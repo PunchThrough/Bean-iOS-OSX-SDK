@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>72BFF4AC-103E-4B71-8619-70B255527DBA</string>
+	<key>IDESourceControlProjectName</key>
+	<string>Bean OSX Library</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>1FEF13F9-BF3E-45B7-8BC8-50BB4DF9676D</key>
+		<string>https://bitbucket.org/punchthroughdesign/bean-control-library.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>OSX/Bean OSX Library/Bean OSX Library.xcodeproj/project.xcworkspace</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>1FEF13F9-BF3E-45B7-8BC8-50BB4DF9676D</key>
+		<string>../../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://bitbucket.org/punchthroughdesign/bean-control-library.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>110</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>1FEF13F9-BF3E-45B7-8BC8-50BB4DF9676D</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>1FEF13F9-BF3E-45B7-8BC8-50BB4DF9676D</string>
+			<key>IDESourceControlWCCName</key>
+			<string>bean-control-library</string>
+		</dict>
+	</array>
+</dict>
+</plist>
