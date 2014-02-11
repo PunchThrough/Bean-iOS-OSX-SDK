@@ -195,36 +195,6 @@
         }
     }
 }
-- (void)peripheral:(CBPeripheral *)peripheral didReliablyWriteValuesForCharacteristics:(NSArray *)characteristics error:(NSError *)error{
-    NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
-                            peripheral ?: [NSNull null], @"peripheral",
-                            characteristics ?: [NSNull null], @"characteristics",
-                            error ?: [NSNull null], @"error",
-                            nil];
-    [[NSNotificationCenter defaultCenter] postNotificationName: @"didReliablyWriteValuesForCharacteristics" object:params];
-    for (id<Profile_Protocol> profile in profiles) {
-        if(profile){
-            if([profile respondsToSelector:@selector(peripheral:didReliablyWriteValuesForCharacteristics:error:)]){
-                [profile peripheral:peripheral didReliablyWriteValuesForCharacteristics:characteristics error:error];
-            }
-        }
-    }
-}
-- (void)peripheral:(CBPeripheral *)peripheral didUpdateBroadcastStateForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error{
-    NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
-                            peripheral ?: [NSNull null], @"peripheral",
-                            characteristic ?: [NSNull null], @"characteristic",
-                            error ?: [NSNull null], @"error",
-                            nil];
-    [[NSNotificationCenter defaultCenter] postNotificationName: @"didUpdateBroadcastStateForCharacteristic" object:params];
-    for (id<Profile_Protocol> profile in profiles) {
-        if(profile){
-            if([profile respondsToSelector:@selector(peripheral:didUpdateBroadcastStateForCharacteristic:error:)]){
-                [profile peripheral:peripheral didUpdateBroadcastStateForCharacteristic:characteristic error:error];
-            }
-        }
-    }
-}
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateNotificationStateForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error{
     NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
                             peripheral ?: [NSNull null], @"peripheral",

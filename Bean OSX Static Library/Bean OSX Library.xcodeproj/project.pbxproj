@@ -13,32 +13,20 @@
 		52D34E3D18A9B455002F0C59 /* libBean OSX Library.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D34E2418A9B455002F0C59 /* libBean OSX Library.a */; };
 		52D34E4318A9B455002F0C59 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 52D34E4118A9B455002F0C59 /* InfoPlist.strings */; };
 		52D34E4518A9B455002F0C59 /* Bean_OSX_LibraryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E4418A9B455002F0C59 /* Bean_OSX_LibraryTests.m */; };
-		52D34EAB18A9B890002F0C59 /* BEAN_Globals.h in Headers */ = {isa = PBXBuildFile; fileRef = 52D34E8A18A9B890002F0C59 /* BEAN_Globals.h */; };
-		52D34EAC18A9B890002F0C59 /* BeanDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 52D34E8B18A9B890002F0C59 /* BeanDevice.h */; };
 		52D34EAD18A9B890002F0C59 /* BeanDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E8C18A9B890002F0C59 /* BeanDevice.m */; };
-		52D34EAE18A9B890002F0C59 /* CBPeripheral+UniqueId.h in Headers */ = {isa = PBXBuildFile; fileRef = 52D34E8E18A9B890002F0C59 /* CBPeripheral+UniqueId.h */; };
 		52D34EAF18A9B890002F0C59 /* CBPeripheral+UniqueId.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E8F18A9B890002F0C59 /* CBPeripheral+UniqueId.m */; };
-		52D34EB018A9B890002F0C59 /* BEAN_Helper.h in Headers */ = {isa = PBXBuildFile; fileRef = 52D34E9118A9B890002F0C59 /* BEAN_Helper.h */; };
 		52D34EB118A9B890002F0C59 /* BEAN_Helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E9218A9B890002F0C59 /* BEAN_Helper.m */; };
-		52D34EB218A9B890002F0C59 /* DevInfoProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = 52D34E9518A9B890002F0C59 /* DevInfoProfile.h */; };
 		52D34EB318A9B890002F0C59 /* DevInfoProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E9618A9B890002F0C59 /* DevInfoProfile.m */; };
-		52D34EB418A9B890002F0C59 /* GattSerialProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = 52D34E9818A9B890002F0C59 /* GattSerialProfile.h */; };
 		52D34EB518A9B890002F0C59 /* GattSerialProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E9918A9B890002F0C59 /* GattSerialProfile.m */; };
-		52D34EB618A9B890002F0C59 /* GattPacket.h in Headers */ = {isa = PBXBuildFile; fileRef = 52D34E9B18A9B890002F0C59 /* GattPacket.h */; };
 		52D34EB718A9B890002F0C59 /* GattPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E9C18A9B890002F0C59 /* GattPacket.m */; };
-		52D34EB818A9B890002F0C59 /* GattSerialMessage.h in Headers */ = {isa = PBXBuildFile; fileRef = 52D34E9D18A9B890002F0C59 /* GattSerialMessage.h */; };
 		52D34EB918A9B890002F0C59 /* GattSerialMessage.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E9E18A9B890002F0C59 /* GattSerialMessage.m */; };
-		52D34EBA18A9B890002F0C59 /* GattSerialMessageRxAssembler.h in Headers */ = {isa = PBXBuildFile; fileRef = 52D34E9F18A9B890002F0C59 /* GattSerialMessageRxAssembler.h */; };
 		52D34EBB18A9B890002F0C59 /* GattSerialMessageRxAssembler.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34EA018A9B890002F0C59 /* GattSerialMessageRxAssembler.m */; };
-		52D34EBC18A9B890002F0C59 /* GattSerialTransport.h in Headers */ = {isa = PBXBuildFile; fileRef = 52D34EA118A9B890002F0C59 /* GattSerialTransport.h */; };
 		52D34EBD18A9B890002F0C59 /* GattSerialTransport.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34EA218A9B890002F0C59 /* GattSerialTransport.m */; };
-		52D34EBE18A9B890002F0C59 /* GattTransport.h in Headers */ = {isa = PBXBuildFile; fileRef = 52D34EA318A9B890002F0C59 /* GattTransport.h */; };
 		52D34EBF18A9B890002F0C59 /* GattTransport.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34EA418A9B890002F0C59 /* GattTransport.m */; };
-		52D34EC018A9B890002F0C59 /* oad.h in Headers */ = {isa = PBXBuildFile; fileRef = 52D34EA618A9B890002F0C59 /* oad.h */; };
-		52D34EC118A9B890002F0C59 /* OadProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = 52D34EA718A9B890002F0C59 /* OadProfile.h */; };
 		52D34EC218A9B890002F0C59 /* OadProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34EA818A9B890002F0C59 /* OadProfile.m */; };
-		52D34EC318A9B890002F0C59 /* Profile_Protocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 52D34EA918A9B890002F0C59 /* Profile_Protocol.h */; };
-		52D34EC418A9B890002F0C59 /* ProfileDelegate_Protocol.h in Headers */ = {isa = PBXBuildFile; fileRef = 52D34EAA18A9B890002F0C59 /* ProfileDelegate_Protocol.h */; };
+		52DE25C118AAC53900E69929 /* IOBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52DE25C018AAC53900E69929 /* IOBluetooth.framework */; };
+		52DE25C318AACB4B00E69929 /* BeanDevice.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 52D34E8B18A9B890002F0C59 /* BeanDevice.h */; };
+		52DE25C418AACB4F00E69929 /* CBPeripheral+UniqueId.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 52D34E8E18A9B890002F0C59 /* CBPeripheral+UniqueId.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,6 +38,20 @@
 			remoteInfo = "Bean OSX Library";
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		52DE25C218AACAE600E69929 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/${PRODUCT_NAME}";
+			dstSubfolderSpec = 16;
+			files = (
+				52DE25C418AACB4F00E69929 /* CBPeripheral+UniqueId.h in CopyFiles */,
+				52DE25C318AACB4B00E69929 /* BeanDevice.h in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		52D34E2418A9B455002F0C59 /* libBean OSX Library.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libBean OSX Library.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -89,6 +91,7 @@
 		52D34EA818A9B890002F0C59 /* OadProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OadProfile.m; sourceTree = "<group>"; };
 		52D34EA918A9B890002F0C59 /* Profile_Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Profile_Protocol.h; sourceTree = "<group>"; };
 		52D34EAA18A9B890002F0C59 /* ProfileDelegate_Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileDelegate_Protocol.h; sourceTree = "<group>"; };
+		52DE25C018AAC53900E69929 /* IOBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOBluetooth.framework; path = System/Library/Frameworks/IOBluetooth.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +99,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52DE25C118AAC53900E69929 /* IOBluetooth.framework in Frameworks */,
 				52D34E2818A9B455002F0C59 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -135,6 +139,7 @@
 		52D34E2618A9B455002F0C59 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				52DE25C018AAC53900E69929 /* IOBluetooth.framework */,
 				52D34E2718A9B455002F0C59 /* Cocoa.framework */,
 				52D34E3818A9B455002F0C59 /* XCTest.framework */,
 				52D34E2918A9B455002F0C59 /* Other Frameworks */,
@@ -273,31 +278,6 @@
 		};
 /* End PBXGroup section */
 
-/* Begin PBXHeadersBuildPhase section */
-		52D34E2218A9B455002F0C59 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				52D34EB018A9B890002F0C59 /* BEAN_Helper.h in Headers */,
-				52D34EC418A9B890002F0C59 /* ProfileDelegate_Protocol.h in Headers */,
-				52D34EB618A9B890002F0C59 /* GattPacket.h in Headers */,
-				52D34EC318A9B890002F0C59 /* Profile_Protocol.h in Headers */,
-				52D34EBA18A9B890002F0C59 /* GattSerialMessageRxAssembler.h in Headers */,
-				52D34EC018A9B890002F0C59 /* oad.h in Headers */,
-				52D34EAE18A9B890002F0C59 /* CBPeripheral+UniqueId.h in Headers */,
-				52D34EBE18A9B890002F0C59 /* GattTransport.h in Headers */,
-				52D34EB418A9B890002F0C59 /* GattSerialProfile.h in Headers */,
-				52D34EAC18A9B890002F0C59 /* BeanDevice.h in Headers */,
-				52D34EBC18A9B890002F0C59 /* GattSerialTransport.h in Headers */,
-				52D34EB218A9B890002F0C59 /* DevInfoProfile.h in Headers */,
-				52D34EB818A9B890002F0C59 /* GattSerialMessage.h in Headers */,
-				52D34EC118A9B890002F0C59 /* OadProfile.h in Headers */,
-				52D34EAB18A9B890002F0C59 /* BEAN_Globals.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXHeadersBuildPhase section */
-
 /* Begin PBXNativeTarget section */
 		52D34E2318A9B455002F0C59 /* Bean OSX Library */ = {
 			isa = PBXNativeTarget;
@@ -305,7 +285,7 @@
 			buildPhases = (
 				52D34E2018A9B455002F0C59 /* Sources */,
 				52D34E2118A9B455002F0C59 /* Frameworks */,
-				52D34E2218A9B455002F0C59 /* Headers */,
+				52DE25C218AACAE600E69929 /* CopyFiles */,
 			);
 			buildRules = (
 			);
