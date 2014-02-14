@@ -8,7 +8,7 @@
 
 #import "GattSerialProfile.h"
 
-@interface GattSerialProfile () <GattSerialTransportDelegate>
+@interface GattSerialProfile () <GattSerialTransportDelegate, TxRxCharacteristicHandler>
 @end
 
 @implementation GattSerialProfile
@@ -31,7 +31,7 @@
         _delegate = delegate;
         
         //Initialize Gatt Transport layer
-        gatt_transport = [[GattTransport alloc] initWithPeripheral:peripheral characteristic:serial_pass_characteristic];
+        gatt_transport = [[GattTransport alloc] initWithCharacteristicHandler:self];
         if(!gatt_transport) return nil;
         
         //Initialize Gatt Serial Transport layer
@@ -41,6 +41,7 @@
         
         //Assign GattTransport layer's delegate to the serial transport layer
         gatt_transport.delegate = gatt_serial_transport;
+        
     }
     return self;
 }
@@ -80,7 +81,7 @@
 }
 
 
-#pragma mark - GattSerialTransportDelegate callback
+#pragma mark - GattSerialTransportDelegate callbacks
 -(void)GattSerialTransport_error:(NSError*)error
 {
     if (self.delegate)
@@ -102,6 +103,22 @@
     }
 }
 
+#pragma mark - TxRxCharacteristicUser callbacks
+-(void)user:(id<TxRxCharacteristicUser>)user hasDataForTransmission:(NSData*)data error:(NSError**)error
+{
+    if(!peripheral){
+        if(error) *error = [BEAN_Helper basicError:@"Peripheral is not connected" domain:@"BEAN API:GATT Serial Profile" code:100];
+        return;
+    }
+    if(!(peripheral.isConnected)){
+        if(error) *error = [BEAN_Helper basicError:@"Peripheral is not connected" domain:@"BEAN API:GATT Serial Profile" code:100];
+        return;
+    }
+    
+    [peripheral writeValue:data forCharacteristic:serial_pass_characteristic type:CBCharacteristicWriteWithoutResponse];
+    NSLog(@"Packet Written to Serial Pass Characteristic: %@", data);
+
+}
 
 #pragma mark CBPeripheralDelegate callbacks
 ////////////////  CBPeripheralDeligate Callbacks ////////////////////////////
@@ -181,7 +198,7 @@
 {
     if (!error) {
         if ([characteristic isEqual:serial_pass_characteristic]) {
-           
+            [gatt_transport handler:self hasReceivedData:[characteristic value]];
         }
     }
 }

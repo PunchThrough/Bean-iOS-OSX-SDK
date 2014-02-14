@@ -54,6 +54,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5251175218ADA0AC0088DE2D /* TxRxCharacteristicHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TxRxCharacteristicHandler.h; sourceTree = "<group>"; };
+		5251175318ADA0C80088DE2D /* TxRxCharacteristicUser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TxRxCharacteristicUser.h; sourceTree = "<group>"; };
 		52D34E2418A9B455002F0C59 /* libBean OSX Library.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libBean OSX Library.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		52D34E2718A9B455002F0C59 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		52D34E2A18A9B455002F0C59 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -117,6 +119,34 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5251175018AD9D530088DE2D /* GATT Transport  */ = {
+			isa = PBXGroup;
+			children = (
+				52D34EA318A9B890002F0C59 /* GattTransport.h */,
+				52D34EA418A9B890002F0C59 /* GattTransport.m */,
+				52D34E9B18A9B890002F0C59 /* GattPacket.h */,
+				52D34E9C18A9B890002F0C59 /* GattPacket.m */,
+				5251175218ADA0AC0088DE2D /* TxRxCharacteristicHandler.h */,
+				5251175318ADA0C80088DE2D /* TxRxCharacteristicUser.h */,
+			);
+			name = "GATT Transport ";
+			path = Transport;
+			sourceTree = "<group>";
+		};
+		5251175118AD9D550088DE2D /* GATT Serial Transport */ = {
+			isa = PBXGroup;
+			children = (
+				52D34EA118A9B890002F0C59 /* GattSerialTransport.h */,
+				52D34EA218A9B890002F0C59 /* GattSerialTransport.m */,
+				52D34E9D18A9B890002F0C59 /* GattSerialMessage.h */,
+				52D34E9E18A9B890002F0C59 /* GattSerialMessage.m */,
+				52D34E9F18A9B890002F0C59 /* GattSerialMessageRxAssembler.h */,
+				52D34EA018A9B890002F0C59 /* GattSerialMessageRxAssembler.m */,
+			);
+			name = "GATT Serial Transport";
+			path = Transport;
+			sourceTree = "<group>";
+		};
 		52D34E1B18A9B455002F0C59 = {
 			isa = PBXGroup;
 			children = (
@@ -244,26 +274,10 @@
 			children = (
 				52D34E9818A9B890002F0C59 /* GattSerialProfile.h */,
 				52D34E9918A9B890002F0C59 /* GattSerialProfile.m */,
-				52D34E9A18A9B890002F0C59 /* Transport */,
+				5251175118AD9D550088DE2D /* GATT Serial Transport */,
+				5251175018AD9D530088DE2D /* GATT Transport  */,
 			);
 			path = "Gatt Serial";
-			sourceTree = "<group>";
-		};
-		52D34E9A18A9B890002F0C59 /* Transport */ = {
-			isa = PBXGroup;
-			children = (
-				52D34E9B18A9B890002F0C59 /* GattPacket.h */,
-				52D34E9C18A9B890002F0C59 /* GattPacket.m */,
-				52D34E9D18A9B890002F0C59 /* GattSerialMessage.h */,
-				52D34E9E18A9B890002F0C59 /* GattSerialMessage.m */,
-				52D34E9F18A9B890002F0C59 /* GattSerialMessageRxAssembler.h */,
-				52D34EA018A9B890002F0C59 /* GattSerialMessageRxAssembler.m */,
-				52D34EA118A9B890002F0C59 /* GattSerialTransport.h */,
-				52D34EA218A9B890002F0C59 /* GattSerialTransport.m */,
-				52D34EA318A9B890002F0C59 /* GattTransport.h */,
-				52D34EA418A9B890002F0C59 /* GattTransport.m */,
-			);
-			path = Transport;
 			sourceTree = "<group>";
 		};
 		52D34EA518A9B890002F0C59 /* OAD */ = {

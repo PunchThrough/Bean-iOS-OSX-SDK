@@ -8,21 +8,16 @@
 
 #import "GattTransport.h"
 
-@interface GattTransport () <CBPeripheralDelegate>
-@end
 
 @implementation GattTransport
 {
-    __weak CBPeripheral * peripheral;
-    __weak CBCharacteristic * serialCharacteristic;
 }
 
 #pragma mark Public Methods
--(id)initWithPeripheral:(CBPeripheral*)cbperipheral characteristic:(CBCharacteristic*)cbcharacteristic;
+-(id)initWithCharacteristicHandler:(id<TxRxCharacteristicHandler>)handler;
 {
     if ( self = [super init] ) {
-        peripheral = cbperipheral;
-        serialCharacteristic = cbcharacteristic;
+        _characteristicHandler = handler;
     }
     return self;
 }
@@ -30,17 +25,20 @@
 -(void)sendPacket:(GattPacket*)packet error:(NSError**)error
 {
     //Send data over BLE
-    if(peripheral && serialCharacteristic)
+    if(_characteristicHandler)
     {
-        [peripheral writeValue:[packet bytes] forCharacteristic:serialCharacteristic type:CBCharacteristicWriteWithoutResponse];
-        NSLog(@"Writing Data: %@", packet );
+        [_characteristicHandler user:self hasDataForTransmission:[packet bytes] error:error];
     }
 }
 
--(void)packetDataRecieved:(NSData*)packetData
+-(void)handler:(id<TxRxCharacteristicHandler>)handler hasTransmittedDataWithError:(NSError*)error
+{
+    
+}
+-(void)handler:(id<TxRxCharacteristicHandler>)handler hasReceivedData:(NSData*)data
 {
     NSError* error;
-    GattPacket * packet = [[GattPacket alloc] initWithData:packetData error:&error];
+    GattPacket * packet = [[GattPacket alloc] initWithData:data error:&error];
     if(!packet || error)
     {
         if (self.delegate)

@@ -63,7 +63,7 @@
     {
         if (self.delegate)
         {
-            if([self.delegate respondsToSelector:@selector(GATT_Serial_Transport_error:)])
+            if([self.delegate respondsToSelector:@selector(GattSerialTransport_error:)])
             {
                 [self.delegate GattSerialTransport_error:error];
             }
@@ -97,8 +97,11 @@
             outgoingMessageCount = (outgoingMessageCount+1)%4; //Two bit counter
         }
         
+        unsigned long packetDataSize = ((i + PACKET_TX_MAX_PAYLOAD_LENGTH)<[messageData length]) ? PACKET_TX_MAX_PAYLOAD_LENGTH : ([messageData length] - i);
+        NSData* packetData = [messageData subdataWithRange:NSMakeRange (i, packetDataSize)];
+        
         NSError* error;
-        [packets addObject:[[GattPacket alloc] initWithStartBit:startBit messageCount:outgoingMessageCount gattPacketDescendingCount:gattPacketDescendingCount data:messageData error:&error]];
+        [packets addObject:[[GattPacket alloc] initWithStartBit:startBit messageCount:outgoingMessageCount gattPacketDescendingCount:gattPacketDescendingCount data:packetData error:&error]];
         
         gattPacketDescendingCount--; // The last packet should have a value of 0 for this
     }
@@ -112,40 +115,24 @@
     {
         if (self.delegate)
         {
-            if([self.delegate respondsToSelector:@selector(GATT_Serial_Transport_error:)])
+            if([self.delegate respondsToSelector:@selector(GattSerialTransport_error:)])
             {
                 [self.delegate GattSerialTransport_error:error];
             }
         }
         return;
     }
-
 }
 -(void)GattTransport_packetReceived:(GattPacket*)packet
 {
     NSError* error;
-    GattSerialMessage * message;
-    
-    BOOL incompleteMessage = (message)?TRUE:FALSE;
-    if(packet.startBit==TRUE && !(incompleteMessage)) //Case 1
-    {
-        message = [messageAssembler processPacket:packet error:&error];
-    }else if(packet.startBit==FALSE && incompleteMessage) //Case 2
-    {
-        message = [messageAssembler processPacket:packet error:&error];
-    }else if(packet.startBit==TRUE && incompleteMessage) //Case 3
-    {
-        //TODO: send an error
-    }else if(packet.startBit==FALSE && !(incompleteMessage)) //Case 4
-    {
-        //TODO: send an error
-    }
+    GattSerialMessage * message = [messageAssembler processPacket:packet error:&error];
     
     if(error)
     {
         if (self.delegate)
         {
-            if([self.delegate respondsToSelector:@selector(GATT_Serial_Transport_error:)])
+            if([self.delegate respondsToSelector:@selector(GattSerialTransport_error:)])
             {
                 [self.delegate GattSerialTransport_error:error];
             }
@@ -157,7 +144,7 @@
     {
         if (self.delegate)
         {
-            if([self.delegate respondsToSelector:@selector(GATT_Serial_Transport_messageReceived:)])
+            if([self.delegate respondsToSelector:@selector(GattSerialTransport_messageReceived:)])
             {
                 [self.delegate GattSerialTransport_messageReceived:message];
             }

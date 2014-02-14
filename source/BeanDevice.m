@@ -61,11 +61,16 @@
     return valid;
 }
 
+-(void)sendMessage:(GattSerialMessage*)message{
+    [gatt_serial_profile sendMessage:message];
+}
+
 #pragma mark Private Methods
 -(void)__validateNextProfile
 {
     id<Profile_Protocol> profile = [profiles objectAtIndex:validatedProfileCount];
-    [cbperipheral  setDelegate:profile];
+    //[cbperipheral  setDelegate:profile];
+    [profile validate];
     validatedProfileCount++;
 }
 
@@ -90,6 +95,7 @@
 -(void)gattSerialDevice:(GattSerialProfile*)device recievedIncomingMessage:(GattSerialMessage*)message
 {
     //TODO: have some message parsing in here, and break messages out into bean specific callbacks
+    NSLog(@"Gatt Serial Message Received: %@",[message bytes]);
 }
 
 -(void)gattSerialDevice:(GattSerialProfile*)device error:(NSError*)error

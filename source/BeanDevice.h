@@ -17,6 +17,8 @@
 -(id)initWithPeripheral:(CBPeripheral*)peripheral delegate:(id<BeanDeviceDelegate>)delegate;
 -(BOOL)isValid:(NSError**)error;
 
+-(void)sendMessage:(GattSerialMessage*)message;
+
 @end
 
 
@@ -26,4 +28,7 @@
 //-(void)beanDevice:(BeanDevice*)device recievedIncomingMessage:(GattSerialMessage*)message;
 -(void)beanDevice:(BeanDevice*)device error:(NSError*)error;
 -(void)beanDeviceIsValid:(BeanDevice*)device;
+
+-(void)beanDevice:(BeanDevice*)device receivedMessage:(NSData*)data;
+
 @end
