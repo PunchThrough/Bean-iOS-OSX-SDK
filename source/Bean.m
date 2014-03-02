@@ -6,12 +6,12 @@
 //  Copyright (c) 2014 Punch Through Design. All rights reserved.
 //
 
-#import "BeanDevice.h"
+#import "Bean.h"
 
-@interface BeanDevice () <CBPeripheralDelegate, ProfileDelegate_Protocol, GattSerialDeviceDelegate, OAD_Delegate>
+@interface Bean () <CBPeripheralDelegate, ProfileDelegate_Protocol, GattSerialDeviceDelegate, OAD_Delegate>
 @end
 
-@implementation BeanDevice
+@implementation Bean
 {
     CBPeripheral* cbperipheral;
     NSInteger validatedProfileCount;
@@ -30,7 +30,7 @@
 }
 
 #pragma mark Public Methods
--(id)initWithPeripheral:(CBPeripheral*)peripheral delegate:(id<BeanDeviceDelegate>)delegate
+-(id)initWithPeripheral:(CBPeripheral*)peripheral delegate:(id<BeanDelegate>)delegate
 {
     self = [super init];
     if (self) {
@@ -61,6 +61,10 @@
     return valid;
 }
 
+-(NSUUID*)identifier{
+    return [cbperipheral identifier];
+}
+
 -(void)sendMessage:(GattSerialMessage*)message{
     [gatt_serial_profile sendMessage:message];
 }
@@ -81,9 +85,9 @@
     {
         if(_delegate)
         {
-            if([_delegate respondsToSelector:@selector(beanDeviceIsValid:)])
+            if([_delegate respondsToSelector:@selector(beanIsValid:error:)])
             {
-                [_delegate beanDeviceIsValid:self];
+                [_delegate beanIsValid:self error:nil];
             }
         }
     }else{

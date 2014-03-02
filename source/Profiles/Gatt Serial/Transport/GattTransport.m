@@ -14,7 +14,7 @@
 }
 
 #pragma mark Public Methods
--(id)initWithCharacteristicHandler:(id<TxRxCharacteristicHandler>)handler;
+-(id)initWithCharacteristicHandler:(id<GattCharacteristicHandler>)handler;
 {
     if ( self = [super init] ) {
         _characteristicHandler = handler;
@@ -31,11 +31,11 @@
     }
 }
 
--(void)handler:(id<TxRxCharacteristicHandler>)handler hasTransmittedDataWithError:(NSError*)error
+-(void)handler:(id<GattCharacteristicHandler>)handler hasTransmittedDataWithError:(NSError*)error
 {
     
 }
--(void)handler:(id<TxRxCharacteristicHandler>)handler hasReceivedData:(NSData*)data
+-(void)handler:(id<GattCharacteristicHandler>)handler hasReceivedData:(NSData*)data
 {
     NSError* error;
     GattPacket * packet = [[GattPacket alloc] initWithData:data error:&error];

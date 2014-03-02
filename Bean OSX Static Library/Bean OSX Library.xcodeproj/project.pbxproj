@@ -7,13 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5251176518B3FD9B0088DE2D /* BeanManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5251176418B3FD9B0088DE2D /* BeanManager.m */; };
 		52D34E2818A9B455002F0C59 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D34E2718A9B455002F0C59 /* Cocoa.framework */; };
 		52D34E3918A9B455002F0C59 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D34E3818A9B455002F0C59 /* XCTest.framework */; };
 		52D34E3A18A9B455002F0C59 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D34E2718A9B455002F0C59 /* Cocoa.framework */; };
 		52D34E3D18A9B455002F0C59 /* libBean OSX Library.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D34E2418A9B455002F0C59 /* libBean OSX Library.a */; };
 		52D34E4318A9B455002F0C59 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 52D34E4118A9B455002F0C59 /* InfoPlist.strings */; };
 		52D34E4518A9B455002F0C59 /* Bean_OSX_LibraryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E4418A9B455002F0C59 /* Bean_OSX_LibraryTests.m */; };
-		52D34EAD18A9B890002F0C59 /* BeanDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E8C18A9B890002F0C59 /* BeanDevice.m */; };
+		52D34EAD18A9B890002F0C59 /* Bean.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E8C18A9B890002F0C59 /* Bean.m */; };
 		52D34EAF18A9B890002F0C59 /* CBPeripheral+UniqueId.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E8F18A9B890002F0C59 /* CBPeripheral+UniqueId.m */; };
 		52D34EB118A9B890002F0C59 /* BEAN_Helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E9218A9B890002F0C59 /* BEAN_Helper.m */; };
 		52D34EB318A9B890002F0C59 /* DevInfoProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E9618A9B890002F0C59 /* DevInfoProfile.m */; };
@@ -24,8 +25,9 @@
 		52D34EBD18A9B890002F0C59 /* GattSerialTransport.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34EA218A9B890002F0C59 /* GattSerialTransport.m */; };
 		52D34EBF18A9B890002F0C59 /* GattTransport.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34EA418A9B890002F0C59 /* GattTransport.m */; };
 		52D34EC218A9B890002F0C59 /* OadProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34EA818A9B890002F0C59 /* OadProfile.m */; };
+		52D9B95B18BF368D00EB9331 /* BeanManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5251176318B3FD9B0088DE2D /* BeanManager.h */; };
 		52DE25C118AAC53900E69929 /* IOBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52DE25C018AAC53900E69929 /* IOBluetooth.framework */; };
-		52DE25C318AACB4B00E69929 /* BeanDevice.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 52D34E8B18A9B890002F0C59 /* BeanDevice.h */; };
+		52DE25C318AACB4B00E69929 /* Bean.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 52D34E8B18A9B890002F0C59 /* Bean.h */; };
 		52DE25C418AACB4F00E69929 /* CBPeripheral+UniqueId.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 52D34E8E18A9B890002F0C59 /* CBPeripheral+UniqueId.h */; };
 /* End PBXBuildFile section */
 
@@ -46,16 +48,19 @@
 			dstPath = "include/${PRODUCT_NAME}";
 			dstSubfolderSpec = 16;
 			files = (
+				52D9B95B18BF368D00EB9331 /* BeanManager.h in CopyFiles */,
 				52DE25C418AACB4F00E69929 /* CBPeripheral+UniqueId.h in CopyFiles */,
-				52DE25C318AACB4B00E69929 /* BeanDevice.h in CopyFiles */,
+				52DE25C318AACB4B00E69929 /* Bean.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		5251175218ADA0AC0088DE2D /* TxRxCharacteristicHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TxRxCharacteristicHandler.h; sourceTree = "<group>"; };
-		5251175318ADA0C80088DE2D /* TxRxCharacteristicUser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TxRxCharacteristicUser.h; sourceTree = "<group>"; };
+		5251175218ADA0AC0088DE2D /* GattCharacteristicHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GattCharacteristicHandler.h; path = Transport/GattCharacteristicHandler.h; sourceTree = "<group>"; };
+		5251175318ADA0C80088DE2D /* GattCharacteristicObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GattCharacteristicObserver.h; path = Transport/GattCharacteristicObserver.h; sourceTree = "<group>"; };
+		5251176318B3FD9B0088DE2D /* BeanManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeanManager.h; path = ../../source/BeanManager.h; sourceTree = "<group>"; };
+		5251176418B3FD9B0088DE2D /* BeanManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BeanManager.m; path = ../../source/BeanManager.m; sourceTree = "<group>"; };
 		52D34E2418A9B455002F0C59 /* libBean OSX Library.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libBean OSX Library.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		52D34E2718A9B455002F0C59 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		52D34E2A18A9B455002F0C59 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -68,8 +73,8 @@
 		52D34E4218A9B455002F0C59 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		52D34E4418A9B455002F0C59 /* Bean_OSX_LibraryTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Bean_OSX_LibraryTests.m; sourceTree = "<group>"; };
 		52D34E8A18A9B890002F0C59 /* BEAN_Globals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BEAN_Globals.h; path = ../../source/BEAN_Globals.h; sourceTree = "<group>"; };
-		52D34E8B18A9B890002F0C59 /* BeanDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeanDevice.h; path = ../../source/BeanDevice.h; sourceTree = "<group>"; };
-		52D34E8C18A9B890002F0C59 /* BeanDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BeanDevice.m; path = ../../source/BeanDevice.m; sourceTree = "<group>"; };
+		52D34E8B18A9B890002F0C59 /* Bean.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Bean.h; path = ../../source/Bean.h; sourceTree = "<group>"; };
+		52D34E8C18A9B890002F0C59 /* Bean.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Bean.m; path = ../../source/Bean.m; sourceTree = "<group>"; };
 		52D34E8E18A9B890002F0C59 /* CBPeripheral+UniqueId.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CBPeripheral+UniqueId.h"; sourceTree = "<group>"; };
 		52D34E8F18A9B890002F0C59 /* CBPeripheral+UniqueId.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CBPeripheral+UniqueId.m"; sourceTree = "<group>"; };
 		52D34E9118A9B890002F0C59 /* BEAN_Helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BEAN_Helper.h; sourceTree = "<group>"; };
@@ -126,8 +131,6 @@
 				52D34EA418A9B890002F0C59 /* GattTransport.m */,
 				52D34E9B18A9B890002F0C59 /* GattPacket.h */,
 				52D34E9C18A9B890002F0C59 /* GattPacket.m */,
-				5251175218ADA0AC0088DE2D /* TxRxCharacteristicHandler.h */,
-				5251175318ADA0C80088DE2D /* TxRxCharacteristicUser.h */,
 			);
 			name = "GATT Transport ";
 			path = Transport;
@@ -191,10 +194,13 @@
 			isa = PBXGroup;
 			children = (
 				52D34E8A18A9B890002F0C59 /* BEAN_Globals.h */,
-				52D34E8B18A9B890002F0C59 /* BeanDevice.h */,
-				52D34E8C18A9B890002F0C59 /* BeanDevice.m */,
+				5251176318B3FD9B0088DE2D /* BeanManager.h */,
+				5251176418B3FD9B0088DE2D /* BeanManager.m */,
+				52D34E8B18A9B890002F0C59 /* Bean.h */,
+				52D34E8C18A9B890002F0C59 /* Bean.m */,
 				52D34E8D18A9B890002F0C59 /* Categories */,
 				52D34E9018A9B890002F0C59 /* Helper */,
+				52D9B95218BF2E1300EB9331 /* Protocols */,
 				52D34E9318A9B890002F0C59 /* Profiles */,
 				52D34E2E18A9B455002F0C59 /* Supporting Files */,
 			);
@@ -274,6 +280,8 @@
 			children = (
 				52D34E9818A9B890002F0C59 /* GattSerialProfile.h */,
 				52D34E9918A9B890002F0C59 /* GattSerialProfile.m */,
+				5251175218ADA0AC0088DE2D /* GattCharacteristicHandler.h */,
+				5251175318ADA0C80088DE2D /* GattCharacteristicObserver.h */,
 				5251175118AD9D550088DE2D /* GATT Serial Transport */,
 				5251175018AD9D530088DE2D /* GATT Transport  */,
 			);
@@ -288,6 +296,14 @@
 				52D34EA818A9B890002F0C59 /* OadProfile.m */,
 			);
 			path = OAD;
+			sourceTree = "<group>";
+		};
+		52D9B95218BF2E1300EB9331 /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Protocols;
+			path = ../../source/Profiles;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -374,9 +390,10 @@
 				52D34EB918A9B890002F0C59 /* GattSerialMessage.m in Sources */,
 				52D34EBD18A9B890002F0C59 /* GattSerialTransport.m in Sources */,
 				52D34EAF18A9B890002F0C59 /* CBPeripheral+UniqueId.m in Sources */,
-				52D34EAD18A9B890002F0C59 /* BeanDevice.m in Sources */,
+				52D34EAD18A9B890002F0C59 /* Bean.m in Sources */,
 				52D34EC218A9B890002F0C59 /* OadProfile.m in Sources */,
 				52D34EB518A9B890002F0C59 /* GattSerialProfile.m in Sources */,
+				5251176518B3FD9B0088DE2D /* BeanManager.m in Sources */,
 				52D34EB718A9B890002F0C59 /* GattPacket.m in Sources */,
 				52D34EB118A9B890002F0C59 /* BEAN_Helper.m in Sources */,
 				52D34EBB18A9B890002F0C59 /* GattSerialMessageRxAssembler.m in Sources */,
@@ -488,6 +505,7 @@
 			buildSettings = {
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Bean OSX Library/Bean OSX Library-Prefix.pch";
+				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;

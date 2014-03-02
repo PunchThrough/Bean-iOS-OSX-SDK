@@ -10,8 +10,8 @@
 #import <IOBluetooth/IOBluetooth.h>
 #import "BEAN_Helper.h"
 #import "GattPacket.h"
-#import "TxRxCharacteristicHandler.h"
-#import "TxRxCharacteristicUser.h"
+#import "GattCharacteristicHandler.h"
+#import "GattCharacteristicObserver.h"
 
 
 #define GLOBAL_BEAN_SERVICE_UUID                      @"FF10"
@@ -19,12 +19,12 @@
 
 @protocol GattTransportDelegate;
 
-@interface GattTransport : NSObject <TxRxCharacteristicUser>
+@interface GattTransport : NSObject <GattCharacteristicObserver>
 
 @property (nonatomic, weak) id<GattTransportDelegate> delegate;
-@property (nonatomic, weak) id<TxRxCharacteristicHandler> characteristicHandler;
+@property (nonatomic, weak) id<GattCharacteristicHandler> characteristicHandler;
 
--(id)initWithCharacteristicHandler:(id<TxRxCharacteristicHandler>)handler;
+-(id)initWithCharacteristicHandler:(id<GattCharacteristicHandler>)handler;
 -(void)sendPacket:(GattPacket*)packet error:(NSError**)error;
 @end
 

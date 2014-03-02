@@ -8,7 +8,7 @@
 
 #import "GattSerialProfile.h"
 
-@interface GattSerialProfile () <GattSerialTransportDelegate, TxRxCharacteristicHandler>
+@interface GattSerialProfile () <GattSerialTransportDelegate, GattCharacteristicHandler>
 @end
 
 @implementation GattSerialProfile
@@ -104,7 +104,7 @@
 }
 
 #pragma mark - TxRxCharacteristicUser callbacks
--(void)user:(id<TxRxCharacteristicUser>)user hasDataForTransmission:(NSData*)data error:(NSError**)error
+-(void)user:(id<GattCharacteristicObserver>)user hasDataForTransmission:(NSData*)data error:(NSError**)error
 {
     if(!peripheral){
         if(error) *error = [BEAN_Helper basicError:@"Peripheral is not connected" domain:@"BEAN API:GATT Serial Profile" code:100];
