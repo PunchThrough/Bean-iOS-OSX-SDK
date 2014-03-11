@@ -29,7 +29,7 @@
 
 @interface OadProfile : NSObject <Profile_Protocol>
 
-@property (nonatomic, assign) id<OAD_Delegate, ProfileDelegate_Protocol> delegate;
+@property (nonatomic, weak) id<OAD_Delegate, ProfileDelegate_Protocol> delegate;
 
 @property (strong,nonatomic) NSData *imageFile;
 @property int nBlocks;

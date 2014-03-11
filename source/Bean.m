@@ -7,87 +7,131 @@
 //
 
 #import "Bean.h"
+#import "BeanManager+Protected.h"
+#import "GattSerialProfile.h"
 
 @interface Bean () <CBPeripheralDelegate, ProfileDelegate_Protocol, GattSerialDeviceDelegate, OAD_Delegate>
 @end
 
 @implementation Bean
 {
-    CBPeripheral* cbperipheral;
-    NSInteger validatedProfileCount;
-    NSArray * profiles;
+	BeanState                   _state;
+    NSNumber*                   _RSSI;
+	NSDictionary*               _advertisementData;
+    NSDate*                     _lastDiscovered;
+	BeanManager*                _beanManager;
+    CBPeripheral*               _peripheral;
     
-    DevInfoProfile * deviceInfo_profile;
-    OadProfile * oad_profile;
-    GattSerialProfile * gatt_serial_profile;
+    NSInteger                   validatedProfileCount;
+    NSArray*                    profiles;
+    DevInfoProfile*             deviceInfo_profile;
+    OadProfile*                 oad_profile;
+    GattSerialProfile*          gatt_serial_profile;
 }
 
 //Enforce that you can't use the "init" function of this class
-- (id)init
-{
+- (id)init{
     NSAssert(false, @"Please use the \"initWithPeripheral:\" method to instantiate this class");
     return nil;
 }
 
-#pragma mark Public Methods
--(id)initWithPeripheral:(CBPeripheral*)peripheral delegate:(id<BeanDelegate>)delegate
-{
-    self = [super init];
-    if (self) {
-        [self setDelegate:delegate];
-        cbperipheral = peripheral;
-        [cbperipheral setDelegate:self];
-        
-        deviceInfo_profile = [[DevInfoProfile alloc] initWithPeripheral:cbperipheral delegate:self];
-        oad_profile = [[OadProfile alloc] initWithPeripheral:cbperipheral  delegate:self];
-        gatt_serial_profile = [[GattSerialProfile alloc] initWithPeripheral:cbperipheral  delegate:self];
-        
-        validatedProfileCount = 0;
-        profiles = [[NSArray alloc] initWithObjects:deviceInfo_profile,
-                                                   oad_profile,
-                                                   gatt_serial_profile,
-                                                   nil];
-        [self __validateNextProfile];
-    }
-    return self;
-}
-
--(BOOL)isValid:(NSError**)error
-{
-    BOOL valid = ([deviceInfo_profile isValid:error],
-                  [oad_profile isValid:error],
-                  [gatt_serial_profile isValid:error]
-                  )?TRUE:FALSE;
-    return valid;
-}
-
--(NSUUID*)identifier{
-    return [cbperipheral identifier];
-}
-
+#pragma mark - Public Methods
 -(void)sendMessage:(GattSerialMessage*)message{
     [gatt_serial_profile sendMessage:message];
 }
 
-#pragma mark Private Methods
--(void)__validateNextProfile
-{
+-(NSUUID*)identifier{
+    if(_peripheral && _peripheral.identifier){
+        return [_peripheral identifier];
+    }
+    return nil;
+}
+-(NSString*)name{
+    if(_peripheral.state == CBPeripheralStateConnected){
+        return _peripheral.name;
+    }
+    return [_advertisementData objectForKey:CBAdvertisementDataLocalNameKey];//Local Name
+}
+-(NSNumber*)RSSI{
+    if(_peripheral.state == CBPeripheralStateConnected
+    && [_peripheral RSSI]){
+        return [_peripheral RSSI];
+    }
+    return _RSSI;
+}
+-(BeanState)state{
+    return _state;
+}
+-(NSDictionary*)advertisementData{
+    return _advertisementData;
+}
+-(NSDate*)lastDiscovered{
+    return _lastDiscovered;
+}
+-(BeanManager*)beanManager{
+    return _beanManager;
+}
+
+
+#pragma mark - Protected Methods
+-(id)initWithPeripheral:(CBPeripheral*)peripheral beanManager:(BeanManager*)manager{
+    self = [super init];
+    if (self) {
+        _beanManager = manager;
+        _peripheral = peripheral;
+        _peripheral.delegate = self;
+        
+        //Initialize BLE Profiles
+        validatedProfileCount = 0;
+        deviceInfo_profile = [[DevInfoProfile alloc] initWithPeripheral:_peripheral delegate:self];
+        oad_profile = [[OadProfile alloc] initWithPeripheral:_peripheral  delegate:self];
+        gatt_serial_profile = [[GattSerialProfile alloc] initWithPeripheral:_peripheral  delegate:self];
+        profiles = [[NSArray alloc] initWithObjects:deviceInfo_profile,
+                    oad_profile,
+                    gatt_serial_profile,
+                    nil];
+    }
+    return self;
+}
+
+-(void)interrogateAndValidate{
+    validatedProfileCount = 0;
+    [self __validateNextProfile];
+}
+-(CBPeripheral*)peripheral{
+    return _peripheral;
+}
+-(void)setState:(BeanState)state{
+    _state = state;
+}
+-(void)setRSSI:(NSNumber*)rssi{
+    _RSSI = rssi;
+}
+-(void)setAdvertisementData:(NSDictionary*)adData{
+    _advertisementData = adData;
+}
+-(void)setLastDiscovered:(NSDate*)date{
+    _lastDiscovered = date;
+}
+-(void)setBeanManager:(BeanManager*)manager{
+    _beanManager = manager;
+}
+
+#pragma mark - Private Methods
+-(void)__validateNextProfile{
     id<Profile_Protocol> profile = [profiles objectAtIndex:validatedProfileCount];
     //[cbperipheral  setDelegate:profile];
     [profile validate];
     validatedProfileCount++;
 }
 
+#pragma mark -
 #pragma mark Profile Delegate callbacks
--(void)profileValidated:(id<Profile_Protocol>)profile
-{
-    if(validatedProfileCount >= [profiles count])
-    {
-        if(_delegate)
-        {
-            if([_delegate respondsToSelector:@selector(beanIsValid:error:)])
-            {
-                [_delegate beanIsValid:self error:nil];
+-(void)profileValidated:(id<Profile_Protocol>)profile{
+    if(validatedProfileCount >= [profiles count]){
+        if(_beanManager){
+            if([_beanManager respondsToSelector:@selector(bean:hasBeenValidated_error:)]){
+                [_beanManager bean:self hasBeenValidated_error:nil];
             }
         }
     }else{
@@ -96,18 +140,18 @@
 }
 
 #pragma mark gattSerialDevideDelegate callbacks
--(void)gattSerialDevice:(GattSerialProfile*)device recievedIncomingMessage:(GattSerialMessage*)message
-{
+-(void)gattSerialDevice:(GattSerialProfile*)device recievedIncomingMessage:(GattSerialMessage*)message{
     //TODO: have some message parsing in here, and break messages out into bean specific callbacks
     NSLog(@"Gatt Serial Message Received: %@",[message bytes]);
 }
 
--(void)gattSerialDevice:(GattSerialProfile*)device error:(NSError*)error
-{
-
+-(void)gattSerialDevice:(GattSerialProfile*)device error:(NSError*)error{
+    
 }
 
+
 #pragma mark CBPeripheralDelegate callbacks
+
 /* //Example of registering to one of these notifications
  id peripheralNotifier = cbperipheral.delegate;
  if([peripheralNotifier isKindOfClass:[CBPeripheralNotifier class]])

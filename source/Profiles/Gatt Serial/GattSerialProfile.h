@@ -18,7 +18,7 @@
 
 @interface GattSerialProfile : NSObject <Profile_Protocol>
 
-@property (nonatomic, assign) id<GattSerialDeviceDelegate, ProfileDelegate_Protocol> delegate;
+@property (nonatomic, weak) id<GattSerialDeviceDelegate, ProfileDelegate_Protocol> delegate;
 
 -(id)initWithPeripheral:(CBPeripheral*)peripheral delegate:(id<GattSerialDeviceDelegate, ProfileDelegate_Protocol>)delegate;
 

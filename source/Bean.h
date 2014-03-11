@@ -6,20 +6,34 @@
 //  Copyright (c) 2014 Punch Through Design. All rights reserved.
 //
 
-#import "GattSerialProfile.h"
+#import <IOBluetooth/IOBluetooth.h>
 
+@class BeanManager;
 @protocol BeanDelegate;
+
+typedef enum { //These occur in sequence
+    BeanState_Unknown = 0,
+    BeanState_Discovered,
+    BeanState_AttemptingConnection,
+    BeanState_AttemptingValidation,
+    BeanState_ConnectedAndValidated,
+    BeanState_AttemptingDisconnection
+} BeanState;
+
 
 @interface Bean : NSObject
 
-@property (nonatomic, assign) id<BeanDelegate> delegate;
-@property (nonatomic, assign, readonly) NSUUID* identifier;
+@property (nonatomic, weak) id<BeanDelegate> delegate;
 
--(id)initWithPeripheral:(CBPeripheral*)peripheral delegate:(id<BeanDelegate>)delegate;
+//-(void)sendMessage:(GattSerialMessage*)message;
 
--(BOOL)isValid:(NSError**)error;
-
--(void)sendMessage:(GattSerialMessage*)message;
+-(NSUUID*)identifier;
+-(NSString*)name;
+-(NSNumber*)RSSI;
+-(BeanState)state;
+-(NSDictionary*)advertisementData;
+-(NSDate*)lastDiscovered;
+-(BeanManager*)beanManager;
 
 @end
 
@@ -29,9 +43,6 @@
 @optional
 //-(void)beanDevice:(BeanDevice*)device recievedIncomingMessage:(GattSerialMessage*)message;
 -(void)bean:(Bean*)device error:(NSError*)error;
-
--(void)beanIsValid:(Bean*)device error:(NSError*)error;
-
 -(void)bean:(Bean*)device receivedMessage:(NSData*)data;
 
 @end

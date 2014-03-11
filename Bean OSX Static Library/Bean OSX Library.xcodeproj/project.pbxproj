@@ -61,6 +61,8 @@
 		5251175318ADA0C80088DE2D /* GattCharacteristicObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GattCharacteristicObserver.h; path = Transport/GattCharacteristicObserver.h; sourceTree = "<group>"; };
 		5251176318B3FD9B0088DE2D /* BeanManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeanManager.h; path = ../../source/BeanManager.h; sourceTree = "<group>"; };
 		5251176418B3FD9B0088DE2D /* BeanManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BeanManager.m; path = ../../source/BeanManager.m; sourceTree = "<group>"; };
+		52CD166D18CE7B8D00636119 /* Bean+Protected.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Bean+Protected.h"; path = "../../source/Bean+Protected.h"; sourceTree = "<group>"; };
+		52CD166E18CE8C1B00636119 /* BeanManager+Protected.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "BeanManager+Protected.h"; path = "../../source/BeanManager+Protected.h"; sourceTree = "<group>"; };
 		52D34E2418A9B455002F0C59 /* libBean OSX Library.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libBean OSX Library.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		52D34E2718A9B455002F0C59 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		52D34E2A18A9B455002F0C59 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -194,8 +196,10 @@
 			isa = PBXGroup;
 			children = (
 				52D34E8A18A9B890002F0C59 /* BEAN_Globals.h */,
+				52CD166E18CE8C1B00636119 /* BeanManager+Protected.h */,
 				5251176318B3FD9B0088DE2D /* BeanManager.h */,
 				5251176418B3FD9B0088DE2D /* BeanManager.m */,
+				52CD166D18CE7B8D00636119 /* Bean+Protected.h */,
 				52D34E8B18A9B890002F0C59 /* Bean.h */,
 				52D34E8C18A9B890002F0C59 /* Bean.m */,
 				52D34E8D18A9B890002F0C59 /* Categories */,
