@@ -29,15 +29,15 @@ typedef enum { //These occur in sequence
 -(id)initWithDelegate:(id<BeanManagerDelegate>)delegate;
 -(void)startScanningForBeans_error:(NSError**)error;
 -(void)stopScanningForBeans_error:(NSError**)error;
--(void)connectToBeanWithUUID:(NSUUID*)uuid error:(NSError**)error;
--(void)disconnectBeanWithUUID:(NSUUID*)uuid error:(NSError**)error;
+-(void)connectToBean:(Bean*)bean error:(NSError**)error;
+-(void)disconnectBean:(Bean*)bean error:(NSError**)error;
 @end
 
 
 @protocol BeanManagerDelegate <NSObject>
 
 - (void)beanManagerDidUpdateState:(BeanManager *)beanManager;
-- (void)BeanManager:(BeanManager*)beanManager didDiscoverBean:(Bean*)beanData error:(NSError*)error;
+- (void)BeanManager:(BeanManager*)beanManager didDiscoverBean:(Bean*)bean error:(NSError*)error;
 - (void)BeanManager:(BeanManager*)beanManager didConnectToBean:(Bean*)bean error:(NSError*)error;
 - (void)BeanManager:(BeanManager*)beanManager didDisconnectBean:(Bean*)bean error:(NSError*)error;
 

@@ -11,18 +11,6 @@
 #import "GattSerialProfile.h"
 #import "Bean+Protected.h"
 
-//@interface BeanRecord : NSObject
-//@property (strong, nonatomic) NSDate       * last_seen;
-//@property (strong, nonatomic) CBPeripheral * peripheral;
-//@property (strong, nonatomic) NSNumber     * rssi;
-//@property (strong, nonatomic) NSDictionary * advertisementData;
-//@property (strong, nonatomic) Bean         * bean;
-//@property (nonatomic) BeanRecordConnectionState        state;
-//@end
-//@implementation BeanRecord
-//@end
-
-
 @interface BeanManager () <CBCentralManagerDelegate, BeanDelegate>
 @end
 
@@ -85,9 +73,9 @@
     NSLog(@"Stopped scanning.");
 }
 
--(void)connectToBeanWithUUID:(NSUUID*)uuid error:(NSError**)error{
+-(void)connectToBean:(Bean*)bean_ error:(NSError**)error{
     //Find BeanRecord that corresponds to this UUID
-    Bean* bean = [beanRecords objectForKey:uuid];
+    Bean* bean = [beanRecords objectForKey:bean_.identifier];
     //If there is no such peripheral, return error
     if(!bean){
         if(error) *error = [BEAN_Helper basicError:@"Attemp to connect to Bean failed. No peripheral discovered with the corresponding UUID." domain:NSStringFromClass([self class]) code:100];
@@ -112,9 +100,9 @@
     [cbcentralmanager connectPeripheral:bean.peripheral options:nil];
 }
 
--(void)disconnectBeanWithUUID:(NSUUID*)uuid error:(NSError**)error{
+-(void)disconnectBean:(Bean*)bean_ error:(NSError**)error{
     //Find BeanPeripheral that corresponds to this UUID
-    Bean* bean = [beanRecords objectForKey:uuid];
+    Bean* bean = [beanRecords objectForKey:bean_.identifier];
     //Check if the device isn't currently connected
     if(!bean || bean.state != BeanState_ConnectedAndValidated){
         if(error) *error = [BEAN_Helper basicError:@"Failed attemp to disconnect Bean. No device with this UUID is currently connected" domain:NSStringFromClass([self class]) code:100];
@@ -194,6 +182,7 @@
 }
 
 -(void)centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral{
+    NSLog(@"centralManager:didConnectPeripheral %@", peripheral);
     //Find BeanRecord that corresponds to this UUID
     Bean* bean = [beanRecords objectForKey:[peripheral identifier]];
     //If there is no such peripheral, return
@@ -205,6 +194,7 @@
 }
 
 - (void)centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error{
+    NSLog(@"centralManager:didFailToConnectPeripheral %@", peripheral);
     //Find BeanRecord that corresponds to this UUID
     Bean* bean = [beanRecords objectForKey:[peripheral identifier]];
     //If there is no such peripheral, return
@@ -220,6 +210,7 @@
 }
 
 - (void)centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error{
+    NSLog(@"centralManager:didDisconnectPeripheral %@", peripheral);
     //Find BeanRecord that corresponds to this UUID
     Bean* bean = [beanRecords objectForKey:[peripheral identifier]];
     if(bean){

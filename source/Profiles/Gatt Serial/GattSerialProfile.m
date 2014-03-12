@@ -49,7 +49,7 @@
 {
     // Discover services
     NSLog(@"Searching for Gatt Serial Pass service: %@", GLOBAL_SERIAL_PASS_SERVICE_UUID);
-    if(peripheral.isConnected)
+    if(peripheral.state == CBPeripheralStateConnected)
     {
         [peripheral discoverServices:[NSArray arrayWithObjects:[CBUUID UUIDWithString:GLOBAL_SERIAL_PASS_SERVICE_UUID]
                                       , nil]];
@@ -127,7 +127,6 @@
     if (!error) {
         if(peripheral.services)
         {
-            NSLog(@"%@: GATT Serial Pass service of peripheral found", self.class.description);
             // Discover characteristics of found services
             for (CBService * service in peripheral.services) {
                 // Save Gatt Serail service

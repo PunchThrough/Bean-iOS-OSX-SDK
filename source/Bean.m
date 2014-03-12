@@ -50,7 +50,7 @@
     if(_peripheral.state == CBPeripheralStateConnected){
         return _peripheral.name;
     }
-    return [_advertisementData objectForKey:CBAdvertisementDataLocalNameKey];//Local Name
+    return [_advertisementData objectForKey:CBAdvertisementDataLocalNameKey]?[_advertisementData objectForKey:CBAdvertisementDataLocalNameKey]:@"Unknown";//Local Name
 }
 -(NSNumber*)RSSI{
     if(_peripheral.state == CBPeripheralStateConnected
@@ -72,6 +72,18 @@
     return _beanManager;
 }
 
+-(void)sendLoopbackDebugMessage:(NSInteger)length{
+    NSMutableData* data = [[NSMutableData alloc] init];
+    UInt8 messageID[]= {0xFE, 0x00}; //Major, Minor
+    [data appendBytes:messageID length:2];
+    [data appendData:[BEAN_Helper dummyData:length]];
+    if(_state == BeanState_ConnectedAndValidated &&
+       _peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
+    {
+        GattSerialMessage* message = [[GattSerialMessage alloc] initWithPayload:data error:nil];
+        [gatt_serial_profile sendMessage:message];
+    }
+}
 
 #pragma mark - Protected Methods
 -(id)initWithPeripheral:(CBPeripheral*)peripheral beanManager:(BeanManager*)manager{
@@ -80,22 +92,21 @@
         _beanManager = manager;
         _peripheral = peripheral;
         _peripheral.delegate = self;
-        
-        //Initialize BLE Profiles
-        validatedProfileCount = 0;
-        deviceInfo_profile = [[DevInfoProfile alloc] initWithPeripheral:_peripheral delegate:self];
-        oad_profile = [[OadProfile alloc] initWithPeripheral:_peripheral  delegate:self];
-        gatt_serial_profile = [[GattSerialProfile alloc] initWithPeripheral:_peripheral  delegate:self];
-        profiles = [[NSArray alloc] initWithObjects:deviceInfo_profile,
-                    oad_profile,
-                    gatt_serial_profile,
-                    nil];
     }
     return self;
 }
 
 -(void)interrogateAndValidate{
+    //Initialize BLE Profiles
     validatedProfileCount = 0;
+    deviceInfo_profile = [[DevInfoProfile alloc] initWithPeripheral:_peripheral delegate:self];
+    oad_profile = [[OadProfile alloc] initWithPeripheral:_peripheral  delegate:self];
+    gatt_serial_profile = [[GattSerialProfile alloc] initWithPeripheral:_peripheral  delegate:self];
+    profiles = [[NSArray alloc] initWithObjects:deviceInfo_profile,
+                oad_profile,
+                gatt_serial_profile,
+                nil];
+
     [self __validateNextProfile];
 }
 -(CBPeripheral*)peripheral{

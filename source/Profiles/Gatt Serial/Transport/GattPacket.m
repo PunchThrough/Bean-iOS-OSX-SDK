@@ -22,8 +22,8 @@
         UInt8 firstbyte;
         [characteristicData getBytes:&firstbyte length:1];
         _startBit = (firstbyte & 0x80)?TRUE:FALSE; // "Start Bit"
-        _messageCount = (firstbyte & 0x60)>>4; //Message Count
-        _gattPacketDescendingCount = (firstbyte & 0x0F); // GATT Packet Descending Count
+        _messageCount = (firstbyte & 0x60)>>5; //Message Count
+        _gattPacketDescendingCount = (firstbyte & 0x1F); // GATT Packet Descending Count
         _data = [characteristicData subdataWithRange: NSMakeRange (1, [characteristicData length]-1)]; //data
     }
     return self;
@@ -42,7 +42,7 @@
 
 -(NSData*)bytes
 {
-    UInt8 header = (_startBit?0x80:0x00) | ((_messageCount<<4)&0x60) | (_gattPacketDescendingCount&0xFF) ;
+    UInt8 header = (_startBit?0x80:0x00) | ((_messageCount<<5)&0x60) | (_gattPacketDescendingCount&0x1F) ;
     NSMutableData* data = [[NSMutableData alloc] initWithBytes:&header length:1];
     [data appendData:_data];
     

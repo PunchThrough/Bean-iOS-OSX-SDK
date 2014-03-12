@@ -34,7 +34,7 @@
 {
     // Discover services
     NSLog(@"Searching for Device Information service: %@", SERVICE_DEVICE_INFORMATION);
-    if(peripheral.isConnected)
+    if(peripheral.state == CBPeripheralStateConnected)
     {
         [peripheral discoverServices:[NSArray arrayWithObjects:[CBUUID UUIDWithString:SERVICE_DEVICE_INFORMATION]
                                       , nil]];
@@ -68,7 +68,6 @@
         {
             if(peripheral.services)
             {
-                
                 for (CBService * service in peripheral.services) {
                     if ([service.UUID isEqual:[CBUUID UUIDWithString:SERVICE_DEVICE_INFORMATION]]) {
                         NSLog(@"%@: Device Information profile  found", self.class.description);

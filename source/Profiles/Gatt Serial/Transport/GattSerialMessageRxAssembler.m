@@ -35,7 +35,7 @@
         {
             firstMessage = FALSE;
         }//Check if Message Count matches expected. Every full message coming in should increment this count (2 bit count, 0,1,2,3,0,1,2,...)
-        else if([packet messageCount] != ((++messageIndex))%4)
+        else if([packet messageCount] != ((++messageIndex)%4))
         {
             *error = [BEAN_Helper basicError:@"Message Count is out of Sequence" domain:@"BEAN API:GATT Serial Message Assembler" code:100];
             //This is a more minor error. Shouldn't return;
@@ -91,6 +91,7 @@
         GattSerialMessage* message = [[GattSerialMessage alloc] initWithData:payload error:error];
         if(*error) return nil;
         //Return the Message
+        payload = [[NSMutableData alloc] init];
         return message;
     }
     return nil;

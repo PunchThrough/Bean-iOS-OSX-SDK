@@ -35,6 +35,9 @@ typedef enum { //These occur in sequence
 -(NSDate*)lastDiscovered;
 -(BeanManager*)beanManager;
 
+
+-(void)sendLoopbackDebugMessage:(NSInteger)length;
+
 @end
 
 

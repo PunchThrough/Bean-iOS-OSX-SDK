@@ -205,7 +205,7 @@
 				52D34E8D18A9B890002F0C59 /* Categories */,
 				52D34E9018A9B890002F0C59 /* Helper */,
 				52D9B95218BF2E1300EB9331 /* Protocols */,
-				52D34E9318A9B890002F0C59 /* Profiles */,
+				52D34E9318A9B890002F0C59 /* BLE Profiles */,
 				52D34E2E18A9B455002F0C59 /* Supporting Files */,
 			);
 			path = "Bean OSX Library";
@@ -257,7 +257,7 @@
 			path = ../../source/Helper;
 			sourceTree = "<group>";
 		};
-		52D34E9318A9B890002F0C59 /* Profiles */ = {
+		52D34E9318A9B890002F0C59 /* BLE Profiles */ = {
 			isa = PBXGroup;
 			children = (
 				52D34E9418A9B890002F0C59 /* Device Info */,
@@ -266,7 +266,7 @@
 				52D34EA918A9B890002F0C59 /* Profile_Protocol.h */,
 				52D34EAA18A9B890002F0C59 /* ProfileDelegate_Protocol.h */,
 			);
-			name = Profiles;
+			name = "BLE Profiles";
 			path = ../../source/Profiles;
 			sourceTree = "<group>";
 		};
