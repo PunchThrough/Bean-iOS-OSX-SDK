@@ -1,0 +1,3 @@
+[submodule "App Message Definitions"]
+	path = App Message Definitions
+	url = https://raykampmeier@bitbucket.org/punchthroughdesign/bean-application-message-definitions.git
