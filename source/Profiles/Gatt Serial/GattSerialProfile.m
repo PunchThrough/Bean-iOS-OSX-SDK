@@ -23,7 +23,7 @@
 
 
 #pragma mark Public Methods
--(id)initWithPeripheral:(CBPeripheral*)aPeripheral delegate:(id<GattSerialDeviceDelegate, ProfileDelegate_Protocol>)delegate
+-(id)initWithPeripheral:(CBPeripheral*)aPeripheral delegate:(id<GattSerialProfileDelegate>)delegate
 {
     self = [super init];
     if (self) {
@@ -71,11 +71,11 @@
 #pragma mark Private Functions
 -(void)__notifyValidity
 {
-    if (self.delegate)
+    if (self.profileDelegate)
     {
-        if([self.delegate respondsToSelector:@selector(profileValidated:)])
+        if([self.profileDelegate respondsToSelector:@selector(profileValidated:)])
         {
-            [self.delegate profileValidated:self];
+            [self.profileDelegate profileValidated:self];
         }
     }
 }
@@ -86,9 +86,9 @@
 {
     if (self.delegate)
     {
-        if([self.delegate respondsToSelector:@selector(gattSerialDevice:error:)])
+        if([self.delegate respondsToSelector:@selector(gattSerialProfile:error:)])
         {
-            [self.delegate gattSerialDevice:self error:error];
+            [self.delegate gattSerialProfile:self error:error];
         }
     }
 }
@@ -96,9 +96,9 @@
 {
     if (self.delegate)
     {
-        if([self.delegate respondsToSelector:@selector(gattSerialDevice:recievedIncomingMessage:)])
+        if([self.delegate respondsToSelector:@selector(gattSerialProfile:recievedIncomingMessage:)])
         {
-            [self.delegate gattSerialDevice:self recievedIncomingMessage:message];
+            [self.delegate gattSerialProfile:self recievedIncomingMessage:message];
         }
     }
 }

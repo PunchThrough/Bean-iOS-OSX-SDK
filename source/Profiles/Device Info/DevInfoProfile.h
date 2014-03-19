@@ -24,9 +24,9 @@
 
 @interface DevInfoProfile : NSObject <Profile_Protocol>
 
-@property (nonatomic, weak) id<ProfileDelegate_Protocol> delegate;
+@property (nonatomic, weak) id<ProfileDelegate_Protocol> profileDelegate;
 
--(id)initWithPeripheral:(CBPeripheral*)peripheral delegate:(id<ProfileDelegate_Protocol>)delegate;
+-(id)initWithPeripheral:(CBPeripheral*)peripheral;
 
 @end
 

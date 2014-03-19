@@ -29,7 +29,8 @@
 
 @interface OadProfile : NSObject <Profile_Protocol>
 
-@property (nonatomic, weak) id<OAD_Delegate, ProfileDelegate_Protocol> delegate;
+@property (nonatomic, weak) id<OAD_Delegate> delegate;
+@property (nonatomic, weak) id<ProfileDelegate_Protocol> profileDelegate;
 
 @property (strong,nonatomic) NSData *imageFile;
 @property int nBlocks;
@@ -41,7 +42,7 @@
 @property (nonatomic,strong) NSTimer *imageDetectTimer;
 @property uint16_t imgVersion;
 
--(id)initWithPeripheral:(CBPeripheral*)aPeripheral delegate:(id<OAD_Delegate, ProfileDelegate_Protocol>)delegate;
+-(id)initWithPeripheral:(CBPeripheral*)aPeripheral delegate:(id<OAD_Delegate>)delegate;
 
 // Returns FALSE if OAD is not supported on the device. TRUE otherwise
 // See callback method: -(void)FirmwareVersion:(NSString*)version isNewer:(BOOL)isNewer;
