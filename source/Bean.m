@@ -9,8 +9,10 @@
 #import "Bean.h"
 #import "BeanManager+Protected.h"
 #import "GattSerialProfile.h"
+#import "AppMessages.h"
+#import "AppMessagingLayer.h"
 
-@interface Bean () <CBPeripheralDelegate, ProfileDelegate_Protocol, GattSerialDeviceDelegate, OAD_Delegate>
+@interface Bean () <CBPeripheralDelegate, ProfileDelegate_Protocol, AppMessagingLayerDelegate, OAD_Delegate>
 @end
 
 @implementation Bean
@@ -21,6 +23,8 @@
     NSDate*                     _lastDiscovered;
 	BeanManager*                _beanManager;
     CBPeripheral*               _peripheral;
+    
+    AppMessagingLayer*          appMessageLayer;
     
     NSInteger                   validatedProfileCount;
     NSArray*                    profiles;
@@ -73,15 +77,10 @@
 }
 
 -(void)sendLoopbackDebugMessage:(NSInteger)length{
-    NSMutableData* data = [[NSMutableData alloc] init];
-    UInt8 messageID[]= {0xFE, 0x00}; //Major, Minor
-    [data appendBytes:messageID length:2];
-    [data appendData:[BEAN_Helper dummyData:length]];
     if(_state == BeanState_ConnectedAndValidated &&
        _peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
     {
-        GattSerialMessage* message = [[GattSerialMessage alloc] initWithPayload:data error:nil];
-        [gatt_serial_profile sendMessage:message];
+        [appMessageLayer sendMessageWithID:MSG_ID_DB_LOOPBACK andPayload:[BEAN_Helper dummyData:length]];
     }
 }
 
@@ -99,9 +98,12 @@
 -(void)interrogateAndValidate{
     //Initialize BLE Profiles
     validatedProfileCount = 0;
-    deviceInfo_profile = [[DevInfoProfile alloc] initWithPeripheral:_peripheral delegate:self];
+    deviceInfo_profile = [[DevInfoProfile alloc] initWithPeripheral:_peripheral];
+    deviceInfo_profile.profileDelegate = self;
     oad_profile = [[OadProfile alloc] initWithPeripheral:_peripheral  delegate:self];
-    gatt_serial_profile = [[GattSerialProfile alloc] initWithPeripheral:_peripheral  delegate:self];
+    oad_profile.profileDelegate = self;
+    gatt_serial_profile = [[GattSerialProfile alloc] initWithPeripheral:_peripheral  delegate:appMessageLayer];
+    gatt_serial_profile.profileDelegate = self;
     profiles = [[NSArray alloc] initWithObjects:deviceInfo_profile,
                // oad_profile, //TODO: Add this line back in once the CC has OAD prifile 
                 gatt_serial_profile,
@@ -140,6 +142,10 @@
 #pragma mark Profile Delegate callbacks
 -(void)profileValidated:(id<Profile_Protocol>)profile{
     if(validatedProfileCount >= [profiles count]){
+        //Initialize Application Messaging layer
+        appMessageLayer = [[AppMessagingLayer alloc] initWithGattSerialProfile:gatt_serial_profile];
+        appMessageLayer.delegate = self;
+        
         if(_beanManager){
             if([_beanManager respondsToSelector:@selector(bean:hasBeenValidated_error:)]){
                 [_beanManager bean:self hasBeenValidated_error:nil];
@@ -150,16 +156,86 @@
     }
 }
 
-#pragma mark gattSerialDevideDelegate callbacks
--(void)gattSerialDevice:(GattSerialProfile*)device recievedIncomingMessage:(GattSerialMessage*)message{
-    //TODO: have some message parsing in here, and break messages out into bean specific callbacks
-    NSLog(@"Gatt Serial Message Received: %@",[message bytes]);
+#pragma mark AppMessagingLayerDelegate callbacks
+-(void)appMessagingLayer:(AppMessagingLayer*)layer recievedIncomingMessageWithID:(UInt16)identifier andPayload:(NSData*)payload{
+    switch (identifier) {
+        case MSG_ID_SERIAL_DATA:
+            NSLog(@"App Message Received: MSG_ID_SERIAL_DATA: %@", payload);
+            break;
+        case MSG_ID_BT_SET_ADV:
+            NSLog(@"App Message Received: MSG_ID_BT_SET_ADV: %@", payload);
+            break;
+        case MSG_ID_BT_SET_CONN:
+            NSLog(@"App Message Received: MSG_ID_BT_SET_CONN: %@", payload);
+            break;
+        case MSG_ID_BT_SET_LOCAL_NAME:
+            NSLog(@"App Message Received: MSG_ID_BT_SET_LOCAL_NAME: %@", payload);
+            break;
+        case MSG_ID_BT_SET_PIN:
+            NSLog(@"App Message Received: MSG_ID_BT_SET_PIN: %@", payload);
+            break;
+        case MSG_ID_BT_SET_TX_PWR:
+            NSLog(@"App Message Received: MSG_ID_BT_SET_TX_PWR: %@", payload);
+            break;
+        case MSG_ID_BT_GET_CONFIG:
+            NSLog(@"App Message Received: MSG_ID_BT_GET_CONFIG: %@", payload);
+            break;
+        case MSG_ID_BT_ADV_ONOFF:
+            NSLog(@"App Message Received: MSG_ID_BT_ADV_ONOFF: %@", payload);
+            break;
+        case MSG_ID_BT_SET_SCRATCH:
+            NSLog(@"App Message Received: MSG_ID_BT_SET_SCRATCH: %@", payload);
+            break;
+        case MSG_ID_BT_GET_SCRATCH:
+            NSLog(@"App Message Received: MSG_ID_BT_GET_SCRATCH: %@", payload);
+            break;
+        case MSG_ID_BT_RESTART:
+            NSLog(@"App Message Received: MSG_ID_BT_RESTART: %@", payload);
+            break;
+        case MSG_ID_BL_CMD:
+            NSLog(@"App Message Received: MSG_ID_BL_CMD: %@", payload);
+            break;
+        case MSG_ID_BL_FW_BLOCK:
+            NSLog(@"App Message Received: MSG_ID_BL_FW_BLOCK: %@", payload);
+            break;
+        case MSG_ID_BL_STATUS:
+            NSLog(@"App Message Received: MSG_ID_BL_STATUS: %@", payload);
+            break;
+        case MSG_ID_CC_LED_WRITE:
+            NSLog(@"App Message Received: MSG_ID_CC_LED_WRITE: %@", payload);
+            break;
+        case MSG_ID_CC_LED_WRITE_ALL:
+            NSLog(@"App Message Received: MSG_ID_CC_LED_WRITE_ALL: %@", payload);
+            break;
+        case MSG_ID_CC_LED_READ_ALL:
+            NSLog(@"App Message Received: MSG_ID_CC_LED_READ_ALL: %@", payload);
+            break;
+        case MSG_ID_CC_ACCEL_READ:
+            NSLog(@"App Message Received: MSG_ID_CC_ACCEL_READ: %@", payload);
+            break;
+        case MSG_ID_AR_SET_POWER_INT:
+            NSLog(@"App Message Received: MSG_ID_AR_SET_POWER_INT: %@", payload);
+            break;
+        case MSG_ID_AR_GET_CONFIG:
+            NSLog(@"App Message Received: MSG_ID_AR_GET_CONFIG: %@", payload);
+            break;
+        case MSG_ID_AR_POWER_OFFON:
+            NSLog(@"App Message Received: MSG_ID_AR_POWER_OFFON: %@", payload);
+            break;
+        case MSG_ID_DB_LOOPBACK:
+            NSLog(@"App Message Received: MSG_ID_DB_LOOPBACK: %@", payload);
+            break;
+        case MSG_ID_DB_COUNTER:
+            NSLog(@"App Message Received: MSG_ID_DB_COUNTER: %@", payload);
+            break;
+            
+        default:
+            break;
+    }
 }
-
--(void)gattSerialDevice:(GattSerialProfile*)device error:(NSError*)error{
+-(void)appMessagingLayer:(AppMessagingLayer*)later error:(NSError*)error{
     
 }
-
 
 #pragma mark CBPeripheralDelegate callbacks
 

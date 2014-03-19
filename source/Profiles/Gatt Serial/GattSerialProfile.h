@@ -14,24 +14,25 @@
 #define GLOBAL_SERIAL_PASS_SERVICE_UUID                    PUNCHTHROUGHDESIGN_128_UUID(@"FF10")
 #define GLOBAL_SERIAL_PASS_CHARACTERISTIC_UUID             PUNCHTHROUGHDESIGN_128_UUID(@"FF11")
 
-@protocol GattSerialDeviceDelegate;
+@protocol GattSerialProfileDelegate;
 
 @interface GattSerialProfile : NSObject <Profile_Protocol>
 
-@property (nonatomic, weak) id<GattSerialDeviceDelegate, ProfileDelegate_Protocol> delegate;
+@property (nonatomic, weak) id<GattSerialProfileDelegate> delegate;
+@property (nonatomic, weak) id<ProfileDelegate_Protocol> profileDelegate;
 
--(id)initWithPeripheral:(CBPeripheral*)peripheral delegate:(id<GattSerialDeviceDelegate, ProfileDelegate_Protocol>)delegate;
+-(id)initWithPeripheral:(CBPeripheral*)peripheral delegate:(id<GattSerialProfileDelegate>)delegate;
 
 -(void)sendMessage:(GattSerialMessage*)message;
 
 @end
 
 
-@protocol GattSerialDeviceDelegate <NSObject>
+@protocol GattSerialProfileDelegate <NSObject>
 
 @optional
--(void)gattSerialDevice:(GattSerialProfile*)device recievedIncomingMessage:(GattSerialMessage*)message;
--(void)gattSerialDevice:(GattSerialProfile*)device error:(NSError*)error;
+-(void)gattSerialProfile:(GattSerialProfile*)profile recievedIncomingMessage:(GattSerialMessage*)message;
+-(void)gattSerialProfile:(GattSerialProfile*)profile error:(NSError*)error;
 @end
 
 
