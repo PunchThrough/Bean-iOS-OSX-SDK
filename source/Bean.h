@@ -37,6 +37,7 @@ typedef enum { //These occur in sequence
 
 
 -(void)sendLoopbackDebugMessage:(NSInteger)length;
+-(void)sendSerialMessage:(NSData*)data;
 
 @end
 

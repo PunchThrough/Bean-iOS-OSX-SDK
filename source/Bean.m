@@ -84,6 +84,14 @@
     }
 }
 
+-(void)sendSerialMessage:(NSData*)data{
+    if(_state == BeanState_ConnectedAndValidated &&
+       _peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
+    {
+        [appMessageLayer sendMessageWithID:MSG_ID_SERIAL_DATA andPayload:data];
+    }
+}
+
 #pragma mark - Protected Methods
 -(id)initWithPeripheral:(CBPeripheral*)peripheral beanManager:(BeanManager*)manager{
     self = [super init];
