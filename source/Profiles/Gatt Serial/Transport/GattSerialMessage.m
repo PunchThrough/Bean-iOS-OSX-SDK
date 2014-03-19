@@ -14,22 +14,22 @@
 -(id)initWithData:(NSData*)data error:(NSError**)error
 {
     if ( self = [super init] ) {
-        //data must have at least 5 bytes
-        if([data length]<5)
+        //data must have at least 4 bytes
+        if([data length]<4)
         {
-            if(error) *error = [BEAN_Helper basicError:@"Message length is too small" domain:@"BEAN API:GATT Serial Message" code:100];
+            if(error) *error = [BEAN_Helper basicError:@"Message is an invalid length: Too small" domain:@"BEAN API:GATT Serial Message" code:100];
             return nil;
         }
         
-        UInt8 header[3];
+        UInt8 header[2];
         UInt8 footer[2];
         
-        [data getBytes:&header length:3];
+        [data getBytes:&header length:2];
         [data getBytes:&footer range:NSMakeRange([data length]-2, 2)];
         
-        _payloadLength = (((UInt16)header[1])<<8) + header[0];
-        _reserved = header[2];
-        _payload = [data subdataWithRange: NSMakeRange (3, [data length]-5)]; //data
+        _payloadLength = header[0];
+        _reserved = header[1];
+        _payload = [data subdataWithRange: NSMakeRange (2, [data length]-4)]; //data
         _crc = (((UInt16)footer[1])<<8) + footer[0];
         
         
@@ -77,13 +77,11 @@
 
 -(NSData*)__getHeaderData
 {
-    UInt8 bytes[3];
+    UInt8 bytes[2];
+    bytes[0] = (UInt8)_payloadLength;
+    bytes[1] = _reserved;
     
-    bytes[0] = (UInt8)(_payloadLength & 0xFF);
-    bytes[1] = (UInt8)((_payloadLength >> 8) & 0xFF);
-    bytes[2] = _reserved;
-    
-    return [NSData dataWithBytes:bytes length:3];
+    return [NSData dataWithBytes:bytes length:2];
 }
 
 -(NSData*)__getFooterData

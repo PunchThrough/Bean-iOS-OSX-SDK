@@ -12,13 +12,13 @@
 
 @interface GattSerialMessage : NSObject
 {
-    @protected UInt16 _payloadLength;
+    @protected UInt8 _payloadLength;
     @protected UInt8 _reserved;
     @protected NSData *_payload;
     @protected UInt16 _crc;
 }
 
-@property (readonly, nonatomic) UInt16 payloadLength;
+@property (readonly, nonatomic) UInt8 payloadLength;
 @property (readonly, nonatomic) UInt8 reserved;
 @property (readonly, nonatomic, strong) NSData * payload;
 @property (readonly, nonatomic) UInt16 crc; //CRC value for entire message
