@@ -29,13 +29,13 @@
 
 #pragma mark gattSerialDevideDelegate callbacks
 -(void)gattSerialProfile:(GattSerialProfile*)profile recievedIncomingMessage:(GattSerialMessage*)message{
-    NSLog(@"Gatt Serial Message Received: %@",[message bytes]);
+    //NSLog(@"Gatt Serial Message Received: %@",[message bytes]);
     
     UInt8 messageIdBytes[2];
-    [[message bytes] getBytes:messageIdBytes length:2];
+    [[message payload] getBytes:messageIdBytes length:2];
     UInt16 messageId = (messageIdBytes[0]<<8) + messageIdBytes[1];
     
-    NSData* payload = [[message bytes] subdataWithRange:NSMakeRange(2, [message bytes].length-2)];
+    NSData* payload = [[message payload] subdataWithRange:NSMakeRange(2, [message payload].length-2)];
     
     if(_delegate){
         if([_delegate respondsToSelector:@selector(appMessagingLayer:recievedIncomingMessageWithID:andPayload:)]){
