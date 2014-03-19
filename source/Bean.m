@@ -167,7 +167,9 @@
 
 #pragma mark AppMessagingLayerDelegate callbacks
 -(void)appMessagingLayer:(AppMessagingLayer*)layer recievedIncomingMessageWithID:(UInt16)identifier andPayload:(NSData*)payload{
-    switch (identifier) {
+    BOOL isReply = identifier & APP_MSG_RESPONSE_BIT;
+    UInt16 identifier_type = identifier & ~(APP_MSG_RESPONSE_BIT);
+    switch (identifier_type) {
         case MSG_ID_SERIAL_DATA:
             NSLog(@"App Message Received: MSG_ID_SERIAL_DATA: %@", payload);
             break;
