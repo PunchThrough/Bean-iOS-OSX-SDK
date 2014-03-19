@@ -102,7 +102,7 @@
     deviceInfo_profile.profileDelegate = self;
     oad_profile = [[OadProfile alloc] initWithPeripheral:_peripheral  delegate:self];
     oad_profile.profileDelegate = self;
-    gatt_serial_profile = [[GattSerialProfile alloc] initWithPeripheral:_peripheral  delegate:appMessageLayer];
+    gatt_serial_profile = [[GattSerialProfile alloc] initWithPeripheral:_peripheral  delegate:nil];
     gatt_serial_profile.profileDelegate = self;
     profiles = [[NSArray alloc] initWithObjects:deviceInfo_profile,
                // oad_profile, //TODO: Add this line back in once the CC has OAD prifile 
@@ -145,6 +145,7 @@
         //Initialize Application Messaging layer
         appMessageLayer = [[AppMessagingLayer alloc] initWithGattSerialProfile:gatt_serial_profile];
         appMessageLayer.delegate = self;
+        gatt_serial_profile.delegate = appMessageLayer;
         
         if(_beanManager){
             if([_beanManager respondsToSelector:@selector(bean:hasBeenValidated_error:)]){
