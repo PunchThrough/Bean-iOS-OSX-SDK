@@ -57,6 +57,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5242A60C18D9101200DDB29F /* AppMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppMessages.h; path = "../App Message Definitions/AppMessages.h"; sourceTree = "<group>"; };
 		5251175218ADA0AC0088DE2D /* GattCharacteristicHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GattCharacteristicHandler.h; path = Transport/GattCharacteristicHandler.h; sourceTree = "<group>"; };
 		5251175318ADA0C80088DE2D /* GattCharacteristicObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GattCharacteristicObserver.h; path = Transport/GattCharacteristicObserver.h; sourceTree = "<group>"; };
 		5251176318B3FD9B0088DE2D /* BeanManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeanManager.h; path = ../../source/BeanManager.h; sourceTree = "<group>"; };
@@ -126,6 +127,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5242A60B18D90FF400DDB29F /* Application Message Definitions */ = {
+			isa = PBXGroup;
+			children = (
+				5242A60C18D9101200DDB29F /* AppMessages.h */,
+			);
+			name = "Application Message Definitions";
+			sourceTree = "<group>";
+		};
 		5251175018AD9D530088DE2D /* GATT Transport  */ = {
 			isa = PBXGroup;
 			children = (
@@ -155,6 +164,7 @@
 		52D34E1B18A9B455002F0C59 = {
 			isa = PBXGroup;
 			children = (
+				5242A60B18D90FF400DDB29F /* Application Message Definitions */,
 				52D34E2D18A9B455002F0C59 /* Bean OSX Library */,
 				52D34E3E18A9B455002F0C59 /* Bean OSX LibraryTests */,
 				52D34E2618A9B455002F0C59 /* Frameworks */,
