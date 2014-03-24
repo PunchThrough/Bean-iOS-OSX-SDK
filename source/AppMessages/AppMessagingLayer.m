@@ -21,7 +21,7 @@
 - (void)sendMessageWithID:(UInt16)identifier andPayload:(NSData *)payload{
     UInt8 messageIdBytes[] = {(UInt8)((identifier>>8)&0xFF),(UInt8)((identifier)&0xFF)};
     NSMutableData* data = [[NSMutableData alloc] initWithBytes:messageIdBytes length:2];
-    [data appendData:payload];
+    if(payload)[data appendData:payload];
     
     GattSerialMessage* message = [[GattSerialMessage alloc] initWithPayload:data error:nil];
     [_gatt_serial_profile sendMessage:message];
