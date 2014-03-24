@@ -12,6 +12,16 @@
 #import "AppMessages.h"
 #import "AppMessagingLayer.h"
 
+#define ARDUINO_OAD_MAX_CHUNK_SIZE 64
+
+typedef enum { //These occur in sequence
+    BeanArduinoOADLocalState_Inactive = 0,
+	BeanArduinoOADLocalState_ResettingRemote,
+	BeanArduinoOADLocalState_SendingStartCommand,
+    BeanArduinoOADLocalState_SendingChunks,
+    BeanArduinoOADLocalState_Finished,
+} BeanArduinoOADLocalState;
+
 @interface Bean () <CBPeripheralDelegate, ProfileDelegate_Protocol, AppMessagingLayerDelegate, OAD_Delegate>
 @end
 
@@ -31,6 +41,12 @@
     DevInfoProfile*             deviceInfo_profile;
     OadProfile*                 oad_profile;
     GattSerialProfile*          gatt_serial_profile;
+    
+    NSData*                     arduinoFwImage;
+    NSInteger                   arduinoFwImage_chunkIndex;
+    BeanArduinoOADLocalState    localArduinoOADState;
+    NSTimer*                    arduinoOADStateTimout;
+    NSTimer*                    arduinoOADChunkSendTimer;
 }
 
 //Enforce that you can't use the "init" function of this class
@@ -92,6 +108,21 @@
     }
 }
 
+-(void)programArduinoWithRawHexImage:(NSData*)hexImage{
+    if(_state == BeanState_ConnectedAndValidated &&
+       _peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
+    {
+        [self __resetArduinoOADLocals];
+        arduinoFwImage = hexImage;
+        localArduinoOADState = BeanArduinoOADLocalState_ResettingRemote;
+        [appMessageLayer sendMessageWithID:BL_CMD_RESET andPayload:nil];
+        [self __setArduinoOADTimeout:ARDUINO_OAD_GENERIC_TIMEOUT_SEC];
+    }else{
+         NSError* error = [BEAN_Helper basicError:@"Bean isn't connected" domain:NSStringFromClass([self class]) code:100];
+        [self __alertDelegateOfArduinoOADCompletion:error];
+    }
+}
+
 #pragma mark - Protected Methods
 -(id)initWithPeripheral:(CBPeripheral*)peripheral beanManager:(BeanManager*)manager{
     self = [super init];
@@ -99,6 +130,7 @@
         _beanManager = manager;
         _peripheral = peripheral;
         _peripheral.delegate = self;
+        localArduinoOADState = BeanArduinoOADLocalState_Inactive;
     }
     return self;
 }
@@ -144,6 +176,83 @@
     //[cbperipheral  setDelegate:profile];
     [profile validate];
     validatedProfileCount++;
+}
+
+-(void)__alertDelegateOfArduinoOADCompletion:(NSError*)error{
+    if(_delegate){
+        if([_delegate respondsToSelector:@selector(bean:didProgramArduinoWithError:)]){
+            [_delegate bean:self didProgramArduinoWithError:error];
+        }
+    }
+}
+-(void)__resetArduinoOADLocals{
+    arduinoFwImage = nil;
+    arduinoFwImage_chunkIndex = 0;
+    localArduinoOADState = BeanArduinoOADLocalState_Inactive;
+    if (arduinoOADStateTimout) [arduinoOADStateTimout invalidate];
+    arduinoOADStateTimout = nil;
+    if (arduinoOADChunkSendTimer) [arduinoOADChunkSendTimer invalidate];
+    arduinoOADChunkSendTimer = nil;
+}
+-(void)__setArduinoOADTimeout:(NSTimeInterval)duration{
+    if (arduinoOADStateTimout) [arduinoOADStateTimout invalidate];
+    arduinoOADStateTimout = [NSTimer scheduledTimerWithTimeInterval:duration target:self selector:@selector(__arduinoOADTimeout:) userInfo:nil repeats:NO];
+}
+-(void)__arduinoOADTimeout:(NSTimer*)timer{
+    localArduinoOADState = BeanArduinoOADLocalState_Inactive;
+    NSError* error = [BEAN_Helper basicError:@"Arduino programming failed" domain:NSStringFromClass([self class]) code:100];
+    [self __alertDelegateOfArduinoOADCompletion:error];
+}
+
+-(void)__sendArduinoOADChunk{ //Call this once. It will continue until the entire FW has been unloaded
+    if(arduinoFwImage_chunkIndex >= arduinoFwImage.length){
+        if (arduinoOADChunkSendTimer) [arduinoOADChunkSendTimer invalidate];
+        arduinoOADChunkSendTimer = nil;
+    }else{
+        NSInteger chunksize = (arduinoFwImage_chunkIndex + ARDUINO_OAD_MAX_CHUNK_SIZE > arduinoFwImage.length)? arduinoFwImage.length-arduinoFwImage_chunkIndex:ARDUINO_OAD_MAX_CHUNK_SIZE;
+        
+        NSData* chunk = [arduinoFwImage subdataWithRange:NSMakeRange(arduinoFwImage_chunkIndex, chunksize)];
+        arduinoFwImage_chunkIndex+=chunksize;
+
+        [appMessageLayer sendMessageWithID:MSG_ID_BL_FW_BLOCK andPayload:chunk];
+        
+        if (arduinoOADChunkSendTimer) [arduinoOADChunkSendTimer invalidate];
+        arduinoOADChunkSendTimer = [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(__sendArduinoOADChunk) userInfo:nil repeats:NO];
+    }
+}
+-(void)__handleArduinoOADRemoteStateChange:(BL_HL_STATE_T)state{
+    UInt8 startBytes[] = {BL_CMD_START_PRG, 0x00, 0x00};
+    NSData* data;
+    switch (state) {
+        case BL_HL_STATE_NULL:
+            break;
+        case BL_HL_STATE_INIT:
+            if(localArduinoOADState == BeanArduinoOADLocalState_ResettingRemote){
+                if (arduinoOADStateTimout) [arduinoOADStateTimout invalidate];
+                data = [[NSData alloc] initWithBytes:startBytes length:3];
+                [appMessageLayer sendMessageWithID:MSG_ID_BL_CMD andPayload:data];
+                localArduinoOADState = BeanArduinoOADLocalState_SendingStartCommand;
+                [self __setArduinoOADTimeout:ARDUINO_OAD_GENERIC_TIMEOUT_SEC];
+            }
+            break;
+        case BL_HL_STATE_READY:
+            if(localArduinoOADState == BeanArduinoOADLocalState_SendingStartCommand){
+                if (arduinoOADStateTimout) [arduinoOADStateTimout invalidate];
+                //Send first Chunk
+                [self __sendArduinoOADChunk];
+                localArduinoOADState = BeanArduinoOADLocalState_SendingChunks;
+            }
+            break;
+        case BL_HL_STATE_PROGRAMMING:
+            break;
+        case BL_HL_STATE_VERIFY:
+            break;
+        case BL_HL_STATE_COMPLETE:
+            [self __alertDelegateOfArduinoOADCompletion:nil];
+            break;
+        default:
+            break;
+    }
 }
 
 #pragma mark -
@@ -211,6 +320,10 @@
             break;
         case MSG_ID_BL_STATUS:
             NSLog(@"App Message Received: MSG_ID_BL_STATUS: %@", payload);
+            UInt8 byte;
+            [payload getBytes:&byte length:1];
+            BL_HL_STATE_T highLevelStatus = byte;
+            [self __handleArduinoOADRemoteStateChange:highLevelStatus];
             break;
         case MSG_ID_CC_LED_WRITE:
             NSLog(@"App Message Received: MSG_ID_CC_LED_WRITE: %@", payload);
