@@ -13,6 +13,7 @@
 #import "AppMessagingLayer.h"
 
 #define ARDUINO_OAD_MAX_CHUNK_SIZE 64
+//#define ARDUINO_OAD_RESET_BEFORE_DL 1
 
 typedef enum { //These occur in sequence
     BeanArduinoOADLocalState_Inactive = 0,
@@ -114,8 +115,25 @@ typedef enum { //These occur in sequence
     {
         [self __resetArduinoOADLocals];
         arduinoFwImage = hexImage;
+        
+        UInt8 commandPayloadBytes[3];
+        NSData* commandPayload;
+#if defined(ARDUINO_OAD_RESET_BEFORE_DL)
+        commandPayloadBytes[0] = BL_CMD_RESET;
+        commandPayloadBytes[1] = 0x00;
+        commandPayloadBytes[2] = 0x00;
+        commandPayload = [[NSData alloc] initWithBytes:commandPayloadBytes length:3];
+        [appMessageLayer sendMessageWithID:MSG_ID_BL_CMD andPayload:commandPayload];
         localArduinoOADState = BeanArduinoOADLocalState_ResettingRemote;
-        [appMessageLayer sendMessageWithID:BL_CMD_RESET andPayload:nil];
+#else
+        UInt16 imageSize = [arduinoFwImage length];
+        commandPayloadBytes[0] = BL_CMD_START_PRG;
+        commandPayloadBytes[1] = (UInt8)(imageSize & 0xFF); //FW size LSB
+        commandPayloadBytes[2] = (UInt8)((imageSize >> 8) & 0xFF); //FW size MSB
+        commandPayload = [[NSData alloc] initWithBytes:commandPayloadBytes length:3];
+        [appMessageLayer sendMessageWithID:MSG_ID_BL_CMD andPayload:commandPayload];
+        localArduinoOADState = BeanArduinoOADLocalState_SendingStartCommand;
+#endif
         [self __setArduinoOADTimeout:ARDUINO_OAD_GENERIC_TIMEOUT_SEC];
     }else{
          NSError* error = [BEAN_Helper basicError:@"Bean isn't connected" domain:NSStringFromClass([self class]) code:100];
@@ -227,6 +245,7 @@ typedef enum { //These occur in sequence
         case BL_HL_STATE_NULL:
             break;
         case BL_HL_STATE_INIT:
+#if defined(ARDUINO_OAD_RESET_BEFORE_DL)
             if(localArduinoOADState == BeanArduinoOADLocalState_ResettingRemote){
                 if (arduinoOADStateTimout) [arduinoOADStateTimout invalidate];
                 data = [[NSData alloc] initWithBytes:startBytes length:3];
@@ -234,6 +253,7 @@ typedef enum { //These occur in sequence
                 localArduinoOADState = BeanArduinoOADLocalState_SendingStartCommand;
                 [self __setArduinoOADTimeout:ARDUINO_OAD_GENERIC_TIMEOUT_SEC];
             }
+#endif
             break;
         case BL_HL_STATE_READY:
             if(localArduinoOADState == BeanArduinoOADLocalState_SendingStartCommand){
