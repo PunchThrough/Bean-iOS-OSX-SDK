@@ -357,15 +357,6 @@ typedef enum { //These occur in sequence
         case MSG_ID_CC_ACCEL_READ:
             NSLog(@"App Message Received: MSG_ID_CC_ACCEL_READ: %@", payload);
             break;
-        case MSG_ID_AR_SET_POWER_INT:
-            NSLog(@"App Message Received: MSG_ID_AR_SET_POWER_INT: %@", payload);
-            break;
-        case MSG_ID_AR_GET_CONFIG:
-            NSLog(@"App Message Received: MSG_ID_AR_GET_CONFIG: %@", payload);
-            break;
-        case MSG_ID_AR_POWER_OFFON:
-            NSLog(@"App Message Received: MSG_ID_AR_POWER_OFFON: %@", payload);
-            break;
         case MSG_ID_DB_LOOPBACK:
             NSLog(@"App Message Received: MSG_ID_DB_LOOPBACK: %@", payload);
             break;
