@@ -37,10 +37,10 @@ typedef enum { //These occur in sequence
 -(NSDate*)lastDiscovered;
 -(BeanManager*)beanManager;
 
-
 -(void)sendLoopbackDebugMessage:(NSInteger)length;
 -(void)sendSerialMessage:(NSData*)data;
 -(void)programArduinoWithRawHexImage:(NSData*)hexImage;
+-(void)setLedColor:(NSColor*)color;
 
 @end
 

@@ -109,6 +109,21 @@ typedef enum { //These occur in sequence
     }
 }
 
+-(void)setLedColor:(NSColor*)color {
+    color = [color colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+    UInt8 redComponent = [color redComponent]*255.0;
+    UInt8 greenComponent = [color greenComponent]*255.0;
+    UInt8 blueComponent = [color blueComponent]*255.0;
+    UInt8 bytes[] = {redComponent,greenComponent,blueComponent};
+    NSData *data = [NSData dataWithBytes:bytes length:3];
+    
+    if(_state == BeanState_ConnectedAndValidated &&
+       _peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
+    {
+        [appMessageLayer sendMessageWithID:MSG_ID_CC_LED_WRITE_ALL andPayload:data];
+    }    
+}
+
 -(void)programArduinoWithRawHexImage:(NSData*)hexImage{
     if(_state == BeanState_ConnectedAndValidated &&
        _peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
