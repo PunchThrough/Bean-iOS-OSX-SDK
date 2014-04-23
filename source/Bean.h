@@ -8,6 +8,8 @@
 
 #import <IOBluetooth/IOBluetooth.h>
 
+#define ARDUINO_OAD_GENERIC_TIMEOUT_SEC 6
+
 @class BeanManager;
 @protocol BeanDelegate;
 
@@ -38,6 +40,7 @@ typedef enum { //These occur in sequence
 
 -(void)sendLoopbackDebugMessage:(NSInteger)length;
 -(void)sendSerialMessage:(NSData*)data;
+-(void)programArduinoWithRawHexImage:(NSData*)hexImage;
 
 @end
 
@@ -48,5 +51,5 @@ typedef enum { //These occur in sequence
 //-(void)beanDevice:(BeanDevice*)device recievedIncomingMessage:(GattSerialMessage*)message;
 -(void)bean:(Bean*)device error:(NSError*)error;
 -(void)bean:(Bean*)device receivedMessage:(NSData*)data;
-
+-(void)bean:(Bean*)device didProgramArduinoWithError:(NSError*)error;
 @end
