@@ -15,6 +15,7 @@
 #define ARDUINO_OAD_GENERIC_TIMEOUT_SEC 6
 
 #define BeanInvalidArgurment @"BeanInvalidArgurment"
+#define BeanNotConnected @"BeanNotConnected"
 
 @class BeanManager;
 @protocol BeanDelegate;
@@ -52,7 +53,7 @@ typedef enum { //These occur in sequence
 #else
 -(void)setLedColor:(NSColor*)color error:(NSError**)error;
 #endif
-
+-(void)setName:(NSString*)name error:(NSError**)error;
 
 @end
 

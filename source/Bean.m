@@ -93,6 +93,32 @@ typedef enum { //These occur in sequence
     return _beanManager;
 }
 
+-(void)setName:(NSString*)name error:(NSError**)error {
+    if(_state != BeanState_ConnectedAndValidated ||
+       _peripheral.state != CBPeripheralStateConnected) //This second conditional is an assertion
+    {
+        if (error) {
+            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Bean not connected", @"")};
+            *error = [NSError errorWithDomain:BeanNotConnected code:0 userInfo:userInfo];
+        }
+        return;
+    }
+    NSData* data = [name dataUsingEncoding:NSUTF8StringEncoding];
+    if (data.length>20) {
+        if (error) {
+            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Name exceeds 20 character limit", @"")};
+            *error = [NSError errorWithDomain:BeanInvalidArgurment code:0 userInfo:userInfo];
+        }
+        data = [data subdataWithRange:NSMakeRange(0, 20)];
+    }
+    
+    // Testing !
+    UInt8 bytes[] = {1,2,3,'\0'};
+    data = [[NSData alloc] initWithBytes:bytes length:4];
+    
+    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_LOCAL_NAME andPayload:data];
+}
+
 -(void)sendLoopbackDebugMessage:(NSInteger)length{
     if(_state == BeanState_ConnectedAndValidated &&
        _peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
@@ -111,6 +137,20 @@ typedef enum { //These occur in sequence
 
 #if TARGET_OS_IPHONE
 -(void)setLedColor:(UIColor*)color error:(NSError**)error {
+#else
+-(void)setLedColor:(NSColor*)color error:(NSError**)error {
+    color = [color colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+#endif
+    if(_state != BeanState_ConnectedAndValidated ||
+       _peripheral.state != CBPeripheralStateConnected) //This second conditional is an assertion
+    {
+        if (error) {
+            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Bean not connected", @"")};
+            *error = [NSError errorWithDomain:BeanNotConnected code:0 userInfo:userInfo];
+        }
+        return;
+    }
+    
     CGFloat red;
     CGFloat green;
     CGFloat blue;
@@ -130,54 +170,8 @@ typedef enum { //These occur in sequence
     UInt8 bytes[] = {redComponent,greenComponent,blueComponent};
     NSData *data = [NSData dataWithBytes:bytes length:3];
     
-    if(_state == BeanState_ConnectedAndValidated &&
-       _peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
-    {
-        [appMessageLayer sendMessageWithID:MSG_ID_CC_LED_WRITE_ALL andPayload:data];
-    }
+    [appMessageLayer sendMessageWithID:MSG_ID_CC_LED_WRITE_ALL andPayload:data];
 }
-#else
--(void)setLedColor:(NSColor*)color error:(NSError**)error {
-    color = [color colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
-    
-    CGFloat red;
-    CGFloat green;
-    CGFloat blue;
-    CGFloat alpha;
-    [color getRed:&red green:&green blue:&blue alpha:&alpha];
-    
-    if (alpha != 1) {
-        if (error) {
-            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Alpha not supported", nil)};
-            *error = [NSError errorWithDomain:BeanInvalidArgurment code:0 userInfo:userInfo];
-        }
-    }
-    
-    UInt8 redComponent = (red)*255.0;
-    UInt8 greenComponent = (green)*255.0;
-    UInt8 blueComponent = (blue)*255.0;
-    UInt8 bytes[] = {redComponent,greenComponent,blueComponent};
-    NSData *data = [NSData dataWithBytes:bytes length:3];
-    
-    if(_state == BeanState_ConnectedAndValidated &&
-       _peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
-    {
-        [appMessageLayer sendMessageWithID:MSG_ID_CC_LED_WRITE_ALL andPayload:data];
-    }
-
-//    UInt8 redComponent = [color redComponent]*255.0;
-//    UInt8 greenComponent = [color greenComponent]*255.0;
-//    UInt8 blueComponent = [color blueComponent]*255.0;
-//    UInt8 bytes[] = {redComponent,greenComponent,blueComponent};
-//    NSData *data = [NSData dataWithBytes:bytes length:3];
-//    
-//    if(_state == BeanState_ConnectedAndValidated &&
-//       _peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
-//    {
-//        [appMessageLayer sendMessageWithID:MSG_ID_CC_LED_WRITE_ALL andPayload:data];
-//    }
-}
-#endif
 
 -(void)programArduinoWithRawHexImage:(NSData*)hexImage{
     if(_state == BeanState_ConnectedAndValidated &&
