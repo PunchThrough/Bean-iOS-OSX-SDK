@@ -7,7 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
+#if TARGET_OS_IPHONE
+#import <CoreBluetooth/CoreBluetooth.h>
+#else
 #import <IOBluetooth/IOBluetooth.h>
+#endif
 #import "Bean.h"
 
 typedef enum { //These occur in sequence

@@ -7,7 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
+
+#if TARGET_OS_IPHONE
+#import <CoreBluetooth/CoreBluetooth.h>
+#else
 #import <IOBluetooth/IOBluetooth.h>
+#endif
+
 #import "BEAN_Helper.h"
 
 #import "GattTransport.h"

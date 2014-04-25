@@ -6,9 +6,15 @@
 //  Copyright (c) 2014 Punch Through Design. All rights reserved.
 //
 
+#if TARGET_OS_IPHONE
+#import <CoreBluetooth/CoreBluetooth.h>
+#else
 #import <IOBluetooth/IOBluetooth.h>
+#endif
 
 #define ARDUINO_OAD_GENERIC_TIMEOUT_SEC 6
+
+#define BeanInvalidArgurment @"BeanInvalidArgurment"
 
 @class BeanManager;
 @protocol BeanDelegate;
@@ -40,7 +46,13 @@ typedef enum { //These occur in sequence
 -(void)sendLoopbackDebugMessage:(NSInteger)length;
 -(void)sendSerialMessage:(NSData*)data;
 -(void)programArduinoWithRawHexImage:(NSData*)hexImage;
--(void)setLedColor:(NSColor*)color;
+
+#if TARGET_OS_IPHONE
+-(void)setLedColor:(UIColor*)color error:(NSError**)error;
+#else
+-(void)setLedColor:(NSColor*)color error:(NSError**)error;
+#endif
+
 
 @end
 

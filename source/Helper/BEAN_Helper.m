@@ -99,9 +99,9 @@
     {
         UInt8 byte;
         [data getBytes:&byte range:NSMakeRange(i, 1)];
-        crc = (uint8)(crc >> 8) | (crc << 8);
+        crc = (UInt8)(crc >> 8) | (crc << 8);
         crc ^= byte;
-        crc ^= (uint8)(crc & 0xff) >> 4;
+        crc ^= (UInt8)(crc & 0xff) >> 4;
         crc ^= (crc << 8) << 4;
         crc ^= ((crc & 0xff) << 4) << 1;
     }

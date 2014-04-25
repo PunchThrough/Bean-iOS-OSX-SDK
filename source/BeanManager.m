@@ -16,7 +16,6 @@
 
 @implementation BeanManager{
     CBCentralManager* cbcentralmanager;
-    
     NSMutableDictionary* beanRecords; //Uses NSUUID as key
 }
 
@@ -152,7 +151,7 @@
             break;
             
         default:
-            NSLog(@"%@: Bluetooth state error: %ld", self.class.description, central.state);
+            NSLog(@"%@: Bluetooth state error: %d", self.class.description, (int)central.state);
             break;
     }
 }

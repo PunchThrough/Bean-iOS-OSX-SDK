@@ -109,11 +109,24 @@ typedef enum { //These occur in sequence
     }
 }
 
--(void)setLedColor:(NSColor*)color {
-    color = [color colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
-    UInt8 redComponent = [color redComponent]*255.0;
-    UInt8 greenComponent = [color greenComponent]*255.0;
-    UInt8 blueComponent = [color blueComponent]*255.0;
+#if TARGET_OS_IPHONE
+-(void)setLedColor:(UIColor*)color error:(NSError**)error {
+    CGFloat red;
+    CGFloat green;
+    CGFloat blue;
+    CGFloat alpha;
+    [color getRed:&red green:&green blue:&blue alpha:&alpha];
+    
+    if (alpha != 1) {
+        if (error) {
+            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Alpha not supported", @"")};
+            *error = [NSError errorWithDomain:BeanInvalidArgurment code:0 userInfo:userInfo];
+        }
+    }
+    
+    UInt8 redComponent = (red)*255.0;
+    UInt8 greenComponent = (green)*255.0;
+    UInt8 blueComponent = (blue)*255.0;
     UInt8 bytes[] = {redComponent,greenComponent,blueComponent};
     NSData *data = [NSData dataWithBytes:bytes length:3];
     
@@ -121,8 +134,50 @@ typedef enum { //These occur in sequence
        _peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
     {
         [appMessageLayer sendMessageWithID:MSG_ID_CC_LED_WRITE_ALL andPayload:data];
-    }    
+    }
 }
+#else
+-(void)setLedColor:(NSColor*)color error:(NSError**)error {
+    color = [color colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+    
+    CGFloat red;
+    CGFloat green;
+    CGFloat blue;
+    CGFloat alpha;
+    [color getRed:&red green:&green blue:&blue alpha:&alpha];
+    
+    if (alpha != 1) {
+        if (error) {
+            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Alpha not supported", nil)};
+            *error = [NSError errorWithDomain:BeanInvalidArgurment code:0 userInfo:userInfo];
+        }
+    }
+    
+    UInt8 redComponent = (red)*255.0;
+    UInt8 greenComponent = (green)*255.0;
+    UInt8 blueComponent = (blue)*255.0;
+    UInt8 bytes[] = {redComponent,greenComponent,blueComponent};
+    NSData *data = [NSData dataWithBytes:bytes length:3];
+    
+    if(_state == BeanState_ConnectedAndValidated &&
+       _peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
+    {
+        [appMessageLayer sendMessageWithID:MSG_ID_CC_LED_WRITE_ALL andPayload:data];
+    }
+
+//    UInt8 redComponent = [color redComponent]*255.0;
+//    UInt8 greenComponent = [color greenComponent]*255.0;
+//    UInt8 blueComponent = [color blueComponent]*255.0;
+//    UInt8 bytes[] = {redComponent,greenComponent,blueComponent};
+//    NSData *data = [NSData dataWithBytes:bytes length:3];
+//    
+//    if(_state == BeanState_ConnectedAndValidated &&
+//       _peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
+//    {
+//        [appMessageLayer sendMessageWithID:MSG_ID_CC_LED_WRITE_ALL andPayload:data];
+//    }
+}
+#endif
 
 -(void)programArduinoWithRawHexImage:(NSData*)hexImage{
     if(_state == BeanState_ConnectedAndValidated &&
@@ -254,8 +309,6 @@ typedef enum { //These occur in sequence
     }
 }
 -(void)__handleArduinoOADRemoteStateChange:(BL_HL_STATE_T)state{
-    UInt8 startBytes[] = {BL_CMD_START_PRG, 0x00, 0x00};
-    NSData* data;
     switch (state) {
         case BL_HL_STATE_NULL:
             break;
@@ -311,7 +364,6 @@ typedef enum { //These occur in sequence
 
 #pragma mark AppMessagingLayerDelegate callbacks
 -(void)appMessagingLayer:(AppMessagingLayer*)layer recievedIncomingMessageWithID:(UInt16)identifier andPayload:(NSData*)payload{
-    BOOL isReply = identifier & APP_MSG_RESPONSE_BIT;
     UInt16 identifier_type = identifier & ~(APP_MSG_RESPONSE_BIT);
     switch (identifier_type) {
         case MSG_ID_SERIAL_DATA:

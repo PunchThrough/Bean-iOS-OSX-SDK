@@ -110,7 +110,7 @@
         if(error) *error = [BEAN_Helper basicError:@"Peripheral is not connected" domain:@"BEAN API:GATT Serial Profile" code:100];
         return;
     }
-    if(!(peripheral.isConnected)){
+    if(peripheral.state != CBPeripheralStateConnected){
         if(error) *error = [BEAN_Helper basicError:@"Peripheral is not connected" domain:@"BEAN API:GATT Serial Profile" code:100];
         return;
     }
