@@ -49,12 +49,13 @@ typedef enum { //These occur in sequence
 -(void)programArduinoWithRawHexImage:(NSData*)hexImage;
 
 #if TARGET_OS_IPHONE
--(void)setLedColor:(UIColor*)color error:(NSError**)error;
+-(void)setLedColor:(UIColor*)color;
 #else
--(void)setLedColor:(NSColor*)color error:(NSError**)error;
+-(void)setLedColor:(NSColor*)color;
 #endif
--(void)setName:(NSString*)name error:(NSError**)error;
-
+-(void)setName:(NSString*)name;
+-(void)readAccelerationAxis;
+-(void)setAdvertisingInterval:(NSTimeInterval)interval;
 @end
 
 
@@ -65,4 +66,17 @@ typedef enum { //These occur in sequence
 -(void)bean:(Bean*)device error:(NSError*)error;
 -(void)bean:(Bean*)device receivedMessage:(NSData*)data;
 -(void)bean:(Bean*)device didProgramArduinoWithError:(NSError*)error;
+-(void)bean:(Bean*)bean serialDataReceived:(NSData*)data;
+-(void)bean:(Bean*)bean didUpdateAdvertisingInterval: (NSNumber*) interval_ms;
+-(void)bean:(Bean*)bean didUpdatePairingPin:(NSInteger)pinCode;
+
+#if TARGET_OS_IPHONE
+-(void)bean:(Bean*)bean didUpdateLedColor:(UIColor*)color;
+#else
+-(void)bean:(Bean*)bean didUpdateLedColor:(NSColor*)color;
+#endif
+// TODO : check with ray on CMAcceleration
+-(void)bean:(Bean*)bean didUpdateAccelerationXAxis:(double)x yAxis:(double)y zAxis:(double)z;
+-(void)bean:(Bean*)bean didUpdateTemperature:(NSNumber*)degrees_celsius;
+
 @end

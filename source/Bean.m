@@ -93,21 +93,23 @@ typedef enum { //These occur in sequence
     return _beanManager;
 }
 
--(void)setName:(NSString*)name error:(NSError**)error {
+-(void)setName:(NSString*)name {
     if(_state != BeanState_ConnectedAndValidated ||
        _peripheral.state != CBPeripheralStateConnected) //This second conditional is an assertion
     {
-        if (error) {
+        if(self.delegate) {
             NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Bean not connected", @"")};
-            *error = [NSError errorWithDomain:BeanNotConnected code:0 userInfo:userInfo];
+            NSError *error = [NSError errorWithDomain:BeanNotConnected code:0 userInfo:userInfo];
+            [self.delegate bean:self error:error];
         }
         return;
     }
     NSData* data = [name dataUsingEncoding:NSUTF8StringEncoding];
     if (data.length>20) {
-        if (error) {
+        if(self.delegate) {
             NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Name exceeds 20 character limit", @"")};
-            *error = [NSError errorWithDomain:BeanInvalidArgurment code:0 userInfo:userInfo];
+            NSError *error = [NSError errorWithDomain:BeanInvalidArgurment code:0 userInfo:userInfo];
+            [self.delegate bean:self error:error];
         }
         data = [data subdataWithRange:NSMakeRange(0, 20)];
     }
@@ -118,7 +120,6 @@ typedef enum { //These occur in sequence
     
     [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_LOCAL_NAME andPayload:data];
 }
-
 -(void)sendLoopbackDebugMessage:(NSInteger)length{
     if(_state == BeanState_ConnectedAndValidated &&
        _peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
@@ -126,7 +127,6 @@ typedef enum { //These occur in sequence
         [appMessageLayer sendMessageWithID:MSG_ID_DB_LOOPBACK andPayload:[BEAN_Helper dummyData:length]];
     }
 }
-
 -(void)sendSerialMessage:(NSData*)data{
     if(_state == BeanState_ConnectedAndValidated &&
        _peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
@@ -134,19 +134,46 @@ typedef enum { //These occur in sequence
         [appMessageLayer sendMessageWithID:MSG_ID_SERIAL_DATA andPayload:data];
     }
 }
-
+- (void)setAdvertisingInterval:(NSTimeInterval)interval {
+    if(_state != BeanState_ConnectedAndValidated ||
+       _peripheral.state != CBPeripheralStateConnected) //This second conditional is an assertion
+    {
+        if(self.delegate) {
+            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Bean not connected", @"")};
+            NSError *error = [NSError errorWithDomain:BeanNotConnected code:0 userInfo:userInfo];
+            [self.delegate bean:self error:error];
+        }
+        return;
+    }
+    UInt16 interval_ms = interval*1000;
+    NSData *data = [NSData dataWithBytes:&interval_ms length: sizeof(UInt16)];
+    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_ADV andPayload:data];
+}
+-(void)readAccelerationAxis {
+    if(_state != BeanState_ConnectedAndValidated ||
+       _peripheral.state != CBPeripheralStateConnected) //This second conditional is an assertion
+    {
+        if(self.delegate) {
+            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Bean not connected", @"")};
+            NSError *error = [NSError errorWithDomain:BeanNotConnected code:0 userInfo:userInfo];
+            [self.delegate bean:self error:error];
+        }
+    }
+    [appMessageLayer sendMessageWithID:MSG_ID_CC_ACCEL_READ andPayload:nil];
+}
 #if TARGET_OS_IPHONE
--(void)setLedColor:(UIColor*)color error:(NSError**)error {
+-(void)setLedColor:(UIColor*)color {
 #else
--(void)setLedColor:(NSColor*)color error:(NSError**)error {
+-(void)setLedColor:(NSColor*)color {
     color = [color colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
 #endif
     if(_state != BeanState_ConnectedAndValidated ||
        _peripheral.state != CBPeripheralStateConnected) //This second conditional is an assertion
     {
-        if (error) {
+        if(self.delegate) {
             NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Bean not connected", @"")};
-            *error = [NSError errorWithDomain:BeanNotConnected code:0 userInfo:userInfo];
+            NSError *error = [NSError errorWithDomain:BeanNotConnected code:0 userInfo:userInfo];
+            [self.delegate bean:self error:error];
         }
         return;
     }
@@ -158,9 +185,10 @@ typedef enum { //These occur in sequence
     [color getRed:&red green:&green blue:&blue alpha:&alpha];
     
     if (alpha != 1) {
-        if (error) {
+        if(self.delegate) {
             NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Alpha not supported", @"")};
-            *error = [NSError errorWithDomain:BeanInvalidArgurment code:0 userInfo:userInfo];
+            NSError *error = [NSError errorWithDomain:BeanInvalidArgurment code:0 userInfo:userInfo];
+            [self.delegate bean:self error:error];
         }
     }
     
@@ -416,8 +444,17 @@ typedef enum { //These occur in sequence
             NSLog(@"App Message Received: MSG_ID_CC_LED_READ_ALL: %@", payload);
             break;
         case MSG_ID_CC_ACCEL_READ:
+        {
             NSLog(@"App Message Received: MSG_ID_CC_ACCEL_READ: %@", payload);
+            if (self.delegate) {
+                //TODO : getting all zeros, need to test with new firmware and check with Ray this is done correct
+                UInt8 x = (UInt8)[[payload subdataWithRange:NSMakeRange(0, 1)] bytes] * 0.00391;
+                UInt8 y = (UInt8)[[payload subdataWithRange:NSMakeRange(2, 1)] bytes] * 0.00391;
+                UInt8 z = (UInt8)[[payload subdataWithRange:NSMakeRange(4, 1)] bytes] * 0.00391;
+                [self.delegate bean:self didUpdateAccelerationXAxis:x yAxis:y zAxis:z];
+            }
             break;
+        }
         case MSG_ID_DB_LOOPBACK:
             NSLog(@"App Message Received: MSG_ID_DB_LOOPBACK: %@", payload);
             break;
