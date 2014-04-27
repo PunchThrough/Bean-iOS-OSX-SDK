@@ -29,6 +29,11 @@ typedef enum { //These occur in sequence
     BeanState_AttemptingDisconnection
 } BeanState;
 
+typedef struct {
+    double x;
+    double y;
+    double z;
+} PTDAcceleration;
 
 @interface Bean : NSObject
 
@@ -75,8 +80,8 @@ typedef enum { //These occur in sequence
 #else
 -(void)bean:(Bean*)bean didUpdateLedColor:(NSColor*)color;
 #endif
-// TODO : check with ray on CMAcceleration
--(void)bean:(Bean*)bean didUpdateAccelerationXAxis:(double)x yAxis:(double)y zAxis:(double)z;
+// TODO : check with ray on this vs CMAcceleration
+-(void)bean:(Bean*)bean didUpdateAcceleration:(PTDAcceleration)acceleration;
 -(void)bean:(Bean*)bean didUpdateTemperature:(NSNumber*)degrees_celsius;
 
 @end

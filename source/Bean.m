@@ -447,11 +447,12 @@ typedef enum { //These occur in sequence
         {
             NSLog(@"App Message Received: MSG_ID_CC_ACCEL_READ: %@", payload);
             if (self.delegate) {
-                //TODO : getting all zeros, need to test with new firmware and check with Ray this is done correct
-                UInt8 x = (UInt8)[[payload subdataWithRange:NSMakeRange(0, 1)] bytes] * 0.00391;
-                UInt8 y = (UInt8)[[payload subdataWithRange:NSMakeRange(2, 1)] bytes] * 0.00391;
-                UInt8 z = (UInt8)[[payload subdataWithRange:NSMakeRange(4, 1)] bytes] * 0.00391;
-                [self.delegate bean:self didUpdateAccelerationXAxis:x yAxis:y zAxis:z];
+                //TODO : sometimes all zeros, need to test with new firmware and check with Ray this is done correct
+                PTDAcceleration acceleration;
+                acceleration.x = (UInt8)[[payload subdataWithRange:NSMakeRange(0, 1)] bytes] * 0.00391;
+                acceleration.y = (UInt8)[[payload subdataWithRange:NSMakeRange(2, 1)] bytes] * 0.00391;
+                acceleration.z = (UInt8)[[payload subdataWithRange:NSMakeRange(4, 1)] bytes] * 0.00391;
+                [self.delegate bean:self didUpdateAcceleration:acceleration];
             }
             break;
         }
