@@ -35,6 +35,13 @@ typedef struct {
     double z;
 } PTDAcceleration;
 
+typedef enum {
+    PTDTxPower_4dB = 0,
+    PTDTxPower_0dB,
+    PTDTxPower_neg6dB,
+    PTDTxPower_neg23dB,
+} PTDTxPower_dB;
+
 @interface Bean : NSObject
 
 @property (nonatomic, weak) id<BeanDelegate> delegate;
@@ -50,7 +57,8 @@ typedef struct {
 -(BeanManager*)beanManager;
 
 -(void)sendLoopbackDebugMessage:(NSInteger)length;
--(void)sendSerialMessage:(NSData*)data;
+-(void)sendSerialData:(NSData*)data;
+-(void)sendSerialString:(NSString*)string;
 -(void)programArduinoWithRawHexImage:(NSData*)hexImage;
 
 #if TARGET_OS_IPHONE
@@ -61,8 +69,11 @@ typedef struct {
 -(void)setName:(NSString*)name;
 -(void)readAccelerationAxis;
 -(void)setAdvertisingInterval:(NSTimeInterval)interval;
+// TODO : placeholder, not seeing in app message defs
+-(void)setConnectionInterval:(NSTimeInterval)interval;
+-(void)setTxPower:(PTDTxPower_dB)power;
+-(void)readTxPower;
 @end
-
 
 @protocol BeanDelegate <NSObject>
 
@@ -81,7 +92,8 @@ typedef struct {
 -(void)bean:(Bean*)bean didUpdateLedColor:(NSColor*)color;
 #endif
 // TODO : check with ray on this vs CMAcceleration
--(void)bean:(Bean*)bean didUpdateAcceleration:(PTDAcceleration)acceleration;
+-(void)bean:(Bean*)bean didUpdateAccelerationAxes:(PTDAcceleration)acceleration;
 -(void)bean:(Bean*)bean didUpdateTemperature:(NSNumber*)degrees_celsius;
+-(void)bean:(Bean*)bean didUpdateLoopbackPayload:(NSData*)payload;
 
 @end

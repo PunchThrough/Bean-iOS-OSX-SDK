@@ -121,43 +121,64 @@ typedef enum { //These occur in sequence
     [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_LOCAL_NAME andPayload:data];
 }
 -(void)sendLoopbackDebugMessage:(NSInteger)length{
-    if(_state == BeanState_ConnectedAndValidated &&
-       _peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
-    {
-        [appMessageLayer sendMessageWithID:MSG_ID_DB_LOOPBACK andPayload:[BEAN_Helper dummyData:length]];
+    if(![self connected]) {
+        return;
     }
+
+    [appMessageLayer sendMessageWithID:MSG_ID_DB_LOOPBACK andPayload:[BEAN_Helper dummyData:length]];
 }
--(void)sendSerialMessage:(NSData*)data{
-    if(_state == BeanState_ConnectedAndValidated &&
-       _peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
-    {
-        [appMessageLayer sendMessageWithID:MSG_ID_SERIAL_DATA andPayload:data];
+-(void)sendSerialData:(NSData*)data{
+    if(![self connected]) {
+        return;
     }
+    [appMessageLayer sendMessageWithID:MSG_ID_SERIAL_DATA andPayload:data];
+}
+-(void)sendSerialString:(NSString*)string{
+    NSData* data = [string dataUsingEncoding:NSUTF8StringEncoding];
+    [self sendSerialData:data];
 }
 - (void)setAdvertisingInterval:(NSTimeInterval)interval {
-    if(_state != BeanState_ConnectedAndValidated ||
-       _peripheral.state != CBPeripheralStateConnected) //This second conditional is an assertion
-    {
-        if(self.delegate) {
-            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Bean not connected", @"")};
-            NSError *error = [NSError errorWithDomain:BeanNotConnected code:0 userInfo:userInfo];
-            [self.delegate bean:self error:error];
-        }
+    if(![self connected]) {
         return;
     }
     UInt16 interval_ms = interval*1000;
     NSData *data = [NSData dataWithBytes:&interval_ms length: sizeof(UInt16)];
     [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_ADV andPayload:data];
 }
+- (void)readAdvertisingInterval {
+    if(![self connected]) {
+        return;
+    }
+    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_ADV andPayload:nil];
+}
+-(void)setConnectionInterval:(NSTimeInterval)interval {
+    if(![self connected]) {
+        return;
+    }
+    UInt16 interval_ms = interval*1000;
+    NSData *data = [NSData dataWithBytes:&interval_ms length: sizeof(UInt16)];
+    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_CONN andPayload:data];
+}
+-(void)setTxPower:(PTDTxPower_dB)power {
+    if(![self connected]) {
+        return;
+    }
+    NSData *data = [NSData dataWithBytes:&power length: sizeof(UInt8)];
+    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_TX_PWR andPayload:data];
+}
+-(void)readTxPower {
+    
+}
+// TODO : placeholder, not seeing in app message defs
+-(void)readConnectionInterval {
+    if(![self connected]) {
+        return;
+    }
+    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_CONN andPayload:nil];
+}
 -(void)readAccelerationAxis {
-    if(_state != BeanState_ConnectedAndValidated ||
-       _peripheral.state != CBPeripheralStateConnected) //This second conditional is an assertion
-    {
-        if(self.delegate) {
-            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Bean not connected", @"")};
-            NSError *error = [NSError errorWithDomain:BeanNotConnected code:0 userInfo:userInfo];
-            [self.delegate bean:self error:error];
-        }
+    if(![self connected]) {
+        return;
     }
     [appMessageLayer sendMessageWithID:MSG_ID_CC_ACCEL_READ andPayload:nil];
 }
@@ -167,14 +188,7 @@ typedef enum { //These occur in sequence
 -(void)setLedColor:(NSColor*)color {
     color = [color colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
 #endif
-    if(_state != BeanState_ConnectedAndValidated ||
-       _peripheral.state != CBPeripheralStateConnected) //This second conditional is an assertion
-    {
-        if(self.delegate) {
-            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Bean not connected", @"")};
-            NSError *error = [NSError errorWithDomain:BeanNotConnected code:0 userInfo:userInfo];
-            [self.delegate bean:self error:error];
-        }
+    if(![self connected]) {
         return;
     }
     
@@ -364,7 +378,21 @@ typedef enum { //These occur in sequence
             break;
     }
 }
-
+ 
+-(BOOL)connected {
+    if(_state != BeanState_ConnectedAndValidated ||
+       _peripheral.state != CBPeripheralStateConnected) //This second conditional is an assertion
+    {
+        if(self.delegate) {
+            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Bean not connected", @"")};
+            NSError *error = [NSError errorWithDomain:BeanNotConnected code:0 userInfo:userInfo];
+            [self.delegate bean:self error:error];
+        }
+        return NO;
+    }
+    return YES;
+}
+    
 #pragma mark -
 #pragma mark Profile Delegate callbacks
 -(void)profileValidated:(id<Profile_Protocol>)profile{
@@ -452,12 +480,17 @@ typedef enum { //These occur in sequence
                 acceleration.x = (UInt8)[[payload subdataWithRange:NSMakeRange(0, 1)] bytes] * 0.00391;
                 acceleration.y = (UInt8)[[payload subdataWithRange:NSMakeRange(2, 1)] bytes] * 0.00391;
                 acceleration.z = (UInt8)[[payload subdataWithRange:NSMakeRange(4, 1)] bytes] * 0.00391;
-                [self.delegate bean:self didUpdateAcceleration:acceleration];
+                [self.delegate bean:self didUpdateAccelerationAxes:acceleration];
             }
             break;
         }
         case MSG_ID_DB_LOOPBACK:
+            //TODO : talk to ray, intermittent, first call does not call callback, second or third one does
             NSLog(@"App Message Received: MSG_ID_DB_LOOPBACK: %@", payload);
+            if (self.delegate) {
+                [self.delegate bean:self didUpdateLoopbackPayload:payload];
+            }
+
             break;
         case MSG_ID_DB_COUNTER:
             NSLog(@"App Message Received: MSG_ID_DB_COUNTER: %@", payload);
