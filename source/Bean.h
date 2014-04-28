@@ -41,6 +41,7 @@ typedef enum { //These occur in sequence
 -(void)sendLoopbackDebugMessage:(NSInteger)length;
 -(void)sendSerialMessage:(NSData*)data;
 -(void)programArduinoWithRawHexImage:(NSData*)hexImage;
+-(BOOL)updateFirmwareWithImageAPath:(NSString*)imageApath andImageBPath:(NSString*)imageBpath;
 
 @end
 
@@ -52,4 +53,7 @@ typedef enum { //These occur in sequence
 -(void)bean:(Bean*)device error:(NSError*)error;
 -(void)bean:(Bean*)device receivedMessage:(NSData*)data;
 -(void)bean:(Bean*)device didProgramArduinoWithError:(NSError*)error;
+
+-(void)bean:(Bean*)device completedFirmwareUploadWithError:(NSError*)error;
+-(void)bean:(Bean*)device firmwareUploadTimeLeft:(NSNumber*)seconds withPercentage:(NSNumber*)percentageComplete;
 @end

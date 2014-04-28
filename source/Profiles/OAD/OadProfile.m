@@ -102,8 +102,12 @@
 -(BOOL)updateFirmwareWithImageAPath:(NSString*)imageApath andImageBPath:(NSString*)imageBpath
 {
     if (![peripheral isConnected]) {
-        if ([self.delegate respondsToSelector:@selector(deviceFailedOADUpload:)]) {
-            [self.delegate deviceFailedOADUpload:self];
+        NSMutableDictionary *errorDetail = [NSMutableDictionary dictionary];
+        [errorDetail setValue:@"Device is not connected" forKey:NSLocalizedDescriptionKey];
+        NSError* error = [NSError errorWithDomain:@"OAD" code:100 userInfo:errorDetail];
+        
+        if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadWithError:)]) {
+            [self.delegate device:self completedFirmwareUploadWithError:error];
         }
         return FALSE; //Not connected
     }
@@ -152,8 +156,12 @@
     else {
         // Both images are invalid!
         
-        if ([self.delegate respondsToSelector:@selector(deviceOADInvalidImage:)]) {
-            [self.delegate deviceOADInvalidImage:self];
+        NSMutableDictionary *errorDetail = [NSMutableDictionary dictionary];
+        [errorDetail setValue:@"Both OAD images are invalid" forKey:NSLocalizedDescriptionKey];
+        NSError* error = [NSError errorWithDomain:@"OAD" code:100 userInfo:errorDetail];
+        
+        if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadWithError:)]) {
+            [self.delegate device:self completedFirmwareUploadWithError:error];
         }
     }
 }
@@ -234,8 +242,8 @@
         
         if(self.iBlocks == self.nBlocks) {
             self.inProgramming = NO;
-            if ([self.delegate respondsToSelector:@selector(deviceCompletedOADUpload:)]) {
-                [self.delegate deviceCompletedOADUpload:self];
+            if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadWithError:)]) {
+                [self.delegate device:self completedFirmwareUploadWithError:nil];
             }
             return;
         }
@@ -404,8 +412,12 @@
             self.canceled = YES;
             
             if (self.inProgramming) {
-                if ([self.delegate respondsToSelector:@selector(deviceFailedOADUpload:)]) {
-                    [self.delegate deviceFailedOADUpload:self];
+                NSMutableDictionary *errorDetail = [NSMutableDictionary dictionary];
+                [errorDetail setValue:@"Dropping writeWithoutReponse packets" forKey:NSLocalizedDescriptionKey];
+                NSError* error = [NSError errorWithDomain:@"OAD" code:100 userInfo:errorDetail];
+                
+                if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadWithError:)]) {
+                    [self.delegate device:self completedFirmwareUploadWithError:error];
                 }
             }
             self.inProgramming = NO;
