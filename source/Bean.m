@@ -94,14 +94,7 @@ typedef enum { //These occur in sequence
 }
 
 -(void)setName:(NSString*)name {
-    if(_state != BeanState_ConnectedAndValidated ||
-       _peripheral.state != CBPeripheralStateConnected) //This second conditional is an assertion
-    {
-        if(self.delegate) {
-            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Bean not connected", @"")};
-            NSError *error = [NSError errorWithDomain:BeanNotConnected code:0 userInfo:userInfo];
-            [self.delegate bean:self error:error];
-        }
+    if(![self connected]) {
         return;
     }
     NSData* data = [name dataUsingEncoding:NSUTF8StringEncoding];
@@ -113,18 +106,12 @@ typedef enum { //These occur in sequence
         }
         data = [data subdataWithRange:NSMakeRange(0, 20)];
     }
-    
-    // Testing !
-    UInt8 bytes[] = {1,2,3,'\0'};
-    data = [[NSData alloc] initWithBytes:bytes length:4];
-    
     [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_LOCAL_NAME andPayload:data];
 }
 -(void)sendLoopbackDebugMessage:(NSInteger)length{
     if(![self connected]) {
         return;
     }
-
     [appMessageLayer sendMessageWithID:MSG_ID_DB_LOOPBACK andPayload:[BEAN_Helper dummyData:length]];
 }
 -(void)sendSerialData:(NSData*)data{
@@ -163,12 +150,52 @@ typedef enum { //These occur in sequence
     if(![self connected]) {
         return;
     }
-    NSData *data = [NSData dataWithBytes:&power length: sizeof(UInt8)];
+    BT_TXPOWER_DB_T p = 0;
+    if (power == PTDTxPower_4dB) {
+        p = TXPOWER_4DB;
+    }
+    else if (power == PTDTxPower_4dB) {
+        p = TXPOWER_0DB;
+    }
+    else if (power == PTDTxPower_neg6dB) {
+        p = TXPOWER_NEG6DB;
+    }
+    else if (power == PTDTxPower_neg23dB) {
+        p = TXPOWER_NEG23DB;
+    }
+
+    NSData *data = [NSData dataWithBytes:&p length: sizeof(UInt8)];
     [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_TX_PWR andPayload:data];
 }
 -(void)readTxPower {
-    
 }
+-(void)getConfig {
+    if(![self connected]) {
+        return;
+    }
+    [appMessageLayer sendMessageWithID:MSG_ID_BT_GET_CONFIG andPayload:nil];
+}
+// TODO : placeholder, not seeing in app message defs
+-(void)powerOffAtmega {
+    if(![self connected]) {
+        return;
+    }
+    [appMessageLayer sendMessageWithID:MSG_ID_BT_GET_CONFIG andPayload:nil];
+}
+- (void)powerOnAtmega {
+    if(![self connected]) {
+        return;
+    }
+    [appMessageLayer sendMessageWithID:MSG_ID_BT_GET_CONFIG andPayload:nil];   
+}
+-(void)setPairingPin:(UInt16)pinCode {
+    if(![self connected]) {
+        return;
+    }
+    NSData *data = [NSData dataWithBytes:&pinCode length: sizeof(UInt16)];
+    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_PIN andPayload:data];
+}
+
 // TODO : placeholder, not seeing in app message defs
 -(void)readConnectionInterval {
     if(![self connected]) {
@@ -430,6 +457,11 @@ typedef enum { //These occur in sequence
             break;
         case MSG_ID_BT_SET_PIN:
             NSLog(@"App Message Received: MSG_ID_BT_SET_PIN: %@", payload);
+            // TODO : delegate callback not being called
+            if (self.delegate) {
+                UInt16 pin = (UInt16)[[payload subdataWithRange:NSMakeRange(0, 2)] bytes];
+                [self.delegate bean:self didUpdatePairingPin:pin];
+            }
             break;
         case MSG_ID_BT_SET_TX_PWR:
             NSLog(@"App Message Received: MSG_ID_BT_SET_TX_PWR: %@", payload);
@@ -490,7 +522,6 @@ typedef enum { //These occur in sequence
             if (self.delegate) {
                 [self.delegate bean:self didUpdateLoopbackPayload:payload];
             }
-
             break;
         case MSG_ID_DB_COUNTER:
             NSLog(@"App Message Received: MSG_ID_DB_COUNTER: %@", payload);

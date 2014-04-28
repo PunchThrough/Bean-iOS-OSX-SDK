@@ -71,8 +71,12 @@ typedef enum {
 -(void)setAdvertisingInterval:(NSTimeInterval)interval;
 // TODO : placeholder, not seeing in app message defs
 -(void)setConnectionInterval:(NSTimeInterval)interval;
+// TODO : ask ray, is making own enum right or should be be using one from AppMessages
 -(void)setTxPower:(PTDTxPower_dB)power;
+// TODO : placeholder, not seeing in app message defs
 -(void)readTxPower;
+-(void)setPairingPin:(UInt16)pinCode;
+-(void)getConfig;
 @end
 
 @protocol BeanDelegate <NSObject>
@@ -84,8 +88,7 @@ typedef enum {
 -(void)bean:(Bean*)device didProgramArduinoWithError:(NSError*)error;
 -(void)bean:(Bean*)bean serialDataReceived:(NSData*)data;
 -(void)bean:(Bean*)bean didUpdateAdvertisingInterval: (NSNumber*) interval_ms;
--(void)bean:(Bean*)bean didUpdatePairingPin:(NSInteger)pinCode;
-
+-(void)bean:(Bean*)bean didUpdatePairingPin:(UInt16)pinCode;
 #if TARGET_OS_IPHONE
 -(void)bean:(Bean*)bean didUpdateLedColor:(UIColor*)color;
 #else
@@ -95,5 +98,4 @@ typedef enum {
 -(void)bean:(Bean*)bean didUpdateAccelerationAxes:(PTDAcceleration)acceleration;
 -(void)bean:(Bean*)bean didUpdateTemperature:(NSNumber*)degrees_celsius;
 -(void)bean:(Bean*)bean didUpdateLoopbackPayload:(NSData*)payload;
-
 @end
