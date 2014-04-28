@@ -93,20 +93,37 @@ typedef enum { //These occur in sequence
     return _beanManager;
 }
 
--(void)setName:(NSString*)name {
-    if(![self connected]) {
-        return;
+#pragma mark SDK
+-(void)programArduinoWithRawHexImage:(NSData*)hexImage{
+    if(_state == BeanState_ConnectedAndValidated &&
+       _peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
+    {
+        [self __resetArduinoOADLocals];
+        arduinoFwImage = hexImage;
+        
+        UInt8 commandPayloadBytes[3];
+        NSData* commandPayload;
+#if defined(ARDUINO_OAD_RESET_BEFORE_DL)
+        commandPayloadBytes[0] = BL_CMD_RESET;
+        commandPayloadBytes[1] = 0x00;
+        commandPayloadBytes[2] = 0x00;
+        commandPayload = [[NSData alloc] initWithBytes:commandPayloadBytes length:3];
+        [appMessageLayer sendMessageWithID:MSG_ID_BL_CMD andPayload:commandPayload];
+        localArduinoOADState = BeanArduinoOADLocalState_ResettingRemote;
+#else
+        UInt16 imageSize = [arduinoFwImage length];
+        commandPayloadBytes[0] = BL_CMD_START_PRG;
+        commandPayloadBytes[1] = (UInt8)(imageSize & 0xFF); //FW size LSB
+        commandPayloadBytes[2] = (UInt8)((imageSize >> 8) & 0xFF); //FW size MSB
+        commandPayload = [[NSData alloc] initWithBytes:commandPayloadBytes length:3];
+        [appMessageLayer sendMessageWithID:MSG_ID_BL_CMD andPayload:commandPayload];
+        localArduinoOADState = BeanArduinoOADLocalState_SendingStartCommand;
+#endif
+        [self __setArduinoOADTimeout:ARDUINO_OAD_GENERIC_TIMEOUT_SEC];
+    }else{
+        NSError* error = [BEAN_Helper basicError:@"Bean isn't connected" domain:NSStringFromClass([self class]) code:100];
+        [self __alertDelegateOfArduinoOADCompletion:error];
     }
-    NSData* data = [name dataUsingEncoding:NSUTF8StringEncoding];
-    if (data.length>20) {
-        if(self.delegate) {
-            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Name exceeds 20 character limit", @"")};
-            NSError *error = [NSError errorWithDomain:BeanInvalidArgurment code:0 userInfo:userInfo];
-            [self.delegate bean:self error:error];
-        }
-        data = [data subdataWithRange:NSMakeRange(0, 20)];
-    }
-    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_LOCAL_NAME andPayload:data];
 }
 -(void)sendLoopbackDebugMessage:(NSInteger)length{
     if(![self connected]) {
@@ -123,6 +140,21 @@ typedef enum { //These occur in sequence
 -(void)sendSerialString:(NSString*)string{
     NSData* data = [string dataUsingEncoding:NSUTF8StringEncoding];
     [self sendSerialData:data];
+}
+-(void)setName:(NSString*)name {
+    if(![self connected]) {
+        return;
+    }
+    NSData* data = [name dataUsingEncoding:NSUTF8StringEncoding];
+    if (data.length>20) {
+        if(self.delegate) {
+            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Name exceeds 20 character limit", @"")};
+            NSError *error = [NSError errorWithDomain:BeanInvalidArgurment code:0 userInfo:userInfo];
+            [self.delegate bean:self error:error];
+        }
+        data = [data subdataWithRange:NSMakeRange(0, 20)];
+    }
+    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_LOCAL_NAME andPayload:data];
 }
 - (void)setAdvertisingInterval:(NSTimeInterval)interval {
     if(![self connected]) {
@@ -146,6 +178,12 @@ typedef enum { //These occur in sequence
     NSData *data = [NSData dataWithBytes:&interval_ms length: sizeof(UInt16)];
     [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_CONN andPayload:data];
 }
+-(void)readConnectionInterval {
+    if(![self connected]) {
+        return;
+    }
+    // not sure if there should be a separate message or just use get config
+}
 -(void)setTxPower:(PTDTxPower_dB)power {
     if(![self connected]) {
         return;
@@ -168,25 +206,23 @@ typedef enum { //These occur in sequence
     [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_TX_PWR andPayload:data];
 }
 -(void)readTxPower {
-}
--(void)getConfig {
     if(![self connected]) {
         return;
     }
-    [appMessageLayer sendMessageWithID:MSG_ID_BT_GET_CONFIG andPayload:nil];
+    // not sure if there should be a separate message or just use get config
 }
 // TODO : placeholder, not seeing in app message defs
 -(void)powerOffAtmega {
     if(![self connected]) {
         return;
     }
-    [appMessageLayer sendMessageWithID:MSG_ID_BT_GET_CONFIG andPayload:nil];
+    // app message missing
 }
 - (void)powerOnAtmega {
     if(![self connected]) {
         return;
     }
-    [appMessageLayer sendMessageWithID:MSG_ID_BT_GET_CONFIG andPayload:nil];   
+    // app message missing
 }
 -(void)setPairingPin:(UInt16)pinCode {
     if(![self connected]) {
@@ -195,19 +231,17 @@ typedef enum { //These occur in sequence
     NSData *data = [NSData dataWithBytes:&pinCode length: sizeof(UInt16)];
     [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_PIN andPayload:data];
 }
-
-// TODO : placeholder, not seeing in app message defs
--(void)readConnectionInterval {
-    if(![self connected]) {
-        return;
-    }
-    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_CONN andPayload:nil];
-}
 -(void)readAccelerationAxis {
     if(![self connected]) {
         return;
     }
     [appMessageLayer sendMessageWithID:MSG_ID_CC_ACCEL_READ andPayload:nil];
+}
+-(void)readTemperature {
+    if(![self connected]) {
+        return;
+    }
+    [appMessageLayer sendMessageWithID:MSG_ID_CC_TEMP_READ andPayload:nil];
 }
 #if TARGET_OS_IPHONE
 -(void)setLedColor:(UIColor*)color {
@@ -241,39 +275,12 @@ typedef enum { //These occur in sequence
     
     [appMessageLayer sendMessageWithID:MSG_ID_CC_LED_WRITE_ALL andPayload:data];
 }
-
--(void)programArduinoWithRawHexImage:(NSData*)hexImage{
-    if(_state == BeanState_ConnectedAndValidated &&
-       _peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
-    {
-        [self __resetArduinoOADLocals];
-        arduinoFwImage = hexImage;
-        
-        UInt8 commandPayloadBytes[3];
-        NSData* commandPayload;
-#if defined(ARDUINO_OAD_RESET_BEFORE_DL)
-        commandPayloadBytes[0] = BL_CMD_RESET;
-        commandPayloadBytes[1] = 0x00;
-        commandPayloadBytes[2] = 0x00;
-        commandPayload = [[NSData alloc] initWithBytes:commandPayloadBytes length:3];
-        [appMessageLayer sendMessageWithID:MSG_ID_BL_CMD andPayload:commandPayload];
-        localArduinoOADState = BeanArduinoOADLocalState_ResettingRemote;
-#else
-        UInt16 imageSize = [arduinoFwImage length];
-        commandPayloadBytes[0] = BL_CMD_START_PRG;
-        commandPayloadBytes[1] = (UInt8)(imageSize & 0xFF); //FW size LSB
-        commandPayloadBytes[2] = (UInt8)((imageSize >> 8) & 0xFF); //FW size MSB
-        commandPayload = [[NSData alloc] initWithBytes:commandPayloadBytes length:3];
-        [appMessageLayer sendMessageWithID:MSG_ID_BL_CMD andPayload:commandPayload];
-        localArduinoOADState = BeanArduinoOADLocalState_SendingStartCommand;
-#endif
-        [self __setArduinoOADTimeout:ARDUINO_OAD_GENERIC_TIMEOUT_SEC];
-    }else{
-         NSError* error = [BEAN_Helper basicError:@"Bean isn't connected" domain:NSStringFromClass([self class]) code:100];
-        [self __alertDelegateOfArduinoOADCompletion:error];
+-(void)getConfig {
+    if(![self connected]) {
+        return;
     }
+    [appMessageLayer sendMessageWithID:MSG_ID_BT_GET_CONFIG andPayload:nil];
 }
-
 #pragma mark - Protected Methods
 -(id)initWithPeripheral:(CBPeripheral*)peripheral beanManager:(BeanManager*)manager{
     self = [super init];
@@ -513,6 +520,16 @@ typedef enum { //These occur in sequence
                 acceleration.y = (UInt8)[[payload subdataWithRange:NSMakeRange(2, 1)] bytes] * 0.00391;
                 acceleration.z = (UInt8)[[payload subdataWithRange:NSMakeRange(4, 1)] bytes] * 0.00391;
                 [self.delegate bean:self didUpdateAccelerationAxes:acceleration];
+            }
+            break;
+        }
+        case MSG_ID_CC_TEMP_READ:
+        {
+            NSLog(@"App Message Received: MSG_ID_CC_TEMP_READ: %@", payload);
+            if (self.delegate) {
+                //TODO : test with new firmware, since this is never fired
+                UInt8 temp = (UInt8)[[payload subdataWithRange:NSMakeRange(0, 1)] bytes];
+                [self.delegate bean:self didUpdateTemperature:@(temp)];
             }
             break;
         }

@@ -56,25 +56,32 @@ typedef enum {
 -(NSDate*)lastDiscovered;
 -(BeanManager*)beanManager;
 
+-(void)programArduinoWithRawHexImage:(NSData*)hexImage;
 -(void)sendLoopbackDebugMessage:(NSInteger)length;
 -(void)sendSerialData:(NSData*)data;
 -(void)sendSerialString:(NSString*)string;
--(void)programArduinoWithRawHexImage:(NSData*)hexImage;
-
+-(void)setName:(NSString*)name;
+-(void)setAdvertisingInterval:(NSTimeInterval)interval;
+// TODO : placeholder
+-(void)readAdvertisingInterval;
+-(void)setConnectionInterval:(NSTimeInterval)interval;
+// TODO : placeholder
+-(void)readConnectionInterval;
+// TODO : ask ray, is making own enum right or should be be using one from AppMessages
+-(void)setTxPower:(PTDTxPower_dB)power;
+// TODO : placeholder
+-(void)readTxPower;
+// TODO : placeholder
+-(void)powerOffAtmega;
+// TODO : placeholder
+-(void)powerOnAtmega;
 #if TARGET_OS_IPHONE
 -(void)setLedColor:(UIColor*)color;
 #else
 -(void)setLedColor:(NSColor*)color;
 #endif
--(void)setName:(NSString*)name;
 -(void)readAccelerationAxis;
--(void)setAdvertisingInterval:(NSTimeInterval)interval;
-// TODO : placeholder, not seeing in app message defs
--(void)setConnectionInterval:(NSTimeInterval)interval;
-// TODO : ask ray, is making own enum right or should be be using one from AppMessages
--(void)setTxPower:(PTDTxPower_dB)power;
-// TODO : placeholder, not seeing in app message defs
--(void)readTxPower;
+-(void)readTemperature;
 -(void)setPairingPin:(UInt16)pinCode;
 -(void)getConfig;
 @end
@@ -96,6 +103,7 @@ typedef enum {
 #endif
 // TODO : check with ray on this vs CMAcceleration
 -(void)bean:(Bean*)bean didUpdateAccelerationAxes:(PTDAcceleration)acceleration;
+// TODO : ask ray if a float here would work
 -(void)bean:(Bean*)bean didUpdateTemperature:(NSNumber*)degrees_celsius;
 -(void)bean:(Bean*)bean didUpdateLoopbackPayload:(NSData*)payload;
 @end
