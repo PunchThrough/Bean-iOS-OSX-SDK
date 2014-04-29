@@ -11,9 +11,10 @@
 #import "GattSerialProfile.h"
 #import "AppMessages.h"
 #import "AppMessagingLayer.h"
+#import "NSDate+LocalTime.h"
+#import "NSData+CRC.h"
 
 #define ARDUINO_OAD_MAX_CHUNK_SIZE 64
-//#define ARDUINO_OAD_RESET_BEFORE_DL 1
 
 typedef enum { //These occur in sequence
     BeanArduinoOADLocalState_Inactive = 0,
@@ -109,31 +110,36 @@ typedef enum { //These occur in sequence
     }
 }
 
--(void)programArduinoWithRawHexImage:(NSData*)hexImage{
+-(void)programArduinoWithRawHexImage:(NSData*)hexImage andImageName:(NSString*)name{
     if(_state == BeanState_ConnectedAndValidated &&
        _peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
     {
         [self __resetArduinoOADLocals];
         arduinoFwImage = hexImage;
         
-        UInt8 commandPayloadBytes[3];
+        BL_SKETCH_META_DATA_T startPayload;
         NSData* commandPayload;
-#if defined(ARDUINO_OAD_RESET_BEFORE_DL)
-        commandPayloadBytes[0] = BL_CMD_RESET;
-        commandPayloadBytes[1] = 0x00;
-        commandPayloadBytes[2] = 0x00;
-        commandPayload = [[NSData alloc] initWithBytes:commandPayloadBytes length:3];
-        [appMessageLayer sendMessageWithID:MSG_ID_BL_CMD andPayload:commandPayload];
-        localArduinoOADState = BeanArduinoOADLocalState_ResettingRemote;
-#else
-        UInt16 imageSize = [arduinoFwImage length];
-        commandPayloadBytes[0] = BL_CMD_START_PRG;
-        commandPayloadBytes[1] = (UInt8)(imageSize & 0xFF); //FW size LSB
-        commandPayloadBytes[2] = (UInt8)((imageSize >> 8) & 0xFF); //FW size MSB
-        commandPayload = [[NSData alloc] initWithBytes:commandPayloadBytes length:3];
-        [appMessageLayer sendMessageWithID:MSG_ID_BL_CMD andPayload:commandPayload];
+        
+        UInt32 imageSize = (UInt32)[arduinoFwImage length];
+        startPayload.hexSize = imageSize;
+        startPayload.timestamp = [NSDate localDateUnixTimeStamp];
+        startPayload.hexCrc = [hexImage crc32];
+        
+        NSInteger maxNameLength = member_size(BL_SKETCH_META_DATA_T,hexName);
+        if([name length] > maxNameLength){
+            startPayload.hexNameSize = maxNameLength;
+            const UInt8* nameBytes = [[[name substringWithRange:NSMakeRange(0,maxNameLength)] dataUsingEncoding:NSUTF8StringEncoding] bytes];
+            memcpy(&(startPayload.hexName), nameBytes, maxNameLength);
+        }else{
+            startPayload.hexNameSize = [name length];
+            const UInt8* nameBytes = [[name dataUsingEncoding:NSUTF8StringEncoding] bytes];
+            memset(&(startPayload.hexName), ' ', maxNameLength);
+            memcpy(&(startPayload.hexName), nameBytes, maxNameLength);
+        }
+        
+        commandPayload = [[NSData alloc] initWithBytes:&startPayload length:sizeof(BL_SKETCH_META_DATA_T)];
+        [appMessageLayer sendMessageWithID:MSG_ID_BL_CMD_START andPayload:commandPayload];
         localArduinoOADState = BeanArduinoOADLocalState_SendingStartCommand;
-#endif
         [self __setArduinoOADTimeout:ARDUINO_OAD_GENERIC_TIMEOUT_SEC];
     }else{
          NSError* error = [BEAN_Helper basicError:@"Bean isn't connected" domain:NSStringFromClass([self class]) code:100];
@@ -332,8 +338,8 @@ typedef enum { //These occur in sequence
         case MSG_ID_BT_RESTART:
             NSLog(@"App Message Received: MSG_ID_BT_RESTART: %@", payload);
             break;
-        case MSG_ID_BL_CMD:
-            NSLog(@"App Message Received: MSG_ID_BL_CMD: %@", payload);
+        case MSG_ID_BL_CMD_START:
+            NSLog(@"App Message Received: MSG_ID_BL_CMD_START: %@", payload);
             break;
         case MSG_ID_BL_FW_BLOCK:
             NSLog(@"App Message Received: MSG_ID_BL_FW_BLOCK: %@", payload);
@@ -344,6 +350,9 @@ typedef enum { //These occur in sequence
             [payload getBytes:&byte length:1];
             BL_HL_STATE_T highLevelStatus = byte;
             [self __handleArduinoOADRemoteStateChange:highLevelStatus];
+            break;
+        case MSG_ID_BL_GET_META:
+            NSLog(@"App Message Received: MSG_ID_BL_GET_META: %@", payload);
             break;
         case MSG_ID_CC_LED_WRITE:
             NSLog(@"App Message Received: MSG_ID_CC_LED_WRITE: %@", payload);
