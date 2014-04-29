@@ -281,6 +281,18 @@ typedef enum { //These occur in sequence
     }
     [appMessageLayer sendMessageWithID:MSG_ID_CC_LED_READ_ALL andPayload:nil];
 }
+-(void)setScratchNumber:(NSInteger)scratchNumber withValue:(NSData*)value {
+    if(![self connected]) {
+        return;
+    }
+    // TODO : not sure how to send the data
+}
+- (void)readScratchBank:(NSInteger)bank {
+    if(![self connected]) {
+        return;
+    }
+    // TODO : not sure how to send the data
+}
 -(void)getConfig {
     if(![self connected]) {
         return;
@@ -516,13 +528,14 @@ typedef enum { //These occur in sequence
         case MSG_ID_CC_LED_READ_ALL:
             NSLog(@"App Message Received: MSG_ID_CC_LED_READ_ALL: %@", payload);
             if (self.delegate) {
-                
+                LED_SETTING_T rawData;
+                [payload getBytes:&rawData range:NSMakeRange(0, sizeof(LED_SETTING_T))];
+                // TODO : wierd values coming back, check with ray
 #if TARGET_OS_IPHONE
+                UIColor *color = [UIColor colorWithRed:rawData.red/255.0f green:rawData.green/255.0f blue:rawData.blue/255.0f alpha:1];
+                [self.delegate bean:self didUpdateLedColor:color];
 #else
-                LED_COLOR_T rawData;
-                [payload getBytes:&rawData range:NSMakeRange(0, sizeof(LED_COLOR_T))];
-                
-                NSColor *color = [NSColor colorWithCalibratedRed:rawData.LED_RED green:1 blue:1 alpha:1];
+                NSColor *color = [NSColor colorWithCalibratedRed:rawData.red/255.0f green:rawData.green/255.0f blue:rawData.blue/255.0f alpha:1];
                 [self.delegate bean:self didUpdateLedColor:color];
 #endif
             }

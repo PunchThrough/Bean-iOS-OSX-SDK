@@ -75,13 +75,15 @@ typedef enum {
 -(void)powerOffAtmega;
 // TODO : placeholder
 -(void)powerOnAtmega;
+-(void)readAccelerationAxis;
 #if TARGET_OS_IPHONE
 -(void)setLedColor:(UIColor*)color;
 #else
 -(void)setLedColor:(NSColor*)color;
 #endif
 -(void)readLedColor;
--(void)readAccelerationAxis;
+-(void)setScratchNumber:(NSInteger)scratchNumber withValue:(NSData*)value;
+-(void)readScratchBank:(NSInteger)bank;
 -(void)readTemperature;
 -(void)setPairingPin:(UInt16)pinCode;
 -(void)getConfig;
