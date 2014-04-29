@@ -484,7 +484,8 @@ typedef enum { //These occur in sequence
             NSLog(@"App Message Received: MSG_ID_BT_SET_PIN: %@", payload);
             // TODO : delegate callback not being called
             if (self.delegate) {
-                UInt16 pin = (UInt16)[[payload subdataWithRange:NSMakeRange(0, 2)] bytes];
+                UInt16 pin;
+                [payload getBytes:&pin range:NSMakeRange(0, sizeof(UInt16))];
                 [self.delegate bean:self didUpdatePairingPin:pin];
             }
             break;
@@ -558,7 +559,8 @@ typedef enum { //These occur in sequence
             NSLog(@"App Message Received: MSG_ID_CC_TEMP_READ: %@", payload);
             if (self.delegate) {
                 //TODO : test with new firmware, since this is never fired
-                UInt8 temp = (UInt8)[[payload subdataWithRange:NSMakeRange(0, 1)] bytes];
+                UInt8 temp;
+                [payload getBytes:&temp range:NSMakeRange(0, sizeof(UInt8))];
                 [self.delegate bean:self didUpdateTemperature:@(temp)];
             }
             break;
