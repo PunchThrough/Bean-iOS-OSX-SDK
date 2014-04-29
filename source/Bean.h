@@ -12,12 +12,14 @@
 #import <IOBluetooth/IOBluetooth.h>
 #endif
 
+
 #define ARDUINO_OAD_GENERIC_TIMEOUT_SEC 6
 
 #define BeanInvalidArgurment @"BeanInvalidArgurment"
 #define BeanNotConnected @"BeanNotConnected"
 
 @class BeanManager;
+@class BeanRadioConfig;
 @protocol BeanDelegate;
 
 typedef enum { //These occur in sequence
@@ -34,13 +36,6 @@ typedef struct {
     double y;
     double z;
 } PTDAcceleration;
-
-typedef enum {
-    PTDTxPower_4dB = 0,
-    PTDTxPower_0dB,
-    PTDTxPower_neg6dB,
-    PTDTxPower_neg23dB,
-} PTDTxPower_dB;
 
 @interface Bean : NSObject
 
@@ -60,21 +55,6 @@ typedef enum {
 -(void)sendLoopbackDebugMessage:(NSInteger)length;
 -(void)sendSerialData:(NSData*)data;
 -(void)sendSerialString:(NSString*)string;
--(void)setName:(NSString*)name;
--(void)setAdvertisingInterval:(NSTimeInterval)interval;
-// TODO : placeholder
--(void)readAdvertisingInterval;
--(void)setConnectionInterval:(NSTimeInterval)interval;
-// TODO : placeholder
--(void)readConnectionInterval;
-// TODO : ask ray, is making own enum right or should be be using one from AppMessages
--(void)setTxPower:(PTDTxPower_dB)power;
-// TODO : placeholder
--(void)readTxPower;
-// TODO : placeholder
--(void)powerOffAtmega;
-// TODO : placeholder
--(void)powerOnAtmega;
 -(void)readAccelerationAxis;
 #if TARGET_OS_IPHONE
 -(void)setLedColor:(UIColor*)color;
@@ -82,8 +62,8 @@ typedef enum {
 -(void)setLedColor:(NSColor*)color;
 #endif
 -(void)readLedColor;
--(void)setScratchNumber:(NSInteger)scratchNumber withValue:(NSData*)value;
--(void)readScratchBank:(NSInteger)bank;
+-(void)setScratchNumber:(UInt8)scratchNumber withValue:(NSData*)value;
+-(void)readScratchBank:(UInt8)bank;
 -(void)readTemperature;
 -(void)setPairingPin:(UInt16)pinCode;
 -(void)getConfig;

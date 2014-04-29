@@ -141,89 +141,76 @@ typedef enum { //These occur in sequence
     NSData* data = [string dataUsingEncoding:NSUTF8StringEncoding];
     [self sendSerialData:data];
 }
--(void)setName:(NSString*)name {
-    if(![self connected]) {
-        return;
-    }
-    NSData* data = [name dataUsingEncoding:NSUTF8StringEncoding];
-    if (data.length>20) {
-        if(self.delegate) {
-            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Name exceeds 20 character limit", @"")};
-            NSError *error = [NSError errorWithDomain:BeanInvalidArgurment code:0 userInfo:userInfo];
-            [self.delegate bean:self error:error];
-        }
-        data = [data subdataWithRange:NSMakeRange(0, 20)];
-    }
-    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_LOCAL_NAME andPayload:data];
-}
-- (void)setAdvertisingInterval:(NSTimeInterval)interval {
-    if(![self connected]) {
-        return;
-    }
-    UInt16 interval_ms = interval*1000;
-    NSData *data = [NSData dataWithBytes:&interval_ms length: sizeof(UInt16)];
-    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_ADV andPayload:data];
-}
-- (void)readAdvertisingInterval {
-    if(![self connected]) {
-        return;
-    }
-    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_ADV andPayload:nil];
-}
--(void)setConnectionInterval:(NSTimeInterval)interval {
-    if(![self connected]) {
-        return;
-    }
-    UInt16 interval_ms = interval*1000;
-    NSData *data = [NSData dataWithBytes:&interval_ms length: sizeof(UInt16)];
-    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_CONN andPayload:data];
-}
--(void)readConnectionInterval {
-    if(![self connected]) {
-        return;
-    }
-    // not sure if there should be a separate message or just use get config
-}
--(void)setTxPower:(PTDTxPower_dB)power {
-    if(![self connected]) {
-        return;
-    }
-    BT_TXPOWER_DB_T p = 0;
-    if (power == PTDTxPower_4dB) {
-        p = TXPOWER_4DB;
-    }
-    else if (power == PTDTxPower_4dB) {
-        p = TXPOWER_0DB;
-    }
-    else if (power == PTDTxPower_neg6dB) {
-        p = TXPOWER_NEG6DB;
-    }
-    else if (power == PTDTxPower_neg23dB) {
-        p = TXPOWER_NEG23DB;
-    }
-
-    NSData *data = [NSData dataWithBytes:&p length: sizeof(UInt8)];
-    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_TX_PWR andPayload:data];
-}
--(void)readTxPower {
-    if(![self connected]) {
-        return;
-    }
-    // not sure if there should be a separate message or just use get config
-}
-// TODO : placeholder, not seeing in app message defs
--(void)powerOffAtmega {
-    if(![self connected]) {
-        return;
-    }
-    // app message missing
-}
-- (void)powerOnAtmega {
-    if(![self connected]) {
-        return;
-    }
-    // app message missing
-}
+//-(void)setName:(NSString*)name {
+//    if(![self connected]) {
+//        return;
+//    }
+//    NSData* data = [name dataUsingEncoding:NSUTF8StringEncoding];
+//    if (data.length>20) {
+//        if(self.delegate) {
+//            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Name exceeds 20 character limit", @"")};
+//            NSError *error = [NSError errorWithDomain:BeanInvalidArgurment code:0 userInfo:userInfo];
+//            [self.delegate bean:self error:error];
+//        }
+//        data = [data subdataWithRange:NSMakeRange(0, 20)];
+//    }
+//    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_LOCAL_NAME andPayload:data];
+//}
+//- (void)setAdvertisingInterval:(NSTimeInterval)interval {
+//    if(![self connected]) {
+//        return;
+//    }
+//    UInt16 interval_ms = interval*1000;
+//    NSData *data = [NSData dataWithBytes:&interval_ms length: sizeof(UInt16)];
+//    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_ADV andPayload:data];
+//}
+//- (void)readAdvertisingInterval {
+//    if(![self connected]) {
+//        return;
+//    }
+//    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_ADV andPayload:nil];
+//}
+//-(void)setConnectionInterval:(NSTimeInterval)interval {
+//    if(![self connected]) {
+//        return;
+//    }
+//    UInt16 interval_ms = interval*1000;
+//    NSData *data = [NSData dataWithBytes:&interval_ms length: sizeof(UInt16)];
+//    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_CONN andPayload:data];
+//}
+//-(void)readConnectionInterval {
+//    if(![self connected]) {
+//        return;
+//    }
+//    // not sure if there should be a separate message or just use get config
+//}
+//-(void)setTxPower:(PTDTxPower_dB)power {
+//    if(![self connected]) {
+//        return;
+//    }
+//    BT_TXPOWER_DB_T p = 0;
+//    if (power == PTDTxPower_4dB) {
+//        p = TXPOWER_4DB;
+//    }
+//    else if (power == PTDTxPower_4dB) {
+//        p = TXPOWER_0DB;
+//    }
+//    else if (power == PTDTxPower_neg6dB) {
+//        p = TXPOWER_NEG6DB;
+//    }
+//    else if (power == PTDTxPower_neg23dB) {
+//        p = TXPOWER_NEG23DB;
+//    }
+//
+//    NSData *data = [NSData dataWithBytes:&p length: sizeof(UInt8)];
+//    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_TX_PWR andPayload:data];
+//}
+//-(void)readTxPower {
+//    if(![self connected]) {
+//        return;
+//    }
+//    // not sure if there should be a separate message or just use get config
+//}
 -(void)setPairingPin:(UInt16)pinCode {
     if(![self connected]) {
         return;
@@ -281,17 +268,26 @@ typedef enum { //These occur in sequence
     }
     [appMessageLayer sendMessageWithID:MSG_ID_CC_LED_READ_ALL andPayload:nil];
 }
--(void)setScratchNumber:(NSInteger)scratchNumber withValue:(NSData*)value {
+-(void)setScratchNumber:(UInt8)scratchNumber withValue:(NSData*)value {
     if(![self connected]) {
         return;
     }
-    // TODO : not sure how to send the data
+    if (value.length>20) {
+        NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Scratch value exceeds 20 character limit", @"")};
+        NSError *error = [NSError errorWithDomain:BeanInvalidArgurment code:0 userInfo:userInfo];
+        [self.delegate bean:self error:error];
+        value = [value subdataWithRange:NSMakeRange(0, 20)];
+    }
+    NSMutableData *payload = [NSMutableData dataWithBytes:&scratchNumber length:1];
+    [payload appendData:value];
+    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_SCRATCH andPayload:payload];
 }
-- (void)readScratchBank:(NSInteger)bank {
+- (void)readScratchBank:(UInt8)bank {
     if(![self connected]) {
         return;
     }
-    // TODO : not sure how to send the data
+    NSData *data = [NSData dataWithBytes:&bank length: sizeof(UInt8)];
+    [appMessageLayer sendMessageWithID:MSG_ID_BT_GET_SCRATCH andPayload:data];
 }
 -(void)getConfig {
     if(![self connected]) {

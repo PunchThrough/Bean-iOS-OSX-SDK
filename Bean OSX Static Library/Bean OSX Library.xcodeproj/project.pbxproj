@@ -30,6 +30,7 @@
 		52DE25C118AAC53900E69929 /* IOBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52DE25C018AAC53900E69929 /* IOBluetooth.framework */; };
 		52DE25C318AACB4B00E69929 /* Bean.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 52D34E8B18A9B890002F0C59 /* Bean.h */; };
 		52DE25C418AACB4F00E69929 /* CBPeripheral+UniqueId.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 52D34E8E18A9B890002F0C59 /* CBPeripheral+UniqueId.h */; };
+		964A2BBC19105CE00043EADA /* BeanRadioConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 964A2BBB19105CE00043EADA /* BeanRadioConfig.m */; };
 		969B8975190896BC00AA093C /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 969B8974190896BC00AA093C /* CoreBluetooth.framework */; };
 		969B89791908971000AA093C /* BeanManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5251176418B3FD9B0088DE2D /* BeanManager.m */; };
 		969B897C1908971000AA093C /* Bean.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E8C18A9B890002F0C59 /* Bean.m */; };
@@ -127,6 +128,8 @@
 		52D34EA918A9B890002F0C59 /* Profile_Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Profile_Protocol.h; sourceTree = "<group>"; };
 		52D34EAA18A9B890002F0C59 /* ProfileDelegate_Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileDelegate_Protocol.h; sourceTree = "<group>"; };
 		52DE25C018AAC53900E69929 /* IOBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOBluetooth.framework; path = System/Library/Frameworks/IOBluetooth.framework; sourceTree = SDKROOT; };
+		964A2BBA19105CE00043EADA /* BeanRadioConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeanRadioConfig.h; sourceTree = "<group>"; };
+		964A2BBB19105CE00043EADA /* BeanRadioConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeanRadioConfig.m; sourceTree = "<group>"; };
 		969B89481908951F00AA093C /* libBean iOS Library.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libBean iOS Library.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		969B89491908951F00AA093C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		969B89591908951F00AA093C /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -262,6 +265,8 @@
 				52D9B95218BF2E1300EB9331 /* Protocols */,
 				52D34E9318A9B890002F0C59 /* BLE Profiles */,
 				52D34E2E18A9B455002F0C59 /* Supporting Files */,
+				964A2BBA19105CE00043EADA /* BeanRadioConfig.h */,
+				964A2BBB19105CE00043EADA /* BeanRadioConfig.m */,
 			);
 			name = "Bean Library";
 			path = "Bean OSX Library";
@@ -483,6 +488,7 @@
 				52D34EB518A9B890002F0C59 /* GattSerialProfile.m in Sources */,
 				5251176518B3FD9B0088DE2D /* BeanManager.m in Sources */,
 				52D34EB718A9B890002F0C59 /* GattPacket.m in Sources */,
+				964A2BBC19105CE00043EADA /* BeanRadioConfig.m in Sources */,
 				52D34EB118A9B890002F0C59 /* BEAN_Helper.m in Sources */,
 				52D34EBB18A9B890002F0C59 /* GattSerialMessageRxAssembler.m in Sources */,
 				52D34EB318A9B890002F0C59 /* DevInfoProfile.m in Sources */,
