@@ -275,6 +275,12 @@ typedef enum { //These occur in sequence
     
     [appMessageLayer sendMessageWithID:MSG_ID_CC_LED_WRITE_ALL andPayload:data];
 }
+-(void)readLedColor {
+    if(![self connected]) {
+        return;
+    }
+    [appMessageLayer sendMessageWithID:MSG_ID_CC_LED_READ_ALL andPayload:nil];
+}
 -(void)getConfig {
     if(![self connected]) {
         return;
@@ -509,6 +515,17 @@ typedef enum { //These occur in sequence
             break;
         case MSG_ID_CC_LED_READ_ALL:
             NSLog(@"App Message Received: MSG_ID_CC_LED_READ_ALL: %@", payload);
+            if (self.delegate) {
+                
+#if TARGET_OS_IPHONE
+#else
+                LED_COLOR_T rawData;
+                [payload getBytes:&rawData range:NSMakeRange(0, sizeof(LED_COLOR_T))];
+                
+                NSColor *color = [NSColor colorWithCalibratedRed:rawData.LED_RED green:1 blue:1 alpha:1];
+                [self.delegate bean:self didUpdateLedColor:color];
+#endif
+            }
             break;
         case MSG_ID_CC_ACCEL_READ:
         {

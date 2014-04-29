@@ -80,6 +80,7 @@ typedef enum {
 #else
 -(void)setLedColor:(NSColor*)color;
 #endif
+-(void)readLedColor;
 -(void)readAccelerationAxis;
 -(void)readTemperature;
 -(void)setPairingPin:(UInt16)pinCode;
