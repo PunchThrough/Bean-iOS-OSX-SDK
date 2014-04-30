@@ -41,7 +41,7 @@
 {
     // Discover services
     NSLog(@"Searching for OAD service: %@", SERVICE_OAD);
-    if(peripheral.isConnected)
+    if(peripheral.state == CBPeripheralStateConnected)
     {
         [peripheral discoverServices:[NSArray arrayWithObjects:[CBUUID UUIDWithString:SERVICE_OAD]
                                       , nil]];
@@ -101,7 +101,7 @@
 
 -(BOOL)updateFirmwareWithImageAPath:(NSString*)imageApath andImageBPath:(NSString*)imageBpath
 {
-    if (![peripheral isConnected]) {
+    if (peripheral.state != CBPeripheralStateConnected) {
         if ([self.delegate respondsToSelector:@selector(deviceFailedOADUpload:)]) {
             [self.delegate deviceFailedOADUpload:self];
         }

@@ -13,6 +13,7 @@
 #import "AppMessagingLayer.h"
 #import "NSDate+LocalTime.h"
 #import "NSData+CRC.h"
+#import "BeanRadioConfig.h"
 
 #define ARDUINO_OAD_MAX_CHUNK_SIZE 64
 
@@ -94,22 +95,7 @@ typedef enum { //These occur in sequence
     return _beanManager;
 }
 
--(void)sendLoopbackDebugMessage:(NSInteger)length{
-    if(_state == BeanState_ConnectedAndValidated &&
-       _peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
-    {
-        [appMessageLayer sendMessageWithID:MSG_ID_DB_LOOPBACK andPayload:[BEAN_Helper dummyData:length]];
-    }
-}
-
--(void)sendSerialMessage:(NSData*)data{
-    if(_state == BeanState_ConnectedAndValidated &&
-       _peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
-    {
-        [appMessageLayer sendMessageWithID:MSG_ID_SERIAL_DATA andPayload:data];
-    }
-}
-
+#pragma mark SDK
 -(void)programArduinoWithRawHexImage:(NSData*)hexImage andImageName:(NSString*)name{
     if(_state == BeanState_ConnectedAndValidated &&
        _peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
@@ -119,7 +105,6 @@ typedef enum { //These occur in sequence
         
         BL_SKETCH_META_DATA_T startPayload;
         NSData* commandPayload;
-        
         UInt32 imageSize = (UInt32)[arduinoFwImage length];
         startPayload.hexSize = imageSize;
         startPayload.timestamp = [NSDate localDateUnixTimeStamp];
@@ -139,14 +124,146 @@ typedef enum { //These occur in sequence
         
         commandPayload = [[NSData alloc] initWithBytes:&startPayload length:sizeof(BL_SKETCH_META_DATA_T)];
         [appMessageLayer sendMessageWithID:MSG_ID_BL_CMD_START andPayload:commandPayload];
+
         localArduinoOADState = BeanArduinoOADLocalState_SendingStartCommand;
         [self __setArduinoOADTimeout:ARDUINO_OAD_GENERIC_TIMEOUT_SEC];
     }else{
-         NSError* error = [BEAN_Helper basicError:@"Bean isn't connected" domain:NSStringFromClass([self class]) code:100];
+        NSError* error = [BEAN_Helper basicError:@"Bean isn't connected" domain:NSStringFromClass([self class]) code:100];
         [self __alertDelegateOfArduinoOADCompletion:error];
     }
 }
-
+-(void)sendLoopbackDebugMessage:(NSInteger)length{
+    if(![self connected]) {
+        return;
+    }
+    [appMessageLayer sendMessageWithID:MSG_ID_DB_LOOPBACK andPayload:[BEAN_Helper dummyData:length]];
+}
+-(void)sendSerialData:(NSData*)data{
+    if(![self connected]) {
+        return;
+    }
+    [appMessageLayer sendMessageWithID:MSG_ID_SERIAL_DATA andPayload:data];
+}
+-(void)sendSerialString:(NSString*)string{
+    NSData* data = [string dataUsingEncoding:NSUTF8StringEncoding];
+    [self sendSerialData:data];
+}
+- (void)readRadioConfig {
+    if(![self connected]) {
+        return;
+    }
+    [appMessageLayer sendMessageWithID:MSG_ID_BT_GET_CONFIG andPayload:nil];
+}
+-(void)setRadioConfig:(BeanRadioConfig*)config {
+    if(![self connected]) {
+        return;
+    }
+    NSError *error;
+    if (![config validate:&error]) {
+        [self.delegate bean:self error:error];
+        return;
+    }
+    BT_RADIOCONFIG_T raw;
+    raw.adv_int = config.advertisingInterval*1000;
+    raw.conn_int = config.connectionInterval*1000;
+    
+    const UInt8* nameBytes = [[config.name dataUsingEncoding:NSUTF8StringEncoding] bytes];
+    memset(&(raw.local_name), ' ', config.name.length);
+    memcpy(&(raw.local_name), nameBytes, config.name.length);
+    
+    raw.local_name_size = config.name.length;
+    raw.power = config.power;
+    NSData *data = [NSData dataWithBytes:&raw length: sizeof(BT_RADIOCONFIG_T)];
+    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_CONFIG andPayload:data];
+}
+-(void)setPairingPin:(UInt16)pinCode {
+    if(![self connected]) {
+        return;
+    }
+    NSData *data = [NSData dataWithBytes:&pinCode length: sizeof(UInt16)];
+    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_PIN andPayload:data];
+}
+-(void)readAccelerationAxis {
+    if(![self connected]) {
+        return;
+    }
+    [appMessageLayer sendMessageWithID:MSG_ID_CC_ACCEL_READ andPayload:nil];
+}
+-(void)readTemperature {
+    if(![self connected]) {
+        return;
+    }
+    [appMessageLayer sendMessageWithID:MSG_ID_CC_TEMP_READ andPayload:nil];
+}
+#if TARGET_OS_IPHONE
+-(void)setLedColor:(UIColor*)color {
+#else
+-(void)setLedColor:(NSColor*)color {
+    color = [color colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
+#endif
+    if(![self connected]) {
+        return;
+    }
+    CGFloat red;
+    CGFloat green;
+    CGFloat blue;
+    CGFloat alpha;
+    [color getRed:&red green:&green blue:&blue alpha:&alpha];
+    
+    if (alpha != 1) {
+        if(self.delegate) {
+            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Alpha not supported", @"")};
+            NSError *error = [NSError errorWithDomain:BeanInvalidArgurment code:0 userInfo:userInfo];
+            [self.delegate bean:self error:error];
+        }
+    }
+    UInt8 redComponent = (red)*255.0;
+    UInt8 greenComponent = (green)*255.0;
+    UInt8 blueComponent = (blue)*255.0;
+    UInt8 bytes[] = {redComponent,greenComponent,blueComponent};
+    NSData *data = [NSData dataWithBytes:bytes length:3];
+    
+    [appMessageLayer sendMessageWithID:MSG_ID_CC_LED_WRITE_ALL andPayload:data];
+}
+-(void)readLedColor {
+    if(![self connected]) {
+        return;
+    }
+    [appMessageLayer sendMessageWithID:MSG_ID_CC_LED_READ_ALL andPayload:nil];
+}
+-(void)setScratchNumber:(NSInteger)scratchNumber withValue:(NSData*)value {
+    if(![self connected]) {
+        return;
+    }
+    if(![self validScratchNumber:scratchNumber]) {
+        return;
+    }
+    if (value.length>20) {
+        NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Scratch value exceeds 20 character limit", @"")};
+        NSError *error = [NSError errorWithDomain:BeanInvalidArgurment code:0 userInfo:userInfo];
+        [self.delegate bean:self error:error];
+        value = [value subdataWithRange:NSMakeRange(0, 20)];
+    }
+    NSMutableData *payload = [NSMutableData dataWithBytes:&scratchNumber length:1];
+    [payload appendData:value];
+    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_SCRATCH andPayload:payload];
+}
+- (void)readScratchBank:(NSInteger)bank {
+    if(![self connected]) {
+        return;
+    }
+    if(![self validScratchNumber:bank]) {
+        return;
+    }
+    NSData *data = [NSData dataWithBytes:&bank length: sizeof(UInt8)];
+    [appMessageLayer sendMessageWithID:MSG_ID_BT_GET_SCRATCH andPayload:data];
+}
+-(void)getConfig {
+    if(![self connected]) {
+        return;
+    }
+    [appMessageLayer sendMessageWithID:MSG_ID_BT_GET_CONFIG andPayload:nil];
+}
 #pragma mark - Protected Methods
 -(id)initWithPeripheral:(CBPeripheral*)peripheral beanManager:(BeanManager*)manager{
     self = [super init];
@@ -245,8 +362,6 @@ typedef enum { //These occur in sequence
     }
 }
 -(void)__handleArduinoOADRemoteStateChange:(BL_HL_STATE_T)state{
-    UInt8 startBytes[] = {BL_CMD_START_PRG, 0x00, 0x00};
-    NSData* data;
     switch (state) {
         case BL_HL_STATE_NULL:
             break;
@@ -280,7 +395,31 @@ typedef enum { //These occur in sequence
             break;
     }
 }
-
+ 
+-(BOOL)connected {
+    if(_state != BeanState_ConnectedAndValidated ||
+       _peripheral.state != CBPeripheralStateConnected) //This second conditional is an assertion
+    {
+        if(self.delegate && [self.delegate respondsToSelector:@selector(bean:error:)]) {
+            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Bean not connected", @"")};
+            NSError *error = [NSError errorWithDomain:BeanNotConnected code:0 userInfo:userInfo];
+            [self.delegate bean:self error:error];
+        }
+        return NO;
+    }
+    return YES;
+}
+-(BOOL)validScratchNumber:(NSInteger)scratchNumber {
+    if (scratchNumber<1 || scratchNumber>5) {
+        if(self.delegate && [self.delegate respondsToSelector:@selector(bean:error:)]) {
+            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Scratch numbers need to be 1-5", @"")};
+            NSError *error = [NSError errorWithDomain:BeanInvalidArgurment code:0 userInfo:userInfo];
+            [self.delegate bean:self error:error];
+        }
+        return NO;
+    }
+    return YES;
+}
 #pragma mark -
 #pragma mark Profile Delegate callbacks
 -(void)profileValidated:(id<Profile_Protocol>)profile{
@@ -302,7 +441,6 @@ typedef enum { //These occur in sequence
 
 #pragma mark AppMessagingLayerDelegate callbacks
 -(void)appMessagingLayer:(AppMessagingLayer*)layer recievedIncomingMessageWithID:(UInt16)identifier andPayload:(NSData*)payload{
-    BOOL isReply = identifier & APP_MSG_RESPONSE_BIT;
     UInt16 identifier_type = identifier & ~(APP_MSG_RESPONSE_BIT);
     switch (identifier_type) {
         case MSG_ID_SERIAL_DATA:
@@ -318,14 +456,31 @@ typedef enum { //These occur in sequence
             NSLog(@"App Message Received: MSG_ID_BT_SET_LOCAL_NAME: %@", payload);
             break;
         case MSG_ID_BT_SET_PIN:
+            //TODO : never being called
             NSLog(@"App Message Received: MSG_ID_BT_SET_PIN: %@", payload);
+            if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdatePairingPin:)]) {
+                UInt16 pin;
+                [payload getBytes:&pin range:NSMakeRange(0, sizeof(UInt16))];
+                [self.delegate bean:self didUpdatePairingPin:pin];
+            }
             break;
         case MSG_ID_BT_SET_TX_PWR:
             NSLog(@"App Message Received: MSG_ID_BT_SET_TX_PWR: %@", payload);
             break;
-        case MSG_ID_BT_GET_CONFIG:
+        case MSG_ID_BT_GET_CONFIG: {
             NSLog(@"App Message Received: MSG_ID_BT_GET_CONFIG: %@", payload);
+            if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateRadioConfig:)]) {
+                BT_RADIOCONFIG_T rawData;
+                [payload getBytes:&rawData range:NSMakeRange(0, sizeof(BT_RADIOCONFIG_T))];
+                BeanRadioConfig *config = [[BeanRadioConfig alloc] init];
+                config.advertisingInterval = rawData.adv_int;
+                config.connectionInterval = rawData.conn_int;
+                config.name = [NSString stringWithUTF8String:(char*)rawData.local_name];
+                config.power = rawData.power;
+                [self.delegate bean:self didUpdateRadioConfig:config];
+            }
             break;
+        }
         case MSG_ID_BT_ADV_ONOFF:
             NSLog(@"App Message Received: MSG_ID_BT_ADV_ONOFF: %@", payload);
             break;
@@ -334,6 +489,12 @@ typedef enum { //These occur in sequence
             break;
         case MSG_ID_BT_GET_SCRATCH:
             NSLog(@"App Message Received: MSG_ID_BT_GET_SCRATCH: %@", payload);
+            if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateScratchNumber:withValue:)]) {
+                BT_SCRATCH_T rawData;
+                [payload getBytes:&rawData range:NSMakeRange(0, payload.length)];
+                NSData *scratch = [NSData dataWithBytes:rawData.scratch length:payload.length];
+                [self.delegate bean:self didUpdateScratchNumber:@(rawData.number) withValue:scratch];
+            }
             break;
         case MSG_ID_BT_RESTART:
             NSLog(@"App Message Received: MSG_ID_BT_RESTART: %@", payload);
@@ -362,12 +523,48 @@ typedef enum { //These occur in sequence
             break;
         case MSG_ID_CC_LED_READ_ALL:
             NSLog(@"App Message Received: MSG_ID_CC_LED_READ_ALL: %@", payload);
+            if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateLedColor:)]) {
+                LED_SETTING_T rawData;
+                [payload getBytes:&rawData range:NSMakeRange(0, sizeof(LED_SETTING_T))];
+#if TARGET_OS_IPHONE
+                UIColor *color = [UIColor colorWithRed:rawData.red/255.0f green:rawData.green/255.0f blue:rawData.blue/255.0f alpha:1];
+                [self.delegate bean:self didUpdateLedColor:color];
+#else
+                NSColor *color = [NSColor colorWithCalibratedRed:rawData.red/255.0f green:rawData.green/255.0f blue:rawData.blue/255.0f alpha:1];
+                [self.delegate bean:self didUpdateLedColor:color];
+#endif
+            }
             break;
         case MSG_ID_CC_ACCEL_READ:
+        {
             NSLog(@"App Message Received: MSG_ID_CC_ACCEL_READ: %@", payload);
+            if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateAccelerationAxes:)]) {
+                ACC_READING_T rawData;
+                [payload getBytes:&rawData range:NSMakeRange(0, sizeof(ACC_READING_T))];
+                PTDAcceleration acceleration;
+                acceleration.x = rawData.xAxis * 0.00391;
+                acceleration.y = rawData.yAxis * 0.00391;
+                acceleration.z = rawData.zAxis * 0.00391;
+                [self.delegate bean:self didUpdateAccelerationAxes:acceleration];
+            }
             break;
+        }
+        case MSG_ID_CC_TEMP_READ:
+        {
+            NSLog(@"App Message Received: MSG_ID_CC_TEMP_READ: %@", payload);
+            if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateTemperature:)]) {
+                SInt8 temp;
+                [payload getBytes:&temp range:NSMakeRange(0, sizeof(SInt8))];
+                [self.delegate bean:self didUpdateTemperature:@(temp)];
+            }
+            break;
+        }
         case MSG_ID_DB_LOOPBACK:
+
             NSLog(@"App Message Received: MSG_ID_DB_LOOPBACK: %@", payload);
+            if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateLoopbackPayload:)]) {
+                [self.delegate bean:self didUpdateLoopbackPayload:payload];
+            }
             break;
         case MSG_ID_DB_COUNTER:
             NSLog(@"App Message Received: MSG_ID_DB_COUNTER: %@", payload);
