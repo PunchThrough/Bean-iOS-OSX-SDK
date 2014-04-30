@@ -19,7 +19,7 @@
     NSArray *vComp = [[UIDevice currentDevice].systemVersion componentsSeparatedByString:@"."];
     if ([[vComp objectAtIndex:0] intValue] >= 7) {
         if(self.identifier) uuid = self.identifier;
-    } else if ([[vComp objectAtIndex:0] intValue] == 6) {
+    } else if ([[vComp objectAtIndex:0] intValue] == 6  || [[vComp objectAtIndex:0] intValue] == 5) {
         if(self.UUID) uuid = [[NSUUID alloc] initWithUUIDBytes:[[[CBUUID UUIDWithCFUUID:self.UUID] data] bytes]];
     }
 #else

@@ -8,6 +8,7 @@
 
 #import "OadProfile.h"
 #import "oad.h"
+#import "CBPeripheral+isConnected_Universal.h"
 
 @interface OadProfile ()
 @end
@@ -218,6 +219,14 @@
 -(void) programmingTimerTick:(NSTimer *)timer {
     if (self.canceled) {
         self.canceled = FALSE;
+        return;
+    }
+    
+    if(!peripheral.isConnected_Universal){
+        if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadWithError:)]) {
+            NSError* error = [BEAN_Helper basicError:@"Peripheral has disconnected during OAD" domain:@"BEAN API:OAD Profile" code:100];
+            [self.delegate device:self completedFirmwareUploadWithError:error];
+        }
         return;
     }
     
