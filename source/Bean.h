@@ -40,7 +40,7 @@ typedef enum { //These occur in sequence
 
 -(void)sendLoopbackDebugMessage:(NSInteger)length;
 -(void)sendSerialMessage:(NSData*)data;
--(void)programArduinoWithRawHexImage:(NSData*)hexImage;
+-(void)programArduinoWithRawHexImage:(NSData*)hexImage andImageName:(NSString*)name;
 
 @end
 
