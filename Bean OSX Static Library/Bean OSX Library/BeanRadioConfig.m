@@ -22,7 +22,20 @@
         }
         return NO;
     }
-    // TODO : put checks in for other parameters
+    else if (self.connectionInterval <= 0) {
+        if (error) {
+            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Connection interval must be >0 and less than ???", @"")};
+            *error = [NSError errorWithDomain:BeanInvalidArgurment code:0 userInfo:userInfo];
+        }
+        return NO;
+    }
+    else if (self.advertisingInterval <= 0) {
+        if (error) {
+            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Advertising interval must be >0 and less than ???", @"")};
+            *error = [NSError errorWithDomain:BeanInvalidArgurment code:0 userInfo:userInfo];
+        }
+        return NO;
+    }
     return YES;
 }
 @end
