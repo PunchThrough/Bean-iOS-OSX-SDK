@@ -68,8 +68,8 @@ typedef enum {
 -(void)setLedColor:(NSColor*)color;
 #endif
 -(void)readLedColor;
--(void)setScratchNumber:(UInt8)scratchNumber withValue:(NSData*)value;
--(void)readScratchBank:(UInt8)bank;
+-(void)setScratchNumber:(NSInteger)scratchNumber withValue:(NSData*)value;
+-(void)readScratchBank:(NSInteger)bank;
 -(void)readTemperature;
 -(void)setPairingPin:(UInt16)pinCode;
 -(void)readRadioConfig;
@@ -95,4 +95,5 @@ typedef enum {
 -(void)bean:(Bean*)bean didUpdateTemperature:(NSNumber*)degrees_celsius;
 -(void)bean:(Bean*)bean didUpdateLoopbackPayload:(NSData*)payload;
 -(void)bean:(Bean*)bean didUpdateRadioConfig:(BeanRadioConfig*)config;
+-(void)bean:(Bean*)bean didUpdateScratchNumber:(NSNumber*)number withValue:(NSData*)data;
 @end

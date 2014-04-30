@@ -225,8 +225,11 @@ typedef enum { //These occur in sequence
     }
     [appMessageLayer sendMessageWithID:MSG_ID_CC_LED_READ_ALL andPayload:nil];
 }
--(void)setScratchNumber:(UInt8)scratchNumber withValue:(NSData*)value {
+-(void)setScratchNumber:(NSInteger)scratchNumber withValue:(NSData*)value {
     if(![self connected]) {
+        return;
+    }
+    if(![self validScratchNumber:scratchNumber]) {
         return;
     }
     if (value.length>20) {
@@ -239,8 +242,11 @@ typedef enum { //These occur in sequence
     [payload appendData:value];
     [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_SCRATCH andPayload:payload];
 }
-- (void)readScratchBank:(UInt8)bank {
+- (void)readScratchBank:(NSInteger)bank {
     if(![self connected]) {
+        return;
+    }
+    if(![self validScratchNumber:bank]) {
         return;
     }
     NSData *data = [NSData dataWithBytes:&bank length: sizeof(UInt8)];
@@ -388,7 +394,7 @@ typedef enum { //These occur in sequence
     if(_state != BeanState_ConnectedAndValidated ||
        _peripheral.state != CBPeripheralStateConnected) //This second conditional is an assertion
     {
-        if(self.delegate) {
+        if(self.delegate && [self.delegate respondsToSelector:@selector(bean:error:)]) {
             NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Bean not connected", @"")};
             NSError *error = [NSError errorWithDomain:BeanNotConnected code:0 userInfo:userInfo];
             [self.delegate bean:self error:error];
@@ -397,7 +403,17 @@ typedef enum { //These occur in sequence
     }
     return YES;
 }
-    
+-(BOOL)validScratchNumber:(NSInteger)scratchNumber {
+    if (scratchNumber<0 || scratchNumber>4) {
+        if(self.delegate && [self.delegate respondsToSelector:@selector(bean:error:)]) {
+            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Scratch numbers need to be 0-4", @"")};
+            NSError *error = [NSError errorWithDomain:BeanInvalidArgurment code:0 userInfo:userInfo];
+            [self.delegate bean:self error:error];
+        }
+        return NO;
+    }
+    return YES;
+}
 #pragma mark -
 #pragma mark Profile Delegate callbacks
 -(void)profileValidated:(id<Profile_Protocol>)profile{
@@ -433,10 +449,10 @@ typedef enum { //These occur in sequence
         case MSG_ID_BT_SET_LOCAL_NAME:
             NSLog(@"App Message Received: MSG_ID_BT_SET_LOCAL_NAME: %@", payload);
             break;
-        //TODO : never being called
         case MSG_ID_BT_SET_PIN:
+            //TODO : never being called
             NSLog(@"App Message Received: MSG_ID_BT_SET_PIN: %@", payload);
-            if (self.delegate) {
+            if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdatePairingPin:)]) {
                 UInt16 pin;
                 [payload getBytes:&pin range:NSMakeRange(0, sizeof(UInt16))];
                 [self.delegate bean:self didUpdatePairingPin:pin];
@@ -447,7 +463,7 @@ typedef enum { //These occur in sequence
             break;
         case MSG_ID_BT_GET_CONFIG: {
             NSLog(@"App Message Received: MSG_ID_BT_GET_CONFIG: %@", payload);
-            if(self.delegate) {
+            if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateRadioConfig:)]) {
                 BT_RADIOCONFIG_T rawData;
                 [payload getBytes:&rawData range:NSMakeRange(0, sizeof(BT_RADIOCONFIG_T))];
                 BeanRadioConfig *config = [[BeanRadioConfig alloc] init];
@@ -456,8 +472,8 @@ typedef enum { //These occur in sequence
                 config.name = [NSString stringWithUTF8String:(char*)rawData.local_name];
                 config.power = rawData.power;
                 [self.delegate bean:self didUpdateRadioConfig:config];
-            break;
             }
+            break;
         }
         case MSG_ID_BT_ADV_ONOFF:
             NSLog(@"App Message Received: MSG_ID_BT_ADV_ONOFF: %@", payload);
@@ -467,6 +483,12 @@ typedef enum { //These occur in sequence
             break;
         case MSG_ID_BT_GET_SCRATCH:
             NSLog(@"App Message Received: MSG_ID_BT_GET_SCRATCH: %@", payload);
+            if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateScratchNumber:withValue:)]) {
+                BT_SCRATCH_T rawData;
+                [payload getBytes:&rawData range:NSMakeRange(0, payload.length)];
+                NSData *scratch = [NSData dataWithBytes:rawData.scratch length:payload.length];
+                [self.delegate bean:self didUpdateScratchNumber:@(rawData.number) withValue:scratch];
+            }
             break;
         case MSG_ID_BT_RESTART:
             NSLog(@"App Message Received: MSG_ID_BT_RESTART: %@", payload);
@@ -492,10 +514,9 @@ typedef enum { //These occur in sequence
             break;
         case MSG_ID_CC_LED_READ_ALL:
             NSLog(@"App Message Received: MSG_ID_CC_LED_READ_ALL: %@", payload);
-            if (self.delegate) {
+            if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateLedColor:)]) {
                 LED_SETTING_T rawData;
                 [payload getBytes:&rawData range:NSMakeRange(0, sizeof(LED_SETTING_T))];
-                // TODO : wierd values coming back, check with ray
 #if TARGET_OS_IPHONE
                 UIColor *color = [UIColor colorWithRed:rawData.red/255.0f green:rawData.green/255.0f blue:rawData.blue/255.0f alpha:1];
                 [self.delegate bean:self didUpdateLedColor:color];
@@ -508,7 +529,7 @@ typedef enum { //These occur in sequence
         case MSG_ID_CC_ACCEL_READ:
         {
             NSLog(@"App Message Received: MSG_ID_CC_ACCEL_READ: %@", payload);
-            if (self.delegate) {
+            if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateAccelerationAxes:)]) {
                 ACC_READING_T rawData;
                 [payload getBytes:&rawData range:NSMakeRange(0, sizeof(ACC_READING_T))];
                 PTDAcceleration acceleration;
@@ -522,18 +543,17 @@ typedef enum { //These occur in sequence
         case MSG_ID_CC_TEMP_READ:
         {
             NSLog(@"App Message Received: MSG_ID_CC_TEMP_READ: %@", payload);
-            if (self.delegate) {
-                //TODO : test with new firmware, since this is never fired
-                UInt8 temp;
-                [payload getBytes:&temp range:NSMakeRange(0, sizeof(UInt8))];
+            if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateTemperature:)]) {
+                SInt8 temp;
+                [payload getBytes:&temp range:NSMakeRange(0, sizeof(SInt8))];
                 [self.delegate bean:self didUpdateTemperature:@(temp)];
             }
             break;
         }
         case MSG_ID_DB_LOOPBACK:
-            //TODO : talk to ray, intermittent, first call does not call callback, second or third one does
+
             NSLog(@"App Message Received: MSG_ID_DB_LOOPBACK: %@", payload);
-            if (self.delegate) {
+            if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateLoopbackPayload:)]) {
                 [self.delegate bean:self didUpdateLoopbackPayload:payload];
             }
             break;
