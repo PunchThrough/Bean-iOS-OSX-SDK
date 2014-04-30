@@ -12,14 +12,13 @@
 #import <IOBluetooth/IOBluetooth.h>
 #endif
 
-
 #define ARDUINO_OAD_GENERIC_TIMEOUT_SEC 6
 
 #define BeanInvalidArgurment @"BeanInvalidArgurment"
 #define BeanNotConnected @"BeanNotConnected"
 
-@class BeanManager;
 @class BeanRadioConfig;
+@class BeanManager;
 @protocol BeanDelegate;
 
 typedef enum { //These occur in sequence
@@ -36,6 +35,13 @@ typedef struct {
     double y;
     double z;
 } PTDAcceleration;
+
+typedef enum {
+    PTDTxPower_4dB = 0,
+    PTDTxPower_0dB,
+    PTDTxPower_neg6dB,
+    PTDTxPower_neg23dB,
+} PTDTxPower_dB;
 
 @interface Bean : NSObject
 
@@ -66,7 +72,8 @@ typedef struct {
 -(void)readScratchBank:(UInt8)bank;
 -(void)readTemperature;
 -(void)setPairingPin:(UInt16)pinCode;
--(void)getConfig;
+-(void)readRadioConfig;
+-(void)setRadioConfig:(BeanRadioConfig*)config;
 @end
 
 @protocol BeanDelegate <NSObject>
@@ -84,9 +91,8 @@ typedef struct {
 #else
 -(void)bean:(Bean*)bean didUpdateLedColor:(NSColor*)color;
 #endif
-// TODO : check with ray on this vs CMAcceleration
 -(void)bean:(Bean*)bean didUpdateAccelerationAxes:(PTDAcceleration)acceleration;
-// TODO : ask ray if a float here would work
 -(void)bean:(Bean*)bean didUpdateTemperature:(NSNumber*)degrees_celsius;
 -(void)bean:(Bean*)bean didUpdateLoopbackPayload:(NSData*)payload;
+-(void)bean:(Bean*)bean didUpdateRadioConfig:(BeanRadioConfig*)config;
 @end

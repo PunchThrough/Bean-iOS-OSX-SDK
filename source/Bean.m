@@ -11,6 +11,7 @@
 #import "GattSerialProfile.h"
 #import "AppMessages.h"
 #import "AppMessagingLayer.h"
+#import "BeanRadioConfig.h"
 
 #define ARDUINO_OAD_MAX_CHUNK_SIZE 64
 //#define ARDUINO_OAD_RESET_BEFORE_DL 1
@@ -116,7 +117,7 @@ typedef enum { //These occur in sequence
         commandPayloadBytes[1] = (UInt8)(imageSize & 0xFF); //FW size LSB
         commandPayloadBytes[2] = (UInt8)((imageSize >> 8) & 0xFF); //FW size MSB
         commandPayload = [[NSData alloc] initWithBytes:commandPayloadBytes length:3];
-        [appMessageLayer sendMessageWithID:MSG_ID_BL_CMD andPayload:commandPayload];
+//        [appMessageLayer sendMessageWithID:MSG_ID_BL_CMD andPayload:commandPayload];
         localArduinoOADState = BeanArduinoOADLocalState_SendingStartCommand;
 #endif
         [self __setArduinoOADTimeout:ARDUINO_OAD_GENERIC_TIMEOUT_SEC];
@@ -141,76 +142,34 @@ typedef enum { //These occur in sequence
     NSData* data = [string dataUsingEncoding:NSUTF8StringEncoding];
     [self sendSerialData:data];
 }
-//-(void)setName:(NSString*)name {
-//    if(![self connected]) {
-//        return;
-//    }
-//    NSData* data = [name dataUsingEncoding:NSUTF8StringEncoding];
-//    if (data.length>20) {
-//        if(self.delegate) {
-//            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Name exceeds 20 character limit", @"")};
-//            NSError *error = [NSError errorWithDomain:BeanInvalidArgurment code:0 userInfo:userInfo];
-//            [self.delegate bean:self error:error];
-//        }
-//        data = [data subdataWithRange:NSMakeRange(0, 20)];
-//    }
-//    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_LOCAL_NAME andPayload:data];
-//}
-//- (void)setAdvertisingInterval:(NSTimeInterval)interval {
-//    if(![self connected]) {
-//        return;
-//    }
-//    UInt16 interval_ms = interval*1000;
-//    NSData *data = [NSData dataWithBytes:&interval_ms length: sizeof(UInt16)];
-//    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_ADV andPayload:data];
-//}
-//- (void)readAdvertisingInterval {
-//    if(![self connected]) {
-//        return;
-//    }
-//    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_ADV andPayload:nil];
-//}
-//-(void)setConnectionInterval:(NSTimeInterval)interval {
-//    if(![self connected]) {
-//        return;
-//    }
-//    UInt16 interval_ms = interval*1000;
-//    NSData *data = [NSData dataWithBytes:&interval_ms length: sizeof(UInt16)];
-//    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_CONN andPayload:data];
-//}
-//-(void)readConnectionInterval {
-//    if(![self connected]) {
-//        return;
-//    }
-//    // not sure if there should be a separate message or just use get config
-//}
-//-(void)setTxPower:(PTDTxPower_dB)power {
-//    if(![self connected]) {
-//        return;
-//    }
-//    BT_TXPOWER_DB_T p = 0;
-//    if (power == PTDTxPower_4dB) {
-//        p = TXPOWER_4DB;
-//    }
-//    else if (power == PTDTxPower_4dB) {
-//        p = TXPOWER_0DB;
-//    }
-//    else if (power == PTDTxPower_neg6dB) {
-//        p = TXPOWER_NEG6DB;
-//    }
-//    else if (power == PTDTxPower_neg23dB) {
-//        p = TXPOWER_NEG23DB;
-//    }
-//
-//    NSData *data = [NSData dataWithBytes:&p length: sizeof(UInt8)];
-//    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_TX_PWR andPayload:data];
-//}
-//-(void)readTxPower {
-//    if(![self connected]) {
-//        return;
-//    }
-//    // not sure if there should be a separate message or just use get config
-//}
+- (void)readRadioConfig {
+    if(![self connected]) {
+        return;
+    }
+    [appMessageLayer sendMessageWithID:MSG_ID_BT_GET_CONFIG andPayload:nil];
+}
+-(void)setRadioConfig:(BeanRadioConfig*)config {
+    if(![self connected]) {
+        return;
+    }
+    NSError *error;
+    if (![config validate:&error]) {
+        [self.delegate bean:self error:error];
+        return;
+    }
+    BT_RADIOCONFIG_T raw;
+    raw.adv_int = config.advertisingInterval*1000;
+    raw.conn_int = config.connectionInterval*1000;
+    
+    const UInt8* nameBytes = [[config.name dataUsingEncoding:NSUTF8StringEncoding] bytes];
+    memset(&(raw.local_name), ' ', config.name.length);
+    memcpy(&(raw.local_name), nameBytes, config.name.length);
+    
+    raw.local_name_size = config.name.length;
+    raw.power = config.power;
+    NSData *data = [NSData dataWithBytes:&raw length: sizeof(BT_RADIOCONFIG_T)];
+    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_CONFIG andPayload:data];
+}
 -(void)setPairingPin:(UInt16)pinCode {
     if(![self connected]) {
         return;
@@ -239,7 +198,6 @@ typedef enum { //These occur in sequence
     if(![self connected]) {
         return;
     }
-    
     CGFloat red;
     CGFloat green;
     CGFloat blue;
@@ -253,7 +211,6 @@ typedef enum { //These occur in sequence
             [self.delegate bean:self error:error];
         }
     }
-    
     UInt8 redComponent = (red)*255.0;
     UInt8 greenComponent = (green)*255.0;
     UInt8 blueComponent = (blue)*255.0;
@@ -476,9 +433,9 @@ typedef enum { //These occur in sequence
         case MSG_ID_BT_SET_LOCAL_NAME:
             NSLog(@"App Message Received: MSG_ID_BT_SET_LOCAL_NAME: %@", payload);
             break;
+        //TODO : never being called
         case MSG_ID_BT_SET_PIN:
             NSLog(@"App Message Received: MSG_ID_BT_SET_PIN: %@", payload);
-            // TODO : delegate callback not being called
             if (self.delegate) {
                 UInt16 pin;
                 [payload getBytes:&pin range:NSMakeRange(0, sizeof(UInt16))];
@@ -488,9 +445,20 @@ typedef enum { //These occur in sequence
         case MSG_ID_BT_SET_TX_PWR:
             NSLog(@"App Message Received: MSG_ID_BT_SET_TX_PWR: %@", payload);
             break;
-        case MSG_ID_BT_GET_CONFIG:
+        case MSG_ID_BT_GET_CONFIG: {
             NSLog(@"App Message Received: MSG_ID_BT_GET_CONFIG: %@", payload);
+            if(self.delegate) {
+                BT_RADIOCONFIG_T rawData;
+                [payload getBytes:&rawData range:NSMakeRange(0, sizeof(BT_RADIOCONFIG_T))];
+                BeanRadioConfig *config = [[BeanRadioConfig alloc] init];
+                config.advertisingInterval = rawData.adv_int;
+                config.connectionInterval = rawData.conn_int;
+                config.name = [NSString stringWithUTF8String:(char*)rawData.local_name];
+                config.power = rawData.power;
+                [self.delegate bean:self didUpdateRadioConfig:config];
             break;
+            }
+        }
         case MSG_ID_BT_ADV_ONOFF:
             NSLog(@"App Message Received: MSG_ID_BT_ADV_ONOFF: %@", payload);
             break;
@@ -503,9 +471,9 @@ typedef enum { //These occur in sequence
         case MSG_ID_BT_RESTART:
             NSLog(@"App Message Received: MSG_ID_BT_RESTART: %@", payload);
             break;
-        case MSG_ID_BL_CMD:
-            NSLog(@"App Message Received: MSG_ID_BL_CMD: %@", payload);
-            break;
+//        case MSG_ID_BL_CMD:
+//            NSLog(@"App Message Received: MSG_ID_BL_CMD: %@", payload);
+//            break;
         case MSG_ID_BL_FW_BLOCK:
             NSLog(@"App Message Received: MSG_ID_BL_FW_BLOCK: %@", payload);
             break;

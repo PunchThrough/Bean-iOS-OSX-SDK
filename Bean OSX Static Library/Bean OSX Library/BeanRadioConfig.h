@@ -7,17 +7,13 @@
 //
 
 #import <Foundation/Foundation.h>
-
-typedef enum {
-    PTDTxPower_4dB = 0,
-    PTDTxPower_0dB,
-    PTDTxPower_neg6dB,
-    PTDTxPower_neg23dB,
-} PTDTxPower_dB;
+#import "Bean.h"
 
 @interface BeanRadioConfig : NSObject
--(void)setAdvertisingInterval:(NSTimeInterval)advertisingInterval error:(NSError**)error;
--(void)setConnectionInterval:(NSTimeInterval)connectionInterval error:(NSError**)error;
--(void)setPower:(PTDTxPower_dB)power;
--(void)setName:(NSString *)name error:(NSError**)error;
+-(BOOL)validate:(NSError**)error;
+@property (nonatomic, readwrite) NSTimeInterval advertisingInterval;
+@property (nonatomic, readwrite) NSTimeInterval connectionInterval;
+@property (nonatomic, readwrite) PTDTxPower_dB power;
+@property (nonatomic, strong) NSString *name;
+
 @end

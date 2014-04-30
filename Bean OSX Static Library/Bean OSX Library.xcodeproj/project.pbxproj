@@ -31,6 +31,7 @@
 		52DE25C318AACB4B00E69929 /* Bean.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 52D34E8B18A9B890002F0C59 /* Bean.h */; };
 		52DE25C418AACB4F00E69929 /* CBPeripheral+UniqueId.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 52D34E8E18A9B890002F0C59 /* CBPeripheral+UniqueId.h */; };
 		964A2BBC19105CE00043EADA /* BeanRadioConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 964A2BBB19105CE00043EADA /* BeanRadioConfig.m */; };
+		964A2BBD191076B50043EADA /* BeanRadioConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 964A2BBB19105CE00043EADA /* BeanRadioConfig.m */; };
 		969B8975190896BC00AA093C /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 969B8974190896BC00AA093C /* CoreBluetooth.framework */; };
 		969B89791908971000AA093C /* BeanManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5251176418B3FD9B0088DE2D /* BeanManager.m */; };
 		969B897C1908971000AA093C /* Bean.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E8C18A9B890002F0C59 /* Bean.m */; };
@@ -517,6 +518,7 @@
 				969B89871908971000AA093C /* GattSerialProfile.m in Sources */,
 				969B898B1908971000AA093C /* GattSerialTransport.m in Sources */,
 				969B898D1908971000AA093C /* GattSerialMessage.m in Sources */,
+				964A2BBD191076B50043EADA /* BeanRadioConfig.m in Sources */,
 				969B898F1908971000AA093C /* GattSerialMessageRxAssembler.m in Sources */,
 				969B89911908971000AA093C /* GattTransport.m in Sources */,
 				969B89931908971000AA093C /* GattPacket.m in Sources */,
