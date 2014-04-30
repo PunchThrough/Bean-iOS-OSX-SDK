@@ -404,9 +404,9 @@ typedef enum { //These occur in sequence
     return YES;
 }
 -(BOOL)validScratchNumber:(NSInteger)scratchNumber {
-    if (scratchNumber<0 || scratchNumber>4) {
+    if (scratchNumber<1 || scratchNumber>5) {
         if(self.delegate && [self.delegate respondsToSelector:@selector(bean:error:)]) {
-            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Scratch numbers need to be 0-4", @"")};
+            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Scratch numbers need to be 1-5", @"")};
             NSError *error = [NSError errorWithDomain:BeanInvalidArgurment code:0 userInfo:userInfo];
             [self.delegate bean:self error:error];
         }
