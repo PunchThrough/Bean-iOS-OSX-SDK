@@ -46,6 +46,19 @@
         return;
     }
     
+    //Collect already connected Beans
+    NSArray* connectedBeanPeripherals = [cbcentralmanager retrieveConnectedPeripheralsWithServices:[NSArray arrayWithObjects:[CBUUID UUIDWithString:GLOBAL_SERIAL_PASS_SERVICE_UUID], nil]];
+    for( CBPeripheral* beanPeripheral in connectedBeanPeripherals){
+        [self __processBeanRecordFromCBPeripheral:beanPeripheral advertisementData:nil RSSI:0];
+        //Find BeanRecord that corresponds to this UUID
+        Bean* bean = [beanRecords objectForKey:[beanPeripheral identifier]];
+        //If there is no such peripheral, return
+        if(bean){
+            //This is a hackish fix. OSX stays connected to devices after
+            [self connectToBean:bean error:nil];
+        }
+    }
+    
     // Scan for peripherals
     NSLog(@"Started scanning...");
     
@@ -128,6 +141,7 @@
     else if (error){
         localError = error;
         bean.state = BeanState_Discovered; // Reset bean state to the default, ready to connect
+        [self disconnectBean:bean error:nil];
     }else{
         bean.state = BeanState_ConnectedAndValidated;
     }
@@ -139,7 +153,26 @@
 
 
 #pragma mark - Private methods
-
+-(Bean *)__processBeanRecordFromCBPeripheral:(CBPeripheral*)peripheral advertisementData:(NSDictionary *)advertisementData RSSI:(NSNumber *)RSSI{
+    Bean * bean;
+    //This Bean is already discovered and perhaps connected to
+    if ((bean = [beanRecords objectForKey:peripheral.identifier])) {
+        bean.RSSI = RSSI;
+        bean.lastDiscovered = [NSDate date];
+        bean.advertisementData = advertisementData;
+    }
+    else { // A new undiscovered Bean
+        NSLog(@"centralManager:didDiscoverPeripheral %@", peripheral);
+        bean = [[Bean alloc] initWithPeripheral:peripheral beanManager:self];
+        bean.RSSI = RSSI;
+        bean.lastDiscovered = [NSDate date];
+        bean.advertisementData = advertisementData;
+        bean.state = BeanState_Discovered;
+        
+        [beanRecords setObject:bean forKey:peripheral.identifier];
+    }
+    return bean;
+}
 
 #pragma mark - CBCentralManagerDelegate
 
@@ -160,26 +193,12 @@
 }
 
 -(void)centralManager:(CBCentralManager *)central didDiscoverPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary *)advertisementData RSSI:(NSNumber *)RSSI{
-    Bean * bean;
-    //This Bean is already discovered and perhaps connected to
-    if ((bean = [beanRecords objectForKey:peripheral.identifier])) {
-        bean.RSSI = RSSI;
-        bean.lastDiscovered = [NSDate date];
-        bean.advertisementData = advertisementData;
-    }
-    else { // A new undiscovered Bean
-        NSLog(@"centralManager:didDiscoverPeripheral %@", peripheral);
-        bean = [[Bean alloc] initWithPeripheral:peripheral beanManager:self];
-        bean.RSSI = RSSI;
-        bean.lastDiscovered = [NSDate date];
-        bean.advertisementData = advertisementData;
-        bean.state = BeanState_Discovered;
-        
-        [beanRecords setObject:bean forKey:peripheral.identifier];
-    }
-    //Inform the delegate that we located a Bean
-    if (self.delegate && [self.delegate respondsToSelector:@selector(BeanManager:didDisconnectBean:error:)]){
-        [self.delegate BeanManager:self didDiscoverBean:bean error:nil];
+    Bean* bean = [self __processBeanRecordFromCBPeripheral:peripheral advertisementData:advertisementData RSSI:RSSI];
+    if(bean){
+        //Inform the delegate that we located a Bean
+        if (self.delegate && [self.delegate respondsToSelector:@selector(BeanManager:didDisconnectBean:error:)]){
+            [self.delegate BeanManager:self didDiscoverBean:bean error:nil];
+        }
     }
 }
 
