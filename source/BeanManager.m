@@ -103,9 +103,12 @@
     //Find BeanPeripheral that corresponds to this UUID
     Bean* bean = [beanRecords objectForKey:bean_.identifier];
     //Check if the device isn't currently connected
-    if(!bean || bean.state != BeanState_ConnectedAndValidated){
+    if(!bean){
         if(error) *error = [BEAN_Helper basicError:@"Failed attemp to disconnect Bean. No device with this UUID is currently connected" domain:NSStringFromClass([self class]) code:100];
         return;
+    }
+    if(bean.state != BeanState_ConnectedAndValidated){
+        if(error) *error = [BEAN_Helper basicError:@"No device with this UUID is currently connected" domain:NSStringFromClass([self class]) code:100];
     }
     //Mark this BeanRecord as is in the middle of a disconnection attempt
     [bean setState:BeanState_AttemptingDisconnection];
