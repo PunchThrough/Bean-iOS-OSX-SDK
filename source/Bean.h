@@ -75,6 +75,7 @@ typedef enum {
 -(void)setPairingPin:(UInt16)pinCode;
 -(void)readRadioConfig;
 -(void)setRadioConfig:(BeanRadioConfig*)config;
+-(BOOL)updateFirmwareWithImageAPath:(NSString*)imageApath andImageBPath:(NSString*)imageBpath;
 @end
 
 @protocol BeanDelegate <NSObject>
@@ -97,4 +98,7 @@ typedef enum {
 -(void)bean:(Bean*)bean didUpdateLoopbackPayload:(NSData*)payload;
 -(void)bean:(Bean*)bean didUpdateRadioConfig:(BeanRadioConfig*)config;
 -(void)bean:(Bean*)bean didUpdateScratchNumber:(NSNumber*)number withValue:(NSData*)data;
+-(void)bean:(Bean*)device completedFirmwareUploadWithError:(NSError*)error;
+-(void)bean:(Bean*)device firmwareUploadTimeLeft:(NSNumber*)seconds withPercentage:(NSNumber*)percentageComplete;
+
 @end

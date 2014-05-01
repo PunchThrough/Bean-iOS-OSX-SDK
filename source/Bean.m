@@ -264,6 +264,12 @@ typedef enum { //These occur in sequence
     }
     [appMessageLayer sendMessageWithID:MSG_ID_BT_GET_CONFIG andPayload:nil];
 }
+
+-(BOOL)updateFirmwareWithImageAPath:(NSString*)imageApath andImageBPath:(NSString*)imageBpath{
+    if(!oad_profile)return FALSE;
+    return [oad_profile updateFirmwareWithImageAPath:imageApath andImageBPath:imageBpath];
+}
+
 #pragma mark - Protected Methods
 -(id)initWithPeripheral:(CBPeripheral*)peripheral beanManager:(BeanManager*)manager{
     self = [super init];
@@ -286,7 +292,7 @@ typedef enum { //These occur in sequence
     gatt_serial_profile = [[GattSerialProfile alloc] initWithPeripheral:_peripheral  delegate:nil];
     gatt_serial_profile.profileDelegate = self;
     profiles = [[NSArray alloc] initWithObjects:deviceInfo_profile,
-               // oad_profile, //TODO: Add this line back in once the CC has OAD prifile 
+                oad_profile, //TODO: Add this line back in once the CC has OAD prifile
                 gatt_serial_profile,
                 nil];
 
@@ -576,6 +582,23 @@ typedef enum { //These occur in sequence
 }
 -(void)appMessagingLayer:(AppMessagingLayer*)later error:(NSError*)error{
     
+}
+
+
+#pragma mark OAD callbacks
+-(void)device:(OadProfile*)device completedFirmwareUploadWithError:(NSError*)error{
+    if(_delegate){
+        if([_delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]){
+            [_delegate bean:self completedFirmwareUploadWithError:error];
+        }
+    }
+}
+-(void)device:(OadProfile*)device OADUploadTimeLeft:(NSNumber*)seconds withPercentage:(NSNumber*)percentageComplete{
+    if(_delegate){
+        if([_delegate respondsToSelector:@selector(bean:firmwareUploadTimeLeft:withPercentage:)]){
+            [_delegate bean:self firmwareUploadTimeLeft:seconds withPercentage:percentageComplete];
+        }
+    }
 }
 
 #pragma mark CBPeripheralDelegate callbacks

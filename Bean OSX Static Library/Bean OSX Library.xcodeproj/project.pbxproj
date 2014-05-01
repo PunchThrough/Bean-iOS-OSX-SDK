@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		521A4E9D19103E5F005B3097 /* NSData+CRC.m in Sources */ = {isa = PBXBuildFile; fileRef = 521A4E9C19103E5F005B3097 /* NSData+CRC.m */; };
+		521A4EA319116C0F005B3097 /* CBPeripheral+isConnected_Universal.m in Sources */ = {isa = PBXBuildFile; fileRef = 521A4EA219116C0F005B3097 /* CBPeripheral+isConnected_Universal.m */; };
 		5251176518B3FD9B0088DE2D /* BeanManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5251176418B3FD9B0088DE2D /* BeanManager.m */; };
 		52BC523718D96A610083A031 /* AppMessagingLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 52BC523618D96A610083A031 /* AppMessagingLayer.m */; };
 		52D02ED719102AD300996077 /* NSDate+LocalTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D02ED619102AD300996077 /* NSDate+LocalTime.m */; };
@@ -87,6 +88,8 @@
 /* Begin PBXFileReference section */
 		521A4E9B19103E5F005B3097 /* NSData+CRC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+CRC.h"; sourceTree = "<group>"; };
 		521A4E9C19103E5F005B3097 /* NSData+CRC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+CRC.m"; sourceTree = "<group>"; };
+		521A4EA119116C0F005B3097 /* CBPeripheral+isConnected_Universal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CBPeripheral+isConnected_Universal.h"; sourceTree = "<group>"; };
+		521A4EA219116C0F005B3097 /* CBPeripheral+isConnected_Universal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CBPeripheral+isConnected_Universal.m"; sourceTree = "<group>"; };
 		5242A60C18D9101200DDB29F /* AppMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppMessages.h; path = "../../App Message Definitions/AppMessages.h"; sourceTree = "<group>"; };
 		5251175218ADA0AC0088DE2D /* GattCharacteristicHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GattCharacteristicHandler.h; path = Transport/GattCharacteristicHandler.h; sourceTree = "<group>"; };
 		5251175318ADA0C80088DE2D /* GattCharacteristicObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GattCharacteristicObserver.h; path = Transport/GattCharacteristicObserver.h; sourceTree = "<group>"; };
@@ -314,6 +317,8 @@
 				52D02ED619102AD300996077 /* NSDate+LocalTime.m */,
 				521A4E9B19103E5F005B3097 /* NSData+CRC.h */,
 				521A4E9C19103E5F005B3097 /* NSData+CRC.m */,
+				521A4EA119116C0F005B3097 /* CBPeripheral+isConnected_Universal.h */,
+				521A4EA219116C0F005B3097 /* CBPeripheral+isConnected_Universal.m */,
 			);
 			name = Categories;
 			path = ../../source/Categories;
@@ -498,6 +503,7 @@
 				52BC523718D96A610083A031 /* AppMessagingLayer.m in Sources */,
 				52D34EB518A9B890002F0C59 /* GattSerialProfile.m in Sources */,
 				52D02ED719102AD300996077 /* NSDate+LocalTime.m in Sources */,
+				521A4EA319116C0F005B3097 /* CBPeripheral+isConnected_Universal.m in Sources */,
 				5251176518B3FD9B0088DE2D /* BeanManager.m in Sources */,
 				52D34EB718A9B890002F0C59 /* GattPacket.m in Sources */,
 				521A4E9D19103E5F005B3097 /* NSData+CRC.m in Sources */,

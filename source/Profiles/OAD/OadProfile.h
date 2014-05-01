@@ -72,25 +72,12 @@
 // Returns TRUE if the firmware is newer than on the device. FALSE otherwise
 -(void)device:(OadProfile*)device firmwareVersion:(NSString*)version isNewer:(BOOL)isNewer;
 
-// Callback for method: -(BOOL)updateFirmwareWithImageAPath:(NSString*)imageApath andImageBPath:(NSString*)imageBpath;
-// Indicates when the uploading of firmware fails.
-// Called when not connected to breathalyzer.
-// This happens when it sends the writeWithoutResponse packets too fast and packets are dropped
-// Solution: Have user try again. Or slow down transfer time
--(void)deviceFailedOADUpload:(OadProfile*)device;
-
-// Callback for method: -(BOOL)updateFirmwareWithImageAPath:(NSString*)imageApath andImageBPath:(NSString*)imageBpath;
-// Called when firmware upload is complete
--(void)deviceCompletedOADUpload:(OadProfile*)device;
+-(void)device:(OadProfile*)device completedFirmwareUploadWithError:(NSError*)error;
 
 // Callback for method: -(BOOL)updateFirmwareWithImageAPath:(NSString*)imageApath andImageBPath:(NSString*)imageBpath;
 // Called every time the time left changes
 -(void)device:(OadProfile*)device OADUploadTimeLeft:(NSNumber*)seconds withPercentage:(NSNumber*)percentageComplete;
 
-// Callback for method: -(BOOL)updateFirmwareWithImageAPath:(NSString*)imageApath andImageBPath:(NSString*)imageBpath;
-// Called when firmware images are invalid
-// Solution: Use correct images
--(void)deviceOADInvalidImage:(OadProfile*)device;
 
 @end
 

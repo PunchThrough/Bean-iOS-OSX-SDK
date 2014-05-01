@@ -8,6 +8,7 @@
 
 #import "OadProfile.h"
 #import "oad.h"
+#import "CBPeripheral+isConnected_Universal.h"
 
 @interface OadProfile ()
 @end
@@ -101,9 +102,13 @@
 
 -(BOOL)updateFirmwareWithImageAPath:(NSString*)imageApath andImageBPath:(NSString*)imageBpath
 {
-    if (peripheral.state != CBPeripheralStateConnected) {
-        if ([self.delegate respondsToSelector:@selector(deviceFailedOADUpload:)]) {
-            [self.delegate deviceFailedOADUpload:self];
+    if (![peripheral isConnected]) {
+        NSMutableDictionary *errorDetail = [NSMutableDictionary dictionary];
+        [errorDetail setValue:@"Device is not connected" forKey:NSLocalizedDescriptionKey];
+        NSError* error = [NSError errorWithDomain:@"OAD" code:100 userInfo:errorDetail];
+        
+        if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadWithError:)]) {
+            [self.delegate device:self completedFirmwareUploadWithError:error];
         }
         return FALSE; //Not connected
     }
@@ -152,8 +157,12 @@
     else {
         // Both images are invalid!
         
-        if ([self.delegate respondsToSelector:@selector(deviceOADInvalidImage:)]) {
-            [self.delegate deviceOADInvalidImage:self];
+        NSMutableDictionary *errorDetail = [NSMutableDictionary dictionary];
+        [errorDetail setValue:@"Both OAD images are invalid" forKey:NSLocalizedDescriptionKey];
+        NSError* error = [NSError errorWithDomain:@"OAD" code:100 userInfo:errorDetail];
+        
+        if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadWithError:)]) {
+            [self.delegate device:self completedFirmwareUploadWithError:error];
         }
     }
 }
@@ -213,6 +222,14 @@
         return;
     }
     
+    if(!peripheral.isConnected_Universal){
+        if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadWithError:)]) {
+            NSError* error = [BEAN_Helper basicError:@"Peripheral has disconnected during OAD" domain:@"BEAN API:OAD Profile" code:100];
+            [self.delegate device:self completedFirmwareUploadWithError:error];
+        }
+        return;
+    }
+    
     unsigned char imageFileData[self.imageFile.length];
     [self.imageFile getBytes:imageFileData];
     
@@ -234,8 +251,8 @@
         
         if(self.iBlocks == self.nBlocks) {
             self.inProgramming = NO;
-            if ([self.delegate respondsToSelector:@selector(deviceCompletedOADUpload:)]) {
-                [self.delegate deviceCompletedOADUpload:self];
+            if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadWithError:)]) {
+                [self.delegate device:self completedFirmwareUploadWithError:nil];
             }
             return;
         }
@@ -404,8 +421,12 @@
             self.canceled = YES;
             
             if (self.inProgramming) {
-                if ([self.delegate respondsToSelector:@selector(deviceFailedOADUpload:)]) {
-                    [self.delegate deviceFailedOADUpload:self];
+                NSMutableDictionary *errorDetail = [NSMutableDictionary dictionary];
+                [errorDetail setValue:@"Dropping writeWithoutReponse packets" forKey:NSLocalizedDescriptionKey];
+                NSError* error = [NSError errorWithDomain:@"OAD" code:100 userInfo:errorDetail];
+                
+                if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadWithError:)]) {
+                    [self.delegate device:self completedFirmwareUploadWithError:error];
                 }
             }
             self.inProgramming = NO;
