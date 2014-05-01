@@ -210,16 +210,9 @@ typedef enum { //These occur in sequence
     CGFloat alpha;
     [color getRed:&red green:&green blue:&blue alpha:&alpha];
     
-    if (alpha != 1) {
-        if(self.delegate) {
-            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Alpha not supported", @"")};
-            NSError *error = [NSError errorWithDomain:BeanInvalidArgurment code:0 userInfo:userInfo];
-            [self.delegate bean:self error:error];
-        }
-    }
-    UInt8 redComponent = (red)*255.0;
-    UInt8 greenComponent = (green)*255.0;
-    UInt8 blueComponent = (blue)*255.0;
+    UInt8 redComponent = (alpha)*(red)*255.0;
+    UInt8 greenComponent = (alpha)*(green)*255.0;
+    UInt8 blueComponent = (alpha)*(blue)*255.0;
     UInt8 bytes[] = {redComponent,greenComponent,blueComponent};
     NSData *data = [NSData dataWithBytes:bytes length:3];
     
