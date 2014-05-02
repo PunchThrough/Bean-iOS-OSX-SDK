@@ -55,9 +55,10 @@ typedef enum {
 -(BeanState)state;
 -(NSDictionary*)advertisementData;
 -(NSDate*)lastDiscovered;
+-(NSString*)firmwareVersion;
 -(BeanManager*)beanManager;
 
-
+-(void)readArduinoSketchInfo;
 -(void)programArduinoWithRawHexImage:(NSData*)hexImage andImageName:(NSString*)name;
 -(void)sendLoopbackDebugMessage:(NSInteger)length;
 -(void)sendSerialData:(NSData*)data;
@@ -82,11 +83,9 @@ typedef enum {
 
 @optional
 //-(void)beanDevice:(BeanDevice*)device recievedIncomingMessage:(GattSerialMessage*)message;
--(void)bean:(Bean*)device error:(NSError*)error;
--(void)bean:(Bean*)device receivedMessage:(NSData*)data;
--(void)bean:(Bean*)device didProgramArduinoWithError:(NSError*)error;
+-(void)bean:(Bean*)bean error:(NSError*)error;
+-(void)bean:(Bean*)bean didProgramArduinoWithError:(NSError*)error;
 -(void)bean:(Bean*)bean serialDataReceived:(NSData*)data;
--(void)bean:(Bean*)bean didUpdateAdvertisingInterval: (NSNumber*) interval_ms;
 -(void)bean:(Bean*)bean didUpdatePairingPin:(UInt16)pinCode;
 #if TARGET_OS_IPHONE
 -(void)bean:(Bean*)bean didUpdateLedColor:(UIColor*)color;
@@ -98,7 +97,7 @@ typedef enum {
 -(void)bean:(Bean*)bean didUpdateLoopbackPayload:(NSData*)payload;
 -(void)bean:(Bean*)bean didUpdateRadioConfig:(BeanRadioConfig*)config;
 -(void)bean:(Bean*)bean didUpdateScratchNumber:(NSNumber*)number withValue:(NSData*)data;
--(void)bean:(Bean*)device completedFirmwareUploadWithError:(NSError*)error;
--(void)bean:(Bean*)device firmwareUploadTimeLeft:(NSNumber*)seconds withPercentage:(NSNumber*)percentageComplete;
-
+-(void)bean:(Bean*)bean completedFirmwareUploadWithError:(NSError*)error;
+-(void)bean:(Bean*)bean firmwareUploadTimeLeft:(NSNumber*)seconds withPercentage:(NSNumber*)percentageComplete;
+-(void)bean:(Bean*)bean didUpdateSketchName:(NSString*)name dateProgrammed:(NSDate*)date crc32:(UInt32)crc;
 @end

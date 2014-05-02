@@ -25,6 +25,7 @@
 @interface DevInfoProfile : NSObject <Profile_Protocol>
 
 @property (nonatomic, weak) id<ProfileDelegate_Protocol> profileDelegate;
+@property (nonatomic, strong) NSString *firmwareVersion;
 
 -(id)initWithPeripheral:(CBPeripheral*)peripheral;
 

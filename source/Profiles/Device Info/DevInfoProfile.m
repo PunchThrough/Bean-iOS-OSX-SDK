@@ -123,7 +123,7 @@
                      )){
                     NSLog(@"%@: Found all Device Information characteristics", self.class.description);
                     
-                    [self __notifyValidity];
+                    [peripheral readValueForCharacteristic:characteristic_firmware_version];
                     
                 }else {
                     // Could not find all characteristics!
@@ -141,6 +141,17 @@
     else {
         NSLog(@"%@: Characteristics discovery was unsuccessful", self.class.description);
         
+    }
+}
+
+- (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
+{
+    if (!error) {
+        if(characteristic == characteristic_firmware_version){
+            NSLog(@"%@: Device Firmware Version Found", self.class.description);
+            _firmwareVersion = [[NSString alloc] initWithData:[characteristic value] encoding:NSUTF8StringEncoding];
+            [self __notifyValidity];
+        }
     }
 }
 

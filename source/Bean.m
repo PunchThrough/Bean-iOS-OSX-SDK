@@ -91,11 +91,23 @@ typedef enum { //These occur in sequence
 -(NSDate*)lastDiscovered{
     return _lastDiscovered;
 }
+-(NSString*)firmwareVersion{
+    if(deviceInfo_profile){
+        return deviceInfo_profile.firmwareVersion;
+    }
+    return @"";
+}
 -(BeanManager*)beanManager{
     return _beanManager;
 }
 
 #pragma mark SDK
+-(void)readArduinoSketchInfo{
+    if(![self connected]) {
+        return;
+    }
+    [appMessageLayer sendMessageWithID:MSG_ID_BL_GET_META andPayload:nil];
+}
 -(void)programArduinoWithRawHexImage:(NSData*)hexImage andImageName:(NSString*)name{
     if(_state == BeanState_ConnectedAndValidated &&
        _peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
@@ -513,6 +525,15 @@ typedef enum { //These occur in sequence
             break;
         case MSG_ID_BL_GET_META:
             NSLog(@"App Message Received: MSG_ID_BL_GET_META: %@", payload);
+            if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateSketchName:dateProgrammed:crc32:)]) {
+                BL_SKETCH_META_DATA_T meta;
+                [payload getBytes:&meta range:NSMakeRange(0, sizeof(BL_SKETCH_META_DATA_T))];
+                UInt8 nameSize = (meta.hexNameSize < member_size(BL_SKETCH_META_DATA_T, hexName))? meta.hexNameSize:member_size(BL_SKETCH_META_DATA_T, hexName);
+                NSData* nameBytes = [[NSData alloc] initWithBytes:meta.hexName length:nameSize];
+                NSString* name = [[NSString alloc] initWithData:nameBytes encoding:NSUTF8StringEncoding];
+                NSDate *date = [NSDate dateWithTimeIntervalSince1970:meta.timestamp];
+                [self.delegate bean:self didUpdateSketchName:name dateProgrammed:date crc32:meta.hexCrc];
+            }
             break;
         case MSG_ID_CC_LED_WRITE:
             NSLog(@"App Message Received: MSG_ID_CC_LED_WRITE: %@", payload);
