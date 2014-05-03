@@ -46,6 +46,8 @@ typedef enum {
 @interface Bean : NSObject
 
 @property (nonatomic, weak) id<BeanDelegate> delegate;
+@property (nonatomic, strong) NSDate *dateProgrammed;
+@property (nonatomic, strong) NSString *sketchName;
 
 //-(void)sendMessage:(GattSerialMessage*)message;
 
@@ -85,6 +87,7 @@ typedef enum {
 //-(void)beanDevice:(BeanDevice*)device recievedIncomingMessage:(GattSerialMessage*)message;
 -(void)bean:(Bean*)bean error:(NSError*)error;
 -(void)bean:(Bean*)bean didProgramArduinoWithError:(NSError*)error;
+-(void)bean:(Bean*)bean ArduinoProgrammingTimeLeft:(NSNumber*)seconds withPercentage:(NSNumber*)percentageComplete;
 -(void)bean:(Bean*)bean serialDataReceived:(NSData*)data;
 -(void)bean:(Bean*)bean didUpdatePairingPin:(UInt16)pinCode;
 #if TARGET_OS_IPHONE
