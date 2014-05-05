@@ -143,7 +143,7 @@
         bean.state = BeanState_Discovered; // Reset bean state to the default, ready to connect
         [self disconnectBean:bean error:nil];
     }else{
-        bean.state = BeanState_ConnectedAndValidated;
+        //Validation is successful
     }
     //Notify Delegate
     if (self.delegate && [self.delegate respondsToSelector:@selector(BeanManager:didConnectToBean:error:)]){

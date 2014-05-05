@@ -34,7 +34,7 @@ typedef enum { //These occur in sequence
     NSNumber*                   _RSSI;
 	NSDictionary*               _advertisementData;
     NSDate*                     _lastDiscovered;
-	BeanManager*                _beanManager;
+	id<BeanManager>             _beanManager;
     CBPeripheral*               _peripheral;
     
     AppMessagingLayer*          appMessageLayer;
@@ -98,7 +98,12 @@ typedef enum { //These occur in sequence
     return @"";
 }
 -(BeanManager*)beanManager{
-    return _beanManager;
+    if(_beanManager){
+        if([_beanManager isKindOfClass:[BeanManager class]]){
+            return _beanManager;
+        }
+    }
+    return nil;
 }
 
 #pragma mark SDK
@@ -276,7 +281,7 @@ typedef enum { //These occur in sequence
 }
 
 #pragma mark - Protected Methods
--(id)initWithPeripheral:(CBPeripheral*)peripheral beanManager:(BeanManager*)manager{
+-(id)initWithPeripheral:(CBPeripheral*)peripheral beanManager:(id<BeanManager>)manager{
     self = [super init];
     if (self) {
         _beanManager = manager;
@@ -318,7 +323,7 @@ typedef enum { //These occur in sequence
 -(void)setLastDiscovered:(NSDate*)date{
     _lastDiscovered = date;
 }
--(void)setBeanManager:(BeanManager*)manager{
+-(void)setBeanManager:(id<BeanManager>)manager{
     _beanManager = manager;
 }
 
@@ -448,6 +453,7 @@ typedef enum { //These occur in sequence
         appMessageLayer.delegate = self;
         gatt_serial_profile.delegate = appMessageLayer;
         
+        _state = BeanState_ConnectedAndValidated;
         if(_beanManager){
             if([_beanManager respondsToSelector:@selector(bean:hasBeenValidated_error:)]){
                 [_beanManager bean:self hasBeenValidated_error:nil];

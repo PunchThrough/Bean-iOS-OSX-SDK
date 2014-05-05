@@ -8,8 +8,10 @@
 
 #import "BeanManager.h"
 
-@interface BeanManager (Protected)
-
+@protocol BeanManager <NSObject>
 -(void)bean:(Bean*)bean hasBeenValidated_error:(NSError*)error;
+@end
+
+@interface BeanManager (Protected)<BeanManager>
 
 @end

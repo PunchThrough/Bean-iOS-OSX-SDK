@@ -13,10 +13,11 @@
 #endif
 
 #import "Bean.h"
+#import "BeanManager+Protected.h"
 
 @interface Bean (Protected)
 
--(id)initWithPeripheral:(CBPeripheral*)peripheral beanManager:(BeanManager*)manager;
+-(id)initWithPeripheral:(CBPeripheral*)peripheral beanManager:(id<BeanManager>)manager;
 -(void)interrogateAndValidate;
 
 -(CBPeripheral*)peripheral;
@@ -25,6 +26,6 @@
 -(void)setRSSI:(NSNumber*)rssi;
 -(void)setAdvertisementData:(NSDictionary*)adData;
 -(void)setLastDiscovered:(NSDate*)date;
--(void)setBeanManager:(BeanManager*)manager;
+-(void)setBeanManager:(id<BeanManager>)manager;
 
 @end

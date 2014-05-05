@@ -9,11 +9,7 @@
 #ifndef BleArduino_BEAN_Globals_h
 #define BleArduino_BEAN_Globals_h
 
-#define PTD_UINT8 UInt8
-#define PTD_UINT16 UInt16
-#define PTD_UINT32 UInt32
-#define PTD_INT16 SInt16
-#define PTD_UINT32 UInt32
+#define __objectivec TRUE
 
 #define member_size(type, member) sizeof(((type *)0)->member)
 

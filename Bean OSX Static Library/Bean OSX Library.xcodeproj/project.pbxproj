@@ -138,6 +138,7 @@
 		52D34EA918A9B890002F0C59 /* Profile_Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Profile_Protocol.h; sourceTree = "<group>"; };
 		52D34EAA18A9B890002F0C59 /* ProfileDelegate_Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileDelegate_Protocol.h; sourceTree = "<group>"; };
 		52DE25C018AAC53900E69929 /* IOBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOBluetooth.framework; path = System/Library/Frameworks/IOBluetooth.framework; sourceTree = SDKROOT; };
+		52E98537191857E600E73CED /* AppMessageTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppMessageTypes.h; path = "../../App Message Definitions/AppMessageTypes.h"; sourceTree = "<group>"; };
 		964A2BBA19105CE00043EADA /* BeanRadioConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeanRadioConfig.h; sourceTree = "<group>"; };
 		964A2BBB19105CE00043EADA /* BeanRadioConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeanRadioConfig.m; sourceTree = "<group>"; };
 		969B89481908951F00AA093C /* libBean iOS Library.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libBean iOS Library.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -209,6 +210,7 @@
 			isa = PBXGroup;
 			children = (
 				5242A60C18D9101200DDB29F /* AppMessages.h */,
+				52E98537191857E600E73CED /* AppMessageTypes.h */,
 				52BC523518D96A610083A031 /* AppMessagingLayer.h */,
 				52BC523618D96A610083A031 /* AppMessagingLayer.m */,
 			);
