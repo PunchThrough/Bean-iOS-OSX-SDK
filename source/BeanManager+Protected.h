@@ -6,12 +6,12 @@
 //  Copyright (c) 2014 Punch Through Design. All rights reserved.
 //
 
-#import "BeanManager.h"
+#import "PTDBeanManager.h"
 
-@protocol BeanManager <NSObject>
--(void)bean:(Bean*)bean hasBeenValidated_error:(NSError*)error;
+@protocol PTDBeanManager <NSObject>
+-(void)bean:(PTDBean*)bean hasBeenValidated_error:(NSError*)error;
 @end
 
-@interface BeanManager (Protected)<BeanManager>
+@interface PTDBeanManager (Protected)<PTDBeanManager>
 
 @end

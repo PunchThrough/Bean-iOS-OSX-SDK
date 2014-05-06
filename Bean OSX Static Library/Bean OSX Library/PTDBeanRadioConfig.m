@@ -6,13 +6,13 @@
 //  Copyright (c) 2014 Punch Through Design. All rights reserved.
 //
 
-#import "BeanRadioConfig.h"
-#import "Bean.h"
+#import "PTDBeanRadioConfig.h"
+#import "PTDBean.h"
 
-@interface BeanRadioConfig()
+@interface PTDBeanRadioConfig()
 @end
 
-@implementation BeanRadioConfig
+@implementation PTDBeanRadioConfig
 
 -(BOOL)validate:(NSError**)error {
     if (self.name.length>20) {

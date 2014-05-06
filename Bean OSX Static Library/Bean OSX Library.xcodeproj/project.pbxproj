@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		521A4E9D19103E5F005B3097 /* NSData+CRC.m in Sources */ = {isa = PBXBuildFile; fileRef = 521A4E9C19103E5F005B3097 /* NSData+CRC.m */; };
 		521A4EA319116C0F005B3097 /* CBPeripheral+isConnected_Universal.m in Sources */ = {isa = PBXBuildFile; fileRef = 521A4EA219116C0F005B3097 /* CBPeripheral+isConnected_Universal.m */; };
-		5251176518B3FD9B0088DE2D /* BeanManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5251176418B3FD9B0088DE2D /* BeanManager.m */; };
+		5251176518B3FD9B0088DE2D /* PTDBeanManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5251176418B3FD9B0088DE2D /* PTDBeanManager.m */; };
 		52BC523718D96A610083A031 /* AppMessagingLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 52BC523618D96A610083A031 /* AppMessagingLayer.m */; };
 		52D02ED719102AD300996077 /* NSDate+LocalTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D02ED619102AD300996077 /* NSDate+LocalTime.m */; };
 		52D34E2818A9B455002F0C59 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D34E2718A9B455002F0C59 /* Cocoa.framework */; };
@@ -18,7 +18,7 @@
 		52D34E3D18A9B455002F0C59 /* libBean OSX Library.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D34E2418A9B455002F0C59 /* libBean OSX Library.a */; };
 		52D34E4318A9B455002F0C59 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 52D34E4118A9B455002F0C59 /* InfoPlist.strings */; };
 		52D34E4518A9B455002F0C59 /* Bean_OSX_LibraryTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E4418A9B455002F0C59 /* Bean_OSX_LibraryTests.m */; };
-		52D34EAD18A9B890002F0C59 /* Bean.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E8C18A9B890002F0C59 /* Bean.m */; };
+		52D34EAD18A9B890002F0C59 /* PTDBean.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E8C18A9B890002F0C59 /* PTDBean.m */; };
 		52D34EAF18A9B890002F0C59 /* CBPeripheral+UniqueId.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E8F18A9B890002F0C59 /* CBPeripheral+UniqueId.m */; };
 		52D34EB118A9B890002F0C59 /* BEAN_Helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E9218A9B890002F0C59 /* BEAN_Helper.m */; };
 		52D34EB318A9B890002F0C59 /* DevInfoProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E9618A9B890002F0C59 /* DevInfoProfile.m */; };
@@ -29,15 +29,15 @@
 		52D34EBD18A9B890002F0C59 /* GattSerialTransport.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34EA218A9B890002F0C59 /* GattSerialTransport.m */; };
 		52D34EBF18A9B890002F0C59 /* GattTransport.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34EA418A9B890002F0C59 /* GattTransport.m */; };
 		52D34EC218A9B890002F0C59 /* OadProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34EA818A9B890002F0C59 /* OadProfile.m */; };
-		52D9B95B18BF368D00EB9331 /* BeanManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5251176318B3FD9B0088DE2D /* BeanManager.h */; };
+		52D9B95B18BF368D00EB9331 /* PTDBeanManager.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 5251176318B3FD9B0088DE2D /* PTDBeanManager.h */; };
 		52DE25C118AAC53900E69929 /* IOBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52DE25C018AAC53900E69929 /* IOBluetooth.framework */; };
-		52DE25C318AACB4B00E69929 /* Bean.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 52D34E8B18A9B890002F0C59 /* Bean.h */; };
+		52DE25C318AACB4B00E69929 /* PTDBean.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 52D34E8B18A9B890002F0C59 /* PTDBean.h */; };
 		52DE25C418AACB4F00E69929 /* CBPeripheral+UniqueId.h in CopyFiles */ = {isa = PBXBuildFile; fileRef = 52D34E8E18A9B890002F0C59 /* CBPeripheral+UniqueId.h */; };
-		964A2BBC19105CE00043EADA /* BeanRadioConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 964A2BBB19105CE00043EADA /* BeanRadioConfig.m */; };
-		964A2BBD191076B50043EADA /* BeanRadioConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 964A2BBB19105CE00043EADA /* BeanRadioConfig.m */; };
+		964A2BBC19105CE00043EADA /* PTDBeanRadioConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 964A2BBB19105CE00043EADA /* PTDBeanRadioConfig.m */; };
+		964A2BBD191076B50043EADA /* PTDBeanRadioConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 964A2BBB19105CE00043EADA /* PTDBeanRadioConfig.m */; };
 		969B8975190896BC00AA093C /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 969B8974190896BC00AA093C /* CoreBluetooth.framework */; };
-		969B89791908971000AA093C /* BeanManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5251176418B3FD9B0088DE2D /* BeanManager.m */; };
-		969B897C1908971000AA093C /* Bean.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E8C18A9B890002F0C59 /* Bean.m */; };
+		969B89791908971000AA093C /* PTDBeanManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5251176418B3FD9B0088DE2D /* PTDBeanManager.m */; };
+		969B897C1908971000AA093C /* PTDBean.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E8C18A9B890002F0C59 /* PTDBean.m */; };
 		969B897F1908971000AA093C /* AppMessagingLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 52BC523618D96A610083A031 /* AppMessagingLayer.m */; };
 		969B89811908971000AA093C /* CBPeripheral+UniqueId.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E8F18A9B890002F0C59 /* CBPeripheral+UniqueId.m */; };
 		969B89831908971000AA093C /* BEAN_Helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E9218A9B890002F0C59 /* BEAN_Helper.m */; };
@@ -68,9 +68,9 @@
 			dstPath = "include/${PRODUCT_NAME}";
 			dstSubfolderSpec = 16;
 			files = (
-				52D9B95B18BF368D00EB9331 /* BeanManager.h in CopyFiles */,
+				52D9B95B18BF368D00EB9331 /* PTDBeanManager.h in CopyFiles */,
 				52DE25C418AACB4F00E69929 /* CBPeripheral+UniqueId.h in CopyFiles */,
-				52DE25C318AACB4B00E69929 /* Bean.h in CopyFiles */,
+				52DE25C318AACB4B00E69929 /* PTDBean.h in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -93,11 +93,11 @@
 		5242A60C18D9101200DDB29F /* AppMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppMessages.h; path = "../../App Message Definitions/AppMessages.h"; sourceTree = "<group>"; };
 		5251175218ADA0AC0088DE2D /* GattCharacteristicHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GattCharacteristicHandler.h; path = Transport/GattCharacteristicHandler.h; sourceTree = "<group>"; };
 		5251175318ADA0C80088DE2D /* GattCharacteristicObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GattCharacteristicObserver.h; path = Transport/GattCharacteristicObserver.h; sourceTree = "<group>"; };
-		5251176318B3FD9B0088DE2D /* BeanManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BeanManager.h; path = ../../source/BeanManager.h; sourceTree = "<group>"; };
-		5251176418B3FD9B0088DE2D /* BeanManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BeanManager.m; path = ../../source/BeanManager.m; sourceTree = "<group>"; };
+		5251176318B3FD9B0088DE2D /* PTDBeanManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PTDBeanManager.h; path = ../../source/PTDBeanManager.h; sourceTree = "<group>"; };
+		5251176418B3FD9B0088DE2D /* PTDBeanManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PTDBeanManager.m; path = ../../source/PTDBeanManager.m; sourceTree = "<group>"; };
 		52BC523518D96A610083A031 /* AppMessagingLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppMessagingLayer.h; path = ../../source/AppMessages/AppMessagingLayer.h; sourceTree = "<group>"; };
 		52BC523618D96A610083A031 /* AppMessagingLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppMessagingLayer.m; path = ../../source/AppMessages/AppMessagingLayer.m; sourceTree = "<group>"; };
-		52CD166D18CE7B8D00636119 /* Bean+Protected.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Bean+Protected.h"; path = "../../source/Bean+Protected.h"; sourceTree = "<group>"; };
+		52CD166D18CE7B8D00636119 /* PTDBean+Protected.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "PTDBean+Protected.h"; path = "../../source/PTDBean+Protected.h"; sourceTree = "<group>"; };
 		52CD166E18CE8C1B00636119 /* BeanManager+Protected.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "BeanManager+Protected.h"; path = "../../source/BeanManager+Protected.h"; sourceTree = "<group>"; };
 		52D02ED519102AD300996077 /* NSDate+LocalTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+LocalTime.h"; sourceTree = "<group>"; };
 		52D02ED619102AD300996077 /* NSDate+LocalTime.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+LocalTime.m"; sourceTree = "<group>"; };
@@ -112,8 +112,8 @@
 		52D34E4218A9B455002F0C59 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		52D34E4418A9B455002F0C59 /* Bean_OSX_LibraryTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Bean_OSX_LibraryTests.m; sourceTree = "<group>"; };
 		52D34E8A18A9B890002F0C59 /* BEAN_Globals.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BEAN_Globals.h; path = ../../source/BEAN_Globals.h; sourceTree = "<group>"; };
-		52D34E8B18A9B890002F0C59 /* Bean.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Bean.h; path = ../../source/Bean.h; sourceTree = "<group>"; };
-		52D34E8C18A9B890002F0C59 /* Bean.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Bean.m; path = ../../source/Bean.m; sourceTree = "<group>"; };
+		52D34E8B18A9B890002F0C59 /* PTDBean.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PTDBean.h; path = ../../source/PTDBean.h; sourceTree = "<group>"; };
+		52D34E8C18A9B890002F0C59 /* PTDBean.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PTDBean.m; path = ../../source/PTDBean.m; sourceTree = "<group>"; };
 		52D34E8E18A9B890002F0C59 /* CBPeripheral+UniqueId.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CBPeripheral+UniqueId.h"; sourceTree = "<group>"; };
 		52D34E8F18A9B890002F0C59 /* CBPeripheral+UniqueId.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CBPeripheral+UniqueId.m"; sourceTree = "<group>"; };
 		52D34E9118A9B890002F0C59 /* BEAN_Helper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BEAN_Helper.h; sourceTree = "<group>"; };
@@ -139,8 +139,8 @@
 		52D34EAA18A9B890002F0C59 /* ProfileDelegate_Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileDelegate_Protocol.h; sourceTree = "<group>"; };
 		52DE25C018AAC53900E69929 /* IOBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOBluetooth.framework; path = System/Library/Frameworks/IOBluetooth.framework; sourceTree = SDKROOT; };
 		52E98537191857E600E73CED /* AppMessageTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppMessageTypes.h; path = "../../App Message Definitions/AppMessageTypes.h"; sourceTree = "<group>"; };
-		964A2BBA19105CE00043EADA /* BeanRadioConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeanRadioConfig.h; sourceTree = "<group>"; };
-		964A2BBB19105CE00043EADA /* BeanRadioConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeanRadioConfig.m; sourceTree = "<group>"; };
+		964A2BBA19105CE00043EADA /* PTDBeanRadioConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTDBeanRadioConfig.h; sourceTree = "<group>"; };
+		964A2BBB19105CE00043EADA /* PTDBeanRadioConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PTDBeanRadioConfig.m; sourceTree = "<group>"; };
 		969B89481908951F00AA093C /* libBean iOS Library.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libBean iOS Library.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		969B89491908951F00AA093C /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		969B89591908951F00AA093C /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
@@ -266,19 +266,19 @@
 			children = (
 				52D34E8A18A9B890002F0C59 /* BEAN_Globals.h */,
 				52CD166E18CE8C1B00636119 /* BeanManager+Protected.h */,
-				5251176318B3FD9B0088DE2D /* BeanManager.h */,
-				5251176418B3FD9B0088DE2D /* BeanManager.m */,
-				52CD166D18CE7B8D00636119 /* Bean+Protected.h */,
-				52D34E8B18A9B890002F0C59 /* Bean.h */,
-				52D34E8C18A9B890002F0C59 /* Bean.m */,
+				5251176318B3FD9B0088DE2D /* PTDBeanManager.h */,
+				5251176418B3FD9B0088DE2D /* PTDBeanManager.m */,
+				52CD166D18CE7B8D00636119 /* PTDBean+Protected.h */,
+				52D34E8B18A9B890002F0C59 /* PTDBean.h */,
+				52D34E8C18A9B890002F0C59 /* PTDBean.m */,
 				52BC523418D968780083A031 /* Application Messages */,
 				52D34E8D18A9B890002F0C59 /* Categories */,
 				52D34E9018A9B890002F0C59 /* Helper */,
 				52D9B95218BF2E1300EB9331 /* Protocols */,
 				52D34E9318A9B890002F0C59 /* BLE Profiles */,
 				52D34E2E18A9B455002F0C59 /* Supporting Files */,
-				964A2BBA19105CE00043EADA /* BeanRadioConfig.h */,
-				964A2BBB19105CE00043EADA /* BeanRadioConfig.m */,
+				964A2BBA19105CE00043EADA /* PTDBeanRadioConfig.h */,
+				964A2BBB19105CE00043EADA /* PTDBeanRadioConfig.m */,
 			);
 			name = "Bean Library";
 			path = "Bean OSX Library";
@@ -500,16 +500,16 @@
 				52D34EB918A9B890002F0C59 /* GattSerialMessage.m in Sources */,
 				52D34EBD18A9B890002F0C59 /* GattSerialTransport.m in Sources */,
 				52D34EAF18A9B890002F0C59 /* CBPeripheral+UniqueId.m in Sources */,
-				52D34EAD18A9B890002F0C59 /* Bean.m in Sources */,
+				52D34EAD18A9B890002F0C59 /* PTDBean.m in Sources */,
 				52D34EC218A9B890002F0C59 /* OadProfile.m in Sources */,
 				52BC523718D96A610083A031 /* AppMessagingLayer.m in Sources */,
 				52D34EB518A9B890002F0C59 /* GattSerialProfile.m in Sources */,
 				52D02ED719102AD300996077 /* NSDate+LocalTime.m in Sources */,
 				521A4EA319116C0F005B3097 /* CBPeripheral+isConnected_Universal.m in Sources */,
-				5251176518B3FD9B0088DE2D /* BeanManager.m in Sources */,
+				5251176518B3FD9B0088DE2D /* PTDBeanManager.m in Sources */,
 				52D34EB718A9B890002F0C59 /* GattPacket.m in Sources */,
 				521A4E9D19103E5F005B3097 /* NSData+CRC.m in Sources */,
-				964A2BBC19105CE00043EADA /* BeanRadioConfig.m in Sources */,
+				964A2BBC19105CE00043EADA /* PTDBeanRadioConfig.m in Sources */,
 				52D34EB118A9B890002F0C59 /* BEAN_Helper.m in Sources */,
 				52D34EBB18A9B890002F0C59 /* GattSerialMessageRxAssembler.m in Sources */,
 				52D34EB318A9B890002F0C59 /* DevInfoProfile.m in Sources */,
@@ -529,8 +529,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				969B89791908971000AA093C /* BeanManager.m in Sources */,
-				969B897C1908971000AA093C /* Bean.m in Sources */,
+				969B89791908971000AA093C /* PTDBeanManager.m in Sources */,
+				969B897C1908971000AA093C /* PTDBean.m in Sources */,
 				969B897F1908971000AA093C /* AppMessagingLayer.m in Sources */,
 				969B89811908971000AA093C /* CBPeripheral+UniqueId.m in Sources */,
 				969B89831908971000AA093C /* BEAN_Helper.m in Sources */,
@@ -538,7 +538,7 @@
 				969B89871908971000AA093C /* GattSerialProfile.m in Sources */,
 				969B898B1908971000AA093C /* GattSerialTransport.m in Sources */,
 				969B898D1908971000AA093C /* GattSerialMessage.m in Sources */,
-				964A2BBD191076B50043EADA /* BeanRadioConfig.m in Sources */,
+				964A2BBD191076B50043EADA /* PTDBeanRadioConfig.m in Sources */,
 				969B898F1908971000AA093C /* GattSerialMessageRxAssembler.m in Sources */,
 				969B89911908971000AA093C /* GattTransport.m in Sources */,
 				969B89931908971000AA093C /* GattPacket.m in Sources */,

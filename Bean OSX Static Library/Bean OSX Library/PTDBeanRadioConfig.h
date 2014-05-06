@@ -7,9 +7,9 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "Bean.h"
+#import "PTDBean.h"
 
-@interface BeanRadioConfig : NSObject
+@interface PTDBeanRadioConfig : NSObject
 -(BOOL)validate:(NSError**)error;
 @property (nonatomic, readwrite) NSTimeInterval advertisingInterval;
 @property (nonatomic, readwrite) NSTimeInterval connectionInterval;

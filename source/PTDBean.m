@@ -6,14 +6,14 @@
 //  Copyright (c) 2014 Punch Through Design. All rights reserved.
 //
 
-#import "Bean.h"
+#import "PTDBean.h"
 #import "BeanManager+Protected.h"
 #import "GattSerialProfile.h"
 #import "AppMessages.h"
 #import "AppMessagingLayer.h"
 #import "NSDate+LocalTime.h"
 #import "NSData+CRC.h"
-#import "BeanRadioConfig.h"
+#import "PTDBeanRadioConfig.h"
 
 #define ARDUINO_OAD_MAX_CHUNK_SIZE 64
 
@@ -25,16 +25,16 @@ typedef enum { //These occur in sequence
     BeanArduinoOADLocalState_Finished,
 } BeanArduinoOADLocalState;
 
-@interface Bean () <CBPeripheralDelegate, ProfileDelegate_Protocol, AppMessagingLayerDelegate, OAD_Delegate>
+@interface PTDBean () <CBPeripheralDelegate, ProfileDelegate_Protocol, AppMessagingLayerDelegate, OAD_Delegate>
 @end
 
-@implementation Bean
+@implementation PTDBean
 {
 	BeanState                   _state;
     NSNumber*                   _RSSI;
 	NSDictionary*               _advertisementData;
     NSDate*                     _lastDiscovered;
-	id<BeanManager>             _beanManager;
+	id<PTDBeanManager>             _beanManager;
     CBPeripheral*               _peripheral;
     
     AppMessagingLayer*          appMessageLayer;
@@ -97,9 +97,9 @@ typedef enum { //These occur in sequence
     }
     return @"";
 }
--(BeanManager*)beanManager{
+-(PTDBeanManager*)beanManager{
     if(_beanManager){
-        if([_beanManager isKindOfClass:[BeanManager class]]){
+        if([_beanManager isKindOfClass:[PTDBeanManager class]]){
             return _beanManager;
         }
     }
@@ -171,7 +171,7 @@ typedef enum { //These occur in sequence
     }
     [appMessageLayer sendMessageWithID:MSG_ID_BT_GET_CONFIG andPayload:nil];
 }
--(void)setRadioConfig:(BeanRadioConfig*)config {
+-(void)setRadioConfig:(PTDBeanRadioConfig*)config {
     if(![self connected]) {
         return;
     }
@@ -281,7 +281,7 @@ typedef enum { //These occur in sequence
 }
 
 #pragma mark - Protected Methods
--(id)initWithPeripheral:(CBPeripheral*)peripheral beanManager:(id<BeanManager>)manager{
+-(id)initWithPeripheral:(CBPeripheral*)peripheral beanManager:(id<PTDBeanManager>)manager{
     self = [super init];
     if (self) {
         _beanManager = manager;
@@ -323,7 +323,7 @@ typedef enum { //These occur in sequence
 -(void)setLastDiscovered:(NSDate*)date{
     _lastDiscovered = date;
 }
--(void)setBeanManager:(id<BeanManager>)manager{
+-(void)setBeanManager:(id<PTDBeanManager>)manager{
     _beanManager = manager;
 }
 
@@ -498,7 +498,7 @@ typedef enum { //These occur in sequence
             if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateRadioConfig:)]) {
                 BT_RADIOCONFIG_T rawData;
                 [payload getBytes:&rawData range:NSMakeRange(0, sizeof(BT_RADIOCONFIG_T))];
-                BeanRadioConfig *config = [[BeanRadioConfig alloc] init];
+                PTDBeanRadioConfig *config = [[PTDBeanRadioConfig alloc] init];
                 config.advertisingInterval = rawData.adv_int;
                 config.connectionInterval = rawData.conn_int;
                 config.name = [NSString stringWithUTF8String:(char*)rawData.local_name];
