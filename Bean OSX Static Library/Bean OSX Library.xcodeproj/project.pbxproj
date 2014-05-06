@@ -40,13 +40,10 @@
 		969B89911908971000AA093C /* GattTransport.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34EA418A9B890002F0C59 /* GattTransport.m */; };
 		969B89931908971000AA093C /* GattPacket.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E9C18A9B890002F0C59 /* GattPacket.m */; };
 		969B89961908971000AA093C /* OadProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34EA818A9B890002F0C59 /* OadProfile.m */; };
-		96E63F4E1919912F00A58608 /* PTDBean.h in Headers */ = {isa = PBXBuildFile; fileRef = 96E63F481919912F00A58608 /* PTDBean.h */; };
 		96E63F4F1919912F00A58608 /* PTDBean.m in Sources */ = {isa = PBXBuildFile; fileRef = 96E63F491919912F00A58608 /* PTDBean.m */; };
 		96E63F501919912F00A58608 /* PTDBean.m in Sources */ = {isa = PBXBuildFile; fileRef = 96E63F491919912F00A58608 /* PTDBean.m */; };
-		96E63F511919912F00A58608 /* PTDBeanManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 96E63F4A1919912F00A58608 /* PTDBeanManager.h */; };
 		96E63F521919912F00A58608 /* PTDBeanManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 96E63F4B1919912F00A58608 /* PTDBeanManager.m */; };
 		96E63F531919912F00A58608 /* PTDBeanManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 96E63F4B1919912F00A58608 /* PTDBeanManager.m */; };
-		96E63F541919912F00A58608 /* PTDBeanRadioConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 96E63F4C1919912F00A58608 /* PTDBeanRadioConfig.h */; };
 		96E63F551919912F00A58608 /* PTDBeanRadioConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 96E63F4D1919912F00A58608 /* PTDBeanRadioConfig.m */; };
 		96E63F561919912F00A58608 /* PTDBeanRadioConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 96E63F4D1919912F00A58608 /* PTDBeanRadioConfig.m */; };
 /* End PBXBuildFile section */
@@ -402,9 +399,6 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				96E63F541919912F00A58608 /* PTDBeanRadioConfig.h in Headers */,
-				96E63F4E1919912F00A58608 /* PTDBean.h in Headers */,
-				96E63F511919912F00A58608 /* PTDBeanManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
