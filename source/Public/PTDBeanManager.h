@@ -86,6 +86,7 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
 
 /**
  *  The delegate object for the BeanManager. 
+ @see PTDBeanManagerDelegate
  */
 @property (nonatomic, weak) id<PTDBeanManagerDelegate> delegate;
 /**
