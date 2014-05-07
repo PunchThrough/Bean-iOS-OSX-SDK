@@ -15,6 +15,7 @@
 #import "NSData+CRC.h"
 #import "BeanRadioConfig.h"
 
+#define DELAY_BEFORE_PROFILE_VALIDATION  1.0f
 #define PROFILE_VALIDATION_RETRY_TIMEOUT  10.0f
 #define PROFILE_VALIDATION_RETRIES    2
 #define ARDUINO_OAD_MAX_CHUNK_SIZE 64
@@ -298,7 +299,8 @@ typedef enum { //These occur in sequence
 
 -(void)interrogateAndValidate{
     validationRetryCount = 0;
-    [self __interrogateAndValidate];
+    [NSTimer scheduledTimerWithTimeInterval:DELAY_BEFORE_PROFILE_VALIDATION target:self selector:@selector(__interrogateAndValidate) userInfo:nil repeats:NO];
+    //[self __interrogateAndValidate];
 }
 -(CBPeripheral*)peripheral{
     return _peripheral;
