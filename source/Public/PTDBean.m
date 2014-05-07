@@ -250,7 +250,7 @@ typedef enum { //These occur in sequence
     }
     if (value.length>20) {
         NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Scratch value exceeds 20 character limit", @"")};
-        NSError *error = [NSError errorWithDomain:BeanInvalidArgurment code:0 userInfo:userInfo];
+        NSError *error = [NSError errorWithDomain:TPDBeanErrorDomain code:BeanErrors_InvalidArgument userInfo:userInfo];
         [self.delegate bean:self error:error];
         value = [value subdataWithRange:NSMakeRange(0, 20)];
     }
@@ -426,7 +426,7 @@ typedef enum { //These occur in sequence
     {
         if(self.delegate && [self.delegate respondsToSelector:@selector(bean:error:)]) {
             NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Bean not connected", @"")};
-            NSError *error = [NSError errorWithDomain:BeanNotConnected code:0 userInfo:userInfo];
+            NSError *error = [NSError errorWithDomain:TPDBeanErrorDomain code:BeanErrors_NotConnected userInfo:userInfo];
             [self.delegate bean:self error:error];
         }
         return NO;
@@ -437,7 +437,7 @@ typedef enum { //These occur in sequence
     if (scratchNumber<1 || scratchNumber>5) {
         if(self.delegate && [self.delegate respondsToSelector:@selector(bean:error:)]) {
             NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Scratch numbers need to be 1-5", @"")};
-            NSError *error = [NSError errorWithDomain:BeanInvalidArgurment code:0 userInfo:userInfo];
+            NSError *error = [NSError errorWithDomain:TPDBeanErrorDomain code:BeanErrors_InvalidArgument userInfo:userInfo];
             [self.delegate bean:self error:error];
         }
         return NO;

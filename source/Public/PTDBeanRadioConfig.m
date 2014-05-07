@@ -18,21 +18,21 @@
     if (self.name.length>20) {
         if (error) {
             NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Name length can not exceed 20 characters", @"")};
-            *error = [NSError errorWithDomain:BeanInvalidArgurment code:0 userInfo:userInfo];
+            *error = [NSError errorWithDomain:@"" code:BeanErrors_InvalidArgument userInfo:userInfo];
         }
         return NO;
     }
     else if (self.connectionInterval <= 0) {
         if (error) {
             NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Connection interval must be >0 and less than ???", @"")};
-            *error = [NSError errorWithDomain:BeanInvalidArgurment code:0 userInfo:userInfo];
+            *error = [NSError errorWithDomain:TPDBeanErrorDomain code:BeanErrors_InvalidArgument userInfo:userInfo];
         }
         return NO;
     }
     else if (self.advertisingInterval <= 0) {
         if (error) {
             NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Advertising interval must be >0 and less than ???", @"")};
-            *error = [NSError errorWithDomain:BeanInvalidArgurment code:0 userInfo:userInfo];
+            *error = [NSError errorWithDomain:TPDBeanErrorDomain code:BeanErrors_InvalidArgument userInfo:userInfo];
         }
         return NO;
     }

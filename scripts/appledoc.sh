@@ -16,5 +16,5 @@ $APPLEDOC_PATH \
 --no-repeat-first-par \
 --no-warn-invalid-crossref \
 --exit-threshold 2 \
-../
+../source/Public
 fi;
