@@ -227,7 +227,7 @@
             [self __notifyValidity];
         }
     }else{
-        
+        NSLog(@"%@: Error trying to set Characteristic to \"Notify\"", self.class.description);
     }
 }
 
