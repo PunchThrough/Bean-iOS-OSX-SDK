@@ -249,9 +249,10 @@ typedef enum { //These occur in sequence
         return;
     }
     if (value.length>20) {
-        NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Scratch value exceeds 20 character limit", @"")};
-        NSError *error = [NSError errorWithDomain:TPDBeanErrorDomain code:BeanErrors_InvalidArgument userInfo:userInfo];
-        [self.delegate bean:self error:error];
+        if(self.delegate && [self.delegate respondsToSelector:@selector(bean:error:)]) {
+            NSError *error = [BEAN_Helper basicError:@"Scratch value exceeds 20 character limit" domain:NSStringFromClass([self class]) code:BeanErrors_InvalidArgument];
+            [self.delegate bean:self error:error];
+        }
         value = [value subdataWithRange:NSMakeRange(0, 20)];
     }
     NSMutableData *payload = [NSMutableData dataWithBytes:&scratchNumber length:1];
@@ -425,8 +426,7 @@ typedef enum { //These occur in sequence
        _peripheral.state != CBPeripheralStateConnected) //This second conditional is an assertion
     {
         if(self.delegate && [self.delegate respondsToSelector:@selector(bean:error:)]) {
-            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Bean not connected", @"")};
-            NSError *error = [NSError errorWithDomain:TPDBeanErrorDomain code:BeanErrors_NotConnected userInfo:userInfo];
+            NSError *error = [BEAN_Helper basicError:@"Bean not connected" domain:NSStringFromClass([self class]) code:BeanErrors_NotConnected];
             [self.delegate bean:self error:error];
         }
         return NO;
@@ -436,8 +436,7 @@ typedef enum { //These occur in sequence
 -(BOOL)validScratchNumber:(NSInteger)scratchNumber {
     if (scratchNumber<1 || scratchNumber>5) {
         if(self.delegate && [self.delegate respondsToSelector:@selector(bean:error:)]) {
-            NSDictionary *userInfo = @{NSLocalizedDescriptionKey : NSLocalizedString(@"Scratch numbers need to be 1-5", @"")};
-            NSError *error = [NSError errorWithDomain:TPDBeanErrorDomain code:BeanErrors_InvalidArgument userInfo:userInfo];
+            NSError *error = [BEAN_Helper basicError:@"Scratch numbers need to be 1-5" domain:NSStringFromClass([self class]) code:BeanErrors_InvalidArgument];
             [self.delegate bean:self error:error];
         }
         return NO;

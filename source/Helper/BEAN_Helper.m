@@ -77,7 +77,7 @@
 }
 
 
-+(NSError *) basicError:(NSString*)description domain:(NSString*)domain code:(NSInteger)code
++(NSError *) basicError:(NSString*)description domain:(NSString*)domain code:(BeanErrors)code
 {
     NSMutableDictionary *errorDetail = [NSMutableDictionary dictionary];
     [errorDetail setValue:description forKey:NSLocalizedDescriptionKey];

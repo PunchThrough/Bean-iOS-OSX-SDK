@@ -42,7 +42,7 @@
 -(void)startScanningForBeans_error:(NSError**)error{
     // Bluetooth must be ON
     if (cbcentralmanager.state != CBCentralManagerStatePoweredOn){
-        if (error) *error = [BEAN_Helper basicError:@"Bluetooth is not on" domain:NSStringFromClass([self class]) code:100];
+        if (error) *error = [BEAN_Helper basicError:@"Bluetooth is not on" domain:NSStringFromClass([self class]) code:BeanErrors_BluetoothNotOn];
         return;
     }
     
@@ -76,7 +76,7 @@
     // Bluetooth must be ON
     if (cbcentralmanager.state != CBCentralManagerStatePoweredOn)
     {
-        if (error) *error = [BEAN_Helper basicError:@"Bluetooth is not on" domain:@"API:BLE Connection" code:100];
+        if (error) *error = [BEAN_Helper basicError:@"Bluetooth is not on" domain:@"API:BLE Connection" code:BeanErrors_BluetoothNotOn];
         return;
     }
     
@@ -90,20 +90,20 @@
     PTDBean* bean = [beanRecords objectForKey:bean_.identifier];
     //If there is no such peripheral, return error
     if(!bean){
-        if(error) *error = [BEAN_Helper basicError:@"Attemp to connect to Bean failed. No peripheral discovered with the corresponding UUID." domain:NSStringFromClass([self class]) code:100];
+        if(error) *error = [BEAN_Helper basicError:@"Attemp to connect to Bean failed. No peripheral discovered with the corresponding UUID." domain:NSStringFromClass([self class]) code:BeanErrors_NoPeriphealDiscovered];
         return;
     }
     //Check if the device is already connected
     else if(bean.state == BeanState_ConnectedAndValidated){
-        if(error) *error = [BEAN_Helper basicError:@"Attemp to connect to Bean failed. A device with this UUID is already connected" domain:NSStringFromClass([self class]) code:100];
+        if(error) *error = [BEAN_Helper basicError:@"Attemp to connect to Bean failed. A device with this UUID is already connected" domain:NSStringFromClass([self class]) code:BeanErrors_AlreadyConnected];
         return;
     }
     //Check if the device is already in the middle of an attempted connected
     else if(bean.state == BeanState_AttemptingConnection || bean.state == BeanState_AttemptingValidation){
-        if(error) *error = [BEAN_Helper basicError:@"Attemp to connect to Bean failed. A device with this UUID is in the process of being connected to." domain:NSStringFromClass([self class]) code:100];
+        if(error) *error = [BEAN_Helper basicError:@"Attemp to connect to Bean failed. A device with this UUID is in the process of being connected to." domain:NSStringFromClass([self class]) code:BeanErrors_AlreadyConnecting];
         return;
     }else if(bean.state != BeanState_Discovered){
-        if(error) *error = [BEAN_Helper basicError:@"Attemp to connect to Bean failed. The device's current state is not eligible for a connection attempt." domain:NSStringFromClass([self class]) code:100];
+        if(error) *error = [BEAN_Helper basicError:@"Attemp to connect to Bean failed. The device's current state is not eligible for a connection attempt." domain:NSStringFromClass([self class]) code:BeanErrors_DeviceNotEligible];
         return;
     }
     //Mark this BeanRecord as is in the middle of a connection attempt
@@ -117,11 +117,11 @@
     PTDBean* bean = [beanRecords objectForKey:bean_.identifier];
     //Check if the device isn't currently connected
     if(!bean){
-        if(error) *error = [BEAN_Helper basicError:@"Failed attemp to disconnect Bean. No device with this UUID is currently connected" domain:NSStringFromClass([self class]) code:100];
+        if(error) *error = [BEAN_Helper basicError:@"Failed attemp to disconnect Bean. No device with this UUID is currently connected" domain:NSStringFromClass([self class]) code:BeanErrors_FailedDisconnect];
         return;
     }
     if(bean.state != BeanState_ConnectedAndValidated){
-        if(error) *error = [BEAN_Helper basicError:@"No device with this UUID is currently connected" domain:NSStringFromClass([self class]) code:100];
+        if(error) *error = [BEAN_Helper basicError:@"No device with this UUID is currently connected" domain:NSStringFromClass([self class]) code:BeanErrors_FailedDisconnect];
     }
     //Mark this BeanRecord as is in the middle of a disconnection attempt
     [bean setState:BeanState_AttemptingDisconnection];
@@ -136,7 +136,7 @@
     PTDBean* bean = [beanRecords objectForKey:[device identifier]];
     //If there is no such peripheral, return error
     if(!bean){
-        localError = [BEAN_Helper basicError:@"Attemp to connect to Bean failed. No peripheral discovered with the corresponding UUID." domain:NSStringFromClass([self class]) code:100];
+        localError = [BEAN_Helper basicError:@"Attemp to connect to Bean failed. No peripheral discovered with the corresponding UUID." domain:NSStringFromClass([self class]) code:BeanErrors_NoPeriphealDiscovered];
     }
     else if (error){
         localError = error;

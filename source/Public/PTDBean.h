@@ -29,9 +29,33 @@ typedef NS_ENUM(NSInteger, BeanErrors) {
      */
     BeanErrors_InvalidArgument = 0,
     /**
+     *  Bluetooth is not turned on
+     */
+    BeanErrors_BluetoothNotOn,
+    /**
      *  The bean is not connected
      */
-    BeanErrors_NotConnected
+    BeanErrors_NotConnected,
+    /**
+     *  No Peripheral discovered with corresponding UUID
+     */
+    BeanErrors_NoPeriphealDiscovered,
+    /**
+     *  Device with UUID already connected to this Bean
+     */
+    BeanErrors_AlreadyConnected,
+    /**
+     *  A device with this UUID is in the process of being connected to
+     */
+    BeanErrors_AlreadyConnecting,
+    /**
+     *  The device's current state is not eligible for a connection attempt
+     */
+    BeanErrors_DeviceNotEligible,
+    /**
+     *  No device with this UUID is currently connected
+     */
+    BeanErrors_FailedDisconnect
 };
 
 /**
@@ -98,15 +122,24 @@ typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
 /**
    An PTDBean object represents a Light Blue Bean that gives access to setting and retrieving of Arduino attributes, such as the name, temperature, accelerometer, look at Other Methods below for more.
 
-   Implement the PTDBeanDelegate for receiving messages sent from the Bean.
-
+    Example:
+    // tell the bean we implment PTDBeanDelegate
+    self.bean.delegate = self;
+    // ask the bean for the temp
+    [self.bean readTemperature];
+ 
+    // check for the bean response
+    -(void)bean:(PTDBean *)bean didUpdateTemperature:(NSNumber *)degrees_celsius {
+      NSString *msg = [NSString stringWithFormat:@"received did update temp reading:%@", degrees_celsius];
+      NSLog(@"%@",msg);
+    }
+ 
    See [BeanXcodeWorkspace](http://www.punchthrough.com) for more examples.
  */
 
 @interface PTDBean : NSObject
 /**
- *  The delegate object for the Bean. The Bean asynchronously call methods on this delegate on the main thread.
- *  @see PTDBeanDelegate
+ *  The delegate object for the Bean. 
  */
 @property (nonatomic, weak) id<PTDBeanDelegate> delegate;
 /**
@@ -134,16 +167,15 @@ typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
  */
 -(NSNumber*)RSSI;
 /**
- *  The State of the bean. For example, check for BeanState_AttemptingConnection to see if your bean is connected.
- 
+  The BeanState of the bean.
+    
+     Example:
      if (self.bean.state == BeanState_Discovered) {
         NSLog(@"Bean discovered, try connecting");
      }
      else if (self.bean.state == BeanState_ConnectedAndValidated) {
         NSLog(@"Bean connected, try calling an api");
      }
- 
-    @see BeanState
  */
 -(BeanState)state;
 /**
@@ -199,7 +231,8 @@ typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
 /**
  Reads the Beans Accelerometer.
     
-    // let the bean know we implment PTDBeanDelegate
+    Example:
+    // let the bean know we implement PTDBeanDelegate
     self.bean.delegate = self;
     // ask the bean for the acceleration data
     [self.bean readAccelerationAxis];
@@ -215,12 +248,17 @@ typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
 -(void)readAccelerationAxis;
 /**
  *  Sets the Led Color
- *  @param UIColor* Color object which is used to set the Led
+ *  @param color Color object which is used to set the Led
  *  @see [PTDBeanDelegate bean:didUpdateLedColor:]
  */
 #if TARGET_OS_IPHONE
 -(void)setLedColor:(UIColor*)color;
 #else
+/**
+ *  Sets the Led Color
+ *  @param color Color object which is used to set the Led
+ *  @see [PTDBeanDelegate bean:didUpdateLedColor:]
+ */
 -(void)setLedColor:(NSColor*)color;
 #endif
 /**
@@ -231,6 +269,7 @@ typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
 /**
    Sets the Scratch Number with data. Think of it as temporary storage for.
  
+    Example:
     // set the scratch bank, 1-5
     int scratchNumber = 1
     // set the scratch data
@@ -245,8 +284,8 @@ typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
       NSLog(@"%@", msg);
     }
  
- *  @param scratchNumber can be a value 1-5
- *  @param value         up to 20 bytes
+ @param scratchNumber can be a value 1-5
+ @param value         up to 20 bytes
  */
 -(void)setScratchNumber:(NSInteger)scratchNumber withValue:(NSData*)value;
 /**
@@ -268,13 +307,14 @@ typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
  */
 -(void)setPairingPin:(UInt16)pinCode;
 /**
- *  Reads the Radio Configuration.
- *  @see [PTDBeanDelegate bean:didUpdateRadioConfig:]
+  Reads the Radio Configuration.
+  @see [PTDBeanDelegate bean:didUpdateRadioConfig:]
+  @see PTDBeanRadioConfig
  */
 -(void)readRadioConfig;
 /**
- *  Sets the Radio Config.
- *  @param config
+ Sets the Radio Config.
+ @param config see PTDBeanRadioConfig
  */
 -(void)setRadioConfig:(PTDBeanRadioConfig*)config;
 /**
@@ -289,55 +329,31 @@ typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
 @end
 
 /**
- Delegates of a PTDBean object should implement this protocol.
-    
-    Example:
-    // assigning yourself as the delgate
-    self.bean.delegate = self;
-    // ask the bean for the color of its led
-    [self.bean readLedColor]
-    
-    // wait for the delegate callback
-    - (void)bean:(PTDBean *)bean didUpdateLedColor:(UIColor *)color {
-        NSLog(@"%@", color);
-    }
- See [BeanXcodeWorkspace](http://www.punchthrough.com) for more examples.
+ Delegates of a PTDBean object should implement this protocol. See [BeanXcodeWorkspace](http://www.punchthrough.com) for more examples.
  */
 @protocol PTDBeanDelegate <NSObject>
 
 @optional
 /**
- * Sent when an error occurs
-   @param bean  the bean that made the request
-   @param error refer to BeanErrors for the list of error codes.
+ Sent when an error occurs
  
+    example:
     if (error.code == BeanErrors_InvalidArgument) {
-      UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Invalid Argument" message:[error localizedDescription]
-        delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Ok", nil];
-      [alert show];
+      NSLog(@"Invalid argument - %@", [error localizedDescription]);
     }
     else {
-       // do something else
+      // do something else
     }
+ 
+ @param bean  the bean that made the request
+ @param error refer to BeanErrors for the list of error codes
+ 
  */
 -(void)bean:(PTDBean*)bean error:(NSError*)error;
 /**
- * Sent when an error occurs during Arduino Programming
+ Sent when an error occurs during Arduino Programming
  @param bean  the bean that made the request
- @param error contains error. Refer to discussion
- 
-     NSError codes
-     typedef enum {
-       BeanState_Unknown Used // for initialization and unknown error states
-       BeanState_Discovered Bean // has been discovered by a central
-       BeanState_AttemptingConnection // Bean is attempting to connect with a central
-       BeanState_AttemptingValidation // Bean is undergoing validation
-       BeanState_ConnectedAndValidated // Bean is connected
-       BeanState_AttemptingDisconnection // Bean is disconnecting
-     } BeanState
-     
-     NSError domain TPDBeanErrorDomain
-     Refer to the NSError localizedDescription for additional error information.
+ @param error refer to BeanErrors for the list of error codes
  
  */
 -(void)bean:(PTDBean*)bean didProgramArduinoWithError:(NSError*)error;
@@ -409,15 +425,13 @@ typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
  */
 -(void)bean:(PTDBean*)bean didUpdateLoopbackPayload:(NSData*)payload;
 /**
- *  The Bean configuration
- *
- *  @param bean   the Bean being queried
- *  @param config the configuration of the bean
- *  @see PTDBeanRadioConfig
+ The Bean configuration
+  @param bean   the Bean being queried
+  @param config the configuration of the bean, see PTDBeanRadioConfig
  */
 -(void)bean:(PTDBean*)bean didUpdateRadioConfig:(PTDBeanRadioConfig*)config;
 /**
- *  The Beans scratch characteristic.
+ *  The Bean scratch characteristic
  *
  *  @param bean   the Bean being queried
  *  @param number the scratch number
@@ -427,21 +441,7 @@ typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
 /**
  Sent when an error occurs during a Firmware Upload
  @param bean  the Bean that made the request
- @param error the error can be interpreted by its error code and description
- 
-     NSError codes
-     typedef enum {
-       BeanState_Unknown Used // for initialization and unknown error states
-       BeanState_Discovered Bean // has been discovered by a central
-       BeanState_AttemptingConnection // Bean is attempting to connect with a central
-       BeanState_AttemptingValidation // Bean is undergoing validation
-       BeanState_ConnectedAndValidated // Bean is connected
-       BeanState_AttemptingDisconnection // Bean is disconnecting
-     } BeanState
-     
-     NSError domain TPDBeanErrorDomain
-     Refer to the NSError localizedDescription for additional error information.
- 
+ @param error refer to BeanErrors for the list of error codes
  */
 -(void)bean:(PTDBean*)bean completedFirmwareUploadWithError:(NSError*)error;
 /**
