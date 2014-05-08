@@ -13,6 +13,8 @@
 @protocol Profile_Protocol <CBPeripheralDelegate>
 
 @required
+@property (nonatomic, weak) id<ProfileDelegate_Protocol> profileDelegate;
+
 -(void)validate;
 -(BOOL)isValid:(NSError**)error;
 

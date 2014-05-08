@@ -7,7 +7,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "Profile_Protocol.h"
 
 @protocol Profile_Protocol;
 @protocol ProfileDelegate_Protocol <NSObject>

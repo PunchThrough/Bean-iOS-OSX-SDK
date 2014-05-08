@@ -13,7 +13,6 @@
 
 @implementation GattSerialProfile
 {
-    CBPeripheral* peripheral;
     CBService* serial_pass_service;
     CBCharacteristic* serial_pass_characteristic;
     
@@ -69,16 +68,6 @@
 }
 
 #pragma mark Private Functions
--(void)__notifyValidity
-{
-    if (self.profileDelegate)
-    {
-        if([self.profileDelegate respondsToSelector:@selector(profileValidated:)])
-        {
-            [self.profileDelegate profileValidated:self];
-        }
-    }
-}
 -(void)__processCharacteristics
 {
     if(serial_pass_service){
@@ -128,7 +117,7 @@
     }
     
     [peripheral writeValue:data forCharacteristic:serial_pass_characteristic type:CBCharacteristicWriteWithoutResponse];
-    NSLog(@"Packet Written to Serial Pass Characteristic: %@", data);
+   // NSLog(@"Packet Written to Serial Pass Characteristic: %@", data);
 
 }
 

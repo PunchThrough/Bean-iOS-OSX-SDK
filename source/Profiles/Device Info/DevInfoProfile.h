@@ -8,13 +8,7 @@
 
 #import <Foundation/Foundation.h>
 
-#ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
-#import <CoreBluetooth/CoreBluetooth.h>
-#else
-#import <IOBluetooth/IOBluetooth.h>
-#endif
-
-#import "Profile_Protocol.h"
+#import "BleProfile.h"
 
 #define SERVICE_DEVICE_INFORMATION @"180A"
 #define CHARACTERISTIC_HARDWARE_VERSION @"2A27"
@@ -22,9 +16,8 @@
 #define CHARACTERISTIC_SOFTWARE_VERSION @"2A28"
 
 
-@interface DevInfoProfile : NSObject <Profile_Protocol>
+@interface DevInfoProfile : BleProfile
 
-@property (nonatomic, weak) id<ProfileDelegate_Protocol> profileDelegate;
 @property (nonatomic, strong) NSString *firmwareVersion;
 
 -(id)initWithPeripheral:(CBPeripheral*)peripheral;

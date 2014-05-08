@@ -11,7 +11,6 @@
 
 @implementation DevInfoProfile
 {
-    CBPeripheral* peripheral;
     CBService* service_deviceInformation;
     CBCharacteristic* characteristic_hardware_version;
     CBCharacteristic* characteristic_firmware_version;
@@ -48,16 +47,6 @@
 }
 
 #pragma mark Private Functions
--(void)__notifyValidity
-{
-    if (self.profileDelegate)
-    {
-        if([self.profileDelegate respondsToSelector:@selector(profileValidated:)])
-        {
-            [self.profileDelegate profileValidated:self];
-        }
-    }
-}
 -(void)__processCharacteristics
 {
     if(service_deviceInformation){

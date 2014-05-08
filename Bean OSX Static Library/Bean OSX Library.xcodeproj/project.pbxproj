@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		520C8ED7191BF0EC0086C530 /* BleProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 520C8ED6191BF0EC0086C530 /* BleProfile.m */; };
 		521A4E9D19103E5F005B3097 /* NSData+CRC.m in Sources */ = {isa = PBXBuildFile; fileRef = 521A4E9C19103E5F005B3097 /* NSData+CRC.m */; };
 		521A4EA319116C0F005B3097 /* CBPeripheral+isConnected_Universal.m in Sources */ = {isa = PBXBuildFile; fileRef = 521A4EA219116C0F005B3097 /* CBPeripheral+isConnected_Universal.m */; };
 		5251176518B3FD9B0088DE2D /* BeanManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 5251176418B3FD9B0088DE2D /* BeanManager.m */; };
@@ -86,6 +87,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		520C8ED5191BF0EC0086C530 /* BleProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BleProfile.h; sourceTree = "<group>"; };
+		520C8ED6191BF0EC0086C530 /* BleProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BleProfile.m; sourceTree = "<group>"; };
+		520C8ED8191BF4C50086C530 /* Profile_Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Profile_Protocol.h; sourceTree = "<group>"; };
 		521A4E9B19103E5F005B3097 /* NSData+CRC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+CRC.h"; sourceTree = "<group>"; };
 		521A4E9C19103E5F005B3097 /* NSData+CRC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+CRC.m"; sourceTree = "<group>"; };
 		521A4EA119116C0F005B3097 /* CBPeripheral+isConnected_Universal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CBPeripheral+isConnected_Universal.h"; sourceTree = "<group>"; };
@@ -135,7 +139,6 @@
 		52D34EA618A9B890002F0C59 /* oad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oad.h; sourceTree = "<group>"; };
 		52D34EA718A9B890002F0C59 /* OadProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OadProfile.h; sourceTree = "<group>"; };
 		52D34EA818A9B890002F0C59 /* OadProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OadProfile.m; sourceTree = "<group>"; };
-		52D34EA918A9B890002F0C59 /* Profile_Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Profile_Protocol.h; sourceTree = "<group>"; };
 		52D34EAA18A9B890002F0C59 /* ProfileDelegate_Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileDelegate_Protocol.h; sourceTree = "<group>"; };
 		52DE25C018AAC53900E69929 /* IOBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOBluetooth.framework; path = System/Library/Frameworks/IOBluetooth.framework; sourceTree = SDKROOT; };
 		52E98537191857E600E73CED /* AppMessageTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppMessageTypes.h; path = "../../App Message Definitions/AppMessageTypes.h"; sourceTree = "<group>"; };
@@ -342,8 +345,10 @@
 				52D34E9418A9B890002F0C59 /* Device Info */,
 				52D34E9718A9B890002F0C59 /* Gatt Serial */,
 				52D34EA518A9B890002F0C59 /* OAD */,
-				52D34EA918A9B890002F0C59 /* Profile_Protocol.h */,
 				52D34EAA18A9B890002F0C59 /* ProfileDelegate_Protocol.h */,
+				520C8ED8191BF4C50086C530 /* Profile_Protocol.h */,
+				520C8ED5191BF0EC0086C530 /* BleProfile.h */,
+				520C8ED6191BF0EC0086C530 /* BleProfile.m */,
 			);
 			name = "BLE Profiles";
 			path = ../../source/Profiles;
@@ -374,9 +379,9 @@
 		52D34EA518A9B890002F0C59 /* OAD */ = {
 			isa = PBXGroup;
 			children = (
-				52D34EA618A9B890002F0C59 /* oad.h */,
 				52D34EA718A9B890002F0C59 /* OadProfile.h */,
 				52D34EA818A9B890002F0C59 /* OadProfile.m */,
+				52D34EA618A9B890002F0C59 /* oad.h */,
 			);
 			path = OAD;
 			sourceTree = "<group>";
@@ -506,6 +511,7 @@
 				52D34EB518A9B890002F0C59 /* GattSerialProfile.m in Sources */,
 				52D02ED719102AD300996077 /* NSDate+LocalTime.m in Sources */,
 				521A4EA319116C0F005B3097 /* CBPeripheral+isConnected_Universal.m in Sources */,
+				520C8ED7191BF0EC0086C530 /* BleProfile.m in Sources */,
 				5251176518B3FD9B0088DE2D /* BeanManager.m in Sources */,
 				52D34EB718A9B890002F0C59 /* GattPacket.m in Sources */,
 				521A4E9D19103E5F005B3097 /* NSData+CRC.m in Sources */,

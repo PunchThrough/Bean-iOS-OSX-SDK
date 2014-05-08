@@ -15,7 +15,7 @@
 #import "NSData+CRC.h"
 #import "BeanRadioConfig.h"
 
-#define DELAY_BEFORE_PROFILE_VALIDATION  1.0f
+#define DELAY_BEFORE_PROFILE_VALIDATION  0.5f
 #define PROFILE_VALIDATION_RETRY_TIMEOUT  10.0f
 #define PROFILE_VALIDATION_RETRIES    2
 #define ARDUINO_OAD_MAX_CHUNK_SIZE 64
@@ -469,7 +469,8 @@ typedef enum { //These occur in sequence
 #pragma mark -
 #pragma mark Profile Delegate callbacks
 -(void)profileValidated:(id<Profile_Protocol>)profile{
-    if(validatedProfileCount >= [profiles count]){
+    if(validatedProfileCount >= [profiles count]
+       && _state != BeanState_ConnectedAndValidated){
         //Initialize Application Messaging layer
         appMessageLayer = [[AppMessagingLayer alloc] initWithGattSerialProfile:gatt_serial_profile];
         appMessageLayer.delegate = self;

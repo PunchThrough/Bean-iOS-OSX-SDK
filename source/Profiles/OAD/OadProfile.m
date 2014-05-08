@@ -14,11 +14,9 @@
 @end
 
 @implementation OadProfile{
-    CBPeripheral* peripheral;
     CBService* service_oad;
     CBCharacteristic * characteristic_oad_notify;
     CBCharacteristic * characteristic_oad_block;
-    
     
     NSString * pathA;
     NSString * pathB;
@@ -57,16 +55,6 @@
 }
 
 #pragma mark Private Functions
--(void)__notifyValidity
-{
-    if (self.profileDelegate)
-    {
-        if([self.profileDelegate respondsToSelector:@selector(profileValidated:)])
-        {
-            [self.profileDelegate profileValidated:self];
-        }
-    }
-}
 -(void)__processCharacteristics
 {
     if(service_oad){
