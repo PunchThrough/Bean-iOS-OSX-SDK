@@ -491,6 +491,9 @@ typedef enum { //These occur in sequence
     switch (identifier_type) {
         case MSG_ID_SERIAL_DATA:
             NSLog(@"App Message Received: MSG_ID_SERIAL_DATA: %@", payload);
+            if (self.delegate && [self.delegate respondsToSelector:@selector(bean:serialDataReceived:)]) {
+                [self.delegate bean:self serialDataReceived:payload];
+            }
             break;
         case MSG_ID_BT_SET_ADV:
             NSLog(@"App Message Received: MSG_ID_BT_SET_ADV: %@", payload);
