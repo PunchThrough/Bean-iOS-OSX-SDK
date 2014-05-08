@@ -13,7 +13,6 @@
 
 @implementation GattSerialProfile
 {
-    CBPeripheral* peripheral;
     CBService* serial_pass_service;
     CBCharacteristic* serial_pass_characteristic;
     
@@ -69,13 +68,15 @@
 }
 
 #pragma mark Private Functions
--(void)__notifyValidity
+-(void)__processCharacteristics
 {
-    if (self.profileDelegate)
-    {
-        if([self.profileDelegate respondsToSelector:@selector(profileValidated:)])
-        {
-            [self.profileDelegate profileValidated:self];
+    if(serial_pass_service){
+        if(serial_pass_service.characteristics){
+            for(CBCharacteristic* characteristic in serial_pass_service.characteristics){
+                if([characteristic.UUID isEqual:[CBUUID UUIDWithString:GLOBAL_SERIAL_PASS_CHARACTERISTIC_UUID]]){
+                    serial_pass_characteristic = characteristic;
+                }
+            }
         }
     }
 }
@@ -116,7 +117,7 @@
     }
     
     [peripheral writeValue:data forCharacteristic:serial_pass_characteristic type:CBCharacteristicWriteWithoutResponse];
-    NSLog(@"Packet Written to Serial Pass Characteristic: %@", data);
+   // NSLog(@"Packet Written to Serial Pass Characteristic: %@", data);
 
 }
 
@@ -132,16 +133,31 @@
                 // Save Gatt Serail service
                 if ([service.UUID isEqual:[CBUUID UUIDWithString:GLOBAL_SERIAL_PASS_SERVICE_UUID]]) {
                     NSLog(@"%@: GATT Serial Pass profile  found", self.class.description);
+                    
+                    // Save serial pass service
                     serial_pass_service = service;
                     
-                    // Discover characteristics
-                    NSArray * characteristics = [NSArray arrayWithObjects:
-                                                 [CBUUID UUIDWithString:GLOBAL_SERIAL_PASS_CHARACTERISTIC_UUID],
-                                                 nil];
+                    //Check if characterisics are already found.
+                    [self __processCharacteristics];
                     
-                    
-                    // Find characteristics of service
-                    [peripheral discoverCharacteristics:characteristics forService:service];
+                    //If all characteristics are found
+                    if(serial_pass_characteristic)
+                    {
+                        NSLog(@"%@: Found all Gatt Serial characteristics", self.class.description);
+                        if(serial_pass_characteristic.isNotifying){
+                            [self __notifyValidity];
+                        }else{
+                            //Set characteristic to notify
+                            [peripheral setNotifyValue:YES forCharacteristic:serial_pass_characteristic];
+                            //Wait until the notification characteristic is registered successfully as "notify" and then alert delegate that device is valid
+                        }
+                    }else{
+                        // Find characteristics of service
+                        NSArray * characteristics = [NSArray arrayWithObjects:
+                                                     [CBUUID UUIDWithString:GLOBAL_SERIAL_PASS_CHARACTERISTIC_UUID],
+                                                     nil];
+                        [peripheral discoverCharacteristics:characteristics forService:service];
+                    }
                 }
             }
         }
@@ -155,12 +171,7 @@
 {
     if (!error) {
         if ([service isEqual:serial_pass_service]) {
-            for (CBCharacteristic * characteristic in service.characteristics) {
-                
-                if ([characteristic.UUID isEqual:[CBUUID UUIDWithString:GLOBAL_SERIAL_PASS_CHARACTERISTIC_UUID]]) {
-                    serial_pass_characteristic = characteristic;
-                }
-            }
+            [self __processCharacteristics];
             
             NSError* verificationerror;
             if ((
@@ -168,11 +179,14 @@
                  )){
                 NSLog(@"%@: Found all GATT Serial Pass characteristics", self.class.description);
                 
-                //Set characteristic to notify
-                [peripheral setNotifyValue:YES forCharacteristic:serial_pass_characteristic];
-                //Wait until the notification characteristic is registered successfully as "notify" and then alert delegate that device is valid
-            
-            }else {
+                if(serial_pass_characteristic.isNotifying){
+                    [self __notifyValidity];
+                }else{
+                    //Set characteristic to notify
+                    [peripheral setNotifyValue:YES forCharacteristic:serial_pass_characteristic];
+                    //Wait until the notification characteristic is registered successfully as "notify" and then alert delegate that device is valid
+                }
+            }else{
                 // Could not find all characteristics!
                 NSLog(@"%@: Could not find all GATT Serial Pass characteristics!", self.class.description);
                 
@@ -180,16 +194,12 @@
                 [errorDetail setValue:@"Could not find all GATT Serial Pass characteristics" forKey:NSLocalizedDescriptionKey];
                 verificationerror = [NSError errorWithDomain:@"Bluetooth" code:100 userInfo:errorDetail];
             }
-            
             //Alert Delegate
         }
-        
     }
     else {
         NSLog(@"%@: Characteristics discovery was unsuccessful", self.class.description);
-        
         //Alert Delegate
-        
     }
 }
 
@@ -209,6 +219,7 @@
     {
         if (error) {
             // Dropping writeWithoutReponse packets. Stop the firmware upload and notify the delegate
+             NSLog(@"%@: Error: Dropping writeWithoutReponse packets!!", self.class.description);
         }else{
 
         }
@@ -227,7 +238,7 @@
             [self __notifyValidity];
         }
     }else{
-        
+        NSLog(@"%@: Error trying to set Characteristic to \"Notify\"", self.class.description);
     }
 }
 

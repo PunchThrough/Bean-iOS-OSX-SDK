@@ -15,6 +15,9 @@
 #import "NSData+CRC.h"
 #import "BeanRadioConfig.h"
 
+#define DELAY_BEFORE_PROFILE_VALIDATION  0.5f
+#define PROFILE_VALIDATION_RETRY_TIMEOUT  10.0f
+#define PROFILE_VALIDATION_RETRIES    2
 #define ARDUINO_OAD_MAX_CHUNK_SIZE 64
 
 typedef enum { //These occur in sequence
@@ -39,6 +42,8 @@ typedef enum { //These occur in sequence
     
     AppMessagingLayer*          appMessageLayer;
     
+    NSTimer*                    validationRetryTimer;
+    NSInteger                   validationRetryCount;
     NSInteger                   validatedProfileCount;
     NSArray*                    profiles;
     DevInfoProfile*             deviceInfo_profile;
@@ -293,20 +298,9 @@ typedef enum { //These occur in sequence
 }
 
 -(void)interrogateAndValidate{
-    //Initialize BLE Profiles
-    validatedProfileCount = 0;
-    deviceInfo_profile = [[DevInfoProfile alloc] initWithPeripheral:_peripheral];
-    deviceInfo_profile.profileDelegate = self;
-    oad_profile = [[OadProfile alloc] initWithPeripheral:_peripheral  delegate:self];
-    oad_profile.profileDelegate = self;
-    gatt_serial_profile = [[GattSerialProfile alloc] initWithPeripheral:_peripheral  delegate:nil];
-    gatt_serial_profile.profileDelegate = self;
-    profiles = [[NSArray alloc] initWithObjects:deviceInfo_profile,
-                oad_profile, //TODO: Add this line back in once the CC has OAD prifile
-                gatt_serial_profile,
-                nil];
-
-    [self __validateNextProfile];
+    validationRetryCount = 0;
+    [NSTimer scheduledTimerWithTimeInterval:DELAY_BEFORE_PROFILE_VALIDATION target:self selector:@selector(__interrogateAndValidate) userInfo:nil repeats:NO];
+    //[self __interrogateAndValidate];
 }
 -(CBPeripheral*)peripheral{
     return _peripheral;
@@ -328,11 +322,35 @@ typedef enum { //These occur in sequence
 }
 
 #pragma mark - Private Methods
--(void)__validateNextProfile{
-    id<Profile_Protocol> profile = [profiles objectAtIndex:validatedProfileCount];
-    //[cbperipheral  setDelegate:profile];
-    [profile validate];
-    validatedProfileCount++;
+-(void)__interrogateAndValidate{
+    if(validationRetryCount >= PROFILE_VALIDATION_RETRIES){
+        if(_beanManager){
+            if([_beanManager respondsToSelector:@selector(bean:hasBeenValidated_error:)]){
+                NSError* error = [BEAN_Helper basicError:@"Validation Failed. Retry count exceeded" domain:NSStringFromClass([self class]) code:100];
+                [_beanManager bean:self hasBeenValidated_error:error];
+            }
+        }
+        return;
+    }else{
+        validationRetryTimer = [NSTimer scheduledTimerWithTimeInterval:PROFILE_VALIDATION_RETRY_TIMEOUT target:self selector:@selector(__interrogateAndValidate) userInfo:nil repeats:NO];
+    }
+    
+    //Initialize BLE Profiles
+    validationRetryCount++;
+    deviceInfo_profile = [[DevInfoProfile alloc] initWithPeripheral:_peripheral];
+    deviceInfo_profile.profileDelegate = self;
+    oad_profile = [[OadProfile alloc] initWithPeripheral:_peripheral  delegate:self];
+    oad_profile.profileDelegate = self;
+    gatt_serial_profile = [[GattSerialProfile alloc] initWithPeripheral:_peripheral  delegate:nil];
+    gatt_serial_profile.profileDelegate = self;
+    profiles = [[NSArray alloc] initWithObjects:deviceInfo_profile,
+                oad_profile, //TODO: Add this line back in once the CC has OAD prifile
+                gatt_serial_profile,
+                nil];
+    validatedProfileCount = 0;
+    for(id<Profile_Protocol> profile in profiles){
+        [profile validate];
+    }
 }
 
 -(void)__alertDelegateOfArduinoOADCompletion:(NSError*)error{
@@ -447,12 +465,16 @@ typedef enum { //These occur in sequence
 #pragma mark -
 #pragma mark Profile Delegate callbacks
 -(void)profileValidated:(id<Profile_Protocol>)profile{
-    if(validatedProfileCount >= [profiles count]){
+    validatedProfileCount++;
+    if(validatedProfileCount >= [profiles count]
+       && _state != BeanState_ConnectedAndValidated){
         //Initialize Application Messaging layer
         appMessageLayer = [[AppMessagingLayer alloc] initWithGattSerialProfile:gatt_serial_profile];
         appMessageLayer.delegate = self;
         gatt_serial_profile.delegate = appMessageLayer;
         
+        if(validationRetryTimer)[validationRetryTimer invalidate];
+        validationRetryTimer = nil;
         _state = BeanState_ConnectedAndValidated;
         if(_beanManager){
             if([_beanManager respondsToSelector:@selector(bean:hasBeenValidated_error:)]){
@@ -460,8 +482,6 @@ typedef enum { //These occur in sequence
             }
         }
         [self readArduinoSketchInfo];
-    }else{
-        [self __validateNextProfile];
     }
 }
 

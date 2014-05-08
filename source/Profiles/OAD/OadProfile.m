@@ -14,11 +14,9 @@
 @end
 
 @implementation OadProfile{
-    CBPeripheral* peripheral;
     CBService* service_oad;
     CBCharacteristic * characteristic_oad_notify;
     CBCharacteristic * characteristic_oad_block;
-    
     
     NSString * pathA;
     NSString * pathB;
@@ -57,13 +55,17 @@
 }
 
 #pragma mark Private Functions
--(void)__notifyValidity
+-(void)__processCharacteristics
 {
-    if (self.profileDelegate)
-    {
-        if([self.profileDelegate respondsToSelector:@selector(profileValidated:)])
-        {
-            [self.profileDelegate profileValidated:self];
+    if(service_oad){
+        if(service_oad.characteristics){
+            for(CBCharacteristic* characteristic in service_oad.characteristics){
+                if([characteristic.UUID isEqual:[CBUUID UUIDWithString:CHARACTERISTIC_OAD_NOTIFY]]){
+                    characteristic_oad_notify = characteristic;
+                }else if([characteristic.UUID isEqual:[CBUUID UUIDWithString:CHARACTERISTIC_OAD_BLOCK]]){
+                    characteristic_oad_block = characteristic;
+                }
+            }
         }
     }
 }
@@ -337,15 +339,29 @@
                         // Save oad service
                         service_oad = service;
                         
-                        // Discover characteristics
-                        NSArray * characteristics = [NSArray arrayWithObjects:
-                                                     [CBUUID UUIDWithString:CHARACTERISTIC_OAD_NOTIFY],
-                                                     [CBUUID UUIDWithString:CHARACTERISTIC_OAD_BLOCK],
-                                                     nil];
+                        //Check if characterisics are already found.
+                        [self __processCharacteristics];
                         
-                        
-                        // Find characteristics of service
-                        [peripheral discoverCharacteristics:characteristics forService:service];
+                        //If all characteristics are found
+                        if(characteristic_oad_notify &&
+                           characteristic_oad_block)
+                        {
+                            NSLog(@"%@: OAD Characteristics of peripheral found", self.class.description);
+                            if(characteristic_oad_notify.isNotifying){
+                                [self __notifyValidity];
+                            }else{
+                                //Set characteristic to notify
+                                [peripheral setNotifyValue:YES forCharacteristic:characteristic_oad_notify];
+                                //Wait until the notification characteristic is registered successfully as "notify" and then alert delegate that device is valid
+                            }
+                        }else{
+                            // Find characteristics of service
+                            NSArray * characteristics = [NSArray arrayWithObjects:
+                                                         [CBUUID UUIDWithString:CHARACTERISTIC_OAD_NOTIFY],
+                                                         [CBUUID UUIDWithString:CHARACTERISTIC_OAD_BLOCK],
+                                                         nil];
+                            [peripheral discoverCharacteristics:characteristics forService:service];
+                        }
                     }
                 }
             }
@@ -356,42 +372,37 @@
 -(void)peripheral:(CBPeripheral *)aPeripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error
 {
     if (!error) {
-        if(!(characteristic_oad_notify &&
-             characteristic_oad_block))
-        {
-            if ([service isEqual:service_oad]) {
-                NSLog(@"%@: OAD Characteristics of peripheral found", self.class.description);
-                for (CBCharacteristic * characteristic in service.characteristics) {
-                    
-                    if ([characteristic.UUID isEqual:[CBUUID UUIDWithString:CHARACTERISTIC_OAD_NOTIFY]]) {
-                        characteristic_oad_notify = characteristic;
-                    }
-                    else if ([characteristic.UUID isEqual:[CBUUID UUIDWithString:CHARACTERISTIC_OAD_BLOCK]]) {
-                        characteristic_oad_block = characteristic;
-                    }
-                }
+        if ([service isEqual:service_oad]) {
+            [self __processCharacteristics];
+            
+            NSError* verificationerror;
+            if ((
+                 characteristic_oad_notify &&
+                 characteristic_oad_block
+                 ))
+            {
+                NSLog(@"%@: Found all OAD characteristics", self.class.description);
                 
-                NSError* verificationerror;
-                if ((
-                     characteristic_oad_notify &&
-                     characteristic_oad_block
-                     )){
-                    NSLog(@"%@: Found all OAD characteristics", self.class.description);
-                    
+                if(characteristic_oad_notify.isNotifying){
+                    [self __notifyValidity];
+                }else{
                     //Set characteristic to notify
                     [peripheral setNotifyValue:YES forCharacteristic:characteristic_oad_notify];
                     //Wait until the notification characteristic is registered successfully as "notify" and then alert delegate that device is valid
-                }else {
-                    // Could not find all characteristics!
-                    NSLog(@"%@: Could not find all OAD characteristics!", self.class.description);
-                    
-                    NSMutableDictionary *errorDetail = [NSMutableDictionary dictionary];
-                    [errorDetail setValue:@"Could not find all OAD characteristics" forKey:NSLocalizedDescriptionKey];
-                    verificationerror = [NSError errorWithDomain:@"Bluetooth" code:100 userInfo:errorDetail];
                 }
-                //Alert Delegate
+            }else {
+                // Could not find all characteristics!
+                NSLog(@"%@: Could not find all OAD characteristics!", self.class.description);
+                
+                NSMutableDictionary *errorDetail = [NSMutableDictionary dictionary];
+                [errorDetail setValue:@"Could not find all OAD characteristics" forKey:NSLocalizedDescriptionKey];
+                verificationerror = [NSError errorWithDomain:@"Bluetooth" code:100 userInfo:errorDetail];
             }
+            //Alert Delegate
         }
+    }else {
+        NSLog(@"%@: Characteristics discovery was unsuccessful", self.class.description);
+        //Alert Delegate
     }
 }
 

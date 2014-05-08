@@ -15,7 +15,7 @@
 #endif
 
 #import "DevInfoProfile.h"
-#import "Profile_Protocol.h"
+#import "BleProfile.h"
 
 #define HI_UINT16(a) (((a) >> 8) & 0xff)
 #define LO_UINT16(a) ((a) & 0xff)
@@ -27,10 +27,9 @@
 @protocol OAD_Delegate;
 @protocol OadDeviceDelegate;
 
-@interface OadProfile : NSObject <Profile_Protocol>
+@interface OadProfile : BleProfile
 
 @property (nonatomic, weak) id<OAD_Delegate> delegate;
-@property (nonatomic, weak) id<ProfileDelegate_Protocol> profileDelegate;
 
 @property (strong,nonatomic) NSData *imageFile;
 @property int nBlocks;
