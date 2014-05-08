@@ -348,13 +348,9 @@ typedef enum { //These occur in sequence
                 gatt_serial_profile,
                 nil];
     validatedProfileCount = 0;
-    [self __validateNextProfile];
-}
--(void)__validateNextProfile{
-    id<Profile_Protocol> profile = [profiles objectAtIndex:validatedProfileCount];
-    //[cbperipheral  setDelegate:profile];
-    [profile validate];
-    validatedProfileCount++;
+    for(id<Profile_Protocol> profile in profiles){
+        [profile validate];
+    }
 }
 
 -(void)__alertDelegateOfArduinoOADCompletion:(NSError*)error{
@@ -469,6 +465,7 @@ typedef enum { //These occur in sequence
 #pragma mark -
 #pragma mark Profile Delegate callbacks
 -(void)profileValidated:(id<Profile_Protocol>)profile{
+    validatedProfileCount++;
     if(validatedProfileCount >= [profiles count]
        && _state != BeanState_ConnectedAndValidated){
         //Initialize Application Messaging layer
@@ -485,8 +482,6 @@ typedef enum { //These occur in sequence
             }
         }
         [self readArduinoSketchInfo];
-    }else{
-        [self __validateNextProfile];
     }
 }
 
