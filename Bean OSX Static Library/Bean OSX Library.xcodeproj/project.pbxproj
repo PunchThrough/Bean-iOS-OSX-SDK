@@ -256,10 +256,10 @@
 		52D34E2D18A9B455002F0C59 /* Bean Library */ = {
 			isa = PBXGroup;
 			children = (
+				96E63F471919912F00A58608 /* Public */,
 				969FDE94191A9DE80068B99A /* PTDBean.m */,
 				969FDE95191A9DE80068B99A /* PTDBeanManager.m */,
 				969FDE96191A9DE80068B99A /* PTDBeanRadioConfig.m */,
-				96E63F471919912F00A58608 /* Public */,
 				52D34E8A18A9B890002F0C59 /* BEAN_Globals.h */,
 				52CD166E18CE8C1B00636119 /* PTDBeanManager+Protected.h */,
 				52CD166D18CE7B8D00636119 /* PTDBean+Protected.h */,

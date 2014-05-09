@@ -54,7 +54,7 @@
     
     //Send Packet
     NSError* error;
-    if(gattTransport)
+    if(gattTransport && gattPacketTxQueue)
     {
         [gattTransport sendPacket:[gattPacketTxQueue objectAtIndex:0] error:&error];
     }

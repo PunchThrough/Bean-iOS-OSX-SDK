@@ -479,7 +479,6 @@ typedef enum { //These occur in sequence
                 [_beanManager bean:self hasBeenValidated_error:nil];
             }
         }
-        [self readArduinoSketchInfo];
     }
 }
 
