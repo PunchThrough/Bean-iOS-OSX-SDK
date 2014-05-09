@@ -13,9 +13,7 @@
 #import <IOBluetooth/IOBluetooth.h>
 #endif
 
-#import "PTDBean.h"
-
-@interface BEAN_Helper : NSObject
+@interface PTDBEAN_Helper : NSObject
 
 +(NSNumber*)formatNumberFromString:(NSString*)text WithMaxFractionalDigits:(NSInteger)frac;
 +(NSString*)formatStringfromNumber:(NSNumber*)value WithMaxFractionalDigits:(NSInteger)frac;
@@ -29,7 +27,7 @@
 
 +(NSString *) UUIDToNSString:(CFUUIDRef) UUID;
 
-+(NSError *) basicError:(NSString*)description domain:(NSString*)description code:(BeanErrors)code;
++(NSError *) basicError:(NSString*)description domain:(NSString*)description code:(NSInteger)code;
      
 +(UInt16) computeCRC16:(NSData*)data;
 +(UInt16) computeCRC16:(NSData*)data startingCRC:(UInt16)startCrc;

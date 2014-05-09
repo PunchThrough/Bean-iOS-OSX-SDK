@@ -12,12 +12,12 @@
 #import <IOBluetooth/IOBluetooth.h>
 #endif
 
-#import "Bean.h"
+#import "PTDBean.h"
 #import "BeanManager+Protected.h"
 
-@interface Bean (Protected)
+@interface PTDBean (Protected)
 
--(id)initWithPeripheral:(CBPeripheral*)peripheral beanManager:(id<BeanManager>)manager;
+-(id)initWithPeripheral:(CBPeripheral*)peripheral beanManager:(id<PTDBeanManager>)manager;
 -(void)interrogateAndValidate;
 
 -(CBPeripheral*)peripheral;
@@ -26,6 +26,6 @@
 -(void)setRSSI:(NSNumber*)rssi;
 -(void)setAdvertisementData:(NSDictionary*)adData;
 -(void)setLastDiscovered:(NSDate*)date;
--(void)setBeanManager:(id<BeanManager>)manager;
+-(void)setBeanManager:(id<PTDBeanManager>)manager;
 
 @end

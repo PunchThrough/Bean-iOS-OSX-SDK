@@ -6,9 +6,9 @@
 //  Copyright (c) 2014 Punch Through Design. All rights reserved.
 //
 
-#import "BEAN_Helper.h"
+#import "PTDBEAN_Helper.h"
 
-@implementation BEAN_Helper
+@implementation PTDBEAN_Helper
 
 +(NSNumber*)formatNumberFromString:(NSString*)text WithMaxFractionalDigits:(NSInteger)frac{
     NSNumberFormatter * f = [[NSNumberFormatter alloc] init];
@@ -77,7 +77,7 @@
 }
 
 
-+(NSError *) basicError:(NSString*)description domain:(NSString*)domain code:(BeanErrors)code
++(NSError *) basicError:(NSString*)description domain:(NSString*)domain code:(NSInteger)code
 {
     NSMutableDictionary *errorDetail = [NSMutableDictionary dictionary];
     [errorDetail setValue:description forKey:NSLocalizedDescriptionKey];
@@ -88,7 +88,7 @@
 
 +(UInt16) computeCRC16:(NSData*)data
 {
-    return [BEAN_Helper computeCRC16:data startingCRC:0xFFFF];
+    return [PTDBEAN_Helper computeCRC16:data startingCRC:0xFFFF];
 }
 
 +(UInt16) computeCRC16:(NSData*)data startingCRC:(UInt16)startCrc;
