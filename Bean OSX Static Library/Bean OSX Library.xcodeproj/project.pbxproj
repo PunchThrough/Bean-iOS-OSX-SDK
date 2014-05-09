@@ -89,7 +89,7 @@
 		52BC523518D96A610083A031 /* AppMessagingLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppMessagingLayer.h; path = ../../source/AppMessages/AppMessagingLayer.h; sourceTree = "<group>"; };
 		52BC523618D96A610083A031 /* AppMessagingLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppMessagingLayer.m; path = ../../source/AppMessages/AppMessagingLayer.m; sourceTree = "<group>"; };
 		52CD166D18CE7B8D00636119 /* PTDBean+Protected.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "PTDBean+Protected.h"; path = "../../source/PTDBean+Protected.h"; sourceTree = "<group>"; };
-		52CD166E18CE8C1B00636119 /* BeanManager+Protected.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "BeanManager+Protected.h"; path = "../../source/BeanManager+Protected.h"; sourceTree = "<group>"; };
+		52CD166E18CE8C1B00636119 /* PTDBeanManager+Protected.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "PTDBeanManager+Protected.h"; path = "../../source/PTDBeanManager+Protected.h"; sourceTree = "<group>"; };
 		52D02ED519102AD300996077 /* NSDate+LocalTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+LocalTime.h"; sourceTree = "<group>"; };
 		52D02ED619102AD300996077 /* NSDate+LocalTime.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+LocalTime.m"; sourceTree = "<group>"; };
 		52D34E2418A9B455002F0C59 /* libBean OSX Library.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libBean OSX Library.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -261,7 +261,7 @@
 				969FDE96191A9DE80068B99A /* PTDBeanRadioConfig.m */,
 				96E63F471919912F00A58608 /* Public */,
 				52D34E8A18A9B890002F0C59 /* BEAN_Globals.h */,
-				52CD166E18CE8C1B00636119 /* BeanManager+Protected.h */,
+				52CD166E18CE8C1B00636119 /* PTDBeanManager+Protected.h */,
 				52CD166D18CE7B8D00636119 /* PTDBean+Protected.h */,
 				52BC523418D968780083A031 /* Application Messages */,
 				52D34E8D18A9B890002F0C59 /* Categories */,

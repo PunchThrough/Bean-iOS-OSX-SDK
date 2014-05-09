@@ -13,7 +13,7 @@
 #endif
 
 #import "PTDBean.h"
-#import "BeanManager+Protected.h"
+#import "PTDBeanManager+Protected.h"
 
 @interface PTDBean (Protected)
 

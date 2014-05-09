@@ -7,7 +7,7 @@
 //
 
 #import "PTDBean.h"
-#import "BeanManager+Protected.h"
+#import "PTDBeanManager+Protected.h"
 #import "GattSerialProfile.h"
 #import "AppMessages.h"
 #import "AppMessagingLayer.h"
