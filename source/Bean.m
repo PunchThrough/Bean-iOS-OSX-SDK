@@ -221,7 +221,6 @@ typedef enum { //These occur in sequence
 -(void)setLedColor:(UIColor*)color {
 #else
 -(void)setLedColor:(NSColor*)color {
-    color = [color colorUsingColorSpaceName:NSCalibratedRGBColorSpace];
 #endif
     if(![self connected]) {
         return;
@@ -592,7 +591,7 @@ typedef enum { //These occur in sequence
                 UIColor *color = [UIColor colorWithRed:rawData.red/255.0f green:rawData.green/255.0f blue:rawData.blue/255.0f alpha:1];
                 [self.delegate bean:self didUpdateLedColor:color];
 #else
-                NSColor *color = [NSColor colorWithCalibratedRed:rawData.red/255.0f green:rawData.green/255.0f blue:rawData.blue/255.0f alpha:1];
+                NSColor *color = [NSColor colorWithRed:rawData.red/255.0f green:rawData.green/255.0f blue:rawData.blue/255.0f alpha:1];
                 [self.delegate bean:self didUpdateLedColor:color];
 #endif
             }
@@ -815,6 +814,15 @@ typedef enum { //These occur in sequence
             }
         }
     }
+}
+- (void)peripheral:(CBPeripheral *)peripheral didModifyServices:(NSArray *)invalidatedServices{
+    NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
+                            peripheral ?: [NSNull null], @"peripheral",
+                            invalidatedServices ?: [NSNull null], @"invalidatedServices",
+                            nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName: @"didModifyServices" object:params];
+    _state = BeanState_AttemptingValidation;
+    [self __interrogateAndValidate];
 }
 
 @end

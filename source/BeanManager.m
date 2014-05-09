@@ -46,24 +46,25 @@
         return;
     }
     
+    //Clear array of previously discovered peripherals.
+    [beanRecords removeAllObjects];
+    
     //Collect already connected Beans
     NSArray* connectedBeanPeripherals = [cbcentralmanager retrieveConnectedPeripheralsWithServices:[NSArray arrayWithObjects:[CBUUID UUIDWithString:GLOBAL_SERIAL_PASS_SERVICE_UUID], nil]];
     for( CBPeripheral* beanPeripheral in connectedBeanPeripherals){
-        [self __processBeanRecordFromCBPeripheral:beanPeripheral advertisementData:nil RSSI:0];
-        //Find BeanRecord that corresponds to this UUID
-        Bean* bean = [beanRecords objectForKey:[beanPeripheral identifier]];
-        //If there is no such peripheral, return
+        Bean* bean = [[Bean alloc] initWithPeripheral:beanPeripheral beanManager:self];
         if(bean){
-            //This is a hackish fix. OSX stays connected to devices after
+            [beanRecords setObject:bean forKey:bean.identifier];
+            bean.state = BeanState_Discovered;
             [self connectToBean:bean error:nil];
+            if (self.delegate && [self.delegate respondsToSelector:@selector(BeanManager:didDisconnectBean:error:)]){
+                [self.delegate BeanManager:self didDiscoverBean:bean error:nil];
+            }
         }
     }
     
     // Scan for peripherals
     NSLog(@"Started scanning...");
-    
-    //Clear array of previously discovered peripherals.
-    [beanRecords removeAllObjects];
     
     // Define array of app service UUID
     NSArray * services = [NSArray arrayWithObjects:[CBUUID UUIDWithString:GLOBAL_SERIAL_PASS_SERVICE_UUID], nil];
