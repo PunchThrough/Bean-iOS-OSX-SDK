@@ -211,6 +211,12 @@ typedef enum { //These occur in sequence
     }
     [appMessageLayer sendMessageWithID:MSG_ID_CC_ACCEL_READ andPayload:nil];
 }
+-(void)readRSSI {
+    if(![self connected]) {
+        return;
+    }
+    [_peripheral readRSSI];
+}
 -(void)readTemperature {
     if(![self connected]) {
         return;
@@ -677,6 +683,9 @@ typedef enum { //These occur in sequence
                 [profile peripheralDidUpdateRSSI:peripheral error:error];
             }
         }
+    }
+    if (self.delegate && [self.delegate respondsToSelector:@selector(beanDidUpdateRSSI:error:)]) {
+        [self.delegate beanDidUpdateRSSI:self error:error];
     }
 }
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverServices:(NSError *)error{

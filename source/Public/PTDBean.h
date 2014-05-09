@@ -296,6 +296,11 @@ typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
  */
 -(void)readScratchBank:(NSInteger)bank;
 /**
+ *  Reads the RSSI.
+ *  @see [PTDBeanDelegate beanDidUpdateRSSI:error:]
+ */
+-(void)readRSSI;
+/**
  *  Reads the temperature.
  *  @see [PTDBeanDelegate bean:didUpdateTemperature:]
  */
@@ -410,6 +415,13 @@ typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
  
  */
 -(void)bean:(PTDBean*)bean didUpdateAccelerationAxes:(PTDAcceleration)acceleration;
+/**
+ *  The Bean RSSI reading
+ *
+ *  @param bean            the bean being queried
+ *  @param error           error returned during RSSI read
+ */
+-(void)beanDidUpdateRSSI:(PTDBean*)bean error:(NSError*)error;
 /**
  *  The Bean temperature readings
  *
