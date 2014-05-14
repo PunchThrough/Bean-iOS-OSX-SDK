@@ -40,7 +40,7 @@
             [errorDetail setValue:@"CRC check failed" forKey:NSLocalizedDescriptionKey];
             [errorDetail setValue:self forKey:@"GattSerialMessage"];
             NSError* local_error = [NSError errorWithDomain:@"BEAN API:GATT Serial Message" code:100 userInfo:errorDetail];
-            NSLog(@"Error: %@ %@", local_error, [local_error userInfo]);
+            PTDLog(@"Error: %@ %@", local_error, [local_error userInfo]);
             if(error) *error = local_error;
             return nil;
         }

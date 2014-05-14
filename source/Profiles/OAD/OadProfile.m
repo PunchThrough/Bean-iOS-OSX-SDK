@@ -39,7 +39,7 @@
 -(void)validate
 {
     // Discover services
-    NSLog(@"Searching for OAD service: %@", SERVICE_OAD);
+    PTDLog(@"Searching for OAD service: %@", SERVICE_OAD);
     if(peripheral.state == CBPeripheralStateConnected)
     {
         [peripheral discoverServices:[NSArray arrayWithObjects:[CBUUID UUIDWithString:SERVICE_OAD]
@@ -95,7 +95,7 @@
         return NO;
     }
     else {
-        NSLog(@"%@: checkForNewFirmware. OAD is not supported on this device", self.class.description);
+        PTDLog(@"%@: checkForNewFirmware. OAD is not supported on this device", self.class.description);
         *error = [BEAN_Helper basicError:@"OAD is not supported on this device" domain:NSStringFromClass([self class]) code:100];
         return NO;
     }
@@ -115,7 +115,7 @@
         return FALSE; //Not connected
     }
     else if (service_oad) {
-        NSLog(@"%@: updateFirmware. Updating Firmware...", self.class.description);
+        PTDLog(@"%@: updateFirmware. Updating Firmware...", self.class.description);
         // Update the firmware
         
         pathA = imageApath;
@@ -135,7 +135,7 @@
         return TRUE;
     }
     else {
-        NSLog(@"%@: updateFirmware. OAD is not supported ", self.class.description);
+        PTDLog(@"%@: updateFirmware. OAD is not supported ", self.class.description);
         return FALSE; //Device doesn't support OAD
     }
 
@@ -183,7 +183,7 @@
     uint8_t requestData[OAD_IMG_HDR_SIZE + 2 + 2]; // 12Bytes
     
     for(int ii = 0; ii < 20; ii++) {
-        NSLog(@"%02hhx",imageFileData[ii]);
+        PTDLog(@"%02hhx",imageFileData[ii]);
     }
     
     
@@ -197,7 +197,7 @@
     requestData[2] = LO_UINT16(imgHeader.len);
     requestData[3] = HI_UINT16(imgHeader.len);
     
-    NSLog(@"Image version = %04hx, len = %04hx",imgHeader.ver,imgHeader.len);
+    PTDLog(@"Image version = %04hx, len = %04hx",imgHeader.ver,imgHeader.len);
     
     memcpy(requestData + 4, &imgHeader.uid, sizeof(imgHeader.uid));
     
@@ -273,7 +273,7 @@
         [self.delegate device:self OADUploadTimeLeft:seconds withPercentage:percentage];
     }
     
-    NSLog(@".");
+    PTDLog(@".");
 }
 
 
@@ -290,7 +290,7 @@
 
 -(BOOL)validateImage:(NSString *)filename {
     self.imageFile = [NSData dataWithContentsOfFile:filename];
-    NSLog(@"Loaded firmware \"%@\"of size : %lu",filename,(unsigned long)self.imageFile.length);
+    PTDLog(@"Loaded firmware \"%@\"of size : %lu",filename,(unsigned long)self.imageFile.length);
     if ([self isCorrectImage]) {
         [self uploadImage:filename];
         return YES;
@@ -314,7 +314,7 @@
 
 -(void) imageDetectTimerTick:(NSTimer *)timer {
     //IF we have come here, the image userID is B.
-    NSLog(@"imageDetectTimerTick:");
+    PTDLog(@"imageDetectTimerTick:");
 
     unsigned char data = 0x01;
     
@@ -334,7 +334,7 @@
             {
                 for (CBService * service in peripheral.services) {
                     if ([service.UUID isEqual:[CBUUID UUIDWithString:SERVICE_OAD]]) {
-                        NSLog(@"%@: OAD service  found", self.class.description);
+                        PTDLog(@"%@: OAD service  found", self.class.description);
                         
                         // Save oad service
                         service_oad = service;
@@ -346,7 +346,7 @@
                         if(characteristic_oad_notify &&
                            characteristic_oad_block)
                         {
-                            NSLog(@"%@: OAD Characteristics of peripheral found", self.class.description);
+                            PTDLog(@"%@: OAD Characteristics of peripheral found", self.class.description);
                             if(characteristic_oad_notify.isNotifying){
                                 [self __notifyValidity];
                             }else{
@@ -381,7 +381,7 @@
                  characteristic_oad_block
                  ))
             {
-                NSLog(@"%@: Found all OAD characteristics", self.class.description);
+                PTDLog(@"%@: Found all OAD characteristics", self.class.description);
                 
                 if(characteristic_oad_notify.isNotifying){
                     [self __notifyValidity];
@@ -392,7 +392,7 @@
                 }
             }else {
                 // Could not find all characteristics!
-                NSLog(@"%@: Could not find all OAD characteristics!", self.class.description);
+                PTDLog(@"%@: Could not find all OAD characteristics!", self.class.description);
                 
                 NSMutableDictionary *errorDetail = [NSMutableDictionary dictionary];
                 [errorDetail setValue:@"Could not find all OAD characteristics" forKey:NSLocalizedDescriptionKey];
@@ -401,7 +401,7 @@
             //Alert Delegate
         }
     }else {
-        NSLog(@"%@: Characteristics discovery was unsuccessful", self.class.description);
+        PTDLog(@"%@: Characteristics discovery was unsuccessful", self.class.description);
         //Alert Delegate
     }
 }
@@ -414,9 +414,9 @@
                 unsigned char data[characteristic.value.length];
                 [characteristic.value getBytes:&data];
                 self.imgVersion = ((uint16_t)data[1] << 8 & 0xff00) | ((uint16_t)data[0] & 0xff);
-                NSLog(@"self.imgVersion : %04hx",self.imgVersion);
+                PTDLog(@"self.imgVersion : %04hx",self.imgVersion);
             }
-            NSLog(@"OAD Image notify : %@",characteristic.value);
+            PTDLog(@"OAD Image notify : %@",characteristic.value);
         }
     }
 
@@ -442,7 +442,7 @@
             }
             self.inProgramming = NO;
         }else{
-            NSLog(@"wrote characteristic length:%lu data:%@",(unsigned long)characteristic.value.length, characteristic.value);
+            PTDLog(@"wrote characteristic length:%lu data:%@",(unsigned long)characteristic.value.length, characteristic.value);
             if(readyToInitiateImageTransfer ==TRUE)
             {
                 readyToInitiateImageTransfer = FALSE;
@@ -459,7 +459,7 @@
                 }
             }
              */
-            NSLog(@"didWriteValueForProfile : %@",characteristic);
+            PTDLog(@"didWriteValueForProfile : %@",characteristic);
         }
     }
 }
@@ -470,7 +470,7 @@
     {
         if([characteristic isEqual:characteristic_oad_notify])
         {
-            NSLog(@"%@: OAD Characteristic set to \"Notify\"", self.class.description);
+            PTDLog(@"%@: OAD Characteristic set to \"Notify\"", self.class.description);
             //Alert Delegate that device is connected. At this point, the device should be added to the list of connected devices
            
             [self __notifyValidity];

@@ -6,6 +6,7 @@
 
 #ifdef __OBJC__
     #import <UIKit/UIKit.h>
+    #import "BEAN_Globals.h"
 #endif
 
 #include "TargetConditionals.h"

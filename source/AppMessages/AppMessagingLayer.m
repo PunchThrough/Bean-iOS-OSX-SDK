@@ -29,7 +29,7 @@
 
 #pragma mark gattSerialDevideDelegate callbacks
 -(void)gattSerialProfile:(GattSerialProfile*)profile recievedIncomingMessage:(GattSerialMessage*)message{
-    //NSLog(@"Gatt Serial Message Received: %@",[message bytes]);
+    //PTDLog(@"Gatt Serial Message Received: %@",[message bytes]);
     
     UInt8 messageIdBytes[2];
     [[message payload] getBytes:messageIdBytes length:2];

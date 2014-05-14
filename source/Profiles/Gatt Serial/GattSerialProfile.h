@@ -7,7 +7,6 @@
 //
 
 #import "OadProfile.h"
-#import "BEAN_Globals.h"
 #import "GattSerialTransport.h"
 
 #import "BleProfile.h"

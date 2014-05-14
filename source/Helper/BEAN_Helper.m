@@ -44,7 +44,7 @@
         whole_byte = strtol(byte_chars, NULL, 16);
         [commandToSend appendBytes:&whole_byte length:1];
     }
-    NSLog(@"Hex to data: %@", commandToSend);
+    PTDLog(@"Hex to data: %@", commandToSend);
     
     return commandToSend;
 }
@@ -82,7 +82,7 @@
     NSMutableDictionary *errorDetail = [NSMutableDictionary dictionary];
     [errorDetail setValue:description forKey:NSLocalizedDescriptionKey];
     NSError* error = [NSError errorWithDomain:domain code:code userInfo:errorDetail];
-    NSLog(@"Error: %@ %@", error, [error userInfo]);
+    PTDLog(@"Error: %@ %@", error, [error userInfo]);
     return error;
 }
 

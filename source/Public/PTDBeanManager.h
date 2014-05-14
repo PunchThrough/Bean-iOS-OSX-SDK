@@ -66,7 +66,7 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
      // bean discovered
      - (void)BeanManager:(PTDBeanManager*)beanManager didDiscoverBean:(PTDBean*)bean error:(NSError*)error{
        if (error) {
-         NSLog(@"%@", [error localizedDescription]);
+         PTDLog(@"%@", [error localizedDescription]);
          return;
        }
        [self.beanManager connectToBean:bean error:nil];
@@ -74,7 +74,7 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
      // bean connected
      - (void)BeanManager:(PTDBeanManager*)beanManager didConnectToBean:(PTDBean*)bean error:(NSError*)error{
        if (error) {
-         NSLog(@"%@", [error localizedDescription]);
+         PTDLog(@"%@", [error localizedDescription]);
          return;
        }
        // do stuff with your bean

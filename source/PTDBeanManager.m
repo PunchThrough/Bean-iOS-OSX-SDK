@@ -64,7 +64,7 @@
     }
     
     // Scan for peripherals
-    NSLog(@"Started scanning...");
+    PTDLog(@"Started scanning...");
     
     // Define array of app service UUID
     NSArray * services = [NSArray arrayWithObjects:[CBUUID UUIDWithString:GLOBAL_SERIAL_PASS_SERVICE_UUID], nil];
@@ -83,7 +83,7 @@
     
     [cbcentralmanager stopScan];
     
-    NSLog(@"Stopped scanning.");
+    PTDLog(@"Stopped scanning.");
 }
 
 -(void)connectToBean:(PTDBean*)bean_ error:(NSError**)error{
@@ -163,7 +163,7 @@
         bean.advertisementData = advertisementData;
     }
     else { // A new undiscovered Bean
-        NSLog(@"centralManager:didDiscoverPeripheral %@", peripheral);
+        PTDLog(@"centralManager:didDiscoverPeripheral %@", peripheral);
         bean = [[PTDBean alloc] initWithPeripheral:peripheral beanManager:self];
         bean.RSSI = RSSI;
         bean.lastDiscovered = [NSDate date];
@@ -184,11 +184,11 @@
     }
     switch (central.state) {
         case CBCentralManagerStatePoweredOn:
-            NSLog(@"%@: Bluetooth ON", self.class.description);
+            PTDLog(@"%@: Bluetooth ON", self.class.description);
             break;
             
         default:
-            NSLog(@"%@: Bluetooth state error: %d", self.class.description, (int)central.state);
+            PTDLog(@"%@: Bluetooth state error: %d", self.class.description, (int)central.state);
             break;
     }
 }
@@ -204,7 +204,7 @@
 }
 
 -(void)centralManager:(CBCentralManager *)central didConnectPeripheral:(CBPeripheral *)peripheral{
-    NSLog(@"centralManager:didConnectPeripheral %@", peripheral);
+    PTDLog(@"centralManager:didConnectPeripheral %@", peripheral);
     //Find BeanRecord that corresponds to this UUID
     PTDBean* bean = [beanRecords objectForKey:[peripheral identifier]];
     //If there is no such peripheral, return
@@ -216,7 +216,7 @@
 }
 
 - (void)centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error{
-    NSLog(@"centralManager:didFailToConnectPeripheral %@", peripheral);
+    PTDLog(@"centralManager:didFailToConnectPeripheral %@", peripheral);
     //Find BeanRecord that corresponds to this UUID
     PTDBean* bean = [beanRecords objectForKey:[peripheral identifier]];
     //If there is no such peripheral, return
@@ -232,7 +232,7 @@
 }
 
 - (void)centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error{
-    NSLog(@"centralManager:didDisconnectPeripheral %@", peripheral);
+    PTDLog(@"centralManager:didDisconnectPeripheral %@", peripheral);
     //Find BeanRecord that corresponds to this UUID
     PTDBean* bean = [beanRecords objectForKey:[peripheral identifier]];
     if(bean){
