@@ -350,13 +350,14 @@ typedef enum { //These occur in sequence
     gatt_serial_profile = [[GattSerialProfile alloc] initWithPeripheral:_peripheral  delegate:nil];
     gatt_serial_profile.profileDelegate = self;
     profiles = [[NSArray alloc] initWithObjects:deviceInfo_profile,
-                oad_profile, //TODO: Add this line back in once the CC has OAD prifile
+                oad_profile,
                 gatt_serial_profile,
                 nil];
     validatedProfileCount = 0;
-    for(id<Profile_Protocol> profile in profiles){
-        [profile validate];
-    }
+//    for(id<Profile_Protocol> profile in profiles){
+//        [profile validate];
+//    }
+    [_peripheral discoverServices:nil];
 }
 
 -(void)__alertDelegateOfArduinoOADCompletion:(NSError*)error{
