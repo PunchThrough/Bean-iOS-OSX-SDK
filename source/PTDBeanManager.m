@@ -138,14 +138,14 @@
     //If there is no such peripheral, return error
     if(!bean){
         localError = [BEAN_Helper basicError:@"Attemp to connect to Bean failed. No peripheral discovered with the corresponding UUID." domain:NSStringFromClass([self class]) code:BeanErrors_NoPeriphealDiscovered];
-    }
-    else if (error){
+    }else if (error){
         localError = error;
         bean.state = BeanState_Discovered; // Reset bean state to the default, ready to connect
         [self disconnectBean:bean error:nil];
     }else{
         //Validation is successful
     }
+    
     //Notify Delegate
     if (self.delegate && [self.delegate respondsToSelector:@selector(BeanManager:didConnectToBean:error:)]){
         [self.delegate BeanManager:self didConnectToBean:device error:error];

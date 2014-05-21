@@ -104,7 +104,7 @@
 
 -(BOOL)updateFirmwareWithImageAPath:(NSString*)imageApath andImageBPath:(NSString*)imageBpath
 {
-    if (![peripheral isConnected]) {
+    if (![peripheral isConnected_Universal]) {
         NSMutableDictionary *errorDetail = [NSMutableDictionary dictionary];
         [errorDetail setValue:@"Device is not connected" forKey:NSLocalizedDescriptionKey];
         NSError* error = [NSError errorWithDomain:@"OAD" code:100 userInfo:errorDetail];

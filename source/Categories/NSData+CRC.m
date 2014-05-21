@@ -37,7 +37,7 @@ void generateCRC32Table(uint32_t *pTable, uint32_t poly)
     
     uint32_t crc    = CRC_SEED;
     uint8_t *pBytes = (uint8_t *)[self bytes];
-    uint32_t length = [self length];
+    uint32_t length = (uint32_t)[self length];
     
     while (length--)
     {
