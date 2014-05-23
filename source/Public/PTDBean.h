@@ -131,7 +131,7 @@ typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
     // check for the bean response
     -(void)bean:(PTDBean *)bean didUpdateTemperature:(NSNumber *)degrees_celsius {
       NSString *msg = [NSString stringWithFormat:@"received did update temp reading:%@", degrees_celsius];
-      NSLog(@"%@",msg);
+      PTDLog(@"%@",msg);
     }
  
    See [BeanXcodeWorkspace](http://www.punchthrough.com) for more examples.
@@ -171,10 +171,10 @@ typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
     
      Example:
      if (self.bean.state == BeanState_Discovered) {
-        NSLog(@"Bean discovered, try connecting");
+        PTDLog(@"Bean discovered, try connecting");
      }
      else if (self.bean.state == BeanState_ConnectedAndValidated) {
-        NSLog(@"Bean connected, try calling an api");
+        PTDLog(@"Bean connected, try calling an api");
      }
  */
 -(BeanState)state;
@@ -240,7 +240,7 @@ typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
     // check for the bean to send it back
     -(void)bean:(PTDBean*)bean didUpdateAccelerationAxes:(PTDAcceleration)acceleration {
         NSString *msg = [NSString stringWithFormat:@"x:%f y:%f z:%f", acceleration.x,acceleration.y,acceleration.z];
-        NSLog(@"%@", msg);
+        PTDLog(@"%@", msg);
     }
 
  @see [PTDBeanDelegate bean:didUpdateAccelerationAxes:]
@@ -281,7 +281,7 @@ typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
     -(void)bean:(PTDBean *)bean didUpdateScratchNumber:(NSNumber *)number withValue:(NSData *)data {
       NSString* str = [NSString stringWithUTF8String:[data bytes]];
       NSString *msg = [NSString stringWithFormat:@"received scratch number:%@ scratch:%@", number, str];
-      NSLog(@"%@", msg);
+      PTDLog(@"%@", msg);
     }
  
  @param scratchNumber can be a value 1-5
@@ -344,7 +344,7 @@ typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
  
     example:
     if (error.code == BeanErrors_InvalidArgument) {
-      NSLog(@"Invalid argument - %@", [error localizedDescription]);
+      PTDLog(@"Invalid argument - %@", [error localizedDescription]);
     }
     else {
       // do something else

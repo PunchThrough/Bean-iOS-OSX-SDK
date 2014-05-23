@@ -494,23 +494,23 @@ typedef enum { //These occur in sequence
     UInt16 identifier_type = identifier & ~(APP_MSG_RESPONSE_BIT);
     switch (identifier_type) {
         case MSG_ID_SERIAL_DATA:
-            NSLog(@"App Message Received: MSG_ID_SERIAL_DATA: %@", payload);
+            PTDLog(@"App Message Received: MSG_ID_SERIAL_DATA: %@", payload);
             if (self.delegate && [self.delegate respondsToSelector:@selector(bean:serialDataReceived:)]) {
                 [self.delegate bean:self serialDataReceived:payload];
             }
             break;
         case MSG_ID_BT_SET_ADV:
-            NSLog(@"App Message Received: MSG_ID_BT_SET_ADV: %@", payload);
+            PTDLog(@"App Message Received: MSG_ID_BT_SET_ADV: %@", payload);
             break;
         case MSG_ID_BT_SET_CONN:
-            NSLog(@"App Message Received: MSG_ID_BT_SET_CONN: %@", payload);
+            PTDLog(@"App Message Received: MSG_ID_BT_SET_CONN: %@", payload);
             break;
         case MSG_ID_BT_SET_LOCAL_NAME:
-            NSLog(@"App Message Received: MSG_ID_BT_SET_LOCAL_NAME: %@", payload);
+            PTDLog(@"App Message Received: MSG_ID_BT_SET_LOCAL_NAME: %@", payload);
             break;
         case MSG_ID_BT_SET_PIN:
             //TODO : never being called
-            NSLog(@"App Message Received: MSG_ID_BT_SET_PIN: %@", payload);
+            PTDLog(@"App Message Received: MSG_ID_BT_SET_PIN: %@", payload);
             if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdatePairingPin:)]) {
                 UInt16 pin;
                 [payload getBytes:&pin range:NSMakeRange(0, sizeof(UInt16))];
@@ -518,10 +518,10 @@ typedef enum { //These occur in sequence
             }
             break;
         case MSG_ID_BT_SET_TX_PWR:
-            NSLog(@"App Message Received: MSG_ID_BT_SET_TX_PWR: %@", payload);
+            PTDLog(@"App Message Received: MSG_ID_BT_SET_TX_PWR: %@", payload);
             break;
         case MSG_ID_BT_GET_CONFIG: {
-            NSLog(@"App Message Received: MSG_ID_BT_GET_CONFIG: %@", payload);
+            PTDLog(@"App Message Received: MSG_ID_BT_GET_CONFIG: %@", payload);
             if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateRadioConfig:)]) {
                 BT_RADIOCONFIG_T rawData;
                 [payload getBytes:&rawData range:NSMakeRange(0, sizeof(BT_RADIOCONFIG_T))];
@@ -535,13 +535,13 @@ typedef enum { //These occur in sequence
             break;
         }
         case MSG_ID_BT_ADV_ONOFF:
-            NSLog(@"App Message Received: MSG_ID_BT_ADV_ONOFF: %@", payload);
+            PTDLog(@"App Message Received: MSG_ID_BT_ADV_ONOFF: %@", payload);
             break;
         case MSG_ID_BT_SET_SCRATCH:
-            NSLog(@"App Message Received: MSG_ID_BT_SET_SCRATCH: %@", payload);
+            PTDLog(@"App Message Received: MSG_ID_BT_SET_SCRATCH: %@", payload);
             break;
         case MSG_ID_BT_GET_SCRATCH:
-            NSLog(@"App Message Received: MSG_ID_BT_GET_SCRATCH: %@", payload);
+            PTDLog(@"App Message Received: MSG_ID_BT_GET_SCRATCH: %@", payload);
             if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateScratchNumber:withValue:)]) {
                 BT_SCRATCH_T rawData;
                 [payload getBytes:&rawData range:NSMakeRange(0, payload.length)];
@@ -550,16 +550,16 @@ typedef enum { //These occur in sequence
             }
             break;
         case MSG_ID_BT_RESTART:
-            NSLog(@"App Message Received: MSG_ID_BT_RESTART: %@", payload);
+            PTDLog(@"App Message Received: MSG_ID_BT_RESTART: %@", payload);
             break;
         case MSG_ID_BL_CMD_START:
-            NSLog(@"App Message Received: MSG_ID_BL_CMD_START: %@", payload);
+            PTDLog(@"App Message Received: MSG_ID_BL_CMD_START: %@", payload);
             break;
         case MSG_ID_BL_FW_BLOCK:
-            NSLog(@"App Message Received: MSG_ID_BL_FW_BLOCK: %@", payload);
+            PTDLog(@"App Message Received: MSG_ID_BL_FW_BLOCK: %@", payload);
             break;
         case MSG_ID_BL_STATUS:
-            NSLog(@"App Message Received: MSG_ID_BL_STATUS: %@", payload);
+            PTDLog(@"App Message Received: MSG_ID_BL_STATUS: %@", payload);
             UInt8 byte;
             [payload getBytes:&byte length:1];
             BL_HL_STATE_T highLevelStatus = byte;
@@ -567,7 +567,7 @@ typedef enum { //These occur in sequence
             break;
         case MSG_ID_BL_GET_META:
         {
-            NSLog(@"App Message Received: MSG_ID_BL_GET_META: %@", payload);
+            PTDLog(@"App Message Received: MSG_ID_BL_GET_META: %@", payload);
             BL_SKETCH_META_DATA_T meta;
             [payload getBytes:&meta range:NSMakeRange(0, sizeof(BL_SKETCH_META_DATA_T))];
             UInt8 nameSize = (meta.hexNameSize < member_size(BL_SKETCH_META_DATA_T, hexName))? meta.hexNameSize:member_size(BL_SKETCH_META_DATA_T, hexName);
@@ -582,13 +582,13 @@ typedef enum { //These occur in sequence
         }
             break;
         case MSG_ID_CC_LED_WRITE:
-            NSLog(@"App Message Received: MSG_ID_CC_LED_WRITE: %@", payload);
+            PTDLog(@"App Message Received: MSG_ID_CC_LED_WRITE: %@", payload);
             break;
         case MSG_ID_CC_LED_WRITE_ALL:
-            NSLog(@"App Message Received: MSG_ID_CC_LED_WRITE_ALL: %@", payload);
+            PTDLog(@"App Message Received: MSG_ID_CC_LED_WRITE_ALL: %@", payload);
             break;
         case MSG_ID_CC_LED_READ_ALL:
-            NSLog(@"App Message Received: MSG_ID_CC_LED_READ_ALL: %@", payload);
+            PTDLog(@"App Message Received: MSG_ID_CC_LED_READ_ALL: %@", payload);
             if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateLedColor:)]) {
                 LED_SETTING_T rawData;
                 [payload getBytes:&rawData range:NSMakeRange(0, sizeof(LED_SETTING_T))];
@@ -603,7 +603,7 @@ typedef enum { //These occur in sequence
             break;
         case MSG_ID_CC_ACCEL_READ:
         {
-            NSLog(@"App Message Received: MSG_ID_CC_ACCEL_READ: %@", payload);
+            PTDLog(@"App Message Received: MSG_ID_CC_ACCEL_READ: %@", payload);
             if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateAccelerationAxes:)]) {
                 ACC_READING_T rawData;
                 [payload getBytes:&rawData range:NSMakeRange(0, sizeof(ACC_READING_T))];
@@ -617,7 +617,7 @@ typedef enum { //These occur in sequence
         }
         case MSG_ID_CC_TEMP_READ:
         {
-            NSLog(@"App Message Received: MSG_ID_CC_TEMP_READ: %@", payload);
+            PTDLog(@"App Message Received: MSG_ID_CC_TEMP_READ: %@", payload);
             if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateTemperature:)]) {
                 SInt8 temp;
                 [payload getBytes:&temp range:NSMakeRange(0, sizeof(SInt8))];
@@ -627,13 +627,13 @@ typedef enum { //These occur in sequence
         }
         case MSG_ID_DB_LOOPBACK:
 
-            NSLog(@"App Message Received: MSG_ID_DB_LOOPBACK: %@", payload);
+            PTDLog(@"App Message Received: MSG_ID_DB_LOOPBACK: %@", payload);
             if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateLoopbackPayload:)]) {
                 [self.delegate bean:self didUpdateLoopbackPayload:payload];
             }
             break;
         case MSG_ID_DB_COUNTER:
-            NSLog(@"App Message Received: MSG_ID_DB_COUNTER: %@", payload);
+            PTDLog(@"App Message Received: MSG_ID_DB_COUNTER: %@", payload);
             break;
             
         default:

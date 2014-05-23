@@ -47,7 +47,7 @@
 -(void)validate
 {
     // Discover services
-    NSLog(@"Searching for Gatt Serial Pass service: %@", GLOBAL_SERIAL_PASS_SERVICE_UUID);
+    PTDLog(@"Searching for Gatt Serial Pass service: %@", GLOBAL_SERIAL_PASS_SERVICE_UUID);
     if(peripheral.state == CBPeripheralStateConnected)
     {
         [peripheral discoverServices:[NSArray arrayWithObjects:[CBUUID UUIDWithString:GLOBAL_SERIAL_PASS_SERVICE_UUID]
@@ -117,7 +117,7 @@
     }
     
     [peripheral writeValue:data forCharacteristic:serial_pass_characteristic type:CBCharacteristicWriteWithoutResponse];
-   // NSLog(@"Packet Written to Serial Pass Characteristic: %@", data);
+   // PTDLog(@"Packet Written to Serial Pass Characteristic: %@", data);
 
 }
 
@@ -132,7 +132,7 @@
             for (CBService * service in peripheral.services) {
                 // Save Gatt Serail service
                 if ([service.UUID isEqual:[CBUUID UUIDWithString:GLOBAL_SERIAL_PASS_SERVICE_UUID]]) {
-                    NSLog(@"%@: GATT Serial Pass profile  found", self.class.description);
+                    PTDLog(@"%@: GATT Serial Pass profile  found", self.class.description);
                     
                     // Save serial pass service
                     serial_pass_service = service;
@@ -143,7 +143,7 @@
                     //If all characteristics are found
                     if(serial_pass_characteristic)
                     {
-                        NSLog(@"%@: Found all Gatt Serial characteristics", self.class.description);
+                        PTDLog(@"%@: Found all Gatt Serial characteristics", self.class.description);
                         if(serial_pass_characteristic.isNotifying){
                             [self __notifyValidity];
                         }else{
@@ -162,7 +162,7 @@
             }
         }
     }else {
-        NSLog(@"%@: GATT Serial Pass service discovery was unsuccessful", self.class.description);
+        PTDLog(@"%@: GATT Serial Pass service discovery was unsuccessful", self.class.description);
         
     }
 }
@@ -177,7 +177,7 @@
             if ((
                  serial_pass_characteristic
                  )){
-                NSLog(@"%@: Found all GATT Serial Pass characteristics", self.class.description);
+                PTDLog(@"%@: Found all GATT Serial Pass characteristics", self.class.description);
                 
                 if(serial_pass_characteristic.isNotifying){
                     [self __notifyValidity];
@@ -188,7 +188,7 @@
                 }
             }else{
                 // Could not find all characteristics!
-                NSLog(@"%@: Could not find all GATT Serial Pass characteristics!", self.class.description);
+                PTDLog(@"%@: Could not find all GATT Serial Pass characteristics!", self.class.description);
                 
                 NSMutableDictionary *errorDetail = [NSMutableDictionary dictionary];
                 [errorDetail setValue:@"Could not find all GATT Serial Pass characteristics" forKey:NSLocalizedDescriptionKey];
@@ -198,7 +198,7 @@
         }
     }
     else {
-        NSLog(@"%@: Characteristics discovery was unsuccessful", self.class.description);
+        PTDLog(@"%@: Characteristics discovery was unsuccessful", self.class.description);
         //Alert Delegate
     }
 }
@@ -219,7 +219,7 @@
     {
         if (error) {
             // Dropping writeWithoutReponse packets. Stop the firmware upload and notify the delegate
-             NSLog(@"%@: Error: Dropping writeWithoutReponse packets!!", self.class.description);
+             PTDLog(@"%@: Error: Dropping writeWithoutReponse packets!!", self.class.description);
         }else{
 
         }
@@ -232,13 +232,13 @@
     {
         if([characteristic isEqual:serial_pass_characteristic])
         {
-            NSLog(@"%@: Gatt Serial Characteristic set to \"Notify\"", self.class.description);
+            PTDLog(@"%@: Gatt Serial Characteristic set to \"Notify\"", self.class.description);
             //Alert Delegate that device is connected. At this point, the device should be added to the list of connected devices.
             
             [self __notifyValidity];
         }
     }else{
-        NSLog(@"%@: Error trying to set Characteristic to \"Notify\"", self.class.description);
+        PTDLog(@"%@: Error trying to set Characteristic to \"Notify\"", self.class.description);
     }
 }
 

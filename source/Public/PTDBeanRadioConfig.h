@@ -24,7 +24,7 @@
     // listens for the Bean to tell us the config
     -(void)bean:(PTDBean*)bean didUpdateRadioConfig:(PTDBeanRadioConfig*)config {
         NSString *msg = [NSString stringWithFormat:@"received advertising interval:%f connection interval:%f name:%@ power:%d", config.advertisingInterval, config.connectionInterval, config.name, (int)config.power];
-        NSLog(@"%@",msg);
+        PTDLog(@"%@",msg);
     }
 
  */
