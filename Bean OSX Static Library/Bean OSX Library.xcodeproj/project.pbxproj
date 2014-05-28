@@ -15,6 +15,8 @@
 		521A4E9D19103E5F005B3097 /* NSData+CRC.m in Sources */ = {isa = PBXBuildFile; fileRef = 521A4E9C19103E5F005B3097 /* NSData+CRC.m */; };
 		521A4EA319116C0F005B3097 /* CBPeripheral+isConnected_Universal.m in Sources */ = {isa = PBXBuildFile; fileRef = 521A4EA219116C0F005B3097 /* CBPeripheral+isConnected_Universal.m */; };
 		52BC523718D96A610083A031 /* AppMessagingLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 52BC523618D96A610083A031 /* AppMessagingLayer.m */; };
+		52BF98A119352E59008DCA31 /* BatteryProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = 52BF989F19352E59008DCA31 /* BatteryProfile.h */; };
+		52BF98A219352E59008DCA31 /* BatteryProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 52BF98A019352E59008DCA31 /* BatteryProfile.m */; };
 		52D02ED719102AD300996077 /* NSDate+LocalTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D02ED619102AD300996077 /* NSDate+LocalTime.m */; };
 		52D34E2818A9B455002F0C59 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D34E2718A9B455002F0C59 /* Cocoa.framework */; };
 		52D34E3918A9B455002F0C59 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D34E3818A9B455002F0C59 /* XCTest.framework */; };
@@ -88,6 +90,8 @@
 		5251175318ADA0C80088DE2D /* GattCharacteristicObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GattCharacteristicObserver.h; path = Transport/GattCharacteristicObserver.h; sourceTree = "<group>"; };
 		52BC523518D96A610083A031 /* AppMessagingLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppMessagingLayer.h; path = ../../source/AppMessages/AppMessagingLayer.h; sourceTree = "<group>"; };
 		52BC523618D96A610083A031 /* AppMessagingLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppMessagingLayer.m; path = ../../source/AppMessages/AppMessagingLayer.m; sourceTree = "<group>"; };
+		52BF989F19352E59008DCA31 /* BatteryProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BatteryProfile.h; path = Battery/BatteryProfile.h; sourceTree = "<group>"; };
+		52BF98A019352E59008DCA31 /* BatteryProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BatteryProfile.m; path = Battery/BatteryProfile.m; sourceTree = "<group>"; };
 		52CD166D18CE7B8D00636119 /* PTDBean+Protected.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "PTDBean+Protected.h"; path = "../../source/PTDBean+Protected.h"; sourceTree = "<group>"; };
 		52CD166E18CE8C1B00636119 /* PTDBeanManager+Protected.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "PTDBeanManager+Protected.h"; path = "../../source/PTDBeanManager+Protected.h"; sourceTree = "<group>"; };
 		52D02ED519102AD300996077 /* NSDate+LocalTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+LocalTime.h"; sourceTree = "<group>"; };
@@ -207,6 +211,15 @@
 				52BC523618D96A610083A031 /* AppMessagingLayer.m */,
 			);
 			name = "Application Messages";
+			sourceTree = "<group>";
+		};
+		52BF989E192FD21B008DCA31 /* Battery */ = {
+			isa = PBXGroup;
+			children = (
+				52BF989F19352E59008DCA31 /* BatteryProfile.h */,
+				52BF98A019352E59008DCA31 /* BatteryProfile.m */,
+			);
+			name = Battery;
 			sourceTree = "<group>";
 		};
 		52D34E1B18A9B455002F0C59 = {
@@ -329,6 +342,7 @@
 		52D34E9318A9B890002F0C59 /* BLE Profiles */ = {
 			isa = PBXGroup;
 			children = (
+				52BF989E192FD21B008DCA31 /* Battery */,
 				52D34E9418A9B890002F0C59 /* Device Info */,
 				52D34E9718A9B890002F0C59 /* Gatt Serial */,
 				52D34EA518A9B890002F0C59 /* OAD */,
@@ -408,6 +422,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52BF98A119352E59008DCA31 /* BatteryProfile.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -528,6 +543,7 @@
 				52D34EB318A9B890002F0C59 /* DevInfoProfile.m in Sources */,
 				969FDE99191A9DE80068B99A /* PTDBeanRadioConfig.m in Sources */,
 				52D34EBF18A9B890002F0C59 /* GattTransport.m in Sources */,
+				52BF98A219352E59008DCA31 /* BatteryProfile.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

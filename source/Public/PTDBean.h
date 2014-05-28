@@ -167,6 +167,10 @@ typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
  */
 -(NSNumber*)RSSI;
 /**
+ *  The Peripheral Battery Voltage.
+ */
+-(NSNumber*)batteryVoltage;
+/**
   The BeanState of the bean.
     
      Example:
@@ -304,6 +308,11 @@ typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
  *  Reads the temperature.
  *  @see [PTDBeanDelegate bean:didUpdateTemperature:]
  */
+-(void)readBatteryVoltage;
+/**
+ *  Reads the battery voltage.
+ *  @see [PTDBeanDelegate beanDidUpdateBatteryVoltage:error:]
+ */
 -(void)readTemperature;
 /**
  *  Sets the pairing pin.
@@ -429,6 +438,13 @@ typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
  *  @param degrees_celsius the temperature in celsius
  */
 -(void)bean:(PTDBean*)bean didUpdateTemperature:(NSNumber*)degrees_celsius;
+/**
+ *  The Bean Battery Voltage reading
+ *
+ *  @param bean            the bean being queried
+ *  @param error           error returned during Battery Voltage read
+ */
+-(void)beanDidUpdateBatteryVoltage:(PTDBean*)bean error:(NSError*)error;
 /**
  *  The payload returned from a Bean after a loopback call
  *

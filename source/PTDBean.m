@@ -9,6 +9,7 @@
 #import "PTDBean.h"
 #import "PTDBeanManager+Protected.h"
 #import "GattSerialProfile.h"
+#import "BatteryProfile.h"
 #import "AppMessages.h"
 #import "AppMessagingLayer.h"
 #import "NSDate+LocalTime.h"
@@ -28,7 +29,7 @@ typedef enum { //These occur in sequence
     BeanArduinoOADLocalState_Finished,
 } BeanArduinoOADLocalState;
 
-@interface PTDBean () <CBPeripheralDelegate, ProfileDelegate_Protocol, AppMessagingLayerDelegate, OAD_Delegate>
+@interface PTDBean () <CBPeripheralDelegate, ProfileDelegate_Protocol, AppMessagingLayerDelegate, OAD_Delegate, BatteryProfileDelegate>
 @end
 
 @implementation PTDBean
@@ -49,6 +50,7 @@ typedef enum { //These occur in sequence
     DevInfoProfile*             deviceInfo_profile;
     OadProfile*                 oad_profile;
     GattSerialProfile*          gatt_serial_profile;
+    BatteryProfile*             battery_profile;
     
     NSData*                     arduinoFwImage;
     NSInteger                   arduinoFwImage_chunkIndex;
@@ -86,6 +88,14 @@ typedef enum { //These occur in sequence
         return [_peripheral RSSI];
     }
     return _RSSI;
+}
+-(NSNumber*)batteryVoltage{
+    if(_peripheral.state == CBPeripheralStateConnected
+       && battery_profile
+       && [battery_profile batteryVoltage]){
+        return [battery_profile batteryVoltage];
+    }
+    return nil;
 }
 -(BeanState)state{
     return _state;
@@ -186,8 +196,8 @@ typedef enum { //These occur in sequence
         return;
     }
     BT_RADIOCONFIG_T raw;
-    raw.adv_int = config.advertisingInterval*1000;
-    raw.conn_int = config.connectionInterval*1000;
+    raw.adv_int = config.advertisingInterval;
+    raw.conn_int = config.connectionInterval;
     
     const UInt8* nameBytes = [[config.name dataUsingEncoding:NSUTF8StringEncoding] bytes];
     memset(&(raw.local_name), ' ', config.name.length);
@@ -349,9 +359,12 @@ typedef enum { //These occur in sequence
     oad_profile.profileDelegate = self;
     gatt_serial_profile = [[GattSerialProfile alloc] initWithPeripheral:_peripheral  delegate:nil];
     gatt_serial_profile.profileDelegate = self;
+    battery_profile = [[BatteryProfile alloc] initWithPeripheral:_peripheral delegate:self];
+    battery_profile.profileDelegate = self;
     profiles = [[NSArray alloc] initWithObjects:deviceInfo_profile,
                 oad_profile,
                 gatt_serial_profile,
+                battery_profile,
                 nil];
     validatedProfileCount = 0;
 //    for(id<Profile_Protocol> profile in profiles){
@@ -657,6 +670,15 @@ typedef enum { //These occur in sequence
     if(_delegate){
         if([_delegate respondsToSelector:@selector(bean:firmwareUploadTimeLeft:withPercentage:)]){
             [_delegate bean:self firmwareUploadTimeLeft:seconds withPercentage:percentageComplete];
+        }
+    }
+}
+    
+#pragma mark Battery Monitoring Delegate callbacks
+-(void)batteryProfileDidUpdate:(BatteryProfile*)profile{
+    if(_delegate){
+        if([_delegate respondsToSelector:@selector(beanDidUpdateBatteryVoltage:error:)]){
+            [_delegate beanDidUpdateBatteryVoltage:self error:nil];
         }
     }
 }

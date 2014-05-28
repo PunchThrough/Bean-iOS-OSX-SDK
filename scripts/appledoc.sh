@@ -9,7 +9,7 @@ $APPLEDOC_PATH \
 --project-name "LightBlue Bean" \
 --project-company "Punch Through Design" \
 --company-id "com.punchthrough.LightBlue-Bean" \
---output ~/Desktop/"LightBlue-Bean" \
+--output ../Documents \
 --keep-undocumented-objects \
 --keep-undocumented-members \
 --keep-intermediate-files \
