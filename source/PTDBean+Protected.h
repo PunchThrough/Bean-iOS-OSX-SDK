@@ -27,5 +27,8 @@
 -(void)setAdvertisementData:(NSDictionary*)adData;
 -(void)setLastDiscovered:(NSDate*)date;
 -(void)setBeanManager:(id<PTDBeanManager>)manager;
+-(void)sendLoopbackDebugMessage:(NSInteger)length;
+-(BOOL)updateFirmwareWithImageAPath:(NSString*)imageApath andImageBPath:(NSString*)imageBpath;
+-(void)setPairingPin:(UInt16)pinCode;
 
 @end

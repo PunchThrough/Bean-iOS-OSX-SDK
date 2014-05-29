@@ -138,23 +138,11 @@ typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
  */
 
 @interface PTDBean : NSObject
+/// @name Identifying a Bean
 /**
- *  The delegate object for the Bean. 
- */
-@property (nonatomic, weak) id<PTDBeanDelegate> delegate;
-/**
- * The date the Bean firmware was programmed.
- */
-@property (nonatomic, strong) NSDate *dateProgrammed;
-/**
- *  The name of the Arduino Sketch used to program the Bean firmware.
- */
-@property (nonatomic, strong) NSString *sketchName;
-
-/**
- *  The Peripheral identifier. 
- *  For more info, refer to the [Apple identifier documentation](https://developer.apple.com/library/ios/documentation/CoreBluetooth/Reference/CBPeripheral_Class/translated_content/CBPeripheral.html#//apple_ref/occ/instp/CBPeripheral/identifier)
- */
+*  The Peripheral identifier.
+*  For more info, refer to the [Apple identifier documentation](https://developer.apple.com/library/ios/documentation/CoreBluetooth/Reference/CBPeripheral_Class/translated_content/CBPeripheral.html#//apple_ref/occ/instp/CBPeripheral/identifier)
+*/
 -(NSUUID*)identifier;
 /**
  *  The Peripheral name.
@@ -162,38 +150,9 @@ typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
  */
 -(NSString*)name;
 /**
- *  The Peripheral RSSI.
- *  For more info, refer to the [Apple RSSI documentation](https://developer.apple.com/library/ios/documentation/CoreBluetooth/Reference/CBPeripheral_Class/translated_content/CBPeripheral.html#//apple_ref/occ/instp/CBPeripheral/RSSI)
+ *  The delegate object for the Bean. 
  */
--(NSNumber*)RSSI;
-/**
- *  The Peripheral Battery Voltage.
- */
--(NSNumber*)batteryVoltage;
-/**
-  The BeanState of the bean.
-    
-     Example:
-     if (self.bean.state == BeanState_Discovered) {
-        PTDLog(@"Bean discovered, try connecting");
-     }
-     else if (self.bean.state == BeanState_ConnectedAndValidated) {
-        PTDLog(@"Bean connected, try calling an api");
-     }
- */
--(BeanState)state;
-/**
- *  A dictionary containing [CBAdvertisementDataLocalNameKey](https://developer.apple.com/library/ios/documentation/CoreBluetooth/Reference/CBCentralManagerDelegate_Protocol/translated_content/CBCentralManagerDelegate.html)
- */
--(NSDictionary*)advertisementData;
-/**
- *  The last time this bean was discovered by a central.
- */
--(NSDate*)lastDiscovered;
-/**
- *  The version of the Bean firmware.
- */
--(NSString*)firmwareVersion;
+@property (nonatomic, weak) id<PTDBeanDelegate> delegate;
 /**
  *  Used to create and manage Beans.
  *
@@ -201,10 +160,54 @@ typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
  */
 -(PTDBeanManager*)beanManager;
 /**
- *  Reads the Arduino Sketch.
- *  @see [PTDBeanDelegate bean:didUpdateSketchName:dateProgrammed:crc32:]
+ *  A dictionary containing [CBAdvertisementDataLocalNameKey](https://developer.apple.com/library/ios/documentation/CoreBluetooth/Reference/CBCentralManagerDelegate_Protocol/translated_content/CBCentralManagerDelegate.html)
  */
--(void)readArduinoSketchInfo;
+-(NSDictionary*)advertisementData;
+/**
+ *  The version of the Bean firmware.
+ */
+-(NSString*)firmwareVersion;
+/**
+ *  The last time this bean was discovered by a central.
+ */
+-(NSDate*)lastDiscovered;
+/// @name Monitoring a Bean's Connection State
+/**
+ The BeanState of the bean.
+ 
+ Example:
+ if (self.bean.state == BeanState_Discovered) {
+ PTDLog(@"Bean discovered, try connecting");
+ }
+ else if (self.bean.state == BeanState_ConnectedAndValidated) {
+ PTDLog(@"Bean connected, try calling an api");
+ }
+ */
+-(BeanState)state;
+/// @name Radio Configuration
+/**
+ Reads the Radio Configuration.
+ @see [PTDBeanDelegate bean:didUpdateRadioConfig:]
+ @see PTDBeanRadioConfig
+ */
+-(void)readRadioConfig;
+/**
+ Sets the Radio Config.
+ @param config see PTDBeanRadioConfig
+ */
+-(void)setRadioConfig:(PTDBeanRadioConfig*)config;
+/// @name Accessing a Bean's Received Signal Strength Indicator (RSSI) Data
+/**
+ *  Reads the RSSI.
+ *  @see [PTDBeanDelegate beanDidUpdateRSSI:error:]
+ */
+-(void)readRSSI;
+/**
+ *  The Peripheral RSSI.
+ *  For more info, refer to the [Apple RSSI documentation](https://developer.apple.com/library/ios/documentation/CoreBluetooth/Reference/CBPeripheral_Class/translated_content/CBPeripheral.html#//apple_ref/occ/instp/CBPeripheral/RSSI)
+ */
+-(NSNumber*)RSSI;
+/// @name Programming an Arduino Sketch
 /**
  *  Programs the Arduino with a hex file.
  *
@@ -213,43 +216,32 @@ typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
  *  @see [PTDBeanDelegate bean:didProgramArduinoWithError:]
  */
 -(void)programArduinoWithRawHexImage:(NSData*)hexImage andImageName:(NSString*)name;
+/// @name Accessing Arduino Sketch Information
 /**
- *  A request to have Data sent from the Bean to this app.
- *
- *  @param length The size of the data to send.
- *  @see [PTDBeanDelegate bean:didUpdateLoopbackPayload:]
+ *  Reads the Arduino Sketch.
+ *  @see [PTDBeanDelegate bean:didUpdateSketchName:dateProgrammed:crc32:]
  */
--(void)sendLoopbackDebugMessage:(NSInteger)length;
+-(void)readArduinoSketchInfo;
 /**
- *  Sends data to the Bean over a serial port.
- *  @param data data to send over the serial port
- *  @see [PTDBeanDelegate bean:serialDataReceived:]
+ *  The name of the Arduino Sketch used to program the Bean firmware.
  */
--(void)sendSerialData:(NSData*)data;
+@property (nonatomic, strong) NSString *sketchName;
 /**
- *  Sends a NSString over a serial port
- *  @param string string which is converted to NSData for sending over the serial port
- *  @see [PTDBeanDelegate bean:serialDataReceived:]
+ * The date the Bean firmware was programmed.
  */
--(void)sendSerialString:(NSString*)string;
-/**
- Reads the Beans Accelerometer.
-    
-    Example:
-    // let the bean know we implement PTDBeanDelegate
-    self.bean.delegate = self;
-    // ask the bean for the acceleration data
-    [self.bean readAccelerationAxis];
-    
-    // check for the bean to send it back
-    -(void)bean:(PTDBean*)bean didUpdateAccelerationAxes:(PTDAcceleration)acceleration {
-        NSString *msg = [NSString stringWithFormat:@"x:%f y:%f z:%f", acceleration.x,acceleration.y,acceleration.z];
-        PTDLog(@"%@", msg);
-    }
+@property (nonatomic, strong) NSDate *dateProgrammed;
 
- @see [PTDBeanDelegate bean:didUpdateAccelerationAxes:]
+/// @name Accessing Battery Voltage
+/**
+ *  Reads the temperature.
+ *  @see [PTDBeanDelegate bean:didUpdateTemperature:]
  */
--(void)readAccelerationAxis;
+-(void)readBatteryVoltage;
+/**
+ *  The Peripheral Battery Voltage.
+ */
+-(NSNumber*)batteryVoltage;
+/// @name Accessing LED colors
 /**
  *  Sets the Led Color
  *  @param color Color object which is used to set the Led
@@ -270,6 +262,41 @@ typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
  *  @see [PTDBeanDelegate bean:didUpdateLedColor:]
  */
 -(void)readLedColor;
+
+/// @name Sending Serial Data
+/**
+ *  Sends data to the Bean over a serial port.
+ *  @param data data to send over the serial port
+ *  @see [PTDBeanDelegate bean:serialDataReceived:]
+ */
+-(void)sendSerialData:(NSData*)data;
+/**
+ *  Sends a NSString over a serial port
+ *  @param string string which is converted to NSData for sending over the serial port
+ *  @see [PTDBeanDelegate bean:serialDataReceived:]
+ */
+-(void)sendSerialString:(NSString*)string;
+
+/// @name Accessing Acceleration Data
+/**
+ Reads the Beans Accelerometer.
+    
+    Example:
+    // let the bean know we implement PTDBeanDelegate
+    self.bean.delegate = self;
+    // ask the bean for the acceleration data
+    [self.bean readAccelerationAxis];
+    
+    // check for the bean to send it back
+    -(void)bean:(PTDBean*)bean didUpdateAccelerationAxes:(PTDAcceleration)acceleration {
+        NSString *msg = [NSString stringWithFormat:@"x:%f y:%f z:%f", acceleration.x,acceleration.y,acceleration.z];
+        PTDLog(@"%@", msg);
+    }
+
+ @see [PTDBeanDelegate bean:didUpdateAccelerationAxes:]
+ */
+-(void)readAccelerationAxis;
+/// @name Accessing "Scratch" Data
 /**
    Sets the Scratch Number with data. Think of it as temporary storage for.
  
@@ -299,47 +326,14 @@ typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
  *  @see [PTDBeanDelegate bean:didUpdateScratchNumber:withValue:]
  */
 -(void)readScratchBank:(NSInteger)bank;
-/**
- *  Reads the RSSI.
- *  @see [PTDBeanDelegate beanDidUpdateRSSI:error:]
- */
--(void)readRSSI;
-/**
- *  Reads the temperature.
- *  @see [PTDBeanDelegate bean:didUpdateTemperature:]
- */
--(void)readBatteryVoltage;
+
+/// @name Accessing Temperature Data
 /**
  *  Reads the battery voltage.
  *  @see [PTDBeanDelegate beanDidUpdateBatteryVoltage:error:]
  */
 -(void)readTemperature;
-/**
- *  Sets the pairing pin.
- *
- *  @param pinCode the code to set the pairing pin
- */
--(void)setPairingPin:(UInt16)pinCode;
-/**
-  Reads the Radio Configuration.
-  @see [PTDBeanDelegate bean:didUpdateRadioConfig:]
-  @see PTDBeanRadioConfig
- */
--(void)readRadioConfig;
-/**
- Sets the Radio Config.
- @param config see PTDBeanRadioConfig
- */
--(void)setRadioConfig:(PTDBeanRadioConfig*)config;
-/**
- *  Updates Firmware with a path to the hex file.
- *
- *  @param imageApath XXX
- *  @param imageBpath XXX
- *
- *  @return YES if successful
- */
--(BOOL)updateFirmwareWithImageAPath:(NSString*)imageApath andImageBPath:(NSString*)imageBpath;
+
 @end
 
 /**

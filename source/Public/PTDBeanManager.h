@@ -84,6 +84,7 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
  */
 @interface PTDBeanManager : NSObject
 
+/// @name Monitoring Properties
 /**
  *  The delegate object for the BeanManager. 
  @see PTDBeanManagerDelegate
@@ -93,6 +94,8 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
  The BeanManagerState of the BeanManager
  */
 @property (nonatomic, assign, readonly) BeanManagerState state;
+
+/// @name Initializing a Bean Manager
 /**
  *  Initializes the BeanManager
  *
@@ -101,6 +104,8 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
  *  @return an instance of the BeanManager
  */
 -(id)initWithDelegate:(id<PTDBeanManagerDelegate>)delegate;
+
+/// @name Scanning or Stopping Scans for Beans
 /**
  *  Begins scanning for Beans
  *
@@ -113,6 +118,8 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
  *  @param error see BeanErrors
  */
 -(void)stopScanningForBeans_error:(NSError**)error;
+
+/// @name Establishing or Canceling Connections with Beans
 /**
  *  Connects to a Bean
  *
