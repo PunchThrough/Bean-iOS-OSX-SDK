@@ -15,6 +15,7 @@
     self = [super init];
     if (self) {
         //Init Code
+        _isRequired = TRUE;
         profileHasReportedValidity = FALSE;
     }
     return self;

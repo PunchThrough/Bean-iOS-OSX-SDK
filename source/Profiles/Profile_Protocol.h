@@ -14,6 +14,7 @@
 
 @required
 @property (nonatomic, weak) id<ProfileDelegate_Protocol> profileDelegate;
+@property (nonatomic) BOOL isRequired;
 
 -(void)validate;
 -(BOOL)isValid:(NSError**)error;

@@ -45,7 +45,6 @@ typedef enum { //These occur in sequence
     
     NSTimer*                    validationRetryTimer;
     NSInteger                   validationRetryCount;
-    NSInteger                   validatedProfileCount;
     NSArray*                    profiles;
     DevInfoProfile*             deviceInfo_profile;
     OadProfile*                 oad_profile;
@@ -361,15 +360,12 @@ typedef enum { //These occur in sequence
     gatt_serial_profile.profileDelegate = self;
     battery_profile = [[BatteryProfile alloc] initWithPeripheral:_peripheral delegate:self];
     battery_profile.profileDelegate = self;
+    battery_profile.isRequired = FALSE;
     profiles = [[NSArray alloc] initWithObjects:deviceInfo_profile,
                 oad_profile,
                 gatt_serial_profile,
                 battery_profile,
                 nil];
-    validatedProfileCount = 0;
-//    for(id<Profile_Protocol> profile in profiles){
-//        [profile validate];
-//    }
     [_peripheral discoverServices:nil];
 }
 
@@ -483,9 +479,14 @@ typedef enum { //These occur in sequence
 #pragma mark -
 #pragma mark Profile Delegate callbacks
 -(void)profileValidated:(id<Profile_Protocol>)profile{
-    validatedProfileCount++;
-    if(validatedProfileCount >= [profiles count]
-       && _state != BeanState_ConnectedAndValidated){
+    for(id<Profile_Protocol> profile in profiles){
+        if([profile isRequired]
+           && ![profile isValid:nil]){
+            return;
+        }
+    }
+    //At this point, all required profiles are validated
+    if(_state != BeanState_ConnectedAndValidated){
         //Initialize Application Messaging layer
         appMessageLayer = [[AppMessagingLayer alloc] initWithGattSerialProfile:gatt_serial_profile];
         appMessageLayer.delegate = self;
