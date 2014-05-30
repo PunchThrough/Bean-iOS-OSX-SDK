@@ -68,6 +68,10 @@
                 [self.delegate GattSerialTransport_error:error];
             }
         }
+        if(error.code == BeanErrors_NotConnected){
+            //Bean is disconnected, clear the outgoing buffer and stop retrying 
+            gattPacketTxQueue = [[NSMutableArray alloc] init];
+        }
         return;
     }else{
         //Unload successfully sent packet

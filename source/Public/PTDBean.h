@@ -12,7 +12,7 @@
 #import <IOBluetooth/IOBluetooth.h>
 #endif
 
-#define ARDUINO_OAD_GENERIC_TIMEOUT_SEC 10
+#define ARDUINO_OAD_GENERIC_TIMEOUT_SEC 3
 #define TPDBeanErrorDomain @"TPDBeanErrorDomain"
 
 @class PTDBeanRadioConfig;

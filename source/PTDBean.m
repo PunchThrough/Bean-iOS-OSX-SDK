@@ -56,6 +56,7 @@ typedef enum { //These occur in sequence
     BeanArduinoOADLocalState    localArduinoOADState;
     NSTimer*                    arduinoOADStateTimout;
     NSTimer*                    arduinoOADChunkSendTimer;
+    
 }
 
 //Enforce that you can't use the "init" function of this class
@@ -370,6 +371,7 @@ typedef enum { //These occur in sequence
 }
 
 -(void)__alertDelegateOfArduinoOADCompletion:(NSError*)error{
+    [self __resetArduinoOADLocals];
     if(_delegate){
         if([_delegate respondsToSelector:@selector(bean:didProgramArduinoWithError:)]){
             [_delegate bean:self didProgramArduinoWithError:error];
@@ -390,8 +392,7 @@ typedef enum { //These occur in sequence
     arduinoOADStateTimout = [NSTimer scheduledTimerWithTimeInterval:duration target:self selector:@selector(__arduinoOADTimeout:) userInfo:nil repeats:NO];
 }
 -(void)__arduinoOADTimeout:(NSTimer*)timer{
-    localArduinoOADState = BeanArduinoOADLocalState_Inactive;
-    NSError* error = [BEAN_Helper basicError:@"Arduino programming failed" domain:NSStringFromClass([self class]) code:100];
+    NSError* error = [BEAN_Helper basicError:@"Sketch upload failed!" domain:NSStringFromClass([self class]) code:0];
     [self __alertDelegateOfArduinoOADCompletion:error];
 }
 
@@ -436,19 +437,28 @@ typedef enum { //These occur in sequence
             break;
         case BL_HL_STATE_READY:
             if(localArduinoOADState == BeanArduinoOADLocalState_SendingStartCommand){
-                if (arduinoOADStateTimout) [arduinoOADStateTimout invalidate];
+                [self __setArduinoOADTimeout:ARDUINO_OAD_GENERIC_TIMEOUT_SEC];
                 //Send first Chunk
                 [self __sendArduinoOADChunk];
                 localArduinoOADState = BeanArduinoOADLocalState_SendingChunks;
+            }else{
+                [self __setArduinoOADTimeout:ARDUINO_OAD_GENERIC_TIMEOUT_SEC];
             }
             break;
         case BL_HL_STATE_PROGRAMMING:
+            [self __setArduinoOADTimeout:ARDUINO_OAD_GENERIC_TIMEOUT_SEC];
             break;
         case BL_HL_STATE_VERIFY:
             break;
         case BL_HL_STATE_COMPLETE:
             [self __alertDelegateOfArduinoOADCompletion:nil];
             break;
+        case BL_HL_STATE_ERROR:
+        {
+            NSError *error = [BEAN_Helper basicError:@"Sketch upload failed!" domain:NSStringFromClass([self class]) code:0];
+            [self __alertDelegateOfArduinoOADCompletion:error];
+            break;
+        }
         default:
             break;
     }
@@ -574,10 +584,13 @@ typedef enum { //These occur in sequence
             break;
         case MSG_ID_BL_STATUS:
             PTDLog(@"App Message Received: MSG_ID_BL_STATUS: %@", payload);
-            UInt8 byte;
-            [payload getBytes:&byte length:1];
-            BL_HL_STATE_T highLevelStatus = byte;
-            [self __handleArduinoOADRemoteStateChange:highLevelStatus];
+            BL_MSG_STATUS_T stateMsg;
+            [payload getBytes:&stateMsg range:NSMakeRange(0, sizeof(BL_MSG_STATUS_T))];
+            BL_HL_STATE_T highLevelState = stateMsg.hlState;
+            BL_STATE_T internalState = stateMsg.intState;
+            UInt16 blocks = stateMsg.blocksSent;
+            UInt16 bytes = stateMsg.bytesSent;
+            [self __handleArduinoOADRemoteStateChange:highLevelState];
             break;
         case MSG_ID_BL_GET_META:
         {

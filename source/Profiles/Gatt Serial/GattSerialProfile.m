@@ -108,11 +108,11 @@
 -(void)user:(id<GattCharacteristicObserver>)user hasDataForTransmission:(NSData*)data error:(NSError**)error
 {
     if(!peripheral){
-        if(error) *error = [BEAN_Helper basicError:@"Peripheral is not connected" domain:@"BEAN API:GATT Serial Profile" code:100];
+        if(error) *error = [BEAN_Helper basicError:@"Peripheral is not connected" domain:@"BEAN API:GATT Serial Profile" code:BeanErrors_NotConnected];
         return;
     }
     if(peripheral.state != CBPeripheralStateConnected){
-        if(error) *error = [BEAN_Helper basicError:@"Peripheral is not connected" domain:@"BEAN API:GATT Serial Profile" code:100];
+        if(error) *error = [BEAN_Helper basicError:@"Peripheral is not connected" domain:@"BEAN API:GATT Serial Profile" code:BeanErrors_NotConnected];
         return;
     }
     
