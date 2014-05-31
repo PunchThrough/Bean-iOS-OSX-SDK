@@ -6,6 +6,20 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXAggregateTarget section */
+		52316FB61939629F00512C74 /* Generate Appledoc */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 52316FB91939629F00512C74 /* Build configuration list for PBXAggregateTarget "Generate Appledoc" */;
+			buildPhases = (
+				52316FBA193962AB00512C74 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = "Generate Appledoc";
+			productName = "Generate Appledoc";
+		};
+/* End PBXAggregateTarget section */
+
 /* Begin PBXBuildFile section */
 		520C8ED7191BF0EC0086C530 /* BleProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 520C8ED6191BF0EC0086C530 /* BleProfile.m */; };
 		520C8EDD191C31780086C530 /* NSDate+LocalTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D02ED619102AD300996077 /* NSDate+LocalTime.m */; };
@@ -506,6 +520,7 @@
 				52D34E2318A9B455002F0C59 /* Bean OSX Library */,
 				52D34E3618A9B455002F0C59 /* Bean OSX LibraryTests */,
 				969B89471908951F00AA093C /* Bean iOS Library */,
+				52316FB61939629F00512C74 /* Generate Appledoc */,
 			);
 		};
 /* End PBXProject section */
@@ -520,6 +535,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		52316FBA193962AB00512C74 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/usr/local/bin/appledoc \\\n--project-name \"LightBlue Bean\" \\\n--project-company \"Punch Through Design\" \\\n--company-id \"com.punchthrough.LightBlue-Bean\" \\\n--output ../Documents \\\n--keep-undocumented-objects \\\n--keep-undocumented-members \\\n--keep-intermediate-files \\\n--no-repeat-first-par \\\n--no-warn-invalid-crossref \\\n--exit-threshold 2 \\\n../source/Public";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		52D34E2018A9B455002F0C59 /* Sources */ = {
@@ -604,6 +636,20 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		52316FB71939629F00512C74 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		52316FB81939629F00512C74 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
 		52D34E4618A9B455002F0C59 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -767,6 +813,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		52316FB91939629F00512C74 /* Build configuration list for PBXAggregateTarget "Generate Appledoc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				52316FB71939629F00512C74 /* Debug */,
+				52316FB81939629F00512C74 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		52D34E1F18A9B455002F0C59 /* Build configuration list for PBXProject "Bean OSX Library" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
