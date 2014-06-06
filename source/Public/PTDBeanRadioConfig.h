@@ -31,13 +31,13 @@
 @interface PTDBeanRadioConfig : NSObject
 /// @name Setup
 /**
- *  The Bean bluetooth advertisting interval
+ *  The Bean bluetooth advertisting interval in ms
  */
-@property (nonatomic, readwrite) NSTimeInterval advertisingInterval;
+@property (nonatomic, readwrite) CGFloat advertisingInterval;
 /**
- *  The Bean bluetooth connection interval
+ *  The Bean bluetooth connection interval in ms
  */
-@property (nonatomic, readwrite) NSTimeInterval connectionInterval;
+@property (nonatomic, readwrite) CGFloat connectionInterval;
 /**
  *  The Bean bluetooth transmission power
  */
