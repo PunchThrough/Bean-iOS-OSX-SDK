@@ -234,7 +234,7 @@ typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
 /// @name Accessing Battery Voltage
 /**
  *  Reads the temperature.
- *  @see [PTDBeanDelegate bean:didUpdateTemperature:]
+ *  @see [PTDBeanDelegate bean:didUpdateBattery:]
  */
 -(void)readBatteryVoltage;
 /**

@@ -24,6 +24,7 @@
 @property (nonatomic, strong) NSNumber *batteryVoltage; // Voltage
 
 -(id)initWithPeripheral:(CBPeripheral*)aPeripheral delegate:(id<BatteryProfileDelegate>)delegate;
+-(void)readBattery;
 
 @end
 

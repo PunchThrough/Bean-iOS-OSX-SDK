@@ -227,6 +227,11 @@ typedef enum { //These occur in sequence
     }
     [_peripheral readRSSI];
 }
+-(void)readBatteryVoltage{
+    if(battery_profile){
+        [battery_profile readBattery];
+    }
+}
 -(void)readTemperature {
     if(![self connected]) {
         return;
@@ -587,9 +592,9 @@ typedef enum { //These occur in sequence
             BL_MSG_STATUS_T stateMsg;
             [payload getBytes:&stateMsg range:NSMakeRange(0, sizeof(BL_MSG_STATUS_T))];
             BL_HL_STATE_T highLevelState = stateMsg.hlState;
-            BL_STATE_T internalState = stateMsg.intState;
-            UInt16 blocks = stateMsg.blocksSent;
-            UInt16 bytes = stateMsg.bytesSent;
+//            BL_STATE_T internalState = stateMsg.intState;
+//            UInt16 blocks = stateMsg.blocksSent;
+//            UInt16 bytes = stateMsg.bytesSent;
             [self __handleArduinoOADRemoteStateChange:highLevelState];
             break;
         case MSG_ID_BL_GET_META:

@@ -28,7 +28,10 @@
     }else
 #else
     {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         return self.isConnected;
+#pragma clang diagnostic pop
     }
 #endif
     

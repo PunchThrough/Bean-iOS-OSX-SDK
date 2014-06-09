@@ -31,7 +31,10 @@
     }else
 #else
     {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         if(self.UUID) uuid = [[NSUUID alloc] initWithUUIDBytes:[[[CBUUID UUIDWithCFUUID:self.UUID] data] bytes]];
+#pragma clang diagnostic pop
     }
 #endif
     

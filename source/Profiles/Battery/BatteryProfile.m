@@ -26,6 +26,11 @@
     }
     return self;
 }
+-(void)readBattery{
+    if([peripheral isConnected_Universal]){
+        [peripheral readValueForCharacteristic:characteristic_battery_level];
+    }
+}
 -(void)validate
 {
     // Discover services
