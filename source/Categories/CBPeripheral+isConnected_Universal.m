@@ -18,7 +18,10 @@
     if ([[vComp objectAtIndex:0] intValue] >= 7) {
         return (self.state == CBPeripheralStateConnected);
     } else if ([[vComp objectAtIndex:0] intValue] == 6 || [[vComp objectAtIndex:0] intValue] == 5) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         return self.isConnected;
+#pragma clang diagnostic pop
     }
 #else
     
