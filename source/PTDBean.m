@@ -77,7 +77,7 @@ typedef enum { //These occur in sequence
     return nil;
 }
 -(NSString*)name{
-    if(_peripheral.state == CBPeripheralStateConnected){
+    if(_peripheral.name){
         return _peripheral.name;
     }
     return [_advertisementData objectForKey:CBAdvertisementDataLocalNameKey]?[_advertisementData objectForKey:CBAdvertisementDataLocalNameKey]:@"Unknown";//Local Name
