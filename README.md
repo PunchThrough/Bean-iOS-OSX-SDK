@@ -1,7 +1,6 @@
 # LightBlue Bean SDK for iOS & OSX
 
-Punch Through Design's SDK for speeding up development with the LightBlue Bean development platform. Build iOS and OS X apps that talk to your Beans.
-
+Punch Through Design's SDK for speeding up development with the LightBlue Bean development platform. Build iOS and OS X apps that talk to your Beans. To get started with the SDK, take a look at our [Reference Docs](http://punchthrough.com/files/bean/sdk-docs/index.html).
 
 # How to Clone and Pull from this repo
 
