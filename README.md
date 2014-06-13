@@ -2,6 +2,22 @@
 
 Punch Through Design's SDK for speeding up development with the LightBlue Bean development platform. Build iOS and OS X apps that talk to your Beans.
 
+
+# How to Clone and Pull from this repo
+
+## Clone
+		git clone REPO_URL --recursive
+
+## Initialize Submodules 
+####(This is unnecessary if the recursive clone works)
+		git submodule update --init --recursive
+
+## Pull
+		git pull
+		git submodule update --recursive
+
+
+
 # Attribution
 
 If you use our SDK to build something cool, we'd appreciate it if you did the following:
