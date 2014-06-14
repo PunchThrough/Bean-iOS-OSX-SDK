@@ -28,7 +28,9 @@
 }
 -(void)readBattery{
     if([peripheral isConnected_Universal]){
-        [peripheral readValueForCharacteristic:characteristic_battery_level];
+        if(characteristic_battery_level){
+            [peripheral readValueForCharacteristic:characteristic_battery_level];
+        }
     }
 }
 -(void)validate
