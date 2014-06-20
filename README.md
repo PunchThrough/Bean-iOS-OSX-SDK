@@ -15,6 +15,25 @@ Punch Through Design's SDK for speeding up development with the LightBlue Bean d
 		git pull
 		git submodule update --recursive
 
+## Installation with CocoaPods 
+
+[CocoaPods](http://cocoapods.org)  is a dependency manager for Objective-C, which automates and simplifies the process of using 3rd-party libraries like the Bean-iOS-OSX-SDK. See the "Getting Started" guide for more information.
+
+#### Podfile
+
+for iOS
+
+```ruby
+platform :ios, '7.0'
+pod 'Bean-iOS-OSX-SDK', :git => "https://github.com/PunchThrough/Bean-iOS-OSX-SDK.git", :tag => "0.1", :submodules => true
+```
+
+for OSX
+
+```ruby
+platform :osx, '10.7' 
+pod 'Bean-iOS-OSX-SDK', :git => "https://github.com/PunchThrough/Bean-iOS-OSX-SDK.git", :tag => "0.1", :submodules => true
+```
 
 
 # Attribution
