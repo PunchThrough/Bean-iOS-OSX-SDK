@@ -17,7 +17,7 @@ Punch Through Design's SDK for speeding up development with the LightBlue Bean d
 
 # Installation with CocoaPods 
 
-[CocoaPods](http://cocoapods.org)  is a dependency manager for Objective-C, which automates and simplifies the process of using 3rd-party libraries like the Bean-iOS-OSX-SDK. See the See the ["Getting Started" guide for more information](https://github.com/PunchThrough/Bean-iOS-OSX-SDK/wiki). guide for more information.
+[CocoaPods](http://cocoapods.org)  is a dependency manager for Objective-C, which automates and simplifies the process of using 3rd-party libraries like the Bean-iOS-OSX-SDK. See the See the ["Getting Started" guide for more information](https://github.com/PunchThrough/Bean-iOS-OSX-SDK/wiki).
 
 #### Podfile for iOS
 
