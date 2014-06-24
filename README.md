@@ -1,6 +1,6 @@
 # LightBlue Bean SDK for iOS & OSX
 
-Punch Through Design's SDK for speeding up development with the LightBlue Bean development platform. Build iOS and OS X apps that talk to your Beans. To get started with the SDK, take a look at our [Reference Docs](http://punchthrough.com/files/bean/sdk-docs/index.html).
+Punch Through Design's SDK for speeding up development with the LightBlue Bean development platform. Build iOS and OS X apps that talk to your Beans. To get started with the SDK, look below and check out our [Reference Docs](http://punchthrough.com/files/bean/sdk-docs/index.html).
 
 # How to Clone and Pull from this repo
 
@@ -15,6 +15,23 @@ Punch Through Design's SDK for speeding up development with the LightBlue Bean d
 		git pull
 		git submodule update --recursive
 
+# Installation with CocoaPods 
+
+[CocoaPods](http://cocoapods.org)  is a dependency manager for Objective-C, which automates and simplifies the process of using 3rd-party libraries like the Bean-iOS-OSX-SDK. See the See the ["Getting Started" guide for more information](https://github.com/PunchThrough/Bean-iOS-OSX-SDK/wiki).
+
+#### Podfile for iOS
+
+```ruby
+platform :ios, '7.0'
+pod 'Bean-iOS-OSX-SDK', :git => "https://github.com/PunchThrough/Bean-iOS-OSX-SDK.git", :tag => "0.1", :submodules => true
+```
+
+#### Podfile for OSX
+
+```ruby
+platform :osx, '10.9' 
+pod 'Bean-iOS-OSX-SDK', :git => "https://github.com/PunchThrough/Bean-iOS-OSX-SDK.git", :tag => "0.1", :submodules => true
+```
 
 
 # Attribution

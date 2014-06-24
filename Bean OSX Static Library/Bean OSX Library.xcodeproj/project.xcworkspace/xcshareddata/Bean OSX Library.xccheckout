@@ -5,36 +5,48 @@
 	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
 	<false/>
 	<key>IDESourceControlProjectIdentifier</key>
-	<string>72BFF4AC-103E-4B71-8619-70B255527DBA</string>
+	<string>5A1CDAE5-196D-4C64-B63A-8E094A5AEA85</string>
 	<key>IDESourceControlProjectName</key>
 	<string>Bean OSX Library</string>
 	<key>IDESourceControlProjectOriginsDictionary</key>
 	<dict>
-		<key>1FEF13F9-BF3E-45B7-8BC8-50BB4DF9676D</key>
-		<string>https://bitbucket.org/punchthroughdesign/bean-control-library.git</string>
+		<key>4E4674A2-DFE5-4314-9CC1-BC0DC66DC4AC</key>
+		<string>https://bitbucket.org/punchthroughdesign/bean-application-message-definitions.git</string>
+		<key>C427DB06-E255-4540-9870-1C04E6084162</key>
+		<string>https://github.com/PunchThrough/Bean-iOS-OSX-SDK.git</string>
 	</dict>
 	<key>IDESourceControlProjectPath</key>
-	<string>OSX/Bean OSX Library/Bean OSX Library.xcodeproj/project.xcworkspace</string>
+	<string>Bean OSX Static Library/Bean OSX Library.xcodeproj/project.xcworkspace</string>
 	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
 	<dict>
-		<key>1FEF13F9-BF3E-45B7-8BC8-50BB4DF9676D</key>
-		<string>../../../..</string>
+		<key>4E4674A2-DFE5-4314-9CC1-BC0DC66DC4AC</key>
+		<string>../../../App Message Definitions</string>
+		<key>C427DB06-E255-4540-9870-1C04E6084162</key>
+		<string>../../..</string>
 	</dict>
 	<key>IDESourceControlProjectURL</key>
-	<string>https://bitbucket.org/punchthroughdesign/bean-control-library.git</string>
+	<string>https://github.com/PunchThrough/Bean-iOS-OSX-SDK.git</string>
 	<key>IDESourceControlProjectVersion</key>
 	<integer>110</integer>
 	<key>IDESourceControlProjectWCCIdentifier</key>
-	<string>1FEF13F9-BF3E-45B7-8BC8-50BB4DF9676D</string>
+	<string>C427DB06-E255-4540-9870-1C04E6084162</string>
 	<key>IDESourceControlProjectWCConfigurations</key>
 	<array>
 		<dict>
 			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
 			<string>public.vcs.git</string>
 			<key>IDESourceControlWCCIdentifierKey</key>
-			<string>1FEF13F9-BF3E-45B7-8BC8-50BB4DF9676D</string>
+			<string>4E4674A2-DFE5-4314-9CC1-BC0DC66DC4AC</string>
 			<key>IDESourceControlWCCName</key>
-			<string>bean-control-library</string>
+			<string>App Message Definitions</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>C427DB06-E255-4540-9870-1C04E6084162</string>
+			<key>IDESourceControlWCCName</key>
+			<string>Bean-iOS-OSX-SDK</string>
 		</dict>
 	</array>
 </dict>
