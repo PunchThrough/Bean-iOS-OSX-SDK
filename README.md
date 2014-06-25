@@ -23,14 +23,14 @@ Punch Through Design's SDK for speeding up development with the LightBlue Bean d
 
 ```ruby
 platform :ios, '7.0'
-pod 'Bean-iOS-OSX-SDK', :git => "https://github.com/PunchThrough/Bean-iOS-OSX-SDK.git", :tag => "0.1", :submodules => true
+pod 'Bean-iOS-OSX-SDK', :git => "https://github.com/PunchThrough/Bean-iOS-OSX-SDK.git", :tag => '0.1.1', :submodules => true
 ```
 
 #### Podfile for OSX
 
 ```ruby
 platform :osx, '10.9' 
-pod 'Bean-iOS-OSX-SDK', :git => "https://github.com/PunchThrough/Bean-iOS-OSX-SDK.git", :tag => "0.1", :submodules => true
+pod 'Bean-iOS-OSX-SDK', :git => "https://github.com/PunchThrough/Bean-iOS-OSX-SDK.git", :tag => '0.1.1', :submodules => true
 ```
 
 

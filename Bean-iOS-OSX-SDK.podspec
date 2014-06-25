@@ -18,8 +18,8 @@ Pod::Spec.new do |s|
   s.exclude_files = "Bean OSX Static Library/Bean OSX LibraryTests/**/*.{h,m}"
   s.public_header_files = "source/Public/*.h"
 
-  s.ios.frameworks = "IOBluetooth"
-  s.osx.frameworks = "CoreBluetooth"
+  s.ios.frameworks = "CoreBluetooth"
+  s.osx.frameworks = "IOBluetooth"
 
   s.requires_arc = true
   s.prefix_header_contents = '#import "BEAN_Globals.h"'
