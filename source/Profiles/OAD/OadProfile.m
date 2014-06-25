@@ -215,7 +215,8 @@
     self.iBytes = 0;
     
     
-    [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(programmingTimerTick:) userInfo:nil repeats:NO];
+    NSTimer* timer = [NSTimer timerWithTimeInterval:0.1 target:self selector:@selector(programmingTimerTick:) userInfo:nil repeats:NO];
+    [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
 }
 
 -(void) programmingTimerTick:(NSTimer *)timer {
@@ -259,7 +260,10 @@
             return;
         }
         else {
-            if (ii == 3)[NSTimer scheduledTimerWithTimeInterval:OAD_PACKET_TX_DELAY target:self selector:@selector(programmingTimerTick:) userInfo:nil repeats:NO];
+            if (ii == 3){
+                NSTimer* timer = [NSTimer timerWithTimeInterval:OAD_PACKET_TX_DELAY target:self selector:@selector(programmingTimerTick:) userInfo:nil repeats:NO];
+                [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
+            }
         }
     }
     
