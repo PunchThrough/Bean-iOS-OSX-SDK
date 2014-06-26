@@ -28,6 +28,8 @@
 		520C8EE0191C31970086C530 /* BleProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 520C8ED6191BF0EC0086C530 /* BleProfile.m */; };
 		521A4E9D19103E5F005B3097 /* NSData+CRC.m in Sources */ = {isa = PBXBuildFile; fileRef = 521A4E9C19103E5F005B3097 /* NSData+CRC.m */; };
 		521A4EA319116C0F005B3097 /* CBPeripheral+isConnected_Universal.m in Sources */ = {isa = PBXBuildFile; fileRef = 521A4EA219116C0F005B3097 /* CBPeripheral+isConnected_Universal.m */; };
+		524E2B8D195A0C10007FE17D /* BleDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 524E2B8B195A0C10007FE17D /* BleDevice.h */; };
+		524E2B8E195A0C10007FE17D /* BleDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 524E2B8C195A0C10007FE17D /* BleDevice.m */; };
 		52BC523718D96A610083A031 /* AppMessagingLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 52BC523618D96A610083A031 /* AppMessagingLayer.m */; };
 		52BF98A119352E59008DCA31 /* BatteryProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = 52BF989F19352E59008DCA31 /* BatteryProfile.h */; };
 		52BF98A219352E59008DCA31 /* BatteryProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 52BF98A019352E59008DCA31 /* BatteryProfile.m */; };
@@ -101,6 +103,8 @@
 		521A4EA119116C0F005B3097 /* CBPeripheral+isConnected_Universal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CBPeripheral+isConnected_Universal.h"; sourceTree = "<group>"; };
 		521A4EA219116C0F005B3097 /* CBPeripheral+isConnected_Universal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CBPeripheral+isConnected_Universal.m"; sourceTree = "<group>"; };
 		5242A60C18D9101200DDB29F /* AppMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppMessages.h; path = "../../App Message Definitions/AppMessages.h"; sourceTree = "<group>"; };
+		524E2B8B195A0C10007FE17D /* BleDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BleDevice.h; sourceTree = "<group>"; };
+		524E2B8C195A0C10007FE17D /* BleDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BleDevice.m; sourceTree = "<group>"; };
 		5251175218ADA0AC0088DE2D /* GattCharacteristicHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GattCharacteristicHandler.h; path = Transport/GattCharacteristicHandler.h; sourceTree = "<group>"; };
 		5251175318ADA0C80088DE2D /* GattCharacteristicObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GattCharacteristicObserver.h; path = Transport/GattCharacteristicObserver.h; sourceTree = "<group>"; };
 		52BC523518D96A610083A031 /* AppMessagingLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppMessagingLayer.h; path = ../../source/AppMessages/AppMessagingLayer.h; sourceTree = "<group>"; };
@@ -191,6 +195,17 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		524E2B8A195A0BDB007FE17D /* BLE Device */ = {
+			isa = PBXGroup;
+			children = (
+				524E2B8B195A0C10007FE17D /* BleDevice.h */,
+				524E2B8C195A0C10007FE17D /* BleDevice.m */,
+				52D34E9318A9B890002F0C59 /* BLE Profiles */,
+			);
+			name = "BLE Device";
+			path = ../../source/Profiles;
+			sourceTree = "<group>";
+		};
 		5251175018AD9D530088DE2D /* GATT Transport  */ = {
 			isa = PBXGroup;
 			children = (
@@ -295,7 +310,7 @@
 				52D34E8D18A9B890002F0C59 /* Categories */,
 				52D34E9018A9B890002F0C59 /* Helper */,
 				52D9B95218BF2E1300EB9331 /* Protocols */,
-				52D34E9318A9B890002F0C59 /* BLE Profiles */,
+				524E2B8A195A0BDB007FE17D /* BLE Device */,
 				52D34E2E18A9B455002F0C59 /* Supporting Files */,
 			);
 			name = "Bean Library";
@@ -357,17 +372,16 @@
 		52D34E9318A9B890002F0C59 /* BLE Profiles */ = {
 			isa = PBXGroup;
 			children = (
+				520C8ED5191BF0EC0086C530 /* BleProfile.h */,
+				520C8ED6191BF0EC0086C530 /* BleProfile.m */,
+				52D34EAA18A9B890002F0C59 /* ProfileDelegate_Protocol.h */,
+				520C8ED8191BF4C50086C530 /* Profile_Protocol.h */,
 				52BF989E192FD21B008DCA31 /* Battery */,
 				52D34E9418A9B890002F0C59 /* Device Info */,
 				52D34E9718A9B890002F0C59 /* Gatt Serial */,
 				52D34EA518A9B890002F0C59 /* OAD */,
-				52D34EAA18A9B890002F0C59 /* ProfileDelegate_Protocol.h */,
-				520C8ED8191BF4C50086C530 /* Profile_Protocol.h */,
-				520C8ED5191BF0EC0086C530 /* BleProfile.h */,
-				520C8ED6191BF0EC0086C530 /* BleProfile.m */,
 			);
 			name = "BLE Profiles";
-			path = ../../source/Profiles;
 			sourceTree = "<group>";
 		};
 		52D34E9418A9B890002F0C59 /* Device Info */ = {
@@ -437,6 +451,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				524E2B8D195A0C10007FE17D /* BleDevice.h in Headers */,
 				52BF98A119352E59008DCA31 /* BatteryProfile.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -571,6 +586,7 @@
 				520C8ED7191BF0EC0086C530 /* BleProfile.m in Sources */,
 				52D34EB718A9B890002F0C59 /* GattPacket.m in Sources */,
 				521A4E9D19103E5F005B3097 /* NSData+CRC.m in Sources */,
+				524E2B8E195A0C10007FE17D /* BleDevice.m in Sources */,
 				52D34EB118A9B890002F0C59 /* BEAN_Helper.m in Sources */,
 				52D34EBB18A9B890002F0C59 /* GattSerialMessageRxAssembler.m in Sources */,
 				52D34EB318A9B890002F0C59 /* DevInfoProfile.m in Sources */,

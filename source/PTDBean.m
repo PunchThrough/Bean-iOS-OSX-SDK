@@ -35,17 +35,12 @@ typedef enum { //These occur in sequence
 @implementation PTDBean
 {
 	BeanState                   _state;
-    NSNumber*                   _RSSI;
-	NSDictionary*               _advertisementData;
-    NSDate*                     _lastDiscovered;
-	id<PTDBeanManager>             _beanManager;
-    CBPeripheral*               _peripheral;
+	id<PTDBeanManager>          _beanManager;
     
     AppMessagingLayer*          appMessageLayer;
     
     NSTimer*                    validationRetryTimer;
     NSInteger                   validationRetryCount;
-    NSArray*                    profiles;
     DevInfoProfile*             deviceInfo_profile;
     OadProfile*                 oad_profile;
     GattSerialProfile*          gatt_serial_profile;
@@ -308,11 +303,9 @@ typedef enum { //These occur in sequence
 
 #pragma mark - Protected Methods
 -(id)initWithPeripheral:(CBPeripheral*)peripheral beanManager:(id<PTDBeanManager>)manager{
-    self = [super init];
+    self = [super initWithPeripheral:peripheral];
     if (self) {
         _beanManager = manager;
-        _peripheral = peripheral;
-        _peripheral.delegate = self;
         localArduinoOADState = BeanArduinoOADLocalState_Inactive;
     }
     return self;
@@ -367,12 +360,13 @@ typedef enum { //These occur in sequence
     battery_profile = [[BatteryProfile alloc] initWithPeripheral:_peripheral delegate:self];
     battery_profile.profileDelegate = self;
     battery_profile.isRequired = FALSE;
-    profiles = [[NSArray alloc] initWithObjects:deviceInfo_profile,
+    _profiles = [[NSArray alloc] initWithObjects:deviceInfo_profile,
                 oad_profile,
                 gatt_serial_profile,
                 battery_profile,
                 nil];
-    [_peripheral discoverServices:nil];
+    
+    [super interrogateAndValidate];
 }
 
 -(void)__alertDelegateOfArduinoOADCompletion:(NSError*)error{
@@ -491,15 +485,21 @@ typedef enum { //These occur in sequence
     }
     return YES;
 }
-#pragma mark -
+    
+#pragma mark BleDevice Overridden Methods
+-(void)rssiDidUpdateWithError:(NSError*)error{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(beanDidUpdateRSSI:error:)]) {
+        [self.delegate beanDidUpdateRSSI:self error:error];
+    }
+}
+
+-(void)servicesHaveBeenModified{
+    // TODO: Re-Instantiate the Bean object
+}
+    
 #pragma mark Profile Delegate callbacks
 -(void)profileValidated:(id<Profile_Protocol>)profile{
-    for(id<Profile_Protocol> profile in profiles){
-        if([profile isRequired]
-           && ![profile isValid:nil]){
-            return;
-        }
-    }
+    if(![self requiredProfilesAreValid]) return;
     //At this point, all required profiles are validated
     if(_state != BeanState_ConnectedAndValidated){
         //Initialize Application Messaging layer
@@ -517,7 +517,8 @@ typedef enum { //These occur in sequence
         }
     }
 }
-
+    
+#pragma mark -
 #pragma mark AppMessagingLayerDelegate callbacks
 -(void)appMessagingLayer:(AppMessagingLayer*)layer recievedIncomingMessageWithID:(UInt16)identifier andPayload:(NSData*)payload{
     UInt16 identifier_type = identifier & ~(APP_MSG_RESPONSE_BIT);
@@ -702,176 +703,5 @@ typedef enum { //These occur in sequence
     }
 }
 
-#pragma mark CBPeripheralDelegate callbacks
-
-/* //Example of registering to one of these notifications
- id peripheralNotifier = cbperipheral.delegate;
- if([peripheralNotifier isKindOfClass:[CBPeripheralNotifier class]])
- {
- [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateValueForCharacteristic:) name:@"didUpdateValueForCharacteristic" object:peripheralNotifier];
- [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didUpdateNotificationStateForCharacteristic:) name:@"didUpdateNotificationStateForCharacteristic" object:peripheralNotifier];
- [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didWriteValueForCharacteristic:) name:@"didWriteValueForCharacteristic" object:peripheralNotifier];
- }
- */
-- (void)peripheralDidUpdateRSSI:(CBPeripheral *)peripheral error:(NSError *)error{
-    NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
-                            peripheral ?: [NSNull null], @"peripheral",
-                            error ?: [NSNull null], @"error",
-                            nil];
-    [[NSNotificationCenter defaultCenter] postNotificationName: @"peripheralDidUpdateRSSI:error:" object:params];
-    for (id<Profile_Protocol> profile in profiles) {
-        if(profile){
-            if([profile respondsToSelector:@selector(peripheralDidUpdateRSSI:error:)]){
-                [profile peripheralDidUpdateRSSI:peripheral error:error];
-            }
-        }
-    }
-    if (self.delegate && [self.delegate respondsToSelector:@selector(beanDidUpdateRSSI:error:)]) {
-        [self.delegate beanDidUpdateRSSI:self error:error];
-    }
-}
-- (void)peripheral:(CBPeripheral *)peripheral didDiscoverServices:(NSError *)error{
-    NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
-                            peripheral ?: [NSNull null], @"peripheral",
-                            error ?: [NSNull null], @"error",
-                            nil];
-    [[NSNotificationCenter defaultCenter] postNotificationName: @"didDiscoverServices" object:params];
-    for (id<Profile_Protocol> profile in profiles) {
-        if(profile){
-            if([profile respondsToSelector:@selector(peripheral:didDiscoverServices:)]){
-                [profile peripheral:peripheral didDiscoverServices:error];
-            }
-        }
-    }
-}
-- (void)peripheral:(CBPeripheral *)peripheral didDiscoverIncludedServicesForService:(CBService *)service error:(NSError *)error{
-    NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
-                            peripheral ?: [NSNull null], @"peripheral",
-                            service ?: [NSNull null], @"service",
-                            error ?: [NSNull null], @"error",
-                            nil];
-    [[NSNotificationCenter defaultCenter] postNotificationName: @"didDiscoverIncludedServicesForService" object:params];
-    for (id<Profile_Protocol> profile in profiles) {
-        if(profile){
-            if([profile respondsToSelector:@selector(peripheral:didDiscoverIncludedServicesForService:error:)]){
-                [profile peripheral:peripheral didDiscoverIncludedServicesForService:service error:error];
-            }
-        }
-    }
-}
-- (void)peripheral:(CBPeripheral *)peripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error{
-    NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
-                            peripheral ?: [NSNull null], @"peripheral",
-                            service ?: [NSNull null], @"service",
-                            error ?: [NSNull null], @"error",
-                            nil];
-    [[NSNotificationCenter defaultCenter] postNotificationName: @"didDiscoverCharacteristicsForService" object:params];
-    for (id<Profile_Protocol> profile in profiles) {
-        if(profile){
-            if([profile respondsToSelector:@selector(peripheral:didDiscoverCharacteristicsForService:error:)]){
-                [profile peripheral:peripheral didDiscoverCharacteristicsForService:service error:error];
-            }
-        }
-    }
-}
-- (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error{
-    NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
-                            peripheral ?: [NSNull null], @"peripheral",
-                            characteristic ?: [NSNull null], @"characteristic",
-                            error ?: [NSNull null], @"error",
-                            nil];
-    [[NSNotificationCenter defaultCenter] postNotificationName: @"didUpdateValueForCharacteristic" object:params];
-    for (id<Profile_Protocol> profile in profiles) {
-        if(profile){
-            if([profile respondsToSelector:@selector(peripheral:didUpdateValueForCharacteristic:error:)]){
-                [profile peripheral:peripheral didUpdateValueForCharacteristic:characteristic error:error];
-            }
-        }
-    }
-}
-- (void)peripheral:(CBPeripheral *)peripheral didWriteValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error{
-    NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
-                            peripheral ?: [NSNull null], @"peripheral",
-                            characteristic ?: [NSNull null], @"characteristic",
-                            error ?: [NSNull null], @"error",
-                            nil];
-    [[NSNotificationCenter defaultCenter] postNotificationName: @"didWriteValueForCharacteristic" object:params];
-    for (id<Profile_Protocol> profile in profiles) {
-        if(profile){
-            if([profile respondsToSelector:@selector(peripheral:didWriteValueForCharacteristic:error:)]){
-                [profile peripheral:peripheral didWriteValueForCharacteristic:characteristic error:error];
-            }
-        }
-    }
-}
-- (void)peripheral:(CBPeripheral *)peripheral didUpdateNotificationStateForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error{
-    NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
-                            peripheral ?: [NSNull null], @"peripheral",
-                            characteristic ?: [NSNull null], @"characteristic",
-                            error ?: [NSNull null], @"error",
-                            nil];
-    [[NSNotificationCenter defaultCenter] postNotificationName: @"didUpdateNotificationStateForCharacteristic" object:params];
-    for (id<Profile_Protocol> profile in profiles) {
-        if(profile){
-            if([profile respondsToSelector:@selector(peripheral:didUpdateNotificationStateForCharacteristic:error:)]){
-                [profile peripheral:peripheral didUpdateNotificationStateForCharacteristic:characteristic error:error];
-            }
-        }
-    }
-}
-- (void)peripheral:(CBPeripheral *)peripheral didDiscoverDescriptorsForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error{
-    NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
-                            peripheral ?: [NSNull null], @"peripheral",
-                            characteristic ?: [NSNull null], @"characteristic",
-                            error ?: [NSNull null], @"error",
-                            nil];
-    [[NSNotificationCenter defaultCenter] postNotificationName: @"didDiscoverDescriptorsForCharacteristic" object:params];
-    for (id<Profile_Protocol> profile in profiles) {
-        if(profile){
-            if([profile respondsToSelector:@selector(peripheral:didDiscoverDescriptorsForCharacteristic:error:)]){
-                [profile peripheral:peripheral didDiscoverDescriptorsForCharacteristic:characteristic error:error];
-            }
-        }
-    }
-}
-- (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForDescriptor:(CBDescriptor *)descriptor error:(NSError *)error{
-    NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
-                            peripheral ?: [NSNull null], @"peripheral",
-                            descriptor ?: [NSNull null], @"descriptor",
-                            error ?: [NSNull null], @"error",
-                            nil];
-    [[NSNotificationCenter defaultCenter] postNotificationName: @"didUpdateValueForDescriptor" object:params];
-    for (id<Profile_Protocol> profile in profiles) {
-        if(profile){
-            if([profile respondsToSelector:@selector(peripheral:didUpdateValueForDescriptor:error:)]){
-                [profile peripheral:peripheral didUpdateValueForDescriptor:descriptor error:error];
-            }
-        }
-    }
-}
-- (void)peripheral:(CBPeripheral *)peripheral didWriteValueForDescriptor:(CBDescriptor *)descriptor error:(NSError *)error{
-    NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
-                            peripheral ?: [NSNull null], @"peripheral",
-                            descriptor ?: [NSNull null], @"descriptor",
-                            error ?: [NSNull null], @"error",
-                            nil];
-    [[NSNotificationCenter defaultCenter] postNotificationName: @"didWriteValueForDescriptor" object:params];
-    for (id<Profile_Protocol> profile in profiles) {
-        if(profile){
-            if([profile respondsToSelector:@selector(peripheral:didWriteValueForDescriptor:error:)]){
-                [profile peripheral:peripheral didWriteValueForDescriptor:descriptor error:error];
-            }
-        }
-    }
-}
-- (void)peripheral:(CBPeripheral *)peripheral didModifyServices:(NSArray *)invalidatedServices{
-    NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
-                            peripheral ?: [NSNull null], @"peripheral",
-                            invalidatedServices ?: [NSNull null], @"invalidatedServices",
-                            nil];
-    [[NSNotificationCenter defaultCenter] postNotificationName: @"didModifyServices" object:params];
-    _state = BeanState_AttemptingValidation;
-    [self __interrogateAndValidate];
-}
 
 @end

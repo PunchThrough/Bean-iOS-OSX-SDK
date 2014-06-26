@@ -11,6 +11,7 @@
 #else
 #import <IOBluetooth/IOBluetooth.h>
 #endif
+#import "BleDevice.h"
 
 #define ARDUINO_OAD_GENERIC_TIMEOUT_SEC 3
 #define TPDBeanErrorDomain @"TPDBeanErrorDomain"
@@ -137,7 +138,7 @@ typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
    See [BeanXcodeWorkspace](http://www.punchthrough.com) for more examples.
  */
 
-@interface PTDBean : NSObject
+@interface PTDBean : BleDevice
 /// @name Identifying a Bean
 /**
 *  The Peripheral identifier.
