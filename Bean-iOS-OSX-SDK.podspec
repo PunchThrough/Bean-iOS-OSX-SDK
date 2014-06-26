@@ -8,6 +8,7 @@ Pod::Spec.new do |s|
   s.license      = { :type => "MIT", :file => "LICENSE.txt" }
   
   s.author             = { "Punch Through Design" => "info@punchthrough.com" }
+  s.documentation_url = 'http://punchthrough.com/files/bean/sdk-docs/index.html'
 
   s.ios.deployment_target = "7.0"
   s.osx.deployment_target = "10.9"
