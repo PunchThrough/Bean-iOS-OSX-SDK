@@ -12,7 +12,6 @@
 #import "BatteryProfile.h"
 #import "AppMessages.h"
 #import "AppMessagingLayer.h"
-#import "NSDate+LocalTime.h"
 #import "NSData+CRC.h"
 #import "PTDBeanRadioConfig.h"
 
@@ -134,7 +133,7 @@ typedef enum { //These occur in sequence
         NSData* commandPayload;
         UInt32 imageSize = (UInt32)[arduinoFwImage length];
         startPayload.hexSize = imageSize;
-        startPayload.timestamp = [NSDate localDateUnixTimeStamp];
+        startPayload.timestamp = [[NSDate date] timeIntervalSince1970];
         startPayload.hexCrc = [hexImage crc32];
         
         NSInteger maxNameLength = member_size(BL_SKETCH_META_DATA_T,hexName);
