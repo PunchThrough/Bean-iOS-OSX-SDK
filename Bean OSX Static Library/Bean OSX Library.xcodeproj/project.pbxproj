@@ -22,7 +22,6 @@
 
 /* Begin PBXBuildFile section */
 		520C8ED7191BF0EC0086C530 /* BleProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 520C8ED6191BF0EC0086C530 /* BleProfile.m */; };
-		520C8EDD191C31780086C530 /* NSDate+LocalTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D02ED619102AD300996077 /* NSDate+LocalTime.m */; };
 		520C8EDE191C31780086C530 /* NSData+CRC.m in Sources */ = {isa = PBXBuildFile; fileRef = 521A4E9C19103E5F005B3097 /* NSData+CRC.m */; };
 		520C8EDF191C318D0086C530 /* CBPeripheral+isConnected_Universal.m in Sources */ = {isa = PBXBuildFile; fileRef = 521A4EA219116C0F005B3097 /* CBPeripheral+isConnected_Universal.m */; };
 		520C8EE0191C31970086C530 /* BleProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 520C8ED6191BF0EC0086C530 /* BleProfile.m */; };
@@ -33,7 +32,6 @@
 		52BC523718D96A610083A031 /* AppMessagingLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 52BC523618D96A610083A031 /* AppMessagingLayer.m */; };
 		52BF98A119352E59008DCA31 /* BatteryProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = 52BF989F19352E59008DCA31 /* BatteryProfile.h */; };
 		52BF98A219352E59008DCA31 /* BatteryProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 52BF98A019352E59008DCA31 /* BatteryProfile.m */; };
-		52D02ED719102AD300996077 /* NSDate+LocalTime.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D02ED619102AD300996077 /* NSDate+LocalTime.m */; };
 		52D34E2818A9B455002F0C59 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D34E2718A9B455002F0C59 /* Cocoa.framework */; };
 		52D34E3918A9B455002F0C59 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D34E3818A9B455002F0C59 /* XCTest.framework */; };
 		52D34E3A18A9B455002F0C59 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D34E2718A9B455002F0C59 /* Cocoa.framework */; };
@@ -113,8 +111,6 @@
 		52BF98A019352E59008DCA31 /* BatteryProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BatteryProfile.m; path = Battery/BatteryProfile.m; sourceTree = "<group>"; };
 		52CD166D18CE7B8D00636119 /* PTDBean+Protected.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "PTDBean+Protected.h"; path = "../../source/PTDBean+Protected.h"; sourceTree = "<group>"; };
 		52CD166E18CE8C1B00636119 /* PTDBeanManager+Protected.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "PTDBeanManager+Protected.h"; path = "../../source/PTDBeanManager+Protected.h"; sourceTree = "<group>"; };
-		52D02ED519102AD300996077 /* NSDate+LocalTime.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSDate+LocalTime.h"; sourceTree = "<group>"; };
-		52D02ED619102AD300996077 /* NSDate+LocalTime.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSDate+LocalTime.m"; sourceTree = "<group>"; };
 		52D34E2418A9B455002F0C59 /* libBean OSX Library.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libBean OSX Library.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		52D34E2718A9B455002F0C59 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		52D34E2A18A9B455002F0C59 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -348,8 +344,6 @@
 			children = (
 				52D34E8E18A9B890002F0C59 /* CBPeripheral+UniqueId.h */,
 				52D34E8F18A9B890002F0C59 /* CBPeripheral+UniqueId.m */,
-				52D02ED519102AD300996077 /* NSDate+LocalTime.h */,
-				52D02ED619102AD300996077 /* NSDate+LocalTime.m */,
 				521A4E9B19103E5F005B3097 /* NSData+CRC.h */,
 				521A4E9C19103E5F005B3097 /* NSData+CRC.m */,
 				521A4EA119116C0F005B3097 /* CBPeripheral+isConnected_Universal.h */,
@@ -581,7 +575,6 @@
 				969FDE97191A9DE80068B99A /* PTDBean.m in Sources */,
 				52BC523718D96A610083A031 /* AppMessagingLayer.m in Sources */,
 				52D34EB518A9B890002F0C59 /* GattSerialProfile.m in Sources */,
-				52D02ED719102AD300996077 /* NSDate+LocalTime.m in Sources */,
 				521A4EA319116C0F005B3097 /* CBPeripheral+isConnected_Universal.m in Sources */,
 				520C8ED7191BF0EC0086C530 /* BleProfile.m in Sources */,
 				52D34EB718A9B890002F0C59 /* GattPacket.m in Sources */,
@@ -611,7 +604,6 @@
 				96506ECA1937E82A00D02440 /* BatteryProfile.m in Sources */,
 				520C8EE0191C31970086C530 /* BleProfile.m in Sources */,
 				520C8EDF191C318D0086C530 /* CBPeripheral+isConnected_Universal.m in Sources */,
-				520C8EDD191C31780086C530 /* NSDate+LocalTime.m in Sources */,
 				520C8EDE191C31780086C530 /* NSData+CRC.m in Sources */,
 				969FDE9C191A9E200068B99A /* PTDBeanRadioConfig.m in Sources */,
 				969B897F1908971000AA093C /* AppMessagingLayer.m in Sources */,
