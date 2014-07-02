@@ -43,7 +43,8 @@
     return (service_deviceInformation &&
             characteristic_hardware_version &&
             characteristic_firmware_version &&
-            characteristic_software_version)?TRUE:FALSE;
+            characteristic_software_version &&
+            _firmwareVersion)?TRUE:FALSE;
 }
 
 #pragma mark Private Functions
