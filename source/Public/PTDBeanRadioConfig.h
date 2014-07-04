@@ -43,6 +43,22 @@
  */
 @property (nonatomic, readwrite) PTDTxPower_dB power;
 /**
+ *  The Bean advertising mode
+ */
+@property (nonatomic, readwrite) PTDAdvertisingMode advertisingMode;
+/**
+ *  The Bean iBeacon 16-bit UUID using the base: "A495xxxx-C5B1-4B44-B512-1370F02D74DE"
+ */
+@property (nonatomic, readwrite) UInt16 iBeacon_UUID;
+/**
+ *  The Bean iBeacon Major ID
+ */
+@property (nonatomic, readwrite) UInt16 iBeacon_majorID;
+/**
+ *  The Bean iBeacon Minor ID
+ */
+@property (nonatomic, readwrite) UInt16 iBeacon_minorID;
+/**
  *  The Bean name
  */
 @property (nonatomic, strong) NSString *name;

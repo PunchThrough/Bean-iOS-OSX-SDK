@@ -119,6 +119,20 @@ typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
      */
     PTDTxPower_neg23dB
 };
+/**
+ *  Advertising modes availabe to the Bean
+ */
+typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
+    /**
+     *  4db. Do this to maximize your tranmission strength.
+     */
+    PTDAdvertisingMode_Standard = 0,
+    /**
+     *  0db. This is the default value.
+     */
+    PTDAdvertisingMode_IBeacon
+};
+
 
 /**
    An PTDBean object represents a Light Blue Bean that gives access to setting and retrieving of Arduino attributes, such as the name, temperature, accelerometer, look at Other Methods below for more.

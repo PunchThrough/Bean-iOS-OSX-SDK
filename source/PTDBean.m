@@ -12,7 +12,6 @@
 #import "BatteryProfile.h"
 #import "AppMessages.h"
 #import "AppMessagingLayer.h"
-#import "NSDate+LocalTime.h"
 #import "NSData+CRC.h"
 #import "PTDBeanRadioConfig.h"
 
@@ -134,7 +133,7 @@ typedef enum { //These occur in sequence
         NSData* commandPayload;
         UInt32 imageSize = (UInt32)[arduinoFwImage length];
         startPayload.hexSize = imageSize;
-        startPayload.timestamp = [NSDate localDateUnixTimeStamp];
+        startPayload.timestamp = [[NSDate date] timeIntervalSince1970];
         startPayload.hexCrc = [hexImage crc32];
         
         NSInteger maxNameLength = member_size(BL_SKETCH_META_DATA_T,hexName);
@@ -193,6 +192,10 @@ typedef enum { //These occur in sequence
     BT_RADIOCONFIG_T raw;
     raw.adv_int = config.advertisingInterval;
     raw.conn_int = config.connectionInterval;
+    raw.adv_mode = config.advertisingMode;
+    raw.ibeacon_uuid = config.iBeacon_UUID;
+    raw.ibeacon_major = config.iBeacon_majorID;
+    raw.ibeacon_minor = config.iBeacon_minorID;
     
     const UInt8* nameBytes = [[config.name dataUsingEncoding:NSUTF8StringEncoding] bytes];
     memset(&(raw.local_name), ' ', config.name.length);
@@ -552,12 +555,21 @@ typedef enum { //These occur in sequence
             break;
         case MSG_ID_BT_GET_CONFIG: {
             PTDLog(@"App Message Received: MSG_ID_BT_GET_CONFIG: %@", payload);
+            if(payload.length != sizeof(BT_RADIOCONFIG_T)){
+                PTDLog(@"Invalid length of MSG_ID_BT_GET_CONFIG. Most likely an outdated version of FW");
+                break;
+            }
             if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateRadioConfig:)]) {
                 BT_RADIOCONFIG_T rawData;
                 [payload getBytes:&rawData range:NSMakeRange(0, sizeof(BT_RADIOCONFIG_T))];
                 PTDBeanRadioConfig *config = [[PTDBeanRadioConfig alloc] init];
                 config.advertisingInterval = rawData.adv_int;
                 config.connectionInterval = rawData.conn_int;
+                config.advertisingMode = rawData.adv_mode;
+                config.iBeacon_UUID = rawData.ibeacon_uuid;
+                config.iBeacon_majorID = rawData.ibeacon_major;
+                config.iBeacon_minorID = rawData.ibeacon_minor;
+                
                 config.name = [NSString stringWithUTF8String:(char*)rawData.local_name];
                 config.power = rawData.power;
                 [self.delegate bean:self didUpdateRadioConfig:config];
