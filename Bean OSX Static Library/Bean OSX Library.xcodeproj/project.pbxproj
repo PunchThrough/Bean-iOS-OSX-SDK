@@ -21,6 +21,7 @@
 /* End PBXAggregateTarget section */
 
 /* Begin PBXBuildFile section */
+		2F6B5991196CA72E000CC6E8 /* BleDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 524E2B8C195A0C10007FE17D /* BleDevice.m */; };
 		520C8ED7191BF0EC0086C530 /* BleProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 520C8ED6191BF0EC0086C530 /* BleProfile.m */; };
 		520C8EDE191C31780086C530 /* NSData+CRC.m in Sources */ = {isa = PBXBuildFile; fileRef = 521A4E9C19103E5F005B3097 /* NSData+CRC.m */; };
 		520C8EDF191C318D0086C530 /* CBPeripheral+isConnected_Universal.m in Sources */ = {isa = PBXBuildFile; fileRef = 521A4EA219116C0F005B3097 /* CBPeripheral+isConnected_Universal.m */; };
@@ -601,6 +602,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2F6B5991196CA72E000CC6E8 /* BleDevice.m in Sources */,
 				96506ECA1937E82A00D02440 /* BatteryProfile.m in Sources */,
 				520C8EE0191C31970086C530 /* BleProfile.m in Sources */,
 				520C8EDF191C318D0086C530 /* CBPeripheral+isConnected_Universal.m in Sources */,
