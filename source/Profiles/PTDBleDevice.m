@@ -6,10 +6,10 @@
 //  Copyright (c) 2014 Punch Through Design. All rights reserved.
 //
 
-#import "BleDevice.h"
+#import "PTDBleDevice.h"
 #import "Profile_Protocol.h"
 
-@implementation BleDevice
+@implementation PTDBleDevice
 
 #pragma mark - Public Methods
 -(id)initWithPeripheral:(CBPeripheral*)peripheral{

@@ -14,7 +14,7 @@
 #import <IOBluetooth/IOBluetooth.h>
 #endif
 
-@interface BleDevice : NSObject <CBPeripheralDelegate>{
+@interface PTDBleDevice : NSObject <CBPeripheralDelegate>{
     CBPeripheral*               _peripheral;
     NSArray*                    _profiles;
     NSNumber*                   _RSSI;
