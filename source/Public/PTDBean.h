@@ -199,6 +199,11 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  }
  */
 -(BeanState)state;
+/**
+ Test equality with another beans. This method returns TRUE if both beans have an equivalent identifier
+ @param bean see PTDBean
+ */
+- (BOOL)isEqualToBean:(PTDBean *)bean;
 /// @name Radio Configuration
 /**
  Reads the Radio Configuration.
