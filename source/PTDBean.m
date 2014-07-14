@@ -60,6 +60,13 @@ typedef enum { //These occur in sequence
 }
 
 #pragma mark - Public Methods
+- (BOOL)isEqualToBean:(PTDBean *)bean {
+    if([self.identifier isEqual:bean.identifier]){
+        return YES;
+    }
+    return NO;
+}
+
 -(void)sendMessage:(GattSerialMessage*)message{
     [gatt_serial_profile sendMessage:message];
 }
