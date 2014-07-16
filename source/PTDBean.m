@@ -579,6 +579,7 @@ typedef enum { //These occur in sequence
                 
                 config.name = [NSString stringWithUTF8String:(char*)rawData.local_name];
                 config.power = rawData.power;
+                _radioConfig = config;
                 [self.delegate bean:self didUpdateRadioConfig:config];
             }
             break;
