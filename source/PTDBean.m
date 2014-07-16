@@ -519,7 +519,7 @@ typedef enum { //These occur in sequence
         
         if(validationRetryTimer)[validationRetryTimer invalidate];
         validationRetryTimer = nil;
-        _state = BeanState_ConnectedAndValidated;
+        self.state = BeanState_ConnectedAndValidated;
         if(_beanManager){
             if([_beanManager respondsToSelector:@selector(bean:hasBeenValidated_error:)]){
                 [_beanManager bean:self hasBeenValidated_error:nil];
