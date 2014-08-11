@@ -60,6 +60,13 @@ typedef enum { //These occur in sequence
 }
 
 #pragma mark - Public Methods
+- (BOOL)isEqualToBean:(PTDBean *)bean {
+    if([self.identifier isEqual:bean.identifier]){
+        return YES;
+    }
+    return NO;
+}
+
 -(void)sendMessage:(GattSerialMessage*)message{
     [gatt_serial_profile sendMessage:message];
 }
@@ -512,7 +519,7 @@ typedef enum { //These occur in sequence
         
         if(validationRetryTimer)[validationRetryTimer invalidate];
         validationRetryTimer = nil;
-        _state = BeanState_ConnectedAndValidated;
+        self.state = BeanState_ConnectedAndValidated;
         if(_beanManager){
             if([_beanManager respondsToSelector:@selector(bean:hasBeenValidated_error:)]){
                 [_beanManager bean:self hasBeenValidated_error:nil];
@@ -572,6 +579,7 @@ typedef enum { //These occur in sequence
                 
                 config.name = [NSString stringWithUTF8String:(char*)rawData.local_name];
                 config.power = rawData.power;
+                _radioConfig = config;
                 [self.delegate bean:self didUpdateRadioConfig:config];
             }
             break;
