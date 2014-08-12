@@ -323,6 +323,8 @@ typedef enum { //These occur in sequence
 
 -(void)interrogateAndValidate{
     validationRetryCount = 0;
+    if(validationRetryTimer)[validationRetryTimer invalidate];
+    validationRetryTimer = nil;
     [NSTimer scheduledTimerWithTimeInterval:DELAY_BEFORE_PROFILE_VALIDATION target:self selector:@selector(__interrogateAndValidate) userInfo:nil repeats:NO];
     //[self __interrogateAndValidate];
 }
