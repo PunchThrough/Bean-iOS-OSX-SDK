@@ -158,12 +158,12 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
 *  The Peripheral identifier.
 *  For more info, refer to the [Apple identifier documentation](https://developer.apple.com/library/ios/documentation/CoreBluetooth/Reference/CBPeripheral_Class/translated_content/CBPeripheral.html#//apple_ref/occ/instp/CBPeripheral/identifier)
 */
--(NSUUID*)identifier;
+@property (nonatomic, readonly) NSUUID* identifier;
 /**
  *  The Peripheral name.
  *  For more info, refer to the [Apple name documentation](https://developer.apple.com/library/ios/documentation/CoreBluetooth/Reference/CBPeripheral_Class/translated_content/CBPeripheral.html#//apple_ref/occ/instp/CBPeripheral/name)
  */
--(NSString*)name;
+@property (nonatomic, readonly) NSString* name;
 /**
  *  The delegate object for the Bean. 
  */
@@ -173,19 +173,19 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  *
  *  @see PTDBeanManager
  */
--(PTDBeanManager*)beanManager;
+@property (nonatomic, readonly) PTDBeanManager* beanManager;
 /**
  *  A dictionary containing [CBAdvertisementDataLocalNameKey](https://developer.apple.com/library/ios/documentation/CoreBluetooth/Reference/CBCentralManagerDelegate_Protocol/translated_content/CBCentralManagerDelegate.html)
  */
--(NSDictionary*)advertisementData;
+@property (nonatomic, readonly) NSDictionary* advertisementData;
 /**
  *  The version of the Bean firmware.
  */
--(NSString*)firmwareVersion;
+@property (nonatomic, readonly) NSString* firmwareVersion;
 /**
  *  The last time this bean was discovered by a central.
  */
--(NSDate*)lastDiscovered;
+@property (nonatomic, readonly) NSDate* lastDiscovered;
 /// @name Monitoring a Bean's Connection State
 /**
  The BeanState of the bean.
@@ -198,7 +198,7 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  PTDLog(@"Bean connected, try calling an api");
  }
  */
--(BeanState)state;
+@property (nonatomic, readonly) BeanState state;
 /**
  Test equality with another beans. This method returns TRUE if both beans have an equivalent identifier
  @param bean see PTDBean
@@ -233,7 +233,7 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  *  The Peripheral RSSI.
  *  For more info, refer to the [Apple RSSI documentation](https://developer.apple.com/library/ios/documentation/CoreBluetooth/Reference/CBPeripheral_Class/translated_content/CBPeripheral.html#//apple_ref/occ/instp/CBPeripheral/RSSI)
  */
--(NSNumber*)RSSI;
+@property (nonatomic, readonly) NSNumber* RSSI;
 /// @name Programming and Configuring Arduino
 /**
  *  Turns Arduino power on or off
