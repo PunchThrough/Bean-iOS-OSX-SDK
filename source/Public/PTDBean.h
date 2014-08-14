@@ -234,7 +234,18 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  *  For more info, refer to the [Apple RSSI documentation](https://developer.apple.com/library/ios/documentation/CoreBluetooth/Reference/CBPeripheral_Class/translated_content/CBPeripheral.html#//apple_ref/occ/instp/CBPeripheral/RSSI)
  */
 -(NSNumber*)RSSI;
-/// @name Programming an Arduino Sketch
+/// @name Programming and Configuring Arduino
+/**
+ *  Turns Arduino power on or off
+ *
+ *  @param Boolean determining the power state of the arduino. "True" sets the Arduino to a powered on state and "False" is a shut down state.
+ */
+-(void)setArduinoPowerState:(BOOL)powerOn;
+/**
+ *  Retrieves the Arduino power state
+ *  @see [PTDBeanDelegate bean:didUpdateArduinoPowerState:];
+ */
+-(void)getArduinoPowerState;
 /**
  *  Programs the Arduino with a hex file.
  *
@@ -243,7 +254,6 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  *  @see [PTDBeanDelegate bean:didProgramArduinoWithError:]
  */
 -(void)programArduinoWithRawHexImage:(NSData*)hexImage andImageName:(NSString*)name;
-/// @name Accessing Arduino Sketch Information
 /**
  *  Reads the Arduino Sketch.
  *  @see [PTDBeanDelegate bean:didUpdateSketchName:dateProgrammed:crc32:]
@@ -386,10 +396,15 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  */
 -(void)bean:(PTDBean*)bean error:(NSError*)error;
 /**
+ Sent when the Arduino has been manually powered on or off
+ @param bean  the bean that made the request
+ @param poweredOn true if the Arduino is powered, false if it is shut down
+ */
+-(void)bean:(PTDBean*)bean didUpdateArduinoPowerState:(BOOL)poweredOn;
+/**
  Sent when an error occurs during Arduino Programming
  @param bean  the bean that made the request
  @param error refer to BeanErrors for the list of error codes
- 
  */
 -(void)bean:(PTDBean*)bean didProgramArduinoWithError:(NSError*)error;
 /**

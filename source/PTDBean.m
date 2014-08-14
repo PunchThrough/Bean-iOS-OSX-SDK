@@ -129,6 +129,15 @@ typedef enum { //These occur in sequence
     }
     [appMessageLayer sendMessageWithID:MSG_ID_BL_GET_META andPayload:nil];
 }
+-(void)setArduinoPowerState:(BOOL)powerOn{
+    if(![self connected])return;
+    UInt8 byte = powerOn?0x01:0x00;
+    [appMessageLayer sendMessageWithID:MSG_ID_CC_POWER_ARDUINO andPayload:[NSData dataWithBytes:&byte length:1]];
+}
+-(void)getArduinoPowerState{
+    if(![self connected])return;
+    [appMessageLayer sendMessageWithID:MSG_ID_CC_GET_AR_POWER andPayload:nil];
+}
 -(void)programArduinoWithRawHexImage:(NSData*)hexImage andImageName:(NSString*)name{
     if(_state == BeanState_ConnectedAndValidated &&
        _peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
@@ -618,6 +627,13 @@ typedef enum { //These occur in sequence
 //            UInt16 bytes = stateMsg.bytesSent;
             [self __handleArduinoOADRemoteStateChange:highLevelState];
             break;
+        case MSG_ID_CC_GET_AR_POWER:
+            PTDLog(@"App Message Received: MSG_ID_CC_GET_AR_POWER: %@", payload);
+            if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateArduinoPowerState:)]) {
+                UInt8 powerState;
+                [payload getBytes:&powerState range:NSMakeRange(0, 1)];
+                [self.delegate bean:self beanDidUpdateArduinoPowerState:powerState?TRUE:FALSE];
+            }
         case MSG_ID_BL_GET_META:
         {
             PTDLog(@"App Message Received: MSG_ID_BL_GET_META: %@", payload);
