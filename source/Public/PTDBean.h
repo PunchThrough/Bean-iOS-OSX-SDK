@@ -245,7 +245,7 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  *  Retrieves the Arduino power state
  *  @see [PTDBeanDelegate bean:didUpdateArduinoPowerState:];
  */
--(void)getArduinoPowerState;
+-(void)readArduinoPowerState;
 /**
  *  Programs the Arduino with a hex file.
  *
