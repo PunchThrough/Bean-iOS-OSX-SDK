@@ -158,12 +158,12 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
 *  The Peripheral identifier.
 *  For more info, refer to the [Apple identifier documentation](https://developer.apple.com/library/ios/documentation/CoreBluetooth/Reference/CBPeripheral_Class/translated_content/CBPeripheral.html#//apple_ref/occ/instp/CBPeripheral/identifier)
 */
--(NSUUID*)identifier;
+@property (nonatomic, readonly) NSUUID* identifier;
 /**
  *  The Peripheral name.
  *  For more info, refer to the [Apple name documentation](https://developer.apple.com/library/ios/documentation/CoreBluetooth/Reference/CBPeripheral_Class/translated_content/CBPeripheral.html#//apple_ref/occ/instp/CBPeripheral/name)
  */
--(NSString*)name;
+@property (nonatomic, readonly) NSString* name;
 /**
  *  The delegate object for the Bean. 
  */
@@ -173,19 +173,19 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  *
  *  @see PTDBeanManager
  */
--(PTDBeanManager*)beanManager;
+@property (nonatomic, readonly) PTDBeanManager* beanManager;
 /**
  *  A dictionary containing [CBAdvertisementDataLocalNameKey](https://developer.apple.com/library/ios/documentation/CoreBluetooth/Reference/CBCentralManagerDelegate_Protocol/translated_content/CBCentralManagerDelegate.html)
  */
--(NSDictionary*)advertisementData;
+@property (nonatomic, readonly) NSDictionary* advertisementData;
 /**
  *  The version of the Bean firmware.
  */
--(NSString*)firmwareVersion;
+@property (nonatomic, readonly) NSString* firmwareVersion;
 /**
  *  The last time this bean was discovered by a central.
  */
--(NSDate*)lastDiscovered;
+@property (nonatomic, readonly) NSDate* lastDiscovered;
 /// @name Monitoring a Bean's Connection State
 /**
  The BeanState of the bean.
@@ -198,7 +198,7 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  PTDLog(@"Bean connected, try calling an api");
  }
  */
--(BeanState)state;
+@property (nonatomic, readonly) BeanState state;
 /**
  Test equality with another beans. This method returns TRUE if both beans have an equivalent identifier
  @param bean see PTDBean
@@ -233,8 +233,19 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  *  The Peripheral RSSI.
  *  For more info, refer to the [Apple RSSI documentation](https://developer.apple.com/library/ios/documentation/CoreBluetooth/Reference/CBPeripheral_Class/translated_content/CBPeripheral.html#//apple_ref/occ/instp/CBPeripheral/RSSI)
  */
--(NSNumber*)RSSI;
-/// @name Programming an Arduino Sketch
+@property (nonatomic, readonly) NSNumber* RSSI;
+/// @name Programming and Configuring Arduino
+/**
+ *  Turns Arduino power on or off
+ *
+ *  @param Boolean determining the power state of the arduino. "True" sets the Arduino to a powered on state and "False" is a shut down state.
+ */
+-(void)setArduinoPowerState:(BOOL)powerOn;
+/**
+ *  Retrieves the Arduino power state
+ *  @see [PTDBeanDelegate bean:didUpdateArduinoPowerState:];
+ */
+-(void)readArduinoPowerState;
 /**
  *  Programs the Arduino with a hex file.
  *
@@ -243,7 +254,6 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  *  @see [PTDBeanDelegate bean:didProgramArduinoWithError:]
  */
 -(void)programArduinoWithRawHexImage:(NSData*)hexImage andImageName:(NSString*)name;
-/// @name Accessing Arduino Sketch Information
 /**
  *  Reads the Arduino Sketch.
  *  @see [PTDBeanDelegate bean:didUpdateSketchName:dateProgrammed:crc32:]
@@ -386,10 +396,15 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  */
 -(void)bean:(PTDBean*)bean error:(NSError*)error;
 /**
+ Sent when the Arduino has been manually powered on or off
+ @param bean  the bean that made the request
+ @param poweredOn true if the Arduino is powered, false if it is shut down
+ */
+-(void)bean:(PTDBean*)bean didUpdateArduinoPowerState:(BOOL)poweredOn;
+/**
  Sent when an error occurs during Arduino Programming
  @param bean  the bean that made the request
  @param error refer to BeanErrors for the list of error codes
- 
  */
 -(void)bean:(PTDBean*)bean didProgramArduinoWithError:(NSError*)error;
 /**

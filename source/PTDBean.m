@@ -129,19 +129,28 @@ typedef enum { //These occur in sequence
     }
     [appMessageLayer sendMessageWithID:MSG_ID_BL_GET_META andPayload:nil];
 }
+-(void)setArduinoPowerState:(BOOL)powerOn{
+    if(![self connected])return;
+    UInt8 byte = powerOn?0x01:0x00;
+    [appMessageLayer sendMessageWithID:MSG_ID_CC_POWER_ARDUINO andPayload:[NSData dataWithBytes:&byte length:1]];
+}
+-(void)readArduinoPowerState{
+    if(![self connected])return;
+    [appMessageLayer sendMessageWithID:MSG_ID_CC_GET_AR_POWER andPayload:nil];
+}
 -(void)programArduinoWithRawHexImage:(NSData*)hexImage andImageName:(NSString*)name{
     if(_state == BeanState_ConnectedAndValidated &&
        _peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
     {
         [self __resetArduinoOADLocals];
-        arduinoFwImage = hexImage;
+        arduinoFwImage = hexImage?hexImage:[[NSData alloc] init];
         
         BL_SKETCH_META_DATA_T startPayload;
         NSData* commandPayload;
         UInt32 imageSize = (UInt32)[arduinoFwImage length];
         startPayload.hexSize = imageSize;
         startPayload.timestamp = [[NSDate date] timeIntervalSince1970];
-        startPayload.hexCrc = [hexImage crc32];
+        startPayload.hexCrc = [arduinoFwImage crc32];
         
         NSInteger maxNameLength = member_size(BL_SKETCH_META_DATA_T,hexName);
         if([name length] > maxNameLength){
@@ -159,7 +168,11 @@ typedef enum { //These occur in sequence
         [appMessageLayer sendMessageWithID:MSG_ID_BL_CMD_START andPayload:commandPayload];
 
         localArduinoOADState = BeanArduinoOADLocalState_SendingStartCommand;
-        [self __setArduinoOADTimeout:ARDUINO_OAD_GENERIC_TIMEOUT_SEC];
+        if(imageSize!=0){
+            [self __setArduinoOADTimeout:ARDUINO_OAD_GENERIC_TIMEOUT_SEC];
+        }else{
+            [self __resetArduinoOADLocals];
+        }
     }else{
         NSError* error = [BEAN_Helper basicError:@"Bean isn't connected" domain:NSStringFromClass([self class]) code:100];
         [self __alertDelegateOfArduinoOADCompletion:error];
@@ -617,6 +630,14 @@ typedef enum { //These occur in sequence
 //            UInt16 blocks = stateMsg.blocksSent;
 //            UInt16 bytes = stateMsg.bytesSent;
             [self __handleArduinoOADRemoteStateChange:highLevelState];
+            break;
+        case MSG_ID_CC_GET_AR_POWER:
+            PTDLog(@"App Message Received: MSG_ID_CC_GET_AR_POWER: %@", payload);
+            if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateArduinoPowerState:)]) {
+                UInt8 powerState;
+                [payload getBytes:&powerState range:NSMakeRange(0, 1)];
+                [self.delegate bean:self didUpdateArduinoPowerState:powerState?TRUE:FALSE];
+            }
             break;
         case MSG_ID_BL_GET_META:
         {
