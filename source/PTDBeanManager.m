@@ -16,6 +16,7 @@
 
 @implementation PTDBeanManager{
     CBCentralManager* cbcentralmanager;
+    NSDate* lastScanStartDate;
     NSMutableDictionary* beanRecords; //Uses NSUUID as key
 }
 
@@ -40,25 +41,36 @@
 }
 
 -(void)startScanningForBeans_error:(NSError**)error{
+    //Stop any previous scan
+    [self stopScanningForBeans_error:nil];
+    
+    //Record the time that we started scanning
+    lastScanStartDate = [NSDate date];
+    
     // Bluetooth must be ON
     if (cbcentralmanager.state != CBCentralManagerStatePoweredOn){
         if (error) *error = [BEAN_Helper basicError:@"Bluetooth is not on" domain:NSStringFromClass([self class]) code:BeanErrors_BluetoothNotOn];
         return;
     }
     
-    //Clear array of previously discovered peripherals.
-    [beanRecords removeAllObjects];
-    
-    //Collect already connected Beans
+    //Collect already connected Peripherals
     NSArray* connectedBeanPeripherals = [cbcentralmanager retrieveConnectedPeripheralsWithServices:[NSArray arrayWithObjects:[CBUUID UUIDWithString:GLOBAL_SERIAL_PASS_SERVICE_UUID], nil]];
     for( CBPeripheral* beanPeripheral in connectedBeanPeripherals){
-        PTDBean* bean = [[PTDBean alloc] initWithPeripheral:beanPeripheral beanManager:self];
-        if(bean){
-            [beanRecords setObject:bean forKey:bean.identifier];
-            bean.state = BeanState_Discovered;
-            [self connectToBean:bean error:nil];
+        PTDBean* bean;
+        //If this bean is already in out records, pass it back to the delegate as having been discovered!
+        if((bean = [beanRecords objectForKey:beanPeripheral.identifier])){
             if (self.delegate && [self.delegate respondsToSelector:@selector(BeanManager:didDisconnectBean:error:)]){
                 [self.delegate BeanManager:self didDiscoverBean:bean error:nil];
+            }
+        }else{ //If this bean's peripheral is connected and not in our records, another app could have connected to it.
+            if((bean = [[PTDBean alloc] initWithPeripheral:beanPeripheral beanManager:self])){
+                [beanRecords setObject:bean forKey:bean.identifier];
+                bean.RSSI = beanPeripheral.RSSI;
+                bean.lastDiscovered = [NSDate date];
+                bean.state = BeanState_Discovered;
+                if (self.delegate && [self.delegate respondsToSelector:@selector(BeanManager:didDisconnectBean:error:)]){
+                    [self.delegate BeanManager:self didDiscoverBean:bean error:nil];
+                }
             }
         }
     }
@@ -80,6 +92,9 @@
         if (error) *error = [BEAN_Helper basicError:@"Bluetooth is not on" domain:@"API:BLE Connection" code:BeanErrors_BluetoothNotOn];
         return;
     }
+    
+    //Clear array of stale peripherals.
+    [self __removeStaleBeans:lastScanStartDate];
     
     [cbcentralmanager stopScan];
     
@@ -128,6 +143,15 @@
     [bean setState:BeanState_AttemptingDisconnection];
     //Attempt to disconnect from the corresponding CBPeripheral
     [cbcentralmanager cancelPeripheralConnection:bean.peripheral];
+    
+    //This is a special fix. At this time, CoreBluetooth doesn't return the "centralManager:didDisconnectPeripheral:error:" delegate call for peripherals that were found using "retrieveConnectedPeripheralsWithServices:"
+    if([bean.name isEqualToString:@"Unknown"]
+       && bean.RSSI == nil){ //Assumption: Based on these symptoms, we assume this bean was found with "retrieveConnectedPeripheralsWithServices" and will be missing it's disconnection delegate.
+        [bean setState:BeanState_Discovered];
+        if (self.delegate && [self.delegate respondsToSelector:@selector(BeanManager:didDisconnectBean:error:)]){
+            [self.delegate BeanManager:self didDisconnectBean:bean error:nil];
+        }
+    }
 }
 
 #pragma mark - Protected methods
@@ -173,6 +197,24 @@
         [beanRecords setObject:bean forKey:peripheral.identifier];
     }
     return bean;
+}
+
+-(void)__removeStaleBeans:(NSDate*)expirationDate{
+    NSMutableArray* idsOfBeansToRemove = [[NSMutableArray alloc] init];
+    //Find the stale beans
+    for (NSUUID* beanId in beanRecords){
+        PTDBean* bean = [beanRecords objectForKey:beanId];
+        //Check if this bean was last discovered before the previous scan
+        if(bean.state == BeanState_Discovered //Only qualify as stale, if this bean is disconnected
+           && [bean.lastDiscovered compare:expirationDate] == NSOrderedAscending){
+            //Mark it to be removed!
+            [idsOfBeansToRemove addObject:beanId];
+        }
+    }
+    //Remove the stale beans
+    for (NSUUID* beanID in idsOfBeansToRemove){
+        [beanRecords removeObjectForKey:beanID];
+    }
 }
 
 #pragma mark - CBCentralManagerDelegate
