@@ -682,11 +682,21 @@ typedef enum { //These occur in sequence
             PTDLog(@"App Message Received: MSG_ID_CC_ACCEL_READ: %@", payload);
             if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateAccelerationAxes:)]) {
                 ACC_READING_T rawData;
-                [payload getBytes:&rawData range:NSMakeRange(0, sizeof(ACC_READING_T))];
+                UInt8 sensitivity; //sensitivity is in units of g/512LSB
+                if(payload.length == sizeof(ACC_READING_T)){ //This is the latest and greatest Accelerometer message
+                    [payload getBytes:&rawData range:NSMakeRange(0, sizeof(ACC_READING_T))];
+                    sensitivity = rawData.sensitivity;
+                }else if(payload.length == 6){ //Legacy Accelerometer message
+                    [payload getBytes:&rawData range:NSMakeRange(0, 6)];
+                    sensitivity = 2;
+                }else{ // unknown payload
+                    break;
+                }
+                float lsbGConversionFactor = sensitivity/512.0;
                 PTDAcceleration acceleration;
-                acceleration.x = rawData.xAxis * 0.00391;
-                acceleration.y = rawData.yAxis * 0.00391;
-                acceleration.z = rawData.zAxis * 0.00391;
+                acceleration.x = rawData.xAxis * lsbGConversionFactor;
+                acceleration.y = rawData.yAxis * lsbGConversionFactor;
+                acceleration.z = rawData.zAxis * lsbGConversionFactor;
                 [self.delegate bean:self didUpdateAccelerationAxes:acceleration];
             }
             break;
