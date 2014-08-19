@@ -90,6 +90,24 @@ typedef NS_ENUM(NSInteger, BeanState) {
 };
 
 /**
+ *  Represents the Bean's Arduino power state
+ */
+typedef NS_ENUM(NSInteger, ArduinoPowerState) {
+    /**
+     *  Used for initialization and unknown error states
+     */
+    ArduinoPowerState_Unknown = 0,
+    /**
+     *  Bean has been discovered by a central
+     */
+    ArduinoPowerState_Off,
+    /**
+     *  Bean is attempting to connect with a central
+     */
+    ArduinoPowerState_On
+};
+
+/**
  *  docset does not work here
  */
 typedef struct {
@@ -236,11 +254,17 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
 @property (nonatomic, readonly) NSNumber* RSSI;
 /// @name Programming and Configuring Arduino
 /**
+ *  The Power State for the Bean's Arduino
+ *
+ *  @see ArduinoPowerState
+ */
+@property (nonatomic) ArduinoPowerState arduinoPowerState;
+/**
  *  Turns Arduino power on or off
  *
  *  @param Boolean determining the power state of the arduino. "True" sets the Arduino to a powered on state and "False" is a shut down state.
  */
--(void)setArduinoPowerState:(BOOL)powerOn;
+-(void)setArduinoPowerState:(ArduinoPowerState)state;
 /**
  *  Retrieves the Arduino power state
  *  @see [PTDBeanDelegate bean:didUpdateArduinoPowerState:];
@@ -400,7 +424,7 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  @param bean  the bean that made the request
  @param poweredOn true if the Arduino is powered, false if it is shut down
  */
--(void)bean:(PTDBean*)bean didUpdateArduinoPowerState:(BOOL)poweredOn;
+-(void)beanDidUpdateArduinoPowerState:(PTDBean*)bean;
 /**
  Sent when an error occurs during Arduino Programming
  @param bean  the bean that made the request

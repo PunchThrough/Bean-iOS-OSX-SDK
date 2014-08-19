@@ -236,6 +236,7 @@
 }
 
 -(void)centralManager:(CBCentralManager *)central didDiscoverPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary *)advertisementData RSSI:(NSNumber *)RSSI{
+    PTDLog(@"centralManager:didDiscoverPeripheral %@", peripheral);
     PTDBean* bean = [self __processBeanRecordFromCBPeripheral:peripheral advertisementData:advertisementData RSSI:RSSI];
     if(bean){
         //Inform the delegate that we located a Bean
