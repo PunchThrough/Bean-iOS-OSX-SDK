@@ -220,10 +220,11 @@ typedef enum { //These occur in sequence
     raw.ibeacon_minor = config.iBeacon_minorID;
     
     const UInt8* nameBytes = [[config.name dataUsingEncoding:NSUTF8StringEncoding] bytes];
-    memset(&(raw.local_name), ' ', config.name.length);
-    memcpy(&(raw.local_name), nameBytes, config.name.length);
+    UInt8 nameBytesLength = [[config.name dataUsingEncoding:NSUTF8StringEncoding] length];
+    memset(&(raw.local_name), ' ', nameBytesLength);
+    memcpy(&(raw.local_name), nameBytes, nameBytesLength);
     
-    raw.local_name_size = config.name.length;
+    raw.local_name_size = nameBytesLength;
     raw.power = config.power;
     NSData *data = [NSData dataWithBytes:&raw length: sizeof(BT_RADIOCONFIG_T)];
     [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_CONFIG andPayload:data];
