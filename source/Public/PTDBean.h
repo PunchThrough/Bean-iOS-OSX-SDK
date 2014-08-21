@@ -208,13 +208,12 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
 /**
  The BeanState of the bean.
  
- Example:
- if (self.bean.state == BeanState_Discovered) {
- PTDLog(@"Bean discovered, try connecting");
- }
- else if (self.bean.state == BeanState_ConnectedAndValidated) {
- PTDLog(@"Bean connected, try calling an api");
- }
+     if (self.bean.state == BeanState_Discovered) {
+        PTDLog(@"Bean discovered, try connecting");
+     }
+     else if (self.bean.state == BeanState_ConnectedAndValidated) {
+        PTDLog(@"Bean connected, try calling an api");
+     }
  */
 @property (nonatomic, readonly) BeanState state;
 /**
@@ -232,6 +231,9 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
 @property (nonatomic, strong, readonly) PTDBeanRadioConfig * radioConfig;
 /**
  Reads the Radio Configuration.
+ *
+ *  @discussion When you call this method to read the Bean's Radio Configuration, the bean calls the [PTDBeanDelegate bean:didUpdateRadioConfig:] method of its delegate object. If the Bean's Radio Config is successfully retrieved, you can access it through the Bean's radioConfig property.
+ *
  @see [PTDBeanDelegate bean:didUpdateRadioConfig:]
  @see PTDBeanRadioConfig
  */
@@ -266,20 +268,30 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  */
 -(void)setArduinoPowerState:(ArduinoPowerState)state;
 /**
- *  Retrieves the Arduino power state
- *  @see [PTDBeanDelegate bean:didUpdateArduinoPowerState:];
+ *  Retrieves the Arduino Power State
+ *
+ *  @discussion When you call this method to read the Arduino Power State, the bean calls the [PTDBeanDelegate beanDidUpdateArduinoPowerState:] method of its delegate object. If the Arduino's Power State is successfully retrieved, you can access it through the Bean's arduinoPowerState property.
+ *
+ *  @see [PTDBeanDelegate beanDidUpdateArduinoPowerState:]
+ *  @see arduinoPowerState
  */
 -(void)readArduinoPowerState;
 /**
- *  Programs the Arduino with a hex file.
+ *  Programs the Arduino with raw binary data. (Not Intel Hex)
  *
- *  @param hexImage the hexImage for setting the firmware
- *  @param name the name of the file
+ *  @param hexImage the binary image for programming the Arduino
+ *  @param name the name of the sketch
+ *
+ *  @discussion After the Arduino programming is complete, the bean calls the [PTDBeanDelegate bean:didProgramArduinoWithError:] method of its delegate object.
+ *
  *  @see [PTDBeanDelegate bean:didProgramArduinoWithError:]
  */
 -(void)programArduinoWithRawHexImage:(NSData*)hexImage andImageName:(NSString*)name;
 /**
  *  Reads the Arduino Sketch.
+ *
+ *  @discussion When you call this method to read the Arduino sketch info, the bean calls the [PTDBeanDelegate beanDid:didUpdateSketchName:dateProgrammed:crc32:] method of its delegate object.
+ *
  *  @see [PTDBeanDelegate bean:didUpdateSketchName:dateProgrammed:crc32:]
  */
 -(void)readArduinoSketchInfo;
