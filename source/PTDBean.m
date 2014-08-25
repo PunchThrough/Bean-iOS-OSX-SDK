@@ -129,19 +129,30 @@ typedef enum { //These occur in sequence
     }
     [appMessageLayer sendMessageWithID:MSG_ID_BL_GET_META andPayload:nil];
 }
+-(void)setArduinoPowerState:(ArduinoPowerState)state{
+    if(![self connected])return;
+    if(!(state == ArduinoPowerState_Off || state == ArduinoPowerState_On)) return;
+    UInt8 byte = (state==ArduinoPowerState_On)?0x01:0x00;
+    [appMessageLayer sendMessageWithID:MSG_ID_CC_POWER_ARDUINO andPayload:[NSData dataWithBytes:&byte length:1]];
+    _arduinoPowerState = state;
+}
+-(void)readArduinoPowerState{
+    if(![self connected])return;
+    [appMessageLayer sendMessageWithID:MSG_ID_CC_GET_AR_POWER andPayload:nil];
+}
 -(void)programArduinoWithRawHexImage:(NSData*)hexImage andImageName:(NSString*)name{
     if(_state == BeanState_ConnectedAndValidated &&
        _peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
     {
         [self __resetArduinoOADLocals];
-        arduinoFwImage = hexImage;
+        arduinoFwImage = hexImage?hexImage:[[NSData alloc] init];
         
         BL_SKETCH_META_DATA_T startPayload;
         NSData* commandPayload;
         UInt32 imageSize = (UInt32)[arduinoFwImage length];
         startPayload.hexSize = imageSize;
         startPayload.timestamp = [[NSDate date] timeIntervalSince1970];
-        startPayload.hexCrc = [hexImage crc32];
+        startPayload.hexCrc = [arduinoFwImage crc32];
         
         NSInteger maxNameLength = member_size(BL_SKETCH_META_DATA_T,hexName);
         if([name length] > maxNameLength){
@@ -159,7 +170,11 @@ typedef enum { //These occur in sequence
         [appMessageLayer sendMessageWithID:MSG_ID_BL_CMD_START andPayload:commandPayload];
 
         localArduinoOADState = BeanArduinoOADLocalState_SendingStartCommand;
-        [self __setArduinoOADTimeout:ARDUINO_OAD_GENERIC_TIMEOUT_SEC];
+        if(imageSize!=0){
+            [self __setArduinoOADTimeout:ARDUINO_OAD_GENERIC_TIMEOUT_SEC];
+        }else{
+            [self __resetArduinoOADLocals];
+        }
     }else{
         NSError* error = [BEAN_Helper basicError:@"Bean isn't connected" domain:NSStringFromClass([self class]) code:100];
         [self __alertDelegateOfArduinoOADCompletion:error];
@@ -205,10 +220,11 @@ typedef enum { //These occur in sequence
     raw.ibeacon_minor = config.iBeacon_minorID;
     
     const UInt8* nameBytes = [[config.name dataUsingEncoding:NSUTF8StringEncoding] bytes];
-    memset(&(raw.local_name), ' ', config.name.length);
-    memcpy(&(raw.local_name), nameBytes, config.name.length);
+    UInt8 nameBytesLength = [[config.name dataUsingEncoding:NSUTF8StringEncoding] length];
+    memset(&(raw.local_name), ' ', nameBytesLength);
+    memcpy(&(raw.local_name), nameBytes, nameBytesLength);
     
-    raw.local_name_size = config.name.length;
+    raw.local_name_size = nameBytesLength;
     raw.power = config.power;
     NSData *data = [NSData dataWithBytes:&raw length: sizeof(BT_RADIOCONFIG_T)];
     [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_CONFIG andPayload:data];
@@ -317,12 +333,15 @@ typedef enum { //These occur in sequence
     if (self) {
         _beanManager = manager;
         localArduinoOADState = BeanArduinoOADLocalState_Inactive;
+        _arduinoPowerState = ArduinoPowerState_Unknown;
     }
     return self;
 }
 
 -(void)interrogateAndValidate{
     validationRetryCount = 0;
+    if(validationRetryTimer)[validationRetryTimer invalidate];
+    validationRetryTimer = nil;
     [NSTimer scheduledTimerWithTimeInterval:DELAY_BEFORE_PROFILE_VALIDATION target:self selector:@selector(__interrogateAndValidate) userInfo:nil repeats:NO];
     //[self __interrogateAndValidate];
 }
@@ -618,6 +637,15 @@ typedef enum { //These occur in sequence
 //            UInt16 bytes = stateMsg.bytesSent;
             [self __handleArduinoOADRemoteStateChange:highLevelState];
             break;
+        case MSG_ID_CC_GET_AR_POWER:
+            PTDLog(@"App Message Received: MSG_ID_CC_GET_AR_POWER: %@", payload);
+            UInt8 powerState;
+            [payload getBytes:&powerState range:NSMakeRange(0, 1)];
+            _arduinoPowerState = powerState?ArduinoPowerState_On:ArduinoPowerState_Off;
+            if (self.delegate && [self.delegate respondsToSelector:@selector(beanDidUpdateArduinoPowerState:)]) {
+                [self.delegate beanDidUpdateArduinoPowerState:self];
+            }
+            break;
         case MSG_ID_BL_GET_META:
         {
             PTDLog(@"App Message Received: MSG_ID_BL_GET_META: %@", payload);
@@ -659,11 +687,21 @@ typedef enum { //These occur in sequence
             PTDLog(@"App Message Received: MSG_ID_CC_ACCEL_READ: %@", payload);
             if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateAccelerationAxes:)]) {
                 ACC_READING_T rawData;
-                [payload getBytes:&rawData range:NSMakeRange(0, sizeof(ACC_READING_T))];
+                UInt8 sensitivity; //sensitivity is in units of g/512LSB
+                if(payload.length == sizeof(ACC_READING_T)){ //This is the latest and greatest Accelerometer message
+                    [payload getBytes:&rawData range:NSMakeRange(0, sizeof(ACC_READING_T))];
+                    sensitivity = rawData.sensitivity;
+                }else if(payload.length == 6){ //Legacy Accelerometer message
+                    [payload getBytes:&rawData range:NSMakeRange(0, 6)];
+                    sensitivity = 2;
+                }else{ // unknown payload
+                    break;
+                }
+                float lsbGConversionFactor = sensitivity/512.0;
                 PTDAcceleration acceleration;
-                acceleration.x = rawData.xAxis * 0.00391;
-                acceleration.y = rawData.yAxis * 0.00391;
-                acceleration.z = rawData.zAxis * 0.00391;
+                acceleration.x = rawData.xAxis * lsbGConversionFactor;
+                acceleration.y = rawData.yAxis * lsbGConversionFactor;
+                acceleration.z = rawData.zAxis * lsbGConversionFactor;
                 [self.delegate bean:self didUpdateAccelerationAxes:acceleration];
             }
             break;
