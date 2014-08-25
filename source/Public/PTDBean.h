@@ -204,6 +204,11 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  *  The last time this bean was discovered by a central.
  */
 @property (nonatomic, readonly) NSDate* lastDiscovered;
+/**
+ Test equality with another beans. This method returns TRUE if both beans have an equivalent identifier
+ @param bean see PTDBean
+ */
+- (BOOL)isEqualToBean:(PTDBean *)bean;
 /// @name Monitoring a Bean's Connection State
 /**
  The BeanState of the bean.
@@ -216,11 +221,6 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
      }
  */
 @property (nonatomic, readonly) BeanState state;
-/**
- Test equality with another beans. This method returns TRUE if both beans have an equivalent identifier
- @param bean see PTDBean
- */
-- (BOOL)isEqualToBean:(PTDBean *)bean;
 /// @name Radio Configuration
 /**
  Cached data for Bean's Radio Configuration. Should first use readRadioConfig to make sure this data is fresh.
