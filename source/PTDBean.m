@@ -342,8 +342,7 @@ typedef enum { //These occur in sequence
     validationRetryCount = 0;
     if(validationRetryTimer)[validationRetryTimer invalidate];
     validationRetryTimer = nil;
-    [NSTimer scheduledTimerWithTimeInterval:DELAY_BEFORE_PROFILE_VALIDATION target:self selector:@selector(__interrogateAndValidate) userInfo:nil repeats:NO];
-    //[self __interrogateAndValidate];
+    validationRetryTimer = [NSTimer scheduledTimerWithTimeInterval:DELAY_BEFORE_PROFILE_VALIDATION target:self selector:@selector(__interrogateAndValidate) userInfo:nil repeats:NO];
 }
 -(CBPeripheral*)peripheral{
     return _peripheral;
@@ -367,6 +366,10 @@ typedef enum { //These occur in sequence
 #pragma mark - Private Methods
 -(void)__interrogateAndValidate{
     if(validationRetryCount >= PROFILE_VALIDATION_RETRIES){
+        //Clear retry counter
+        if(validationRetryTimer)[validationRetryTimer invalidate];
+        validationRetryTimer = nil;
+        //Notify Bean Manager of the error
         if(_beanManager){
             if([_beanManager respondsToSelector:@selector(bean:hasBeenValidated_error:)]){
                 NSError* error = [BEAN_Helper basicError:@"Validation Failed. Retry count exceeded" domain:NSStringFromClass([self class]) code:100];
