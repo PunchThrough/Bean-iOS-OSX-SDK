@@ -54,9 +54,12 @@
     
     //Send Packet
     NSError* error;
-    if(gattTransport && gattPacketTxQueue)
+    if(gattTransport && gattPacketTxQueue && [gattPacketTxQueue count] != 0)
     {
         [gattTransport sendPacket:[gattPacketTxQueue objectAtIndex:0] error:&error];
+    }else{
+        [bufferUnloadTimer invalidate];
+        return;
     }
     
     if(error)
