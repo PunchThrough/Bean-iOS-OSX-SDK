@@ -123,6 +123,17 @@ typedef enum { //These occur in sequence
 }
 
 #pragma mark SDK
+- (BOOL)setPairingPin:(NSUInteger*)pinCode{
+    if(![self connected]) {
+        return FALSE;
+    }
+    BT_SET_PIN_T payload;
+    payload.pinCode = pinCode?(UInt32)(*pinCode):(UInt32)0;
+    payload.pincodeActive = pinCode?TRUE:FALSE;
+    NSData *data = [NSData dataWithBytes:&payload length: sizeof(BT_SET_PIN_T)];
+    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_PIN andPayload:data];
+    return TRUE;
+}
 -(void)readArduinoSketchInfo{
     if(![self connected]) {
         return;
@@ -228,13 +239,6 @@ typedef enum { //These occur in sequence
     raw.power = config.power;
     NSData *data = [NSData dataWithBytes:&raw length: sizeof(BT_RADIOCONFIG_T)];
     [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_CONFIG andPayload:data];
-}
--(void)setPairingPin:(UInt16)pinCode {
-    if(![self connected]) {
-        return;
-    }
-    NSData *data = [NSData dataWithBytes:&pinCode length: sizeof(UInt16)];
-    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_PIN andPayload:data];
 }
 -(void)readAccelerationAxis {
     if(![self connected]) {

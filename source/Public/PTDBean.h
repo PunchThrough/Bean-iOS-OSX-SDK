@@ -204,6 +204,13 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  *  The last time this bean was discovered by a central.
  */
 @property (nonatomic, readonly) NSDate* lastDiscovered;
+/// @name Security
+/**
+ Sets or clears a Bluetooth pairing pin. This operation can only be used if the Bean is connected. The pairing pin will be cleared/disabled if pinCode is a null pointer.
+ @param pinCode Bluetooth pairing pin (a 32-bit unsigned integer). Use a null pointer to clear/disable pairing pin.
+ @return A Boolean indicating if the operation was successful.
+ */
+- (BOOL)setPairingPin:(NSUInteger*)pinCode;
 /// @name Monitoring a Bean's Connection State
 /**
  The BeanState of the bean.
