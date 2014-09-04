@@ -130,8 +130,8 @@ typedef enum { //These occur in sequence
     
     if(pinCode){
         NSInteger pin = (UInt32)(*pinCode);
-        if(pin < 10000 || pin > 99999){
-            //Pairing pin is not 5 digits
+        if(pin < 0 || pin > 999999){
+            //Pairing pin is not a positive integer with 6 digits or less
             return FALSE;
         }
     }
