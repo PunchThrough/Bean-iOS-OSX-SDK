@@ -127,6 +127,14 @@ typedef enum { //These occur in sequence
     if(![self connected]) {
         return FALSE;
     }
+    
+    if(pinCode){
+        NSInteger pin = (UInt32)(*pinCode);
+        if(pin < 10000 || pin > 99999){
+            //Pairing pin is not 5 digits
+            return FALSE;
+        }
+    }
     BT_SET_PIN_T payload;
     payload.pinCode = pinCode?(UInt32)(*pinCode):(UInt32)0;
     payload.pincodeActive = pinCode?TRUE:FALSE;
@@ -573,15 +581,6 @@ typedef enum { //These occur in sequence
             break;
         case MSG_ID_BT_SET_LOCAL_NAME:
             PTDLog(@"App Message Received: MSG_ID_BT_SET_LOCAL_NAME: %@", payload);
-            break;
-        case MSG_ID_BT_SET_PIN:
-            //TODO : never being called
-            PTDLog(@"App Message Received: MSG_ID_BT_SET_PIN: %@", payload);
-            if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdatePairingPin:)]) {
-                UInt16 pin;
-                [payload getBytes:&pin range:NSMakeRange(0, sizeof(UInt16))];
-                [self.delegate bean:self didUpdatePairingPin:pin];
-            }
             break;
         case MSG_ID_BT_SET_TX_PWR:
             PTDLog(@"App Message Received: MSG_ID_BT_SET_TX_PWR: %@", payload);

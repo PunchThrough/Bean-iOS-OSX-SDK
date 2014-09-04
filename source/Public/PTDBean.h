@@ -207,7 +207,7 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
 /// @name Security
 /**
  Sets or clears a Bluetooth pairing pin. This operation can only be used if the Bean is connected. The pairing pin will be cleared/disabled if pinCode is a null pointer.
- @param pinCode Bluetooth pairing pin (a 32-bit unsigned integer). Use a null pointer to clear/disable pairing pin.
+ @param pinCode Bluetooth pairing pin (5 digit positive integer). Use a null pointer to clear/disable pairing pin.
  @return A Boolean indicating if the operation was successful.
  */
 - (BOOL)setPairingPin:(NSUInteger*)pinCode;
@@ -453,13 +453,6 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  *  @param data the data sent from the Bean
  */
 -(void)bean:(PTDBean*)bean serialDataReceived:(NSData*)data;
-/**
- *  Message from the Bean that the pairing in has been updated
- *
- *  @param bean    the Bean being updated
- *  @param pinCode the code used to update the bean
- */
--(void)bean:(PTDBean*)bean didUpdatePairingPin:(UInt16)pinCode;
 #if TARGET_OS_IPHONE
 /**
  *  The Bean Led color
