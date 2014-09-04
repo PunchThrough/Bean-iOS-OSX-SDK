@@ -156,15 +156,15 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
    An PTDBean object represents a Light Blue Bean that gives access to setting and retrieving of Arduino attributes, such as the name, temperature, accelerometer, look at Other Methods below for more.
 
     Example:
-    // tell the bean we implment PTDBeanDelegate
+    // Set this class as the Bean's delegate to receive messages
     self.bean.delegate = self;
-    // ask the bean for the temp
+    // ask the Bean for the current ambient temperature
     [self.bean readTemperature];
  
-    // check for the bean response
+    // This is called when the Bean responds
     -(void)bean:(PTDBean *)bean didUpdateTemperature:(NSNumber *)degrees_celsius {
       NSString *msg = [NSString stringWithFormat:@"received did update temp reading:%@", degrees_celsius];
-      PTDLog(@"%@",msg);
+      NSLog(@"%@",msg);
     }
  
    See [BeanXcodeWorkspace](http://www.punchthrough.com) for more examples.
@@ -173,17 +173,17 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
 @interface PTDBean : PTDBleDevice
 /// @name Identifying a Bean
 /**
-*  The Peripheral identifier.
+*  The UUID of the CoreBluetooth peripheral associated with the Bean. This is not guaranteed to be the same between different devices. If a bluetooth cache is cleared, this UUID is not guaranteed to stay the same.
 *  For more info, refer to the [Apple identifier documentation](https://developer.apple.com/library/ios/documentation/CoreBluetooth/Reference/CBPeripheral_Class/translated_content/CBPeripheral.html#//apple_ref/occ/instp/CBPeripheral/identifier)
 */
 @property (nonatomic, readonly) NSUUID* identifier;
 /**
- *  The Peripheral name.
+ *  The Bean's name.
  *  For more info, refer to the [Apple name documentation](https://developer.apple.com/library/ios/documentation/CoreBluetooth/Reference/CBPeripheral_Class/translated_content/CBPeripheral.html#//apple_ref/occ/instp/CBPeripheral/name)
  */
 @property (nonatomic, readonly) NSString* name;
 /**
- *  The delegate object for the Bean. 
+ *  The delegate object for the Bean. Set your class as the delegate to receive messages and responses from the Bean.
  */
 @property (nonatomic, weak) id<PTDBeanDelegate> delegate;
 /**
@@ -193,37 +193,37 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  */
 @property (nonatomic, readonly) PTDBeanManager* beanManager;
 /**
- *  A dictionary containing [CBAdvertisementDataLocalNameKey](https://developer.apple.com/library/ios/documentation/CoreBluetooth/Reference/CBCentralManagerDelegate_Protocol/translated_content/CBCentralManagerDelegate.html)
+ *  Bluetooth LE advertising data. A dictionary containing [CBAdvertisementDataLocalNameKey](https://developer.apple.com/library/ios/documentation/CoreBluetooth/Reference/CBCentralManagerDelegate_Protocol/translated_content/CBCentralManagerDelegate.html)
  */
 @property (nonatomic, readonly) NSDictionary* advertisementData;
 /**
- *  The version of the Bean firmware.
+ *  The version of the Bean's current firmware.
  */
 @property (nonatomic, readonly) NSString* firmwareVersion;
 /**
- *  The last time this bean was discovered by a central.
+ *  Represents last time this Bean was discovered while scanning.
  */
 @property (nonatomic, readonly) NSDate* lastDiscovered;
 /**
- Test equality with another beans. This method returns TRUE if both beans have an equivalent identifier
- @param bean see PTDBean
+ Test equality with another Bean. This method returns TRUE if both Beans have the same <identifier>
+ @param bean The Bean with which to test equality
  */
 - (BOOL)isEqualToBean:(PTDBean *)bean;
 /// @name Monitoring a Bean's Connection State
 /**
- The BeanState of the bean.
+ The current connection state of the Bean. See <BeanState> for more details.
  
      if (self.bean.state == BeanState_Discovered) {
-        PTDLog(@"Bean discovered, try connecting");
+        NSLog(@"Bean discovered, try connecting");
      }
      else if (self.bean.state == BeanState_ConnectedAndValidated) {
-        PTDLog(@"Bean connected, try calling an api");
+        NSLog(@"Bean connected, try calling an API");
      }
  */
 @property (nonatomic, readonly) BeanState state;
 /// @name Radio Configuration
 /**
- Cached data for Bean's Radio Configuration. Should first use readRadioConfig to make sure this data is fresh.
+ Cached data for Bean's Radio Configuration. Should call <readRadioConfig> first to ensure this data is fresh.
  @see [PTDBean readRadioConfig]
  @see [PTDBeanDelegate bean:didUpdateRadioConfig:]
  @see PTDBeanRadioConfig
@@ -250,13 +250,13 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  */
 -(void)readRSSI;
 /**
- *  The Peripheral RSSI.
+ *  The Bean's RSSI.
  *  For more info, refer to the [Apple RSSI documentation](https://developer.apple.com/library/ios/documentation/CoreBluetooth/Reference/CBPeripheral_Class/translated_content/CBPeripheral.html#//apple_ref/occ/instp/CBPeripheral/RSSI)
  */
 @property (nonatomic, readonly) NSNumber* RSSI;
 /// @name Programming and Configuring Arduino
 /**
- *  The Power State for the Bean's Arduino
+ *  The power state for the Bean's Arduino. Indicates if the Arduino is powered on or off.
  *
  *  @see ArduinoPowerState
  */
@@ -279,14 +279,14 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
 /**
  *  Programs the Arduino with raw binary data. (Not Intel Hex)
  *
- *  @param hexImage the binary image for programming the Arduino
- *  @param name the name of the sketch
+ *  @param image The raw binary image used to program the Arduino
+ *  @param name The name of the sketch.
  *
  *  @discussion After the Arduino programming is complete, the bean calls the [PTDBeanDelegate bean:didProgramArduinoWithError:] method of its delegate object.
  *
  *  @see [PTDBeanDelegate bean:didProgramArduinoWithError:]
  */
--(void)programArduinoWithRawHexImage:(NSData*)hexImage andImageName:(NSString*)name;
+-(void)programArduinoWithRawHexImage:(NSData*)image andImageName:(NSString*)name;
 /**
  *  Reads the Arduino Sketch.
  *
@@ -296,13 +296,13 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  */
 -(void)readArduinoSketchInfo;
 /**
- *  The name of the Arduino Sketch used to program the Bean firmware.
+ *  The name of the Arduino Sketch used to program the Bean firmware. Should call <readArduinoSketchinfo> first to ensure this data is fresh.
  */
-@property (nonatomic, strong) NSString *sketchName;
+@property (nonatomic, strong, readonly) NSString *sketchName;
 /**
- * The date the Bean firmware was programmed.
+ * The date that the Bean's Arduino sketch was programmed. Should call <readArduinoSketchinfo> first to ensure this data is fresh.
  */
-@property (nonatomic, strong) NSDate *dateProgrammed;
+@property (nonatomic, strong, readonly) NSDate *dateProgrammed;
 
 /// @name Accessing Battery Voltage
 /**
@@ -311,9 +311,9 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  */
 -(void)readBatteryVoltage;
 /**
- *  The Peripheral Battery Voltage.
+ *  Cached representation of the Bean's battery or power supply voltage. Should call <readBatteryVoltage> first to ensure this data is fresh.
  */
--(NSNumber*)batteryVoltage;
+@property (nonatomic, readonly) NSNumber* batteryVoltage;
 /// @name Accessing LED colors
 /**
  *  Sets the Led Color
