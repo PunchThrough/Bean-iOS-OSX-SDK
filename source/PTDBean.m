@@ -576,12 +576,6 @@ typedef enum { //These occur in sequence
         case MSG_ID_BT_SET_ADV:
             PTDLog(@"App Message Received: MSG_ID_BT_SET_ADV: %@", payload);
             break;
-        case MSG_ID_BT_SET_CONN:
-            PTDLog(@"App Message Received: MSG_ID_BT_SET_CONN: %@", payload);
-            break;
-        case MSG_ID_BT_SET_LOCAL_NAME:
-            PTDLog(@"App Message Received: MSG_ID_BT_SET_LOCAL_NAME: %@", payload);
-            break;
         case MSG_ID_BT_SET_TX_PWR:
             PTDLog(@"App Message Received: MSG_ID_BT_SET_TX_PWR: %@", payload);
             break;
@@ -597,7 +591,8 @@ typedef enum { //These occur in sequence
                 PTDBeanRadioConfig *config = [[PTDBeanRadioConfig alloc] init];
                 config.advertisingInterval = rawData.adv_int;
                 config.connectionInterval = rawData.conn_int;
-                config.advertisingMode = rawData.adv_mode;
+                config.pairingPinEnabled = (rawData.adv_mode & 0x80)?TRUE:FALSE;
+                config.advertisingMode = rawData.adv_mode & (~0x80);
                 config.iBeacon_UUID = rawData.ibeacon_uuid;
                 config.iBeacon_majorID = rawData.ibeacon_major;
                 config.iBeacon_minorID = rawData.ibeacon_minor;
