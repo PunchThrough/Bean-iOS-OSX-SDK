@@ -31,7 +31,7 @@
 @interface PTDBeanRadioConfig : NSObject
 /// @name Setup
 /**
- *  The Bean bluetooth advertisting interval in ms
+ *  The Bean's bluetooth advertisting interval in ms
  */
 @property (nonatomic, readwrite) CGFloat advertisingInterval;
 /**

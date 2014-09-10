@@ -287,11 +287,17 @@ typedef enum { //These occur in sequence
     }
     [appMessageLayer sendMessageWithID:MSG_ID_CC_LED_READ_ALL andPayload:nil];
 }
--(void)setScratchNumber:(NSInteger)scratchNumber withValue:(NSData*)value {
+    
+//This method is deprecated
+-(void)setScratchNumber:(NSInteger)scratchNumber withValue:(NSData*)value{
+    [self setScratchBank:scratchNumber data:value];
+}
+    
+-(void)setScratchBank:(NSInteger)bank data:(NSData*)data{
     if(![self connected]) {
         return;
     }
-    if(![self validScratchNumber:scratchNumber]) {
+    if(![self validScratchNumber:bank]) {
         return;
     }
     if (value.length>20) {
@@ -299,10 +305,11 @@ typedef enum { //These occur in sequence
             NSError *error = [BEAN_Helper basicError:@"Scratch value exceeds 20 character limit" domain:NSStringFromClass([self class]) code:BeanErrors_InvalidArgument];
             [self.delegate bean:self error:error];
         }
-        value = [value subdataWithRange:NSMakeRange(0, 20)];
+        data = [data subdataWithRange:NSMakeRange(0, 20)];
     }
-    NSMutableData *payload = [NSMutableData dataWithBytes:&scratchNumber length:1];
-    [payload appendData:value];
+    UInt8 bankNum = bank;
+    NSMutableData *payload = [NSMutableData dataWithBytes:&bankNum length:1];
+    [payload appendData:data];
     [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_SCRATCH andPayload:payload];
 }
 - (void)readScratchBank:(NSInteger)bank {
@@ -614,11 +621,17 @@ typedef enum { //These occur in sequence
             break;
         case MSG_ID_BT_GET_SCRATCH:
             PTDLog(@"App Message Received: MSG_ID_BT_GET_SCRATCH: %@", payload);
-            if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateScratchNumber:withValue:)]) {
+            if (self.delegate) {
                 BT_SCRATCH_T rawData;
                 [payload getBytes:&rawData range:NSMakeRange(0, payload.length)];
                 NSData *scratch = [NSData dataWithBytes:rawData.scratch length:payload.length];
-                [self.delegate bean:self didUpdateScratchNumber:@(rawData.number) withValue:scratch];
+                //This delegate call has been deprecated!
+                if([self.delegate respondsToSelector:@selector(bean:didUpdateScratchNumber:withValue:)]){
+                    [self.delegate bean:self didUpdateScratchNumber:@(rawData.number) withValue:scratch];
+                }
+                if([self.delegate respondsToSelector:@selector(bean:didUpdateScratchBank:data:)]){
+                    [self.delegate bean:self didUpdateScratchBank:rawData.number data:scratch];
+                }
             }
             break;
         case MSG_ID_BT_RESTART:
