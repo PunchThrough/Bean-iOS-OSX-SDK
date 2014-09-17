@@ -62,6 +62,12 @@
  *  The Bean name
  */
 @property (nonatomic, strong) NSString *name;
+/**
+ *  A Boolean that indicates if the Bean's pairing pin is enabled.
+ *
+ *  @discussion This property is ignored when using <[PTDBean setRadioConfig:]>. To enable or disable the pairing pin, use <[PTDBean setPairingPin:]>
+ */
+@property (nonatomic) BOOL pairingPinEnabled;
 /// @name Validation
 /**
  *  Validates a config

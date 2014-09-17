@@ -123,6 +123,25 @@ typedef enum { //These occur in sequence
 }
 
 #pragma mark SDK
+- (BOOL)setPairingPin:(NSUInteger*)pinCode{
+    if(![self connected]) {
+        return FALSE;
+    }
+    
+    if(pinCode){
+        NSInteger pin = (UInt32)(*pinCode);
+        if(pin < 0 || pin > 999999){
+            //Pairing pin is not a positive integer with 6 digits or less
+            return FALSE;
+        }
+    }
+    BT_SET_PIN_T payload;
+    payload.pinCode = pinCode?(UInt32)(*pinCode):(UInt32)0;
+    payload.pincodeActive = pinCode?TRUE:FALSE;
+    NSData *data = [NSData dataWithBytes:&payload length: sizeof(BT_SET_PIN_T)];
+    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_PIN andPayload:data];
+    return TRUE;
+}
 -(void)readArduinoSketchInfo{
     if(![self connected]) {
         return;
@@ -228,13 +247,6 @@ typedef enum { //These occur in sequence
     raw.power = config.power;
     NSData *data = [NSData dataWithBytes:&raw length: sizeof(BT_RADIOCONFIG_T)];
     [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_CONFIG andPayload:data];
-}
--(void)setPairingPin:(UInt16)pinCode {
-    if(![self connected]) {
-        return;
-    }
-    NSData *data = [NSData dataWithBytes:&pinCode length: sizeof(UInt16)];
-    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_PIN andPayload:data];
 }
 -(void)readAccelerationAxis {
     if(![self connected]) {
@@ -564,21 +576,6 @@ typedef enum { //These occur in sequence
         case MSG_ID_BT_SET_ADV:
             PTDLog(@"App Message Received: MSG_ID_BT_SET_ADV: %@", payload);
             break;
-        case MSG_ID_BT_SET_CONN:
-            PTDLog(@"App Message Received: MSG_ID_BT_SET_CONN: %@", payload);
-            break;
-        case MSG_ID_BT_SET_LOCAL_NAME:
-            PTDLog(@"App Message Received: MSG_ID_BT_SET_LOCAL_NAME: %@", payload);
-            break;
-        case MSG_ID_BT_SET_PIN:
-            //TODO : never being called
-            PTDLog(@"App Message Received: MSG_ID_BT_SET_PIN: %@", payload);
-            if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdatePairingPin:)]) {
-                UInt16 pin;
-                [payload getBytes:&pin range:NSMakeRange(0, sizeof(UInt16))];
-                [self.delegate bean:self didUpdatePairingPin:pin];
-            }
-            break;
         case MSG_ID_BT_SET_TX_PWR:
             PTDLog(@"App Message Received: MSG_ID_BT_SET_TX_PWR: %@", payload);
             break;
@@ -594,7 +591,8 @@ typedef enum { //These occur in sequence
                 PTDBeanRadioConfig *config = [[PTDBeanRadioConfig alloc] init];
                 config.advertisingInterval = rawData.adv_int;
                 config.connectionInterval = rawData.conn_int;
-                config.advertisingMode = rawData.adv_mode;
+                config.pairingPinEnabled = (rawData.adv_mode & 0x80)?TRUE:FALSE;
+                config.advertisingMode = rawData.adv_mode & (~0x80);
                 config.iBeacon_UUID = rawData.ibeacon_uuid;
                 config.iBeacon_majorID = rawData.ibeacon_major;
                 config.iBeacon_minorID = rawData.ibeacon_minor;
