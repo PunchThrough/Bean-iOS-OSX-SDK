@@ -188,7 +188,12 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
  @param bean        The Bean that was discovered
  @param error       Not implemented yet
  */
-- (void)BeanManager:(PTDBeanManager*)beanManager didDiscoverBean:(PTDBean*)bean error:(NSError*)error;
+- (void)beanManager:(PTDBeanManager*)beanManager didDiscoverBean:(PTDBean*)bean error:(NSError*)error;
+/**
+ This method is deprecated. Use <[PTDBeanManager beanManager:didDiscoverBean:error:]> instead.
+ @deprecated v0.3.2
+ */
+- (void)BeanManager:(PTDBeanManager*)beanManager didDiscoverBean:(PTDBean*)bean error:(NSError*)error __attribute__((deprecated("use setScratchBank:data:")));
 /**
  *  A Bean was connected
  *
@@ -196,7 +201,12 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
  *  @param bean        The Bean that was connected
  *  @param error       This error is passed through from [centralManager:didFailToConnectPeripheral:error:](https://developer.apple.com/library/mac/documentation/CoreBluetooth/Reference/CBCentralManagerDelegate_Protocol/translated_content/CBCentralManagerDelegate.html#//apple_ref/occ/intfm/CBCentralManagerDelegate/centralManager:didDisconnectPeripheral:error:)
  */
-- (void)BeanManager:(PTDBeanManager*)beanManager didConnectToBean:(PTDBean*)bean error:(NSError*)error;
+- (void)beanManager:(PTDBeanManager*)beanManager didConnectBean:(PTDBean*)bean error:(NSError*)error;
+/**
+ This method is deprecated. Use <[PTDBeanManager beanManager:didConnectToBean:error:]> instead.
+ @deprecated v0.3.2
+ */
+- (void)BeanManager:(PTDBeanManager*)beanManager didConnectToBean:(PTDBean*)bean error:(NSError*)error __attribute__((deprecated("use setScratchBank:data:")));
 /**
  *  A Bean was disconnected
  *
@@ -204,6 +214,11 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
  *  @param bean        The Bean that was disconnect
  *  @param error       This error is passed through from [centralManager:didDisconnectPeripheral:error:](https://developer.apple.com/library/mac/documentation/CoreBluetooth/Reference/CBCentralManagerDelegate_Protocol/translated_content/CBCentralManagerDelegate.html#//apple_ref/occ/intfm/CBCentralManagerDelegate/centralManager:didDisconnectPeripheral:error:)
  */
-- (void)BeanManager:(PTDBeanManager*)beanManager didDisconnectBean:(PTDBean*)bean error:(NSError*)error;
+- (void)beanManager:(PTDBeanManager*)beanManager didDisconnectBean:(PTDBean*)bean error:(NSError*)error;
+/**
+ This method is deprecated. Use <[PTDBeanManager beanManager:didDisconnectBean:error:]> instead.
+ @deprecated v0.3.2
+ */
+- (void)BeanManager:(PTDBeanManager*)beanManager didDisconnectBean:(PTDBean*)bean error:(NSError*)error __attribute__((deprecated("use setScratchBank:data:")));
 
 @end
