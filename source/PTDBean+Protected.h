@@ -35,6 +35,7 @@
 
 
 @protocol PTDBeanExtendedDelegate <PTDBeanDelegate>
+@optional
 /**
  *  Time remaining before the firmware has completed uploading
  *
@@ -56,7 +57,5 @@
 *  @param payload the loopback data
 */
 -(void)bean:(PTDBean*)bean didUpdateLoopbackPayload:(NSData*)payload;
-
-@optional
 
 @end
