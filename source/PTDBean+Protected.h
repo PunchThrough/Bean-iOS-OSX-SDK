@@ -27,9 +27,7 @@
 -(void)setAdvertisementData:(NSDictionary*)adData;
 -(void)setLastDiscovered:(NSDate*)date;
 -(void)setBeanManager:(id<PTDBeanManager>)manager;
--(void)sendLoopbackDebugMessage:(NSInteger)length;
 -(BOOL)updateFirmwareWithImageAPath:(NSString*)imageApath andImageBPath:(NSString*)imageBpath;
--(void)setPairingPin:(UInt16)pinCode;
 
 @end
 
@@ -50,12 +48,5 @@
  *  @param error        Nil if successful, or an NSError if the upload was unsuccessful. See <BeanErrors>.
  */
 -(void)bean:(PTDBean*)bean completedFirmwareUploadWithError:(NSError*)error;
-/**
-*  The payload returned from a Bean after a loopback call
-*
-*  @param bean    the Bean being queried
-*  @param payload the loopback data
-*/
--(void)bean:(PTDBean*)bean didUpdateLoopbackPayload:(NSData*)payload;
 
 @end

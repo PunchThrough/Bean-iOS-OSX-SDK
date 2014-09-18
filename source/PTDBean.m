@@ -200,12 +200,6 @@ typedef enum { //These occur in sequence
         [self __alertDelegateOfArduinoOADCompletion:error];
     }
 }
--(void)sendLoopbackDebugMessage:(NSInteger)length{
-    if(![self connected]) {
-        return;
-    }
-    [appMessageLayer sendMessageWithID:MSG_ID_DB_LOOPBACK andPayload:[BEAN_Helper dummyData:length]];
-}
 -(void)sendSerialData:(NSData*)data{
     if(![self connected]) {
         return;
@@ -738,15 +732,6 @@ typedef enum { //These occur in sequence
             }
             break;
         }
-        case MSG_ID_DB_LOOPBACK:
-
-            PTDLog(@"App Message Received: MSG_ID_DB_LOOPBACK: %@", payload);
-            if (self.delegate
-                && [_delegate conformsToProtocol:@protocol(PTDBeanExtendedDelegate)]
-                && [self.delegate respondsToSelector:@selector(bean:didUpdateLoopbackPayload:)]) {
-                [(id<PTDBeanExtendedDelegate>)self.delegate bean:self didUpdateLoopbackPayload:payload];
-            }
-            break;
         case MSG_ID_DB_COUNTER:
             PTDLog(@"App Message Received: MSG_ID_DB_COUNTER: %@", payload);
             break;
@@ -755,24 +740,24 @@ typedef enum { //These occur in sequence
             break;
     }
 }
--(void)appMessagingLayer:(AppMessagingLayer*)later error:(NSError*)error{
-    
+-(void)appMessagingLayer:(AppMessagingLayer*)layer error:(NSError*)error{
+    //TODO: Add some more error handling in here
 }
 
 
 #pragma mark OAD callbacks
 -(void)device:(OadProfile*)device completedFirmwareUploadWithError:(NSError*)error{
     if(_delegate){
-        if([_delegate conformsToProtocol:@protocol(PTDBeanExtendedDelegate)]
-           && [_delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]){
+        if(/*[_delegate conformsToProtocol:@protocol(PTDBeanExtendedDelegate)]
+           && */[_delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]){
             [(id<PTDBeanExtendedDelegate>)_delegate bean:self completedFirmwareUploadWithError:error];
         }
     }
 }
 -(void)device:(OadProfile*)device OADUploadTimeLeft:(NSNumber*)seconds withPercentage:(NSNumber*)percentageComplete{
     if(_delegate){
-        if([_delegate conformsToProtocol:@protocol(PTDBeanExtendedDelegate)]
-           && [_delegate respondsToSelector:@selector(bean:firmwareUploadTimeLeft:withPercentage:)]){
+        if(/*[_delegate conformsToProtocol:@protocol(PTDBeanExtendedDelegate)]
+           && */[_delegate respondsToSelector:@selector(bean:firmwareUploadTimeLeft:withPercentage:)]){
             [(id<PTDBeanExtendedDelegate>)_delegate bean:self firmwareUploadTimeLeft:seconds withPercentage:percentageComplete];
         }
     }
