@@ -358,7 +358,7 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
     // let the Bean know we implement PTDBeanDelegate
     self.bean.delegate = self;
     // ask the Bean for the acceleration data
-    [self.bean readAccelerationAxis];
+    [self.bean readAccelerationAxes];
     
     // check for the Bean to send it back
     -(void)bean:(PTDBean*)bean didUpdateAccelerationAxes:(PTDAcceleration)acceleration {
@@ -368,7 +368,12 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
 
  @see [PTDBeanDelegate bean:didUpdateAccelerationAxes:]
  */
--(void)readAccelerationAxis;
+-(void)readAccelerationAxes;
+/**
+ This method is deprecated. Use <[PTDBean readAccelerationAxes]> instead.
+ @deprecated v0.3.2
+ */
+-(void)readAccelerationAxis __attribute__((deprecated("use readAccelerationAxes")));
 /// @name Accessing "Scratch" Data
 /**
    Stores data in one of the Bean's scratch banks.
@@ -423,31 +428,29 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
 
 @optional
 /**
- Sent when an error occurs
+ Send when a generic Bean related errors occurs. This is usually called when invalid parameters are passed to Bean methods.
  
-    example:
     if (error.code == BeanErrors_InvalidArgument) {
       NSLog(@"Invalid argument - %@", [error localizedDescription]);
     }
-    else {
-      // do something else
-    }
  
- @param bean  the bean that made the request
- @param error refer to BeanErrors for the list of error codes
- 
+ @param bean  The bean that caused or is related to the error.
+ @param error Refer to <BeanErrors> for the list of error codes
  */
 -(void)bean:(PTDBean*)bean error:(NSError*)error;
 /**
- Sent when the Arduino has been manually powered on or off
- @param bean  the bean that made the request
- @param poweredOn true if the Arduino is powered, false if it is shut down
+ *  Sent in response when a Bean's <ArduinoPowerState> has been requested.
+ *
+ *  @param bean  The Bean whose <ArduinoPowerState> has been requested.
+ *  @see [PTDBean readArduinoPowerState];
+ *  @see ArduinoPowerState
  */
 -(void)beanDidUpdateArduinoPowerState:(PTDBean*)bean;
 /**
- Sent when a Bean has finished programming it's Arduino. The programming process was successful when error is nil.
- @param bean  The Bean whose Arduino has been programmed.
- @param error An NSError with error code representing <BeanErrors>
+ *  Sent when a Bean has finished programming it's Arduino. The programming process was successful when error is nil.
+ *
+ *  @param bean  The Bean whose Arduino has been programmed.
+ *  @param error Nil if successful, or an NSError if the programming was unsuccessful. See <BeanErrors>.
  */
 -(void)bean:(PTDBean*)bean didProgramArduinoWithError:(NSError*)error;
 /**
@@ -459,10 +462,10 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  */
 -(void)bean:(PTDBean*)bean ArduinoProgrammingTimeLeft:(NSNumber*)seconds withPercentage:(NSNumber*)percentageComplete;
 /**
- *  Serial data received from the Bean
+ *  Serial data received from a Bean
  *
- *  @param bean the Bean sending the serial data
- *  @param data the data sent from the Bean
+ *  @param bean The Bean we're receiving serial data from
+ *  @param data The data received from the Bean
  */
 -(void)bean:(PTDBean*)bean serialDataReceived:(NSData*)data;
 /**
@@ -470,6 +473,7 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  *
  *  @param bean  The Bean whose LED color has been requested
  *  @param color The Bean's LED color. Alpha channel is always 1.
+ *  @see [PTDBean readLedColor];
  */
 #if TARGET_OS_IPHONE
 -(void)bean:(PTDBean*)bean didUpdateLedColor:(UIColor*)color;
@@ -487,42 +491,47 @@ Sent in response when a Bean's accelerometer readings are requested
      double y;
      double z;
      } PTDAcceleration;
- 
+ @see [PTDBean readAccelerationAxes];
  */
 -(void)bean:(PTDBean*)bean didUpdateAccelerationAxes:(PTDAcceleration)acceleration;
 /**
- *  The Bean RSSI reading
+ *  Sent in response when a Bean's RSSI is requested
  *
- *  @param bean            the bean being queried
- *  @param error           error returned during RSSI read
+ *  @param bean            The Bean whose RSSI data has been requested.
+ *  @param error           Nil if successful, or an NSError if the reading was unsuccessful. See <BeanErrors>.
+ *  @see [PTDBean readRSSI];
  */
 -(void)beanDidUpdateRSSI:(PTDBean*)bean error:(NSError*)error;
 /**
- *  The Bean temperature readings
+ *  Sent in response when a Bean's temperature is requested
  *
- *  @param bean            the bean being queried
- *  @param degrees_celsius the temperature in celsius
+ *  @param bean            The Bean whose temperature data has been requested.
+ *  @param degrees_celsius The ambient temperature in degrees Celsius
+ *  @see [PTDBean readTemperature];
  */
 -(void)bean:(PTDBean*)bean didUpdateTemperature:(NSNumber*)degrees_celsius;
 /**
- *  The Bean Battery Voltage reading
+ *  Sent in response when a Bean's battery or power supply voltage is requested
  *
- *  @param bean            the bean being queried
- *  @param error           error returned during Battery Voltage read
+ *  @param bean            The Bean whose battery or power supply voltage has been requested
+ *  @param error           Nil if successful, or an NSError if the reading was unsuccessful. See <BeanErrors>.
+ *  @see [PTDBean readBatteryVoltage];
  */
 -(void)beanDidUpdateBatteryVoltage:(PTDBean*)bean error:(NSError*)error;
 /**
   Sent in response when a Bean's <PTDBeanRadioConfig> is requested.
   @param bean   The Bean whose <PTDBeanRadioConfig> has been requested
   @param config The radio configuration of the bean, see <PTDBeanRadioConfig> for more details.
+  @see [PTDBean readRadioConfig];
  */
 -(void)bean:(PTDBean*)bean didUpdateRadioConfig:(PTDBeanRadioConfig*)config;
 /**
  *  Sent in response when a Bean's scratch bank data is requested.
  *
- *  @param bean   The Bean whose scratch bank data has been requested.
+ *  @param bean    The Bean whose scratch bank data has been requested.
  *  @param bank    The index of the scratch bank to store data, from 1 to 5.
  *  @param data    Data to be stored in the selected bank. Can be up to 20 bytes.
+ *  @see [PTDBean readScratchBank];
  */
 -(void)bean:(PTDBean*)bean didUpdateScratchBank:(NSInteger)bank data:(NSData*)data;
 /**
@@ -531,13 +540,13 @@ Sent in response when a Bean's accelerometer readings are requested
  */
 -(void)bean:(PTDBean*)bean didUpdateScratchNumber:(NSNumber*)number withValue:(NSData*)data __attribute__((deprecated("use setScratchBank:data:")));
 /**
-/**
- *  Message from the Bean that a sketch has been programmed
+ *  Sent in response when information about a Bean's Arduino sketch is requested
  *
- *  @param bean the Bean being programmed
- *  @param name the name of the sketch
- *  @param date the date of the programming
- *  @param crc  the cyclic redundancy check
+ *  @param bean The Bean whose sketch info has been requested.
+ *  @param name The name of the currently programmed sketch
+ *  @param date The date the sketch was programmed
+ *  @param crc  The CRC32 of the programmed sketch
+ *  @see [PTDBean readArduinoSketchInfo];
  */
 -(void)bean:(PTDBean*)bean didUpdateSketchName:(NSString*)name dateProgrammed:(NSDate*)date crc32:(UInt32)crc;
 @end

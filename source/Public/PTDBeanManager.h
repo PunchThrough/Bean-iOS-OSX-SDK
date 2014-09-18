@@ -155,7 +155,7 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
 @protocol PTDBeanManagerDelegate <NSObject>
 @optional
 /**
- The BeanManager's <BeanManagerState> has been updated.
+ The BeanManager's <BeanManagerState> has been updated. This method will also be called when Bluetooth is enabled or disabled.
 
      Example:
      - (void)beanManagerDidUpdateState:(PTDBeanManager *)manager{
@@ -168,7 +168,7 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
        }
      }
  
- @param beanManager the BeanManager updating state
+ @param beanManager the BeanManager whose state was updated
  */
 - (void)beanManagerDidUpdateState:(PTDBeanManager *)beanManager;
 /**

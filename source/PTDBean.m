@@ -236,11 +236,15 @@ typedef enum { //These occur in sequence
     NSData *data = [NSData dataWithBytes:&pinCode length: sizeof(UInt16)];
     [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_PIN andPayload:data];
 }
--(void)readAccelerationAxis {
+-(void)readAccelerationAxes {
     if(![self connected]) {
         return;
     }
     [appMessageLayer sendMessageWithID:MSG_ID_CC_ACCEL_READ andPayload:nil];
+}
+//Deprecated
+-(void)readAccelerationAxis {
+    [self readAccelerationAxes];
 }
 -(void)readRSSI {
     if(![self connected]) {
