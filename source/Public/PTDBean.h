@@ -531,19 +531,6 @@ Sent in response when a Bean's accelerometer readings are requested
  */
 -(void)bean:(PTDBean*)bean didUpdateScratchNumber:(NSNumber*)number withValue:(NSData*)data __attribute__((deprecated("use setScratchBank:data:")));
 /**
- Sent when a Bean's firmware upload is completed.
- @param bean  The Bean thats firmware has been updated.
- @param error An NSError with error code representing <BeanErrors> 
- */
--(void)bean:(PTDBean*)bean completedFirmwareUploadWithError:(NSError*)error;
-/**
- *  Time remaining before the firmware has completed uploading
- *
- *  @param bean               the Bean being updated
- *  @param seconds            the remaining seconds for the upload
- *  @param percentageComplete the percentage of the upload complete
- */
--(void)bean:(PTDBean*)bean firmwareUploadTimeLeft:(NSNumber*)seconds withPercentage:(NSNumber*)percentageComplete;
 /**
  *  Message from the Bean that a sketch has been programmed
  *

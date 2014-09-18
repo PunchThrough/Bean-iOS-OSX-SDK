@@ -32,3 +32,31 @@
 -(void)setPairingPin:(UInt16)pinCode;
 
 @end
+
+
+@protocol PTDBeanExtendedDelegate <PTDBeanDelegate>
+/**
+ *  Time remaining before the firmware has completed uploading
+ *
+ *  @param bean               The Bean being updated
+ *  @param seconds            The remaining seconds for the upload
+ *  @param percentageComplete The percentage of the upload complete
+ */
+-(void)bean:(PTDBean*)bean firmwareUploadTimeLeft:(NSNumber*)seconds withPercentage:(NSNumber*)percentageComplete;
+/**
+ *  Sent when a Bean's firmware upload is completed.
+ *  @param bean         The Bean thats firmware has been updated.
+ *  @param error        Nil if successful, or an NSError if the upload was unsuccessful. See <BeanErrors>.
+ */
+-(void)bean:(PTDBean*)bean completedFirmwareUploadWithError:(NSError*)error;
+/**
+*  The payload returned from a Bean after a loopback call
+*
+*  @param bean    the Bean being queried
+*  @param payload the loopback data
+*/
+-(void)bean:(PTDBean*)bean didUpdateLoopbackPayload:(NSData*)payload;
+
+@optional
+
+@end
