@@ -562,7 +562,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/appledoc \\\n--project-name \"LightBlue Bean\" \\\n--project-company \"Punch Through Design\" \\\n--company-id \"com.punchthrough.LightBlue-Bean\" \\\n--output ../Documents \\\n--keep-undocumented-objects \\\n--keep-undocumented-members \\\n--keep-intermediate-files \\\n--no-repeat-first-par \\\n--no-warn-invalid-crossref \\\n--exit-threshold 2 \\\n../source/Public";
+			shellScript = "/usr/local/bin/appledoc \\\n--project-name \"LightBlue Bean\" \\\n--project-company \"Punch Through Design\" \\\n--company-id \"com.punchthrough.LightBlue-Bean\" \\\n--output ../Documents \\\n--keep-undocumented-objects \\\n--keep-undocumented-members \\\n--keep-intermediate-files \\\n--no-repeat-first-par \\\n--no-warn-invalid-crossref \\\n--explicit-crossref \\\n--exit-threshold 2 \\\n../source/Public";
 			showEnvVarsInLog = 0;
 		};
 /* End PBXShellScriptBuildPhase section */

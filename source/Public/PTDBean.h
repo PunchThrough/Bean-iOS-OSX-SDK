@@ -156,15 +156,15 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
    An PTDBean object represents a Light Blue Bean that gives access to setting and retrieving of Arduino attributes, such as the name, temperature, accelerometer, look at Other Methods below for more.
 
     Example:
-    // tell the bean we implment PTDBeanDelegate
+    // Set this class as the Bean's delegate to receive messages
     self.bean.delegate = self;
-    // ask the bean for the temp
+    // ask the Bean for the current ambient temperature
     [self.bean readTemperature];
  
-    // check for the bean response
+    // This is called when the Bean responds
     -(void)bean:(PTDBean *)bean didUpdateTemperature:(NSNumber *)degrees_celsius {
       NSString *msg = [NSString stringWithFormat:@"received did update temp reading:%@", degrees_celsius];
-      PTDLog(@"%@",msg);
+      NSLog(@"%@",msg);
     }
  
    See [BeanXcodeWorkspace](http://www.punchthrough.com) for more examples.
@@ -173,17 +173,17 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
 @interface PTDBean : PTDBleDevice
 /// @name Identifying a Bean
 /**
-*  The Peripheral identifier.
+*  The UUID of the CoreBluetooth peripheral associated with the Bean. This is not guaranteed to be the same between different devices. If a bluetooth cache is cleared, this UUID is not guaranteed to stay the same.
 *  For more info, refer to the [Apple identifier documentation](https://developer.apple.com/library/ios/documentation/CoreBluetooth/Reference/CBPeripheral_Class/translated_content/CBPeripheral.html#//apple_ref/occ/instp/CBPeripheral/identifier)
 */
 @property (nonatomic, readonly) NSUUID* identifier;
 /**
- *  The Peripheral name.
+ *  The Bean's name.
  *  For more info, refer to the [Apple name documentation](https://developer.apple.com/library/ios/documentation/CoreBluetooth/Reference/CBPeripheral_Class/translated_content/CBPeripheral.html#//apple_ref/occ/instp/CBPeripheral/name)
  */
 @property (nonatomic, readonly) NSString* name;
 /**
- *  The delegate object for the Bean. 
+ *  The <PTDBeanDelegate> delegate object for the Bean. Set your class as the delegate to receive messages and responses from the Bean.
  */
 @property (nonatomic, weak) id<PTDBeanDelegate> delegate;
 /**
@@ -193,17 +193,22 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  */
 @property (nonatomic, readonly) PTDBeanManager* beanManager;
 /**
- *  A dictionary containing [CBAdvertisementDataLocalNameKey](https://developer.apple.com/library/ios/documentation/CoreBluetooth/Reference/CBCentralManagerDelegate_Protocol/translated_content/CBCentralManagerDelegate.html)
+ *  Bluetooth LE advertising data. A dictionary containing [CBAdvertisementDataLocalNameKey](https://developer.apple.com/library/ios/documentation/CoreBluetooth/Reference/CBCentralManagerDelegate_Protocol/translated_content/CBCentralManagerDelegate.html)
  */
 @property (nonatomic, readonly) NSDictionary* advertisementData;
 /**
- *  The version of the Bean firmware.
+ *  The version of the Bean's current firmware.
  */
 @property (nonatomic, readonly) NSString* firmwareVersion;
 /**
- *  The last time this bean was discovered by a central.
+ *  Represents last time this Bean was discovered while scanning.
  */
 @property (nonatomic, readonly) NSDate* lastDiscovered;
+/**
+ Test equality with another Bean. This method returns TRUE if both Beans have the same <identifier>
+ @param bean The Bean with which to test equality
+ */
+- (BOOL)isEqualToBean:(PTDBean *)bean;
 /// @name Security
 /**
  Sets or clears a Bluetooth pairing pin. This operation can only be used if the Bean is connected. The pairing pin will be cleared/disabled if pinCode is a null pointer.
@@ -213,160 +218,172 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
 - (BOOL)setPairingPin:(NSUInteger*)pinCode;
 /// @name Monitoring a Bean's Connection State
 /**
- The BeanState of the bean.
+ The current connection state of the Bean. See <BeanState> for more details.
  
- Example:
- if (self.bean.state == BeanState_Discovered) {
- PTDLog(@"Bean discovered, try connecting");
- }
- else if (self.bean.state == BeanState_ConnectedAndValidated) {
- PTDLog(@"Bean connected, try calling an api");
- }
+     if (self.bean.state == BeanState_Discovered) {
+        NSLog(@"Bean discovered, try connecting");
+     }
+     else if (self.bean.state == BeanState_ConnectedAndValidated) {
+        NSLog(@"Bean connected, try calling an API");
+     }
  */
 @property (nonatomic, readonly) BeanState state;
-/**
- Test equality with another beans. This method returns TRUE if both beans have an equivalent identifier
- @param bean see PTDBean
- */
-- (BOOL)isEqualToBean:(PTDBean *)bean;
 /// @name Radio Configuration
 /**
- Cached data for Bean's Radio Configuration. Should first use readRadioConfig to make sure this data is fresh.
+ Cached data for Bean's Radio Configuration. Should call <readRadioConfig> first to ensure this data is fresh.
  @see [PTDBean readRadioConfig]
  @see [PTDBeanDelegate bean:didUpdateRadioConfig:]
  @see PTDBeanRadioConfig
  */
 @property (nonatomic, strong, readonly) PTDBeanRadioConfig * radioConfig;
 /**
- Reads the Radio Configuration.
+ Requests the Bean's current Radio Configuration.
+ @discussion When you call this method to read the Bean's Radio Configuration, the bean calls the [PTDBeanDelegate bean:didUpdateRadioConfig:] method of its delegate object. If the Bean's Radio Config is successfully retrieved, you can access it through the Bean's <radioConfig> property.
  @see [PTDBeanDelegate bean:didUpdateRadioConfig:]
  @see PTDBeanRadioConfig
  */
 -(void)readRadioConfig;
 /**
- Sets the Radio Config.
+ Sets the Bean's radio configuration.
  @param config see PTDBeanRadioConfig
  */
 -(void)setRadioConfig:(PTDBeanRadioConfig*)config;
 /// @name Accessing a Bean's Received Signal Strength Indicator (RSSI) Data
 /**
- *  Reads the RSSI.
+ *  Requests the Bean's current RSSI.
+ *  @discussion When you call this method to read the Bean's RSSI, the bean calls the [PTDBeanDelegate beanDidUpdateRSSI:error:] method of its delegate object. If the Bean's RSSI is successfully retrieved, you can access it through the Bean's <RSSI> property.
  *  @see [PTDBeanDelegate beanDidUpdateRSSI:error:]
+ *  @see RSSI
  */
 -(void)readRSSI;
 /**
- *  The Peripheral RSSI.
+ *  The Bean's RSSI.
  *  For more info, refer to the [Apple RSSI documentation](https://developer.apple.com/library/ios/documentation/CoreBluetooth/Reference/CBPeripheral_Class/translated_content/CBPeripheral.html#//apple_ref/occ/instp/CBPeripheral/RSSI)
  */
 @property (nonatomic, readonly) NSNumber* RSSI;
 /// @name Programming and Configuring Arduino
 /**
- *  The Power State for the Bean's Arduino
+ *  The power state for the Bean's Arduino. Indicates if the Arduino is powered on or off.
  *
  *  @see ArduinoPowerState
  */
 @property (nonatomic) ArduinoPowerState arduinoPowerState;
 /**
- *  Turns Arduino power on or off
+ *  Temporarily turns the Bean's Arduino on or off.
  *
- *  @param Boolean determining the power state of the arduino. "True" sets the Arduino to a powered on state and "False" is a shut down state.
+ *  @param "YES" sets the Arduino to a powered-on state and "NO" is a shutdown state.
  */
 -(void)setArduinoPowerState:(ArduinoPowerState)state;
 /**
- *  Retrieves the Arduino power state
- *  @see [PTDBeanDelegate bean:didUpdateArduinoPowerState:];
+ *  Requests the current Arduino power state
+ *
+ *  @discussion When you call this method to read the Arduino Power State, the bean calls the [PTDBeanDelegate beanDidUpdateArduinoPowerState:] method of its delegate object. If the Arduino's Power State is successfully retrieved, you can access it through the Bean's <arduinoPowerState> property.
+ *
+ *  @see [PTDBeanDelegate beanDidUpdateArduinoPowerState:]
+ *  @see arduinoPowerState
  */
 -(void)readArduinoPowerState;
 /**
- *  Programs the Arduino with a hex file.
+ *  Programs the Arduino with raw binary data. (Not Intel Hex)
  *
- *  @param hexImage the hexImage for setting the firmware
- *  @param name the name of the file
+ *  @param image The raw binary image used to program the Arduino
+ *  @param name The name of the sketch.
+ *
+ *  @discussion After the Arduino is programmed, the Bean calls the [PTDBeanDelegate bean:didProgramArduinoWithError:] method of its delegate object.
+ *
  *  @see [PTDBeanDelegate bean:didProgramArduinoWithError:]
  */
--(void)programArduinoWithRawHexImage:(NSData*)hexImage andImageName:(NSString*)name;
+-(void)programArduinoWithRawHexImage:(NSData*)image andImageName:(NSString*)name;
 /**
- *  Reads the Arduino Sketch.
+ *  Requests information about the currently programmed Arduino Sketch.
+ *
+ *  @discussion When you call this method to read the Arduino sketch info, the bean calls the [PTDBeanDelegate beanDid:didUpdateSketchName:dateProgrammed:crc32:] method of its delegate object.
+ *
  *  @see [PTDBeanDelegate bean:didUpdateSketchName:dateProgrammed:crc32:]
  */
 -(void)readArduinoSketchInfo;
 /**
- *  The name of the Arduino Sketch used to program the Bean firmware.
+ *  The name of the Arduino Sketch used to program the Bean firmware. Should call <readArduinoSketchinfo> first to ensure this data is fresh.
  */
-@property (nonatomic, strong) NSString *sketchName;
+@property (nonatomic, strong, readonly) NSString *sketchName;
 /**
- * The date the Bean firmware was programmed.
+ * The date that the Bean's Arduino sketch was programmed. Should call <readArduinoSketchinfo> first to ensure this data is fresh.
  */
-@property (nonatomic, strong) NSDate *dateProgrammed;
+@property (nonatomic, strong, readonly) NSDate *dateProgrammed;
 
 /// @name Accessing Battery Voltage
 /**
- *  Reads the temperature.
+ *  Requests the current battery or power supply voltage.
+ *  @discussion When you call this method to read the battery or power supply voltage, the bean calls the [PTDBeanDelegate bean:didUpdateBattery:] method of its delegate object. If the Bean's supply voltage is successfully retrieved, you can access it through the Bean's <batteryVoltage> property.
  *  @see [PTDBeanDelegate bean:didUpdateBattery:]
+ *  @see batteryVoltage
  */
 -(void)readBatteryVoltage;
 /**
- *  The Peripheral Battery Voltage.
+ *  Cached representation of the Bean's battery or power supply voltage. Should call <readBatteryVoltage> first to ensure this data is fresh.
  */
--(NSNumber*)batteryVoltage;
+@property (nonatomic, readonly) NSNumber* batteryVoltage;
 /// @name Accessing LED colors
 /**
- *  Sets the Led Color
+ *  Sets the Bean's RGB LED color
  *  @param color Color object which is used to set the Led
  *  @see [PTDBeanDelegate bean:didUpdateLedColor:]
  */
 #if TARGET_OS_IPHONE
 -(void)setLedColor:(UIColor*)color;
 #else
-/**
- *  Sets the Led Color
- *  @param color Color object which is used to set the Led
- *  @see [PTDBeanDelegate bean:didUpdateLedColor:]
- */
 -(void)setLedColor:(NSColor*)color;
 #endif
 /**
- *  Reads the Led Color.
+ *  Requests the Bean's current Led Color.
+ *  @discussion When you call this method to read the LED values, the bean calls the [PTDBeanDelegate bean:didUpdateLedColor:] method of its delegate object.
  *  @see [PTDBeanDelegate bean:didUpdateLedColor:]
  */
 -(void)readLedColor;
 
 /// @name Sending Serial Data
 /**
- *  Sends data to the Bean over a serial port.
- *  @param data data to send over the serial port
+ *  Sends data over serial to the Bean's Arduino
+ *  @param data data to send over serial to the Arduino
  *  @see [PTDBeanDelegate bean:serialDataReceived:]
  */
 -(void)sendSerialData:(NSData*)data;
 /**
- *  Sends a NSString over a serial port
- *  @param string string which is converted to NSData for sending over the serial port
+ *  Sends human-readable ASCII data over serial to the Bean's Arduino
+ *  @param string An NSString which is converted to NSData for sending over serial to the Bean's Arduino
  *  @see [PTDBeanDelegate bean:serialDataReceived:]
  */
 -(void)sendSerialString:(NSString*)string;
 
 /// @name Accessing Acceleration Data
 /**
- Reads the Beans Accelerometer.
+ Requests the Bean's current acceleration values
     
+ @discussion When you call this method to read the Acceleration, the bean calls the [PTDBeanDelegate bean:didUpdateAccelerationAxes:] method of its delegate object.
+ 
     Example:
-    // let the bean know we implement PTDBeanDelegate
+    // let the Bean know we implement PTDBeanDelegate
     self.bean.delegate = self;
-    // ask the bean for the acceleration data
-    [self.bean readAccelerationAxis];
+    // ask the Bean for the acceleration data
+    [self.bean readAccelerationAxes];
     
-    // check for the bean to send it back
+    // check for the Bean to send it back
     -(void)bean:(PTDBean*)bean didUpdateAccelerationAxes:(PTDAcceleration)acceleration {
         NSString *msg = [NSString stringWithFormat:@"x:%f y:%f z:%f", acceleration.x,acceleration.y,acceleration.z];
-        PTDLog(@"%@", msg);
+        NSLog(@"%@", msg);
     }
 
  @see [PTDBeanDelegate bean:didUpdateAccelerationAxes:]
  */
--(void)readAccelerationAxis;
+-(void)readAccelerationAxes;
+/**
+ This method is deprecated. Use <[PTDBean readAccelerationAxes]> instead.
+ @deprecated v0.3.2
+ */
+-(void)readAccelerationAxis __attribute__((deprecated("use readAccelerationAxes")));
 /// @name Accessing "Scratch" Data
 /**
-   Sets the Scratch Number with data. Think of it as temporary storage for.
+   Stores data in one of the Bean's scratch banks.
  
     Example:
     // set the scratch bank, 1-5
@@ -380,25 +397,32 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
     -(void)bean:(PTDBean *)bean didUpdateScratchNumber:(NSNumber *)number withValue:(NSData *)data {
       NSString* str = [NSString stringWithUTF8String:[data bytes]];
       NSString *msg = [NSString stringWithFormat:@"received scratch number:%@ scratch:%@", number, str];
-      PTDLog(@"%@", msg);
+      NSLog(@"%@", msg);
     }
  
- @param scratchNumber can be a value 1-5
- @param value         up to 20 bytes
+ @param bank    The index of the scratch bank to store data, from 1 to 5.
+ @param data    Data to be stored in the selected bank. Can be up to 20 bytes.
+ @see [PTDBean readScratchBank:];
  */
--(void)setScratchNumber:(NSInteger)scratchNumber withValue:(NSData*)value;
+-(void)setScratchBank:(NSInteger)bank data:(NSData*)data;
 /**
- *  Reads the scratch bank.
- *
- *  @param bank can be a value 1-5
+ This method is deprecated. Use <[PTDBean setScratchBank:data:]> instead.
+ @deprecated v0.3.2
+ */
+-(void)setScratchNumber:(NSInteger)scratchNumber withValue:(NSData*)value __attribute__((deprecated("use setScratchBank:data:")));
+/**
+ *  Requests Bean's current scratch bank data.
+ *  @discussion When you call this method to read one of the Bean's scratch banks, the bean calls the [PTDBeanDelegate bean:didUpdateScratchNumber:withValue:] method of its delegate object.
+ *  @param The index of the scratch bank to request, from 1 to 5.
  *  @see [PTDBeanDelegate bean:didUpdateScratchNumber:withValue:]
  */
 -(void)readScratchBank:(NSInteger)bank;
 
 /// @name Accessing Temperature Data
 /**
- *  Reads the battery voltage.
- *  @see [PTDBeanDelegate beanDidUpdateBatteryVoltage:error:]
+ *  Requests the Bean's current temperature reading in Celsius.
+ *  @discussion When you call this method to read the Bean's temperature, the bean calls the [PTDBeanDelegate bean:didUpdateTemperature:] method of its delegate object.
+ *  @see [PTDBeanDelegate bean:didUpdateTemperature:]
  */
 -(void)readTemperature;
 
@@ -411,142 +435,125 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
 
 @optional
 /**
- Sent when an error occurs
+ Send when a generic Bean related errors occurs. This is usually called when invalid parameters are passed to Bean methods.
  
-    example:
     if (error.code == BeanErrors_InvalidArgument) {
-      PTDLog(@"Invalid argument - %@", [error localizedDescription]);
-    }
-    else {
-      // do something else
+      NSLog(@"Invalid argument - %@", [error localizedDescription]);
     }
  
- @param bean  the bean that made the request
- @param error refer to BeanErrors for the list of error codes
- 
+ @param bean  The bean that caused or is related to the error.
+ @param error Refer to <BeanErrors> for the list of error codes
  */
 -(void)bean:(PTDBean*)bean error:(NSError*)error;
 /**
- Sent when the Arduino has been manually powered on or off
- @param bean  the bean that made the request
- @param poweredOn true if the Arduino is powered, false if it is shut down
+ *  Sent in response when a Bean's <ArduinoPowerState> has been requested.
+ *
+ *  @param bean  The Bean whose <ArduinoPowerState> has been requested.
+ *  @see [PTDBean readArduinoPowerState];
+ *  @see ArduinoPowerState
  */
 -(void)beanDidUpdateArduinoPowerState:(PTDBean*)bean;
 /**
- Sent when an error occurs during Arduino Programming
- @param bean  the bean that made the request
- @param error refer to BeanErrors for the list of error codes
+ *  Sent when a Bean has finished programming it's Arduino. The programming process was successful when error is nil.
+ *
+ *  @param bean  The Bean whose Arduino has been programmed.
+ *  @param error Nil if successful, or an NSError if the programming was unsuccessful. See <BeanErrors>.
  */
 -(void)bean:(PTDBean*)bean didProgramArduinoWithError:(NSError*)error;
 /**
- *  Time remaining before the Arduino is finished programming.
+ *  Time remaining until the Arduino is finished programming, and percentage of the process is complete.
  *
- *  @param bean               the Bean being programmed
- *  @param seconds            the remaining number of seconds
- *  @param percentageComplete the percentage already programmed
+ *  @param bean               The Bean being programmed
+ *  @param seconds            The remaining number of seconds in the programming process
+ *  @param percentageComplete The completion percentage of the programming process, from 0.0 to 1.0.
  */
 -(void)bean:(PTDBean*)bean ArduinoProgrammingTimeLeft:(NSNumber*)seconds withPercentage:(NSNumber*)percentageComplete;
 /**
- *  Serial data received from the Bean
+ *  Serial data received from a Bean
  *
- *  @param bean the Bean sending the serial data
- *  @param data the data sent from the Bean
+ *  @param bean The Bean we're receiving serial data from
+ *  @param data The data received from the Bean
  */
 -(void)bean:(PTDBean*)bean serialDataReceived:(NSData*)data;
-#if TARGET_OS_IPHONE
 /**
- *  The Bean Led color
+ *  Sent in response when a Bean's LED values are requested
  *
- *  @param bean  the Bean being queried
- *  @param color the color returned
+ *  @param bean  The Bean whose LED color has been requested
+ *  @param color The Bean's LED color. Alpha channel is always 1.
+ *  @see [PTDBean readLedColor];
  */
+#if TARGET_OS_IPHONE
 -(void)bean:(PTDBean*)bean didUpdateLedColor:(UIColor*)color;
 #else
-/**
- *  The Bean Led color
- *
- *  @param bean the Bean being queried
- *  @param color the color returned
- */
 -(void)bean:(PTDBean*)bean didUpdateLedColor:(NSColor*)color;
 #endif
 /**
- The Bean accelerometer readings
+Sent in response when a Bean's accelerometer readings are requested
  
  @param bean         the Bean being queried
- @param acceleration The type of a structure containing 3-axis acceleration values, identical to [CMAcceleration](https://developer.apple.com/library/ios/documentation/coremotion/reference/CMAccelerometerData_Class/Reference/Reference.html#//apple_ref/doc/c_ref/CMAcceleration)
+ @param acceleration A <PTDAcceleration> struct containing 3-axis acceleration values, identical to [CMAcceleration](https://developer.apple.com/library/ios/documentation/coremotion/reference/CMAccelerometerData_Class/Reference/Reference.html#//apple_ref/doc/c_ref/CMAcceleration)
  
      typedef struct {
      double x;
      double y;
      double z;
      } PTDAcceleration;
- 
+ @see [PTDBean readAccelerationAxes];
  */
 -(void)bean:(PTDBean*)bean didUpdateAccelerationAxes:(PTDAcceleration)acceleration;
 /**
- *  The Bean RSSI reading
+ *  Sent in response when a Bean's RSSI is requested
  *
- *  @param bean            the bean being queried
- *  @param error           error returned during RSSI read
+ *  @param bean            The Bean whose RSSI data has been requested.
+ *  @param error           Nil if successful, or an NSError if the reading was unsuccessful. See <BeanErrors>.
+ *  @see [PTDBean readRSSI];
  */
 -(void)beanDidUpdateRSSI:(PTDBean*)bean error:(NSError*)error;
 /**
- *  The Bean temperature readings
+ *  Sent in response when a Bean's temperature is requested
  *
- *  @param bean            the bean being queried
- *  @param degrees_celsius the temperature in celsius
+ *  @param bean            The Bean whose temperature data has been requested.
+ *  @param degrees_celsius The ambient temperature in degrees Celsius
+ *  @see [PTDBean readTemperature];
  */
 -(void)bean:(PTDBean*)bean didUpdateTemperature:(NSNumber*)degrees_celsius;
 /**
- *  The Bean Battery Voltage reading
+ *  Sent in response when a Bean's battery or power supply voltage is requested
  *
- *  @param bean            the bean being queried
- *  @param error           error returned during Battery Voltage read
+ *  @param bean            The Bean whose battery or power supply voltage has been requested
+ *  @param error           Nil if successful, or an NSError if the reading was unsuccessful. See <BeanErrors>.
+ *  @see [PTDBean readBatteryVoltage];
  */
 -(void)beanDidUpdateBatteryVoltage:(PTDBean*)bean error:(NSError*)error;
 /**
- *  The payload returned from a Bean after a loopback call
- *
- *  @param bean    the Bean being queried
- *  @param payload the loopback data
- */
--(void)bean:(PTDBean*)bean didUpdateLoopbackPayload:(NSData*)payload;
-/**
- The Bean configuration
-  @param bean   the Bean being queried
-  @param config the configuration of the bean, see PTDBeanRadioConfig
+  Sent in response when a Bean's <PTDBeanRadioConfig> is requested.
+  @param bean   The Bean whose <PTDBeanRadioConfig> has been requested
+  @param config The radio configuration of the bean, see <PTDBeanRadioConfig> for more details.
+  @see [PTDBean readRadioConfig];
  */
 -(void)bean:(PTDBean*)bean didUpdateRadioConfig:(PTDBeanRadioConfig*)config;
 /**
- *  The Bean scratch characteristic
+ *  Sent in response when a Bean's scratch bank data is requested.
  *
- *  @param bean   the Bean being queried
- *  @param number the scratch number
- *  @param data   the data stored in the scratch characteristic
+ *  @param bean    The Bean whose scratch bank data has been requested.
+ *  @param bank    The index of the scratch bank to store data, from 1 to 5.
+ *  @param data    Data to be stored in the selected bank. Can be up to 20 bytes.
+ *  @see [PTDBean readScratchBank];
  */
--(void)bean:(PTDBean*)bean didUpdateScratchNumber:(NSNumber*)number withValue:(NSData*)data;
+-(void)bean:(PTDBean*)bean didUpdateScratchBank:(NSInteger)bank data:(NSData*)data;
 /**
- Sent when an error occurs during a Firmware Upload
- @param bean  the Bean that made the request
- @param error refer to BeanErrors for the list of error codes
+  This method is deprecated. Use <[PTDBeanDelegate bean:didUpdateScratchBank:data:]> instead.
+  @deprecated v0.3.2
  */
--(void)bean:(PTDBean*)bean completedFirmwareUploadWithError:(NSError*)error;
+-(void)bean:(PTDBean*)bean didUpdateScratchNumber:(NSNumber*)number withValue:(NSData*)data __attribute__((deprecated("use setScratchBank:data:")));
 /**
- *  Time remaining before the firmware has completed uploading
+ *  Sent in response when information about a Bean's Arduino sketch is requested
  *
- *  @param bean               the Bean being updated
- *  @param seconds            the remaining seconds for the upload
- *  @param percentageComplete the percentage of the upload complete
- */
--(void)bean:(PTDBean*)bean firmwareUploadTimeLeft:(NSNumber*)seconds withPercentage:(NSNumber*)percentageComplete;
-/**
- *  Message from the Bean that a sketch has been programmed
- *
- *  @param bean the Bean being programmed
- *  @param name the name of the sketch
- *  @param date the date of the programming
- *  @param crc  the cyclic redundancy check
+ *  @param bean The Bean whose sketch info has been requested.
+ *  @param name The name of the currently programmed sketch
+ *  @param date The date the sketch was programmed
+ *  @param crc  The CRC32 of the programmed sketch
+ *  @see [PTDBean readArduinoSketchInfo];
  */
 -(void)bean:(PTDBean*)bean didUpdateSketchName:(NSString*)name dateProgrammed:(NSDate*)date crc32:(UInt32)crc;
 @end
