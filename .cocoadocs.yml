@@ -1,0 +1,14 @@
+highlight-font: '"Lato", "Helvetica Neue", "Helvetica", "Arial", "sans-serif"'
+
+body: '"Lato", "Helvetica Neue", "Helvetica", "Arial", "sans-serif"
+code: '"Monaco", "Menlo", "Consolas", "Courier New", monospace'
+
+highlight-color: '#00435d' #'#ED0015' #Headings
+highlight-dark-color: '#0090c9' #'#A90010' #mouse over color on left column nav links, left bar on code section
+
+darker-color: '#008bbf' #'#C6B7B2'  #nav links and logo, and dropdown on top right
+darker-dark-color: '#A8A8A8'
+
+background-color: '#e4eaf2' #F2F2F2' # also the version number
+alt-link-color: '#B7233F'
+warning-color: '#B80E3D'

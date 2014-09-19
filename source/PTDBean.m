@@ -7,6 +7,7 @@
 //
 
 #import "PTDBean.h"
+#import "PTDBean+Protected.h"
 #import "PTDBeanManager+Protected.h"
 #import "GattSerialProfile.h"
 #import "BatteryProfile.h"
@@ -199,12 +200,6 @@ typedef enum { //These occur in sequence
         [self __alertDelegateOfArduinoOADCompletion:error];
     }
 }
--(void)sendLoopbackDebugMessage:(NSInteger)length{
-    if(![self connected]) {
-        return;
-    }
-    [appMessageLayer sendMessageWithID:MSG_ID_DB_LOOPBACK andPayload:[BEAN_Helper dummyData:length]];
-}
 -(void)sendSerialData:(NSData*)data{
     if(![self connected]) {
         return;
@@ -248,11 +243,15 @@ typedef enum { //These occur in sequence
     NSData *data = [NSData dataWithBytes:&raw length: sizeof(BT_RADIOCONFIG_T)];
     [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_CONFIG andPayload:data];
 }
--(void)readAccelerationAxis {
+-(void)readAccelerationAxes {
     if(![self connected]) {
         return;
     }
     [appMessageLayer sendMessageWithID:MSG_ID_CC_ACCEL_READ andPayload:nil];
+}
+//Deprecated
+-(void)readAccelerationAxis {
+    [self readAccelerationAxes];
 }
 -(void)readRSSI {
     if(![self connected]) {
@@ -299,22 +298,29 @@ typedef enum { //These occur in sequence
     }
     [appMessageLayer sendMessageWithID:MSG_ID_CC_LED_READ_ALL andPayload:nil];
 }
--(void)setScratchNumber:(NSInteger)scratchNumber withValue:(NSData*)value {
+    
+//This method is deprecated
+-(void)setScratchNumber:(NSInteger)scratchNumber withValue:(NSData*)value{
+    [self setScratchBank:scratchNumber data:value];
+}
+    
+-(void)setScratchBank:(NSInteger)bank data:(NSData*)data{
     if(![self connected]) {
         return;
     }
-    if(![self validScratchNumber:scratchNumber]) {
+    if(![self validScratchNumber:bank]) {
         return;
     }
-    if (value.length>20) {
+    if (data.length>20) {
         if(self.delegate && [self.delegate respondsToSelector:@selector(bean:error:)]) {
             NSError *error = [BEAN_Helper basicError:@"Scratch value exceeds 20 character limit" domain:NSStringFromClass([self class]) code:BeanErrors_InvalidArgument];
             [self.delegate bean:self error:error];
         }
-        value = [value subdataWithRange:NSMakeRange(0, 20)];
+        data = [data subdataWithRange:NSMakeRange(0, 20)];
     }
-    NSMutableData *payload = [NSMutableData dataWithBytes:&scratchNumber length:1];
-    [payload appendData:value];
+    UInt8 bankNum = bank;
+    NSMutableData *payload = [NSMutableData dataWithBytes:&bankNum length:1];
+    [payload appendData:data];
     [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_SCRATCH andPayload:payload];
 }
 - (void)readScratchBank:(NSInteger)bank {
@@ -612,11 +618,20 @@ typedef enum { //These occur in sequence
             break;
         case MSG_ID_BT_GET_SCRATCH:
             PTDLog(@"App Message Received: MSG_ID_BT_GET_SCRATCH: %@", payload);
-            if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateScratchNumber:withValue:)]) {
+            if (self.delegate) {
                 BT_SCRATCH_T rawData;
                 [payload getBytes:&rawData range:NSMakeRange(0, payload.length)];
                 NSData *scratch = [NSData dataWithBytes:rawData.scratch length:payload.length];
-                [self.delegate bean:self didUpdateScratchNumber:@(rawData.number) withValue:scratch];
+                //This delegate call has been deprecated!
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+                if([self.delegate respondsToSelector:@selector(bean:didUpdateScratchNumber:withValue:)]){
+                    [self.delegate bean:self didUpdateScratchNumber:@(rawData.number) withValue:scratch];
+                }
+#pragma clang diagnostic pop
+                if([self.delegate respondsToSelector:@selector(bean:didUpdateScratchBank:data:)]){
+                    [self.delegate bean:self didUpdateScratchBank:rawData.number data:scratch];
+                }
             }
             break;
         case MSG_ID_BT_RESTART:
@@ -717,13 +732,6 @@ typedef enum { //These occur in sequence
             }
             break;
         }
-        case MSG_ID_DB_LOOPBACK:
-
-            PTDLog(@"App Message Received: MSG_ID_DB_LOOPBACK: %@", payload);
-            if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateLoopbackPayload:)]) {
-                [self.delegate bean:self didUpdateLoopbackPayload:payload];
-            }
-            break;
         case MSG_ID_DB_COUNTER:
             PTDLog(@"App Message Received: MSG_ID_DB_COUNTER: %@", payload);
             break;
@@ -732,23 +740,25 @@ typedef enum { //These occur in sequence
             break;
     }
 }
--(void)appMessagingLayer:(AppMessagingLayer*)later error:(NSError*)error{
-    
+-(void)appMessagingLayer:(AppMessagingLayer*)layer error:(NSError*)error{
+    //TODO: Add some more error handling in here
 }
 
 
 #pragma mark OAD callbacks
 -(void)device:(OadProfile*)device completedFirmwareUploadWithError:(NSError*)error{
     if(_delegate){
-        if([_delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]){
-            [_delegate bean:self completedFirmwareUploadWithError:error];
+        if(/*[_delegate conformsToProtocol:@protocol(PTDBeanExtendedDelegate)]
+           && */[_delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]){
+            [(id<PTDBeanExtendedDelegate>)_delegate bean:self completedFirmwareUploadWithError:error];
         }
     }
 }
 -(void)device:(OadProfile*)device OADUploadTimeLeft:(NSNumber*)seconds withPercentage:(NSNumber*)percentageComplete{
     if(_delegate){
-        if([_delegate respondsToSelector:@selector(bean:firmwareUploadTimeLeft:withPercentage:)]){
-            [_delegate bean:self firmwareUploadTimeLeft:seconds withPercentage:percentageComplete];
+        if(/*[_delegate conformsToProtocol:@protocol(PTDBeanExtendedDelegate)]
+           && */[_delegate respondsToSelector:@selector(bean:firmwareUploadTimeLeft:withPercentage:)]){
+            [(id<PTDBeanExtendedDelegate>)_delegate bean:self firmwareUploadTimeLeft:seconds withPercentage:percentageComplete];
         }
     }
 }

@@ -59,18 +59,14 @@
         PTDBean* bean;
         //If this bean is already in out records, pass it back to the delegate as having been discovered!
         if((bean = [beanRecords objectForKey:beanPeripheral.identifier])){
-            if (self.delegate && [self.delegate respondsToSelector:@selector(BeanManager:didDisconnectBean:error:)]){
-                [self.delegate BeanManager:self didDiscoverBean:bean error:nil];
-            }
+            [self __notifyDelegateOfDiscoveredBean:bean error:nil];
         }else{ //If this bean's peripheral is connected and not in our records, another app could have connected to it.
             if((bean = [[PTDBean alloc] initWithPeripheral:beanPeripheral beanManager:self])){
                 [beanRecords setObject:bean forKey:bean.identifier];
                 bean.RSSI = beanPeripheral.RSSI;
                 bean.lastDiscovered = [NSDate date];
                 bean.state = BeanState_Discovered;
-                if (self.delegate && [self.delegate respondsToSelector:@selector(BeanManager:didDisconnectBean:error:)]){
-                    [self.delegate BeanManager:self didDiscoverBean:bean error:nil];
-                }
+                [self __notifyDelegateOfDiscoveredBean:bean error:nil];
             }
         }
     }
@@ -151,9 +147,7 @@
     if([bean.name isEqualToString:@"Unknown"]
        && bean.RSSI == nil){ //Assumption: Based on these symptoms, we assume this bean was found with "retrieveConnectedPeripheralsWithServices" and will be missing it's disconnection delegate.
         [bean setState:BeanState_Discovered];
-        if (self.delegate && [self.delegate respondsToSelector:@selector(BeanManager:didDisconnectBean:error:)]){
-            [self.delegate BeanManager:self didDisconnectBean:bean error:nil];
-        }
+        [self __notifyDelegateOfDisconnectedBean:bean error:nil];
     }
 }
 
@@ -174,9 +168,7 @@
     }
     
     //Notify Delegate
-    if (self.delegate && [self.delegate respondsToSelector:@selector(BeanManager:didConnectToBean:error:)]){
-        [self.delegate BeanManager:self didConnectToBean:device error:error];
-    }
+    [self __notifyDelegateOfConnectedBean:device error:error];
 }
 
 
@@ -219,6 +211,42 @@
         [beanRecords removeObjectForKey:beanID];
     }
 }
+-(void)__notifyDelegateOfDiscoveredBean:(PTDBean*)bean error:(NSError*)error{
+    //Deprecated
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    if (self.delegate && [self.delegate respondsToSelector:@selector(BeanManager:didDiscoverBean:error:)]){
+        [self.delegate BeanManager:self didDiscoverBean:bean error:error];
+    }
+#pragma clang diagnostic pop
+    if (self.delegate && [self.delegate respondsToSelector:@selector(beanManager:didDiscoverBean:error:)]){
+        [self.delegate beanManager:self didDiscoverBean:bean error:error];
+    }
+}
+-(void)__notifyDelegateOfConnectedBean:(PTDBean*)bean error:(NSError*)error{
+    //Deprecated
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    if (self.delegate && [self.delegate respondsToSelector:@selector(BeanManager:didConnectToBean:error:)]){
+        [self.delegate BeanManager:self didConnectToBean:bean error:error];
+    }
+#pragma clang diagnostic pop
+    if (self.delegate && [self.delegate respondsToSelector:@selector(beanManager:didConnectBean:error:)]){
+        [self.delegate beanManager:self didConnectBean:bean error:error];
+    }
+}
+-(void)__notifyDelegateOfDisconnectedBean:(PTDBean*)bean error:(NSError*)error{
+    //Deprecated
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    if (self.delegate && [self.delegate respondsToSelector:@selector(BeanManager:didDisconnectBean:error:)]){
+        [self.delegate BeanManager:self didDisconnectBean:bean error:error];
+    }
+#pragma clang diagnostic pop
+    if (self.delegate && [self.delegate respondsToSelector:@selector(beanManager:didDisconnectBean:error:)]){
+        [self.delegate beanManager:self didDisconnectBean:bean error:error];
+    }
+}
 
 #pragma mark - CBCentralManagerDelegate
 
@@ -243,9 +271,7 @@
     PTDBean* bean = [self __processBeanRecordFromCBPeripheral:peripheral advertisementData:advertisementData RSSI:RSSI];
     if(bean){
         //Inform the delegate that we located a Bean
-        if (self.delegate && [self.delegate respondsToSelector:@selector(BeanManager:didDisconnectBean:error:)]){
-            [self.delegate BeanManager:self didDiscoverBean:bean error:nil];
-        }
+        [self __notifyDelegateOfDiscoveredBean:bean error:nil];
     }
 }
 
@@ -272,9 +298,7 @@
     //Make sure that there is an error to pass along
     if(!error)return;
     //Notify delegate of failure
-    if (self.delegate && [self.delegate respondsToSelector:@selector(BeanManager:didConnectToBean:error:)]){
-        [self.delegate BeanManager:self didConnectToBean:nil error:error];
-    }
+    [self __notifyDelegateOfConnectedBean:nil error:error];
 }
 
 - (void)centralManager:(CBCentralManager *)central didDisconnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error{
@@ -290,9 +314,7 @@
     
     if(!bean) return; //This may not be the best way to handle this case
     //Alert the delegate of the disconnect
-    if (self.delegate && [self.delegate respondsToSelector:@selector(BeanManager:didDisconnectBean:error:)]){
-        [self.delegate BeanManager:self didDisconnectBean:bean error:error];
-    }
+    [self __notifyDelegateOfDisconnectedBean:bean error:error];
 }
 
 

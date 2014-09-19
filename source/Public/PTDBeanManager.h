@@ -50,34 +50,47 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
  Manages discovery and connection of Beans
  
      Example:
-     // create the bean and assign ourselves as the delegate
-     self.beanManager = [[PTDBeanManager alloc] initWithDelegate:self];
+    
+     //Put the following code in your class initialization
+     {
+        PTDBeanManager* beanManager;
+        // create the Bean Manager and assign ourselves as the delegate
+        beanManager = [[PTDBeanManager alloc] initWithDelegate:self];
+     }
      
      // check to make sure we're on
      - (void)beanManagerDidUpdateState:(PTDBeanManager *)manager{
-       if(self.beanManager.state == BeanManagerState_PoweredOn){
+       if(beanManager.state == BeanManagerState_PoweredOn){
          // if we're on, scan for advertisting beans
-         [self.beanManager startScanningForBeans_error:nil];
+         NSError* scanError;
+         [beanManager startScanningForBeans_error:&scanError];
+         if (scanError) {
+            NSLog(@"%@", [scanError localizedDescription]);
+         }
        }
-       else if (self.beanManager.state == BeanManagerState_PoweredOff) {
+       else if (beanManager.state == BeanManagerState_PoweredOff) {
          // do something else
        }
      }
      // bean discovered
      - (void)BeanManager:(PTDBeanManager*)beanManager didDiscoverBean:(PTDBean*)bean error:(NSError*)error{
        if (error) {
-         PTDLog(@"%@", [error localizedDescription]);
+         NSLog(@"%@", [error localizedDescription]);
          return;
        }
-       [self.beanManager connectToBean:bean error:nil];
+       NSError* connectError;
+       [beanManager connectToBean:bean error:&connectError];
+       if (connectError) {
+         NSLog(@"%@", [connectError localizedDescription]);
+       }
      }
      // bean connected
      - (void)BeanManager:(PTDBeanManager*)beanManager didConnectToBean:(PTDBean*)bean error:(NSError*)error{
        if (error) {
-         PTDLog(@"%@", [error localizedDescription]);
+         NSLog(@"%@", [error localizedDescription]);
          return;
        }
-       // do stuff with your bean
+       // do stuff with your Bean
      }
  
  @see PTDBeanManagerDelegate
@@ -86,20 +99,20 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
 
 /// @name Monitoring Properties
 /**
- *  The delegate object for the BeanManager. 
+ *  The delegate object for the BeanManager. Assign your class as this delegate to receive delegate messages.
  @see PTDBeanManagerDelegate
  */
 @property (nonatomic, weak) id<PTDBeanManagerDelegate> delegate;
 /**
- The BeanManagerState of the BeanManager
+ The <BeanManagerState> state of the BeanManager. Tells you if the Bluetooth Adapter is of, off, unknown, etc.
  */
 @property (nonatomic, assign, readonly) BeanManagerState state;
 
 /// @name Initializing a Bean Manager
 /**
- *  Initializes the BeanManager
+ *  Initializes the BeanManager with a delegate that implements the PTDBeanManagerDelegate protocol.
  *
- *  @param delegate the delegate for this object
+ *  @param delegate the <delegate> for this object
  *
  *  @return an instance of the BeanManager
  */
@@ -109,13 +122,13 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
 /**
  *  Begins scanning for Beans
  *
- *  @param error see BeanErrors
+ *  @param error Nil if successful. See <BeanErrors> for error codes.
  */
 -(void)startScanningForBeans_error:(NSError**)error;
 /**
  *  Stops scanning for Beans
  *
- *  @param error see BeanErrors
+ *  @param error Nil if successful. See <BeanErrors> for error codes.
  */
 -(void)stopScanningForBeans_error:(NSError**)error;
 
@@ -123,25 +136,26 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
 /**
  *  Connects to a Bean
  *
- *  @param bean  the Bean to connect to
- *  @param error see BeanErrors
+ *  @param bean  The Bean to connect to
+ *  @param error Nil if successful. See <BeanErrors> for error codes.
  */
 -(void)connectToBean:(PTDBean*)bean error:(NSError**)error;
 /**
  *  Disconnects from a Bean
  *
- *  @param bean  the Bean to disconnect from
- *  @param error see BeanErrors
+ *  @param bean  The Bean to disconnect from
+ *  @param error Nil if successful. See <BeanErrors> for error codes.
  */
 -(void)disconnectBean:(PTDBean*)bean error:(NSError**)error;
 @end
 
 /**
- Delegates of a PTDBeanManager object should implement this protocol. See [BeanXcodeWorkspace](http://www.punchthrough.com) for more examples.
+ Delegates of a <PTDBeanManager> object should implement this protocol. See [BeanXcodeWorkspace](http://www.punchthrough.com) for more examples.
  */
 @protocol PTDBeanManagerDelegate <NSObject>
+@optional
 /**
- The state representing the BeanManager
+ The BeanManager's <BeanManagerState> has been updated. This method will also be called when Bluetooth is enabled or disabled.
 
      Example:
      - (void)beanManagerDidUpdateState:(PTDBeanManager *)manager{
@@ -154,45 +168,57 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
        }
      }
  
- @param beanManager the BeanManager updating state
+ @param beanManager the BeanManager whose state was updated
  */
 - (void)beanManagerDidUpdateState:(PTDBeanManager *)beanManager;
 /**
- A Bean was discovered
+ An advertising Bean was discovered.
 
     Example:
     // Manager letting us know a Bean was discovered
-    - (void)BeanManager:(PTDBeanManager*)beanManager didDiscoverBean:(PTDBean*)bean 
-        error:(NSError*)error{
-      // maintains a list of all discovered beans
-      NSUUID * key = bean.identifier;
-      if (![self.beans objectForKey:key]) {
-        [self.beans setObject:bean forKey:key];
-        // attempt to connect to the bean
-        [self.beanManager connectToBean:bean error:nil];
-      }
+    - (void)BeanManager:(PTDBeanManager*)beanManager didDiscoverBean:(PTDBean*)bean error:(NSError*)error{
+        NSError* connectError;
+        [self.beanManager connectToBean:bean error:&connectError];
+        if (connectError) {
+          NSLog(@"%@", [connectError localizedDescription]);
+        }
     }
 
- @param beanManager the BeanManager scanning for advertising beans
- @param bean        the Bean
- @param error       not implemented yet
+ @param beanManager The BeanManager scanning for advertising beans
+ @param bean        The Bean that was discovered
+ @param error       Not implemented yet
  */
-- (void)BeanManager:(PTDBeanManager*)beanManager didDiscoverBean:(PTDBean*)bean error:(NSError*)error;
+- (void)beanManager:(PTDBeanManager*)beanManager didDiscoverBean:(PTDBean*)bean error:(NSError*)error;
+/**
+ This method is deprecated. Use <[PTDBeanManager beanManager:didDiscoverBean:error:]> instead.
+ @deprecated v0.3.2
+ */
+- (void)BeanManager:(PTDBeanManager*)beanManager didDiscoverBean:(PTDBean*)bean error:(NSError*)error __attribute__((deprecated("use setScratchBank:data:")));
 /**
  *  A Bean was connected
  *
- *  @param beanManager the BeanManager that connected to an advertising beans
- *  @param bean        the Bean
- *  @param error       error is passed through from [centralManager:didFailToConnectPeripheral:error:](https://developer.apple.com/library/mac/documentation/CoreBluetooth/Reference/CBCentralManagerDelegate_Protocol/translated_content/CBCentralManagerDelegate.html#//apple_ref/occ/intfm/CBCentralManagerDelegate/centralManager:didDisconnectPeripheral:error:)
+ *  @param beanManager The BeanManager that connected to an advertising beans
+ *  @param bean        The Bean that was connected
+ *  @param error       This error is passed through from [centralManager:didFailToConnectPeripheral:error:](https://developer.apple.com/library/mac/documentation/CoreBluetooth/Reference/CBCentralManagerDelegate_Protocol/translated_content/CBCentralManagerDelegate.html#//apple_ref/occ/intfm/CBCentralManagerDelegate/centralManager:didDisconnectPeripheral:error:)
  */
-- (void)BeanManager:(PTDBeanManager*)beanManager didConnectToBean:(PTDBean*)bean error:(NSError*)error;
+- (void)beanManager:(PTDBeanManager*)beanManager didConnectBean:(PTDBean*)bean error:(NSError*)error;
+/**
+ This method is deprecated. Use <[PTDBeanManager beanManager:didConnectToBean:error:]> instead.
+ @deprecated v0.3.2
+ */
+- (void)BeanManager:(PTDBeanManager*)beanManager didConnectToBean:(PTDBean*)bean error:(NSError*)error __attribute__((deprecated("use setScratchBank:data:")));
 /**
  *  A Bean was disconnected
  *
- *  @param beanManager the BeanManager disconnected from the Bean
- *  @param bean        the Bean
- *  @param error       error is passed through from [centralManager:didDisconnectPeripheral:error:](https://developer.apple.com/library/mac/documentation/CoreBluetooth/Reference/CBCentralManagerDelegate_Protocol/translated_content/CBCentralManagerDelegate.html#//apple_ref/occ/intfm/CBCentralManagerDelegate/centralManager:didDisconnectPeripheral:error:)
+ *  @param beanManager The BeanManager that lost connection with the Bean
+ *  @param bean        The Bean that was disconnect
+ *  @param error       This error is passed through from [centralManager:didDisconnectPeripheral:error:](https://developer.apple.com/library/mac/documentation/CoreBluetooth/Reference/CBCentralManagerDelegate_Protocol/translated_content/CBCentralManagerDelegate.html#//apple_ref/occ/intfm/CBCentralManagerDelegate/centralManager:didDisconnectPeripheral:error:)
  */
-- (void)BeanManager:(PTDBeanManager*)beanManager didDisconnectBean:(PTDBean*)bean error:(NSError*)error;
+- (void)beanManager:(PTDBeanManager*)beanManager didDisconnectBean:(PTDBean*)bean error:(NSError*)error;
+/**
+ This method is deprecated. Use <[PTDBeanManager beanManager:didDisconnectBean:error:]> instead.
+ @deprecated v0.3.2
+ */
+- (void)BeanManager:(PTDBeanManager*)beanManager didDisconnectBean:(PTDBean*)bean error:(NSError*)error __attribute__((deprecated("use setScratchBank:data:")));
 
 @end
