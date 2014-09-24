@@ -17,6 +17,7 @@ Pod::Spec.new do |s|
   s.source_files  = "App Message Definitions/*.{h,m}","Bean OSX Static Library/**/*.{h,m}","source","source/**/*.{h,m}"
   s.exclude_files = "Bean OSX Static Library/Bean OSX LibraryTests/**/*.{h,m}"
   s.public_header_files = "source/Public/*.h"
+  s.resource = "firmware/*"
 
   s.ios.frameworks = "CoreBluetooth"
   s.osx.frameworks = "IOBluetooth"
