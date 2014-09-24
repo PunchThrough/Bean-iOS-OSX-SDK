@@ -1,7 +1,7 @@
-highlight-font: '"Lato", "Helvetica Neue", "Helvetica", "Arial", "sans-serif"'
+highlight-font: 'Lato', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'
 
-body: '"Lato", "Helvetica Neue", "Helvetica", "Arial", "sans-serif"
-code: '"Monaco", "Menlo", "Consolas", "Courier New", monospace'
+body: 'Lato', 'Helvetica Neue', 'Helvetica', 'Arial', 'sans-serif'
+code: 'Monaco', 'Menlo', 'Consolas', 'Courier New', 'monospace'
 
 highlight-color: '#00435d' #'#ED0015' #Headings
 highlight-dark-color: '#0090c9' #'#A90010' #mouse over color on left column nav links, left bar on code section
