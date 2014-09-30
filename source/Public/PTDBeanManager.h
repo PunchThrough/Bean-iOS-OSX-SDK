@@ -193,7 +193,7 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
  This method is deprecated. Use <[PTDBeanManager beanManager:didDiscoverBean:error:]> instead.
  @deprecated v0.3.2
  */
-- (void)BeanManager:(PTDBeanManager*)beanManager didDiscoverBean:(PTDBean*)bean error:(NSError*)error __attribute__((deprecated("use setScratchBank:data:")));
+- (void)BeanManager:(PTDBeanManager*)beanManager didDiscoverBean:(PTDBean*)bean error:(NSError*)error __attribute__((deprecated("use beanManager:didDiscoverBean:errror:")));
 /**
  *  A Bean was connected
  *
@@ -206,7 +206,7 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
  This method is deprecated. Use <[PTDBeanManager beanManager:didConnectToBean:error:]> instead.
  @deprecated v0.3.2
  */
-- (void)BeanManager:(PTDBeanManager*)beanManager didConnectToBean:(PTDBean*)bean error:(NSError*)error __attribute__((deprecated("use setScratchBank:data:")));
+- (void)BeanManager:(PTDBeanManager*)beanManager didConnectToBean:(PTDBean*)bean error:(NSError*)error __attribute__((deprecated("use beanManager:didConnectToBean:error:")));
 /**
  *  A Bean was disconnected
  *
@@ -219,6 +219,6 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
  This method is deprecated. Use <[PTDBeanManager beanManager:didDisconnectBean:error:]> instead.
  @deprecated v0.3.2
  */
-- (void)BeanManager:(PTDBeanManager*)beanManager didDisconnectBean:(PTDBean*)bean error:(NSError*)error __attribute__((deprecated("use setScratchBank:data:")));
+- (void)BeanManager:(PTDBeanManager*)beanManager didDisconnectBean:(PTDBean*)bean error:(NSError*)error __attribute__((deprecated("use beanManager:didDisconnectBean:error:")));
 
 @end
