@@ -8,8 +8,10 @@
 
 #if TARGET_OS_IPHONE
 #import <CoreBluetooth/CoreBluetooth.h>
+#import <UIKit/UIKit.h>
 #else
 #import <IOBluetooth/IOBluetooth.h>
+#import <AppKit/AppKit.h>
 #endif
 #import "PTDBleDevice.h"
 
@@ -545,7 +547,7 @@ Sent in response when a Bean's accelerometer readings are requested
   This method is deprecated. Use <[PTDBeanDelegate bean:didUpdateScratchBank:data:]> instead.
   @deprecated v0.3.2
  */
--(void)bean:(PTDBean*)bean didUpdateScratchNumber:(NSNumber*)number withValue:(NSData*)data __attribute__((deprecated("use setScratchBank:data:")));
+-(void)bean:(PTDBean*)bean didUpdateScratchNumber:(NSNumber*)number withValue:(NSData*)data __attribute__((deprecated("use didUpdateScratchBank:data:")));
 /**
  *  Sent in response when information about a Bean's Arduino sketch is requested
  *
