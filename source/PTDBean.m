@@ -597,7 +597,8 @@ typedef enum { //These occur in sequence
                 PTDBeanRadioConfig *config = [[PTDBeanRadioConfig alloc] init];
                 config.advertisingInterval = rawData.adv_int;
                 config.connectionInterval = rawData.conn_int;
-                config.pairingPinEnabled = (rawData.adv_mode & 0x80)?TRUE:FALSE;
+                // The (rawData.adv_mode != 0xFF) check is to catch a FW bug!
+                config.pairingPinEnabled = ((rawData.adv_mode & 0x80) && (rawData.adv_mode != 0xFF) )?TRUE:FALSE;
                 config.advertisingMode = rawData.adv_mode & (~0x80);
                 config.iBeacon_UUID = rawData.ibeacon_uuid;
                 config.iBeacon_majorID = rawData.ibeacon_major;
