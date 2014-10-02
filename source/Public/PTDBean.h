@@ -8,8 +8,10 @@
 
 #if TARGET_OS_IPHONE
 #import <CoreBluetooth/CoreBluetooth.h>
+#import <UIKit/UIKit.h>
 #else
 #import <IOBluetooth/IOBluetooth.h>
+#import <AppKit/AppKit.h>
 #endif
 #import "PTDBleDevice.h"
 
