@@ -54,6 +54,25 @@
  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didWriteValueForCharacteristic:) name:@"didWriteValueForCharacteristic" object:peripheralNotifier];
  }
  */
+#if TARGET_OS_IPHONE // This is used in iOS 8
+- (void)peripheral:(CBPeripheral *)peripheral didReadRSSI:(NSNumber *)RSSI error:(NSError *)error{
+    NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
+                            peripheral ?: [NSNull null], @"peripheral",
+                            RSSI ?: [NSNull null], @"rssi",
+                            error ?: [NSNull null], @"error",
+                            nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName: @"peripheral:didReadRSSI:error:" object:params];
+    for (id<Profile_Protocol> profile in _profiles) {
+        if(profile){
+            if([profile respondsToSelector:@selector(peripheral:didReadRSSI:error:)]){
+                [profile peripheral:peripheral didReadRSSI:RSSI error:error];
+            }
+        }
+    }
+    _RSSI = RSSI;
+    [self rssiDidUpdateWithError:error];
+}
+#endif
 - (void)peripheralDidUpdateRSSI:(CBPeripheral *)peripheral error:(NSError *)error{
     NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
                             peripheral ?: [NSNull null], @"peripheral",
