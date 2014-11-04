@@ -139,7 +139,7 @@
         return;
     }
     //Mark this BeanRecord as is in the middle of a disconnection attempt
-    [bean setState:BeanState_AttemptingDisconnection];
+    [bean setState:(bean.peripheral.state==CBPeripheralStateConnected)?BeanState_AttemptingDisconnection:BeanState_Discovered];
     //Attempt to disconnect from the corresponding CBPeripheral
     [cbcentralmanager cancelPeripheralConnection:bean.peripheral];
     
