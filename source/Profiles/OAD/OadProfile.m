@@ -48,7 +48,13 @@ typedef struct {
     UInt16  len;
     UInt8   uid[4];
     UInt8   res[4];
-} request_oad_t;
+} request_oad_header_t;
+
+typedef struct {
+    UInt16  ver;
+    UInt16  len;
+    UInt8   uid[4];
+} response_oad_header_t;
 
 typedef UInt8 data_block_t[16];
 
@@ -357,11 +363,12 @@ typedef struct {
 
 - (void)beginOADForHeaderData:(NSData *)headerData
 {
-    UInt16 version = CFSwapInt16LittleToHost(*((UInt16 *)headerData.bytes));
+    response_oad_header_t *response = (response_oad_header_t *)headerData.bytes;
+    UInt16 version = CFSwapInt16LittleToHost(response->ver);
     if ([self loadImageForVersion:version]) {
         img_hdr_t *imageHeader = (img_hdr_t *)self.imageData.bytes;
-        NSMutableData *data = [NSMutableData dataWithLength:sizeof(request_oad_t)];
-        request_oad_t   *request = (request_oad_t *)data.bytes;
+        NSMutableData *data = [NSMutableData dataWithLength:sizeof(request_oad_header_t)];
+        request_oad_header_t   *request = (request_oad_header_t *)data.bytes;
         request->ver = imageHeader->ver;
         request->len = imageHeader->len;
         memcpy(&request->uid, &imageHeader->uid, sizeof(request->uid));
