@@ -17,29 +17,9 @@
 #import "DevInfoProfile.h"
 #import "BleProfile.h"
 
-#define HI_UINT16(a) (((a) >> 8) & 0xff)
-#define LO_UINT16(a) ((a) & 0xff)
-
-#define SERVICE_OAD                     @"0xF000FFC0-0451-4000-B000-000000000000"
-#define CHARACTERISTIC_OAD_NOTIFY       @"0xF000FFC1-0451-4000-B000-000000000000"
-#define CHARACTERISTIC_OAD_BLOCK        @"0xF000FFC2-0451-4000-B000-000000000000"
-
 @protocol OAD_Delegate;
-@protocol OadDeviceDelegate;
 
 @interface OadProfile : BleProfile
-
-@property (nonatomic, weak) id<OAD_Delegate> delegate;
-
-@property (strong,nonatomic) NSData *imageFile;
-@property int nBlocks;
-@property int nBytes;
-@property int iBlocks;
-@property int iBytes;
-@property BOOL canceled;
-@property BOOL inProgramming;
-@property (nonatomic,strong) NSTimer *imageDetectTimer;
-@property uint16_t imgVersion;
 
 -(id)initWithPeripheral:(CBPeripheral*)aPeripheral delegate:(id<OAD_Delegate>)delegate;
 
