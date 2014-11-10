@@ -126,11 +126,7 @@ typedef struct {
                                                         userInfo:nil
                                                          repeats:YES];
     
-    if (self.characteristicOADBlock.isNotifying && self.characteristicOADIdentify) {
-        [self requestCurrentHeader];
-    } else {
-        [self enableNotify];
-    }
+    [self enableNotify];
     
     return YES;
 }
@@ -346,11 +342,16 @@ typedef struct {
 {
     self.oadState = OADStateEnableNotify;
     
-    if (!self.characteristicOADBlock.isNotifying) {
-        [peripheral setNotifyValue:YES forCharacteristic:self.characteristicOADBlock];
-    }
-    if (!self.characteristicOADIdentify.isNotifying) {
-        [peripheral setNotifyValue:YES forCharacteristic:self.characteristicOADIdentify];
+    if (self.characteristicOADBlock.isNotifying && self.characteristicOADIdentify.isNotifying) {
+        // Already enabled
+        [self requestCurrentHeader];
+    } else {
+        if (!self.characteristicOADBlock.isNotifying) {
+            [peripheral setNotifyValue:YES forCharacteristic:self.characteristicOADBlock];
+        }
+        if (!self.characteristicOADIdentify.isNotifying) {
+            [peripheral setNotifyValue:YES forCharacteristic:self.characteristicOADIdentify];
+        }
     }
 }
 
