@@ -334,6 +334,13 @@ typedef struct {
         self.oadState = OADStateWaitForCompletion;
     }
     
+    if (self.nextPacket == (totalPackets - 1)) {
+        // Corner case when only a single packet was left to send.
+        // Request was for last packet, notify completion here. No additional requests will be made.
+        PTDLog(@"Update completed in %f seconds", -[self.downloadStartDate timeIntervalSinceNow]);
+        [self completeWithError:nil];
+    }
+    
     self.nextPacket = nextPacket;
 }
 
