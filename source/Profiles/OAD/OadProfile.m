@@ -7,482 +7,448 @@
 //
 
 #import "OadProfile.h"
-#import "oad.h"
+
 #import "CBPeripheral+isConnected_Universal.h"
 
+// OAD implementation based on http://processors.wiki.ti.com/images/8/82/OAD_for_CC254x.pdf
+
+// TODO:
+// Stay 2 packets ahead?
+// Smooth time remaining at beginning of download?
+
+#define SERVICE_OAD                     @"0xF000FFC0-0451-4000-B000-000000000000"
+#define CHARACTERISTIC_OAD_IDENTIFY     @"0xF000FFC1-0451-4000-B000-000000000000"
+#define CHARACTERISTIC_OAD_BLOCK        @"0xF000FFC2-0451-4000-B000-000000000000"
+
+#define ERROR_DOMAIN                    @"OAD"
+#define ERROR_CODE                      100
+
+#define WATCHDOG_TIMER_INTERVAL         (1.5)
+
+typedef NS_ENUM(NSUInteger, OADState) {
+    OADStateIdle,
+    OADStateEnableNotify,
+    OADStateRequestCurrentHeader,
+    OADStateSentNewHeader,
+    OADStateSendingPackets,
+    OADStateWaitForCompletion
+};
+
+typedef struct {
+    UInt16 crc0;
+    UInt16 crc1;       // CRC-shadow must be 0xFFFF.
+    UInt16 ver;        // User-defined Image Version Number - default logic uses simple a '<' comparison to start an OAD.
+    UInt16 len;        // Image length in 4-byte blocks (i.e. HAL_FLASH_WORD_SIZE blocks).
+    UInt8  uid[4];     // User-defined Image Identification bytes.
+    UInt8  res[4];     // Reserved space for future use.
+} img_hdr_t;
+
+typedef struct {
+    UInt16  ver;
+    UInt16  len;
+    UInt8   uid[4];
+    UInt8   res[4];
+} request_oad_t;
+
+typedef UInt8 data_block_t[16];
+
+typedef struct {
+    UInt16          nbr;
+    data_block_t    block;
+} oad_packet_t;
+
 @interface OadProfile ()
+
+@property (weak, nonatomic)     id<OAD_Delegate>    delegate;
+
+@property (strong, nonatomic)   CBService           *serviceOAD;
+@property (strong, nonatomic)   CBCharacteristic    *characteristicOADBlock;
+@property (strong, nonatomic)   CBCharacteristic    *characteristicOADIdentify;
+
+@property (strong, nonatomic)   NSString            *imageAPath;
+@property (strong, nonatomic)   NSString            *imageBPath;
+@property (strong, nonatomic)   NSData              *imageData;
+
+@property (nonatomic)           OADState            oadState;
+@property (nonatomic)           UInt16              nextPacket;
+@property (strong, nonatomic)   NSTimer             *watchdogTimer;
+@property (nonatomic)           BOOL                watchdogSet;
+@property (strong, nonatomic)   NSDate              *downloadStartDate;
+
 @end
 
-@implementation OadProfile{
-    CBService* service_oad;
-    CBCharacteristic * characteristic_oad_notify;
-    CBCharacteristic * characteristic_oad_block;
-    
-    NSString * pathA;
-    NSString * pathB;
-    NSString* firmwareVersionCompare;
-    bool readyToInitiateImageTransfer;
-}
+@implementation OadProfile
 
-#pragma mark Public Methods
--(id)initWithPeripheral:(CBPeripheral*)aPeripheral delegate:(id<OAD_Delegate>)delegate
+#pragma mark - NSObject
+
+- (instancetype)initWithPeripheral:(CBPeripheral*)aPeripheral delegate:(id<OAD_Delegate>)delegate
 {
     self = [super init];
     if (self) {
-        //Init Code
+        self.delegate = delegate;
         peripheral = aPeripheral;
-        _delegate = delegate;
-        readyToInitiateImageTransfer = FALSE;
+        self.oadState = OADStateIdle;
     }
     return self;
 }
--(void)validate
-{
-    // Discover services
-    PTDLog(@"Searching for OAD service: %@", SERVICE_OAD);
-    if(peripheral.state == CBPeripheralStateConnected)
-    {
-        [peripheral discoverServices:[NSArray arrayWithObjects:[CBUUID UUIDWithString:SERVICE_OAD]
-                                      , nil]];
-    }
-}
--(BOOL)isValid:(NSError**)error
-{
-    return (service_oad &&
-            characteristic_oad_notify &&
-            characteristic_oad_block &&
-            characteristic_oad_notify.isNotifying);
-}
 
-#pragma mark Private Functions
--(void)__processCharacteristics
-{
-    if(service_oad){
-        if(service_oad.characteristics){
-            for(CBCharacteristic* characteristic in service_oad.characteristics){
-                if([characteristic.UUID isEqual:[CBUUID UUIDWithString:CHARACTERISTIC_OAD_NOTIFY]]){
-                    characteristic_oad_notify = characteristic;
-                }else if([characteristic.UUID isEqual:[CBUUID UUIDWithString:CHARACTERISTIC_OAD_BLOCK]]){
-                    characteristic_oad_block = characteristic;
-                }
-            }
-        }
-    }
-}
+#pragma mark - PTDOADProfile
 
-#pragma mark main functionality
--(BOOL)checkForNewFirmware:(NSString*)newFirmwareVersion currentFirmware:(NSString*)currentFirmwareVersion error:(NSError**)error
-{
-    if (service_oad) {
-        firmwareVersionCompare = [newFirmwareVersion stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]];
-        
-        //NSString * version = [[NSString alloc] initWithData:characteristic.value encoding:NSASCIIStringEncoding];
-        BOOL newFirmware = NO;
-        
-        //If a firmware check has been initiated
-        if(firmwareVersionCompare)
-        {
-            // Check if firmware is newer
-            if ([currentFirmwareVersion compare:firmwareVersionCompare] == NSOrderedAscending) {
-                // Newer firmware
-                newFirmware = YES;
-            }
-            firmwareVersionCompare = nil;
-            return newFirmware;
-        }
-        
-        *error = [BEAN_Helper basicError:@"Problem comparing FW versions" domain:NSStringFromClass([self class]) code:100];
-        return NO;
-    }
-    else {
-        PTDLog(@"%@: checkForNewFirmware. OAD is not supported on this device", self.class.description);
-        *error = [BEAN_Helper basicError:@"OAD is not supported on this device" domain:NSStringFromClass([self class]) code:100];
-        return NO;
-    }
-}
-
-
--(BOOL)updateFirmwareWithImageAPath:(NSString*)imageApath andImageBPath:(NSString*)imageBpath
+- (BOOL)updateFirmwareWithImageAPath:(NSString*)imageAPath andImageBPath:(NSString*)imageBPath
 {
     if (![peripheral isConnected_Universal]) {
-        NSMutableDictionary *errorDetail = [NSMutableDictionary dictionary];
-        [errorDetail setValue:@"Device is not connected" forKey:NSLocalizedDescriptionKey];
-        NSError* error = [NSError errorWithDomain:@"OAD" code:100 userInfo:errorDetail];
         
         if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadWithError:)]) {
-            [self.delegate device:self completedFirmwareUploadWithError:error];
+            [self.delegate device:self completedFirmwareUploadWithError:[NSError errorWithDomain:ERROR_DOMAIN
+                                                                                            code:ERROR_CODE
+                                                                                        userInfo:@{NSLocalizedDescriptionKey:@"Device is not connected"}]];
         }
-        return FALSE; //Not connected
-    }
-    else if (service_oad) {
-        PTDLog(@"%@: updateFirmware. Updating Firmware...", self.class.description);
-        // Update the firmware
-        
-        pathA = imageApath;
-        pathB = imageBpath;
-        
-        self.canceled = FALSE;
-        self.inProgramming = FALSE;
-  
-        //Sert characteristic to notify
-        [peripheral setNotifyValue:YES forCharacteristic:characteristic_oad_notify];
-        unsigned char byte = 0x00;
-        NSData* data = [NSData dataWithBytes:&byte length:1];
-        [peripheral writeValue:data forCharacteristic:characteristic_oad_notify type:CBCharacteristicWriteWithResponse];
-        self.imageDetectTimer = [NSTimer scheduledTimerWithTimeInterval:1.5f target:self selector:@selector(imageDetectTimerTick:) userInfo:nil repeats:NO];
-        self.imgVersion = 0xFFFF;
-        
-        return TRUE;
-    }
-    else {
-        PTDLog(@"%@: updateFirmware. OAD is not supported ", self.class.description);
-        return FALSE; //Device doesn't support OAD
-    }
-
-}
-
--(void)cancelUpdateFirmware
-{
-    self.canceled = YES;
-    self.inProgramming = NO;
-}
-
-
--(void)firmwareReadyToUpdate
-{
-    if ([self validateImage:pathA]) {
-        // Image A is valid and uploading
-    }
-    else if ([self validateImage:pathB]) {
-        // Image B is valid and uploading
-    }
-    else {
-        // Both images are invalid!
-        
-        NSMutableDictionary *errorDetail = [NSMutableDictionary dictionary];
-        [errorDetail setValue:@"Both OAD images are invalid" forKey:NSLocalizedDescriptionKey];
-        NSError* error = [NSError errorWithDomain:@"OAD" code:100 userInfo:errorDetail];
-        
-        if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadWithError:)]) {
-            [self.delegate device:self completedFirmwareUploadWithError:error];
-        }
-    }
-}
-
-
-// IMPORTANT:
-// This is the time delay between sending packets. If it is dropping packets increase the DELAY value
-#define OAD_PACKET_TX_DELAY 0.13
-
--(void) uploadImage:(NSString *)filename {
-    self.inProgramming = YES;
-    self.canceled = NO;
-    
-    unsigned char imageFileData[self.imageFile.length];
-    [self.imageFile getBytes:imageFileData];
-    uint8_t requestData[OAD_IMG_HDR_SIZE + 2 + 2]; // 12Bytes
-    
-    for(int ii = 0; ii < 20; ii++) {
-        PTDLog(@"%02hhx",imageFileData[ii]);
-    }
-    
-    
-    img_hdr_t imgHeader;
-    memcpy(&imgHeader, &imageFileData[0 + OAD_IMG_HDR_OSET], sizeof(img_hdr_t));
-    
-    
-    requestData[0] = LO_UINT16(imgHeader.ver);
-    requestData[1] = HI_UINT16(imgHeader.ver);
-    
-    requestData[2] = LO_UINT16(imgHeader.len);
-    requestData[3] = HI_UINT16(imgHeader.len);
-    
-    PTDLog(@"Image version = %04hx, len = %04hx",imgHeader.ver,imgHeader.len);
-    
-    memcpy(requestData + 4, &imgHeader.uid, sizeof(imgHeader.uid));
-    
-    requestData[OAD_IMG_HDR_SIZE + 0] = LO_UINT16(12);
-    requestData[OAD_IMG_HDR_SIZE + 1] = HI_UINT16(12);
-    
-    requestData[OAD_IMG_HDR_SIZE + 2] = LO_UINT16(15);
-    requestData[OAD_IMG_HDR_SIZE + 1] = HI_UINT16(15);
-    
-    [peripheral writeValue:[NSData dataWithBytes:requestData length:(OAD_IMG_HDR_SIZE + 2 + 2)] forCharacteristic:characteristic_oad_notify type:CBCharacteristicWriteWithResponse];
-    
-    self.nBlocks = imgHeader.len / (OAD_BLOCK_SIZE / HAL_FLASH_WORD_SIZE);
-    self.nBytes = imgHeader.len * HAL_FLASH_WORD_SIZE;
-    self.iBlocks = 0;
-    self.iBytes = 0;
-    
-    
-    NSTimer* timer = [NSTimer timerWithTimeInterval:0.1 target:self selector:@selector(programmingTimerTick:) userInfo:nil repeats:NO];
-    [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
-}
-
--(void) programmingTimerTick:(NSTimer *)timer {
-    if (self.canceled) {
-        self.canceled = FALSE;
-        return;
-    }
-    
-    if(!peripheral.isConnected_Universal){
-        if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadWithError:)]) {
-            NSError* error = [BEAN_Helper basicError:@"Peripheral has disconnected during OAD" domain:@"BEAN API:OAD Profile" code:100];
-            [self.delegate device:self completedFirmwareUploadWithError:error];
-        }
-        return;
-    }
-    
-    unsigned char imageFileData[self.imageFile.length];
-    [self.imageFile getBytes:imageFileData];
-    
-    //Prepare Block
-    uint8_t requestData[2 + OAD_BLOCK_SIZE];
-    
-    // This block is run 4 times, this is needed to get CoreBluetooth to send consequetive packets in the same connection interval.
-    for (int ii = 0; ii < 4; ii++) {
-        
-        requestData[0] = LO_UINT16(self.iBlocks);
-        requestData[1] = HI_UINT16(self.iBlocks);
-        
-        memcpy(&requestData[2] , &imageFileData[self.iBytes], OAD_BLOCK_SIZE);
-        
-        [peripheral writeValue:[NSData dataWithBytes:requestData length:(2 + OAD_BLOCK_SIZE)] forCharacteristic:characteristic_oad_block type:CBCharacteristicWriteWithoutResponse];
-        
-        self.iBlocks++;
-        self.iBytes += OAD_BLOCK_SIZE;
-        
-        if(self.iBlocks == self.nBlocks) {
-            self.inProgramming = NO;
-            if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadWithError:)]) {
-                [self.delegate device:self completedFirmwareUploadWithError:nil];
-            }
-            return;
-        }
-        else {
-            if (ii == 3){
-                NSTimer* timer = [NSTimer timerWithTimeInterval:OAD_PACKET_TX_DELAY target:self selector:@selector(programmingTimerTick:) userInfo:nil repeats:NO];
-                [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
-            }
-        }
-    }
-    
-    // Tell delegate how long it will take to complete
-    float secondsPerBlock = OAD_PACKET_TX_DELAY / 4;
-    float secondsLeft = (float)(self.nBlocks - self.iBlocks) * secondsPerBlock;
-    float percentageLeft = (float)((float)self.iBlocks / (float)self.nBlocks);
-    NSNumber * seconds = [NSNumber numberWithFloat:secondsLeft];
-    NSNumber * percentage = [NSNumber numberWithFloat:percentageLeft];
-    if ([self.delegate respondsToSelector:@selector(device:OADUploadTimeLeft:withPercentage:)]) {
-        [self.delegate device:self OADUploadTimeLeft:seconds withPercentage:percentage];
-    }
-    
-    PTDLog(@".");
-}
-
-
-/*
--(void)deviceDisconnected:(CBPeripheral *)aPeripheral {
-    if ([peripheral isEqual:self.d.p] && self.inProgramming) {
-        // Cancel firmware upload
-        self.canceled = YES;
-        self.inProgramming = NO;
-    }
-}
- */
-
-
--(BOOL)validateImage:(NSString *)filename {
-    self.imageFile = [NSData dataWithContentsOfFile:filename];
-    PTDLog(@"Loaded firmware \"%@\"of size : %lu",filename,(unsigned long)self.imageFile.length);
-    if ([self isCorrectImage]) {
-        [self uploadImage:filename];
-        return YES;
-    }
-    else {
-        // Invalid image
         return NO;
     }
+    
+    if (self.oadState != OADStateIdle) {
+        if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadWithError:)]) {
+            [self.delegate device:self completedFirmwareUploadWithError:[NSError errorWithDomain:ERROR_DOMAIN
+                                                                                            code:ERROR_CODE
+                                                                                        userInfo:@{NSLocalizedDescriptionKey:@"Download already started"}]];
+        }
+        return NO;
+    }
+    
+    self.imageAPath = imageAPath;
+    self.imageBPath = imageBPath;
+    
+    self.nextPacket = 0;
+    self.watchdogSet = NO;
+    self.watchdogTimer = [NSTimer scheduledTimerWithTimeInterval:WATCHDOG_TIMER_INTERVAL
+                                                          target:self
+                                                        selector:@selector(watchdogTimerFired:)
+                                                        userInfo:nil
+                                                         repeats:YES];
+    
+    if (self.characteristicOADBlock.isNotifying && self.characteristicOADIdentify) {
+        [self requestCurrentHeader];
+    } else {
+        [self enableNotify];
+    }
+    
+    return YES;
 }
 
--(BOOL) isCorrectImage {
-    unsigned char imageFileData[self.imageFile.length];
-    [self.imageFile getBytes:imageFileData];
+- (void)cancelUpdateFirmware
+{
+    if (self.oadState != OADStateIdle) {
+        self.oadState = OADStateIdle;
+        [self.watchdogTimer invalidate];
+        self.watchdogTimer = nil;
+        self.downloadStartDate = nil;
+        self.imageData = nil;
+        [peripheral setNotifyValue:NO forCharacteristic:self.characteristicOADBlock];
+        [peripheral setNotifyValue:NO forCharacteristic:self.characteristicOADIdentify];
+    }
+}
+
+#pragma mark - BleProfile
+
+- (void)validate
+{
+    // Discover services
+    if(peripheral.state == CBPeripheralStateConnected)
+    {
+        [peripheral discoverServices:@[[CBUUID UUIDWithString:SERVICE_OAD]]];
+    }
+}
+
+- (BOOL)isValid:(NSError**)error
+{
+    return (self.characteristicOADIdentify &&
+            self.characteristicOADBlock);
+}
+
+#pragma mark - CBPeripheralDelegate
+
+- (void)peripheral:(CBPeripheral *)aPeripheral didDiscoverServices:(NSError *)error
+{
+    if (!error && !self.serviceOAD && peripheral.services) {
+        CBUUID *oadServiceUUID = [CBUUID UUIDWithString:SERVICE_OAD];
+        for (CBService *service in peripheral.services) {
+            if ([service.UUID isEqual:oadServiceUUID]) {
+                self.serviceOAD = service;
+                
+                if (![self processCharacteristics]) {
+                    [peripheral discoverCharacteristics:@[[CBUUID UUIDWithString:CHARACTERISTIC_OAD_IDENTIFY],
+                                                          [CBUUID UUIDWithString:CHARACTERISTIC_OAD_BLOCK]]
+                                             forService:service];
+                }
+                break;
+            }
+        }
+    }
+}
+
+- (void)peripheral:(CBPeripheral *)peripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error
+{
+    if (!error) {
+        if ([service isEqual:self.serviceOAD]) {
+            if (![self processCharacteristics]) {
+                PTDLog(@"Did not find all OAD characteristics\n");
+            }
+        }
+    } else {
+        PTDLog(@"Error discovering characteristics: %@", [error localizedDescription]);
+    }
+}
+
+- (void)peripheral:(CBPeripheral *)peripheral didUpdateNotificationStateForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
+{
+    if (!error) {
+        if (self.oadState == OADStateEnableNotify) {
+            if (self.characteristicOADBlock.isNotifying && self.characteristicOADIdentify.isNotifying) {
+                [self requestCurrentHeader];
+            }
+        }
+    }
+}
+
+- (void)peripheral:(CBPeripheral *)aPeripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
+{
+    if ([characteristic isEqual:self.characteristicOADBlock]) {
+        UInt16 requestedPacket = CFSwapInt16LittleToHost(*((UInt16 *)characteristic.value.bytes));
+        switch (self.oadState) {
+            case OADStateSentNewHeader:
+                PTDLog(@"Device accepts transfer\n");
+                self.oadState = OADStateSendingPackets;
+                [self sendPackets];
+                break;
+                
+            case OADStateSendingPackets:
+                if (requestedPacket == self.nextPacket) {
+                    PTDLog(@"Device requested block %6d\n", self.nextPacket);
+                    [self sendPackets];
+                }
+                break;
+                
+            case OADStateWaitForCompletion:
+                if (requestedPacket == (self.nextPacket - 1)) {
+                    // Device does not notify when complete. Requested last packet, assume complete.
+                    PTDLog(@"Update completed in %f seconds", -[self.downloadStartDate timeIntervalSinceNow]);
+                    [self completeWithError:nil];
+                    return;
+                }
+                break;
+                
+            default:
+                PTDLog(@"Unexpected value update for Block characteristic in state %lu\n", self.oadState);
+                break;
+        }
+    } else if ([characteristic isEqual:self.characteristicOADIdentify]) {
+        switch (self.oadState) {
+                
+            case OADStateRequestCurrentHeader:
+                [self beginOADForHeaderData:characteristic.value];
+                break;
+                
+            case OADStateSentNewHeader:
+                [self completeWithError:[NSError errorWithDomain:ERROR_DOMAIN
+                                                            code:ERROR_CODE
+                                                        userInfo:@{NSLocalizedDescriptionKey:@"Device rejected firmware version."}]];
+                
+                PTDLog(@"Device rejected firmware version\n");
+                break;
+                
+            default:
+                PTDLog(@"Unexpected value update for Identity characteristic in state %lu\n", self.oadState);
+                break;
+        }
+    }
+}
+
+#pragma mark - Internal
+
+- (void)setOadState:(OADState)oadState
+{
+    _watchdogSet = NO;
+    _oadState = oadState;
+}
+
+- (void)setNextPacket:(UInt16)nextPacket
+{
+    _watchdogSet = NO;
+    _nextPacket = nextPacket;
+}
+
+- (BOOL)processCharacteristics
+{
+    if (self.serviceOAD.characteristics) {
+        CBUUID *oadIdentityUUID = [CBUUID UUIDWithString:CHARACTERISTIC_OAD_IDENTIFY];
+        CBUUID *oadBlockUUID =  [CBUUID UUIDWithString:CHARACTERISTIC_OAD_BLOCK];
+        for (CBCharacteristic *characteristic in self.serviceOAD.characteristics) {
+            if (!self.characteristicOADIdentify && [characteristic.UUID isEqual:oadIdentityUUID]) {
+                self.characteristicOADIdentify = characteristic;
+            }
+            if (!self.characteristicOADBlock && [characteristic.UUID isEqual:oadBlockUUID]) {
+                self.characteristicOADBlock = characteristic;
+            }
+        }
+    }
     
-    img_hdr_t imgHeader;
-    memcpy(&imgHeader, &imageFileData[0 + OAD_IMG_HDR_OSET], sizeof(img_hdr_t));
+    BOOL valid = self.characteristicOADBlock && self.characteristicOADIdentify;
+    if (valid) {
+        [self __notifyValidity];
+    }
     
-    if ((imgHeader.ver & 0x01) != (self.imgVersion & 0x01)) return YES;
+    return valid;
+}
+
+- (void)sendPackets
+{
+    if (self.oadState != OADStateSendingPackets) {
+        return;
+    }
+    
+    UInt16 nextPacket = self.nextPacket;
+    UInt16 totalPackets = self.imageData.length / sizeof(data_block_t);
+    
+    if (self.nextPacket) {
+        NSNumber *percentage = [NSNumber numberWithFloat:(nextPacket * 1.0) / totalPackets];
+        float secondsSoFar = -[self.downloadStartDate timeIntervalSinceNow];
+        NSNumber *seconds = [NSNumber numberWithFloat:(secondsSoFar / nextPacket) * (totalPackets - nextPacket)];
+        [self.delegate device:self OADUploadTimeLeft:seconds withPercentage:percentage];
+    } else {
+        self.downloadStartDate = [NSDate date];
+    }
+    
+    data_block_t    *imageBlocks = (data_block_t *)self.imageData.bytes;
+    
+    for (int i = 0; i < 4 && nextPacket < totalPackets; i++, nextPacket++) {
+        NSMutableData *data = [NSMutableData dataWithLength:sizeof(oad_packet_t)];
+        oad_packet_t *packet = (oad_packet_t *)data.bytes;
+        packet->nbr = CFSwapInt16HostToLittle(nextPacket);
+        memcpy(&packet->block, &(imageBlocks[nextPacket]), sizeof(data_block_t));
+        [peripheral writeValue:data forCharacteristic:self.characteristicOADBlock type:CBCharacteristicWriteWithoutResponse];
+    }
+    
+    if (nextPacket == totalPackets) {
+        self.oadState = OADStateWaitForCompletion;
+    }
+    
+    self.nextPacket = nextPacket;
+}
+
+- (void)requestCurrentHeader
+{
+    self.oadState = OADStateRequestCurrentHeader;
+    
+    [peripheral writeValue:[NSMutableData dataWithLength:sizeof(UInt8)] forCharacteristic:self.characteristicOADIdentify type:CBCharacteristicWriteWithoutResponse];
+}
+
+- (void)enableNotify
+{
+    self.oadState = OADStateEnableNotify;
+    
+    if (!self.characteristicOADBlock.isNotifying) {
+        [peripheral setNotifyValue:YES forCharacteristic:self.characteristicOADBlock];
+    }
+    if (!self.characteristicOADIdentify.isNotifying) {
+        [peripheral setNotifyValue:YES forCharacteristic:self.characteristicOADIdentify];
+    }
+}
+
+- (void)beginOADForHeaderData:(NSData *)headerData
+{
+    UInt16 version = CFSwapInt16LittleToHost(*((UInt16 *)headerData.bytes));
+    if ([self loadImageForVersion:version]) {
+        img_hdr_t *imageHeader = (img_hdr_t *)self.imageData.bytes;
+        NSMutableData *data = [NSMutableData dataWithLength:sizeof(request_oad_t)];
+        request_oad_t   *request = (request_oad_t *)data.bytes;
+        request->ver = imageHeader->ver;
+        request->len = imageHeader->len;
+        memcpy(&request->uid, &imageHeader->uid, sizeof(request->uid));
+        UInt16  reserved[] = {CFSwapInt16HostToLittle(12), CFSwapInt16HostToLittle(15)};
+        memcpy(&request->res, reserved, sizeof(request->res));
+        
+        self.oadState = OADStateSentNewHeader;
+        
+        [peripheral writeValue:data
+             forCharacteristic:self.characteristicOADIdentify
+                          type:CBCharacteristicWriteWithoutResponse];
+    } else {
+        [self completeWithError:[NSError errorWithDomain:ERROR_DOMAIN
+                                                    code:ERROR_CODE
+                                                userInfo:@{NSLocalizedDescriptionKey:@"Unable to find accepted firmware version"}]];
+    }
+}
+
+- (BOOL)loadImageForVersion:(UInt16)version
+{
+    for (NSString *filename in @[self.imageAPath, self.imageBPath]) {
+        NSData *data = [NSData dataWithContentsOfFile:filename];
+        img_hdr_t *imageHeader = (img_hdr_t *)data.bytes;
+        UInt16 imageVersion = CFSwapInt16LittleToHost(imageHeader->ver);
+        if ((version & 0x01) != (imageVersion & 0x01)) {
+            self.imageData = data;
+            return YES;
+        }
+    }
+    self.imageData = nil;
     return NO;
 }
 
--(void) imageDetectTimerTick:(NSTimer *)timer {
-    //IF we have come here, the image userID is B.
-    PTDLog(@"imageDetectTimerTick:");
+- (void)completeWithError:(NSError *)error
+{
+    self.oadState = OADStateIdle;
+    self.downloadStartDate = nil;
+    self.imageData = nil;
+    [self.watchdogTimer invalidate];
+    self.watchdogTimer = nil;
+    if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadWithError:)]) {
+        [self.delegate device:self completedFirmwareUploadWithError:error];
+    }
+}
 
-    unsigned char data = 0x01;
+- (void)watchdogTimerFired:(NSTimer *)timer
+{
+    if (self.oadState == OADStateIdle) {
+        // watchdog should never be running in idle.
+        [timer invalidate];
+        self.watchdogTimer = nil;
+    }
     
-    readyToInitiateImageTransfer = TRUE;
-    [peripheral writeValue:[NSData dataWithBytes:&data length:1] forCharacteristic:characteristic_oad_notify type:CBCharacteristicWriteWithResponse];
-}
-
-
-#pragma mark CBPeripheralDelegate callbacks
-////////////////  CBPeripheralDeligate Callbacks ////////////////////////////
--(void)peripheral:(CBPeripheral *)aPeripheral didDiscoverServices:(NSError *)error
-{
-    if (!error) {
-        if(!(service_oad))
-        {
-            if(peripheral.services)
-            {
-                for (CBService * service in peripheral.services) {
-                    if ([service.UUID isEqual:[CBUUID UUIDWithString:SERVICE_OAD]]) {
-                        PTDLog(@"%@: OAD service  found", self.class.description);
-                        
-                        // Save oad service
-                        service_oad = service;
-                        
-                        //Check if characterisics are already found.
-                        [self __processCharacteristics];
-                        
-                        //If all characteristics are found
-                        if(characteristic_oad_notify &&
-                           characteristic_oad_block)
-                        {
-                            PTDLog(@"%@: OAD Characteristics of peripheral found", self.class.description);
-                            if(characteristic_oad_notify.isNotifying){
-                                [self __notifyValidity];
-                            }else{
-                                //Set characteristic to notify
-                                [peripheral setNotifyValue:YES forCharacteristic:characteristic_oad_notify];
-                                //Wait until the notification characteristic is registered successfully as "notify" and then alert delegate that device is valid
-                            }
-                        }else{
-                            // Find characteristics of service
-                            NSArray * characteristics = [NSArray arrayWithObjects:
-                                                         [CBUUID UUIDWithString:CHARACTERISTIC_OAD_NOTIFY],
-                                                         [CBUUID UUIDWithString:CHARACTERISTIC_OAD_BLOCK],
-                                                         nil];
-                            [peripheral discoverCharacteristics:characteristics forService:service];
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
--(void)peripheral:(CBPeripheral *)aPeripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error
-{
-    if (!error) {
-        if ([service isEqual:service_oad]) {
-            [self __processCharacteristics];
-            
-            NSError* verificationerror;
-            if ((
-                 characteristic_oad_notify &&
-                 characteristic_oad_block
-                 ))
-            {
-                PTDLog(@"%@: Found all OAD characteristics", self.class.description);
-                
-                if(characteristic_oad_notify.isNotifying){
-                    [self __notifyValidity];
-                }else{
-                    //Set characteristic to notify
-                    [peripheral setNotifyValue:YES forCharacteristic:characteristic_oad_notify];
-                    //Wait until the notification characteristic is registered successfully as "notify" and then alert delegate that device is valid
-                }
-            }else {
-                // Could not find all characteristics!
-                PTDLog(@"%@: Could not find all OAD characteristics!", self.class.description);
-                
-                NSMutableDictionary *errorDetail = [NSMutableDictionary dictionary];
-                [errorDetail setValue:@"Could not find all OAD characteristics" forKey:NSLocalizedDescriptionKey];
-                verificationerror = [NSError errorWithDomain:@"Bluetooth" code:100 userInfo:errorDetail];
-            }
-            //Alert Delegate
-        }
-    }else {
-        PTDLog(@"%@: Characteristics discovery was unsuccessful", self.class.description);
-        //Alert Delegate
-    }
-}
-
--(void)peripheral:(CBPeripheral *)aPeripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
-{
-    if (!error) {
-        if ([characteristic isEqual:characteristic_oad_notify]) {
-            if (self.imgVersion == 0xFFFF) {
-                unsigned char data[characteristic.value.length];
-                [characteristic.value getBytes:&data];
-                self.imgVersion = ((uint16_t)data[1] << 8 & 0xff00) | ((uint16_t)data[0] & 0xff);
-                PTDLog(@"self.imgVersion : %04hx",self.imgVersion);
-            }
-            PTDLog(@"OAD Image notify : %@",characteristic.value);
-        }
-    }
-
-}
-
--(void)peripheral:(CBPeripheral *)aPeripheral didWriteValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
-{
-    //Is the notify oad characteristic
-    if([characteristic isEqual:characteristic_oad_notify])
-    {
-        if (error) {
-            // Dropping writeWithoutReponse packets. Stop the firmware upload and notify the delegate
-            self.canceled = YES;
-            
-            if (self.inProgramming) {
-                NSMutableDictionary *errorDetail = [NSMutableDictionary dictionary];
-                [errorDetail setValue:@"Dropping writeWithoutReponse packets" forKey:NSLocalizedDescriptionKey];
-                NSError* error = [NSError errorWithDomain:@"OAD" code:100 userInfo:errorDetail];
-                
-                if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadWithError:)]) {
-                    [self.delegate device:self completedFirmwareUploadWithError:error];
-                }
-            }
-            self.inProgramming = NO;
-        }else{
-            PTDLog(@"wrote characteristic length:%lu data:%@",(unsigned long)characteristic.value.length, characteristic.value);
-            if(readyToInitiateImageTransfer ==TRUE)
-            {
-                readyToInitiateImageTransfer = FALSE;
-                // Ready to send firmware packets
-                [self firmwareReadyToUpdate];
-            }
-            /*
-            if (characteristic.value.length == 1) {
-                Byte number;
-                [characteristic.value getBytes:&number length:1];
-                if (number == 0x01) {
-                    // Ready to send firmware packets
-                    [self firmwareReadyToUpdate];
-                }
-            }
-             */
-            PTDLog(@"didWriteValueForProfile : %@",characteristic);
-        }
-    }
-}
-
-- (void)peripheral:(CBPeripheral *)aPeripheral didUpdateNotificationStateForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
-{
-    if(!error)
-    {
-        if([characteristic isEqual:characteristic_oad_notify])
-        {
-            PTDLog(@"%@: OAD Characteristic set to \"Notify\"", self.class.description);
-            //Alert Delegate that device is connected. At this point, the device should be added to the list of connected devices
-           
-            [self __notifyValidity];
-        }
-    }else{
+    if (self.watchdogSet) {
+        OADState currentState = self.oadState;
         
+        [self cancelUpdateFirmware];
+        
+        NSString *message;
+        switch (currentState) {
+            case OADStateEnableNotify:
+                message = @"Timeout configuring OAD characteristics.";
+                break;
+                
+            case OADStateRequestCurrentHeader:
+                message = @"Timeout requesting current firmware version.";
+                break;
+                
+            case OADStateSentNewHeader:
+                message = @"Timeout starting download.";
+                break;
+                
+            case OADStateSendingPackets:
+            case OADStateWaitForCompletion:
+                message = @"Timeout sending firmware.";
+                break;
+                
+            default:
+                message = @"Unexpected watchdog timeout.";
+                break;
+        }
+        
+        [self completeWithError:[NSError errorWithDomain:ERROR_DOMAIN
+                                                    code:ERROR_CODE
+                                                userInfo:@{NSLocalizedDescriptionKey:message}]];
+    } else {
+        self.watchdogSet = YES;
     }
 }
-
 
 @end
