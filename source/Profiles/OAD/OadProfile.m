@@ -14,7 +14,6 @@
 
 // TODO:
 // Stay 2 packets ahead?
-// Smooth time remaining at beginning of download?
 
 #define SERVICE_OAD                     @"0xF000FFC0-0451-4000-B000-000000000000"
 #define CHARACTERISTIC_OAD_IDENTIFY     @"0xF000FFC1-0451-4000-B000-000000000000"
@@ -48,7 +47,13 @@ typedef struct {
     UInt16  len;
     UInt8   uid[4];
     UInt8   res[4];
-} request_oad_t;
+} request_oad_header_t;
+
+typedef struct {
+    UInt16  ver;
+    UInt16  len;
+    UInt8   uid[4];
+} response_oad_header_t;
 
 typedef UInt8 data_block_t[16];
 
@@ -74,6 +79,7 @@ typedef struct {
 @property (strong, nonatomic)   NSTimer             *watchdogTimer;
 @property (nonatomic)           BOOL                watchdogSet;
 @property (strong, nonatomic)   NSDate              *downloadStartDate;
+@property (nonatomic)           float               leastSeconds;
 
 @end
 
@@ -126,11 +132,9 @@ typedef struct {
                                                         userInfo:nil
                                                          repeats:YES];
     
-    if (self.characteristicOADBlock.isNotifying && self.characteristicOADIdentify) {
-        [self requestCurrentHeader];
-    } else {
-        [self enableNotify];
-    }
+    self.leastSeconds = FLT_MAX;
+    
+    [self enableNotify];
     
     return YES;
 }
@@ -312,7 +316,8 @@ typedef struct {
     if (self.nextPacket) {
         NSNumber *percentage = [NSNumber numberWithFloat:(nextPacket * 1.0) / totalPackets];
         float secondsSoFar = -[self.downloadStartDate timeIntervalSinceNow];
-        NSNumber *seconds = [NSNumber numberWithFloat:(secondsSoFar / nextPacket) * (totalPackets - nextPacket)];
+        self.leastSeconds = MIN(self.leastSeconds, (secondsSoFar / nextPacket) * (totalPackets - nextPacket));
+        NSNumber *seconds = [NSNumber numberWithFloat:self.leastSeconds];
         [self.delegate device:self OADUploadTimeLeft:seconds withPercentage:percentage];
     } else {
         self.downloadStartDate = [NSDate date];
@@ -332,6 +337,13 @@ typedef struct {
         self.oadState = OADStateWaitForCompletion;
     }
     
+    if (self.nextPacket == (totalPackets - 1)) {
+        // Corner case when only a single packet was left to send.
+        // Request was for last packet, notify completion here. No additional requests will be made.
+        PTDLog(@"Update completed in %f seconds", -[self.downloadStartDate timeIntervalSinceNow]);
+        [self completeWithError:nil];
+    }
+    
     self.nextPacket = nextPacket;
 }
 
@@ -346,21 +358,27 @@ typedef struct {
 {
     self.oadState = OADStateEnableNotify;
     
-    if (!self.characteristicOADBlock.isNotifying) {
-        [peripheral setNotifyValue:YES forCharacteristic:self.characteristicOADBlock];
-    }
-    if (!self.characteristicOADIdentify.isNotifying) {
-        [peripheral setNotifyValue:YES forCharacteristic:self.characteristicOADIdentify];
+    if (self.characteristicOADBlock.isNotifying && self.characteristicOADIdentify.isNotifying) {
+        // Already enabled
+        [self requestCurrentHeader];
+    } else {
+        if (!self.characteristicOADBlock.isNotifying) {
+            [peripheral setNotifyValue:YES forCharacteristic:self.characteristicOADBlock];
+        }
+        if (!self.characteristicOADIdentify.isNotifying) {
+            [peripheral setNotifyValue:YES forCharacteristic:self.characteristicOADIdentify];
+        }
     }
 }
 
 - (void)beginOADForHeaderData:(NSData *)headerData
 {
-    UInt16 version = CFSwapInt16LittleToHost(*((UInt16 *)headerData.bytes));
+    response_oad_header_t *response = (response_oad_header_t *)headerData.bytes;
+    UInt16 version = CFSwapInt16LittleToHost(response->ver);
     if ([self loadImageForVersion:version]) {
         img_hdr_t *imageHeader = (img_hdr_t *)self.imageData.bytes;
-        NSMutableData *data = [NSMutableData dataWithLength:sizeof(request_oad_t)];
-        request_oad_t   *request = (request_oad_t *)data.bytes;
+        NSMutableData *data = [NSMutableData dataWithLength:sizeof(request_oad_header_t)];
+        request_oad_header_t   *request = (request_oad_header_t *)data.bytes;
         request->ver = imageHeader->ver;
         request->len = imageHeader->len;
         memcpy(&request->uid, &imageHeader->uid, sizeof(request->uid));
