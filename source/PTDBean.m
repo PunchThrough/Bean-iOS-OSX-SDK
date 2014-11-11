@@ -85,11 +85,15 @@ typedef enum { //These occur in sequence
     return [_advertisementData objectForKey:CBAdvertisementDataLocalNameKey]?[_advertisementData objectForKey:CBAdvertisementDataLocalNameKey]:@"Unknown";//Local Name
 }
 -(NSNumber*)RSSI{
+    NSNumber* returnedRSSI;
     if(_peripheral.state == CBPeripheralStateConnected
     && [_peripheral RSSI]){
-        return [_peripheral RSSI];
+        returnedRSSI = [_peripheral RSSI];
+    }else{
+        returnedRSSI = _RSSI;
     }
-    return _RSSI;
+    // If RSSI == 127, that means it's unavailable. Return nil in this case
+    return (returnedRSSI.integerValue!=127)?returnedRSSI:nil;
 }
 -(NSNumber*)batteryVoltage{
     if(_peripheral.state == CBPeripheralStateConnected
