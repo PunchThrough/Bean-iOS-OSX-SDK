@@ -14,7 +14,6 @@
 
 // TODO:
 // Stay 2 packets ahead?
-// Smooth time remaining at beginning of download?
 
 #define SERVICE_OAD                     @"0xF000FFC0-0451-4000-B000-000000000000"
 #define CHARACTERISTIC_OAD_IDENTIFY     @"0xF000FFC1-0451-4000-B000-000000000000"
@@ -80,6 +79,7 @@ typedef struct {
 @property (strong, nonatomic)   NSTimer             *watchdogTimer;
 @property (nonatomic)           BOOL                watchdogSet;
 @property (strong, nonatomic)   NSDate              *downloadStartDate;
+@property (nonatomic)           float               leastSeconds;
 
 @end
 
@@ -131,6 +131,8 @@ typedef struct {
                                                         selector:@selector(watchdogTimerFired:)
                                                         userInfo:nil
                                                          repeats:YES];
+    
+    self.leastSeconds = FLT_MAX;
     
     [self enableNotify];
     
@@ -314,7 +316,8 @@ typedef struct {
     if (self.nextPacket) {
         NSNumber *percentage = [NSNumber numberWithFloat:(nextPacket * 1.0) / totalPackets];
         float secondsSoFar = -[self.downloadStartDate timeIntervalSinceNow];
-        NSNumber *seconds = [NSNumber numberWithFloat:(secondsSoFar / nextPacket) * (totalPackets - nextPacket)];
+        self.leastSeconds = MIN(self.leastSeconds, (secondsSoFar / nextPacket) * (totalPackets - nextPacket));
+        NSNumber *seconds = [NSNumber numberWithFloat:self.leastSeconds];
         [self.delegate device:self OADUploadTimeLeft:seconds withPercentage:percentage];
     } else {
         self.downloadStartDate = [NSDate date];
