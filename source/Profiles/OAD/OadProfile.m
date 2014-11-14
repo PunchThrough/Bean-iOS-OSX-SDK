@@ -242,7 +242,7 @@ typedef struct {
                 break;
                 
             default:
-                PTDLog(@"Unexpected value update for Block characteristic in state %lu\n", self.oadState);
+                PTDLog(@"Unexpected value update for Block characteristic in state %tu\n", self.oadState);
                 break;
         }
     } else if ([characteristic isEqual:self.characteristicOADIdentify]) {
@@ -261,7 +261,7 @@ typedef struct {
                 break;
                 
             default:
-                PTDLog(@"Unexpected value update for Identity characteristic in state %lu\n", self.oadState);
+                PTDLog(@"Unexpected value update for Identity characteristic in state %tu\n", self.oadState);
                 break;
         }
     }
