@@ -123,21 +123,21 @@ typedef struct {
  */
 typedef NS_ENUM(NSUInteger, PTDTxPower_dB) {
     /**
-     *  4db. Do this to maximize your tranmission strength.
+     *  -23db. Use this to maximize power savings.
      */
-    PTDTxPower_4dB = 0,
-    /**
-     *  0db. This is the default value.
-     */
-    PTDTxPower_0dB,
+    PTDTxPower_neg23dB = 0,
     /**
      *  -6db
      */
     PTDTxPower_neg6dB,
     /**
-     *  -23db. Use this to maximize power savings.
+     *  0db.
      */
-    PTDTxPower_neg23dB
+    PTDTxPower_0dB,
+    /**
+     *  4db. This is the default value and maximum transmission strength.
+     */
+    PTDTxPower_4dB
 };
 /**
  *  Advertising modes availabe to the Bean
