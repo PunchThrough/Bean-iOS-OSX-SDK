@@ -24,7 +24,7 @@ pod 'Bean-iOS-OSX-SDK'
 Take a look at our "template" prjects as a starting point for using the Bean SDK: https://bitbucket.org/punchthroughdesign/bean-xcode-project-template
 
 # Repo Setup
-
+Not a fan of cocoapods? Here's how you use Git to get setup with the SDK repo:
 ### Clone
 		git clone REPO_URL --recursive
 
