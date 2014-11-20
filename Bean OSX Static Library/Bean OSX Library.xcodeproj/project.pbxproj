@@ -50,6 +50,9 @@
 		52D34EBD18A9B890002F0C59 /* GattSerialTransport.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34EA218A9B890002F0C59 /* GattSerialTransport.m */; };
 		52D34EBF18A9B890002F0C59 /* GattTransport.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34EA418A9B890002F0C59 /* GattTransport.m */; };
 		52D34EC218A9B890002F0C59 /* OadProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34EA818A9B890002F0C59 /* OadProfile.m */; };
+		52D67F521A1E938300C434BE /* PTDBeanFirmwareVersionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 52D67F511A1E938300C434BE /* PTDBeanFirmwareVersionManager.h */; };
+		52D67F541A1E938F00C434BE /* PTDBeanFirmwareVersionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D67F531A1E938F00C434BE /* PTDBeanFirmwareVersionManager.m */; };
+		52D67F551A1E938F00C434BE /* PTDBeanFirmwareVersionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D67F531A1E938F00C434BE /* PTDBeanFirmwareVersionManager.m */; };
 		52DE25C118AAC53900E69929 /* IOBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52DE25C018AAC53900E69929 /* IOBluetooth.framework */; };
 		96506ECA1937E82A00D02440 /* BatteryProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 52BF98A019352E59008DCA31 /* BatteryProfile.m */; };
 		969B8975190896BC00AA093C /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 969B8974190896BC00AA093C /* CoreBluetooth.framework */; };
@@ -147,6 +150,8 @@
 		52D34EA718A9B890002F0C59 /* OadProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OadProfile.h; sourceTree = "<group>"; };
 		52D34EA818A9B890002F0C59 /* OadProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OadProfile.m; sourceTree = "<group>"; };
 		52D34EAA18A9B890002F0C59 /* ProfileDelegate_Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileDelegate_Protocol.h; sourceTree = "<group>"; };
+		52D67F511A1E938300C434BE /* PTDBeanFirmwareVersionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PTDBeanFirmwareVersionManager.h; path = ../Helper/PTDBeanFirmwareVersionManager.h; sourceTree = "<group>"; };
+		52D67F531A1E938F00C434BE /* PTDBeanFirmwareVersionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PTDBeanFirmwareVersionManager.m; path = ../../source/Helper/PTDBeanFirmwareVersionManager.m; sourceTree = "<group>"; };
 		52DE25C018AAC53900E69929 /* IOBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOBluetooth.framework; path = System/Library/Frameworks/IOBluetooth.framework; sourceTree = SDKROOT; };
 		52E98537191857E600E73CED /* AppMessageTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppMessageTypes.h; path = "../../App Message Definitions/AppMessageTypes.h"; sourceTree = "<group>"; };
 		969B89481908951F00AA093C /* libBean iOS Library.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libBean iOS Library.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -302,6 +307,7 @@
 				969FDE94191A9DE80068B99A /* PTDBean.m */,
 				969FDE95191A9DE80068B99A /* PTDBeanManager.m */,
 				969FDE96191A9DE80068B99A /* PTDBeanRadioConfig.m */,
+				52D67F531A1E938F00C434BE /* PTDBeanFirmwareVersionManager.m */,
 				52D34E8A18A9B890002F0C59 /* BEAN_Globals.h */,
 				52CD166E18CE8C1B00636119 /* PTDBeanManager+Protected.h */,
 				52CD166D18CE7B8D00636119 /* PTDBean+Protected.h */,
@@ -437,6 +443,7 @@
 				96E63F4A1919912F00A58608 /* PTDBeanManager.h */,
 				96E63F4C1919912F00A58608 /* PTDBeanRadioConfig.h */,
 				2FB1B35D1975E29600903F59 /* PTDBleDevice.h */,
+				52D67F511A1E938300C434BE /* PTDBeanFirmwareVersionManager.h */,
 			);
 			name = Public;
 			path = ../../source/Public;
@@ -452,6 +459,7 @@
 				524E2B8D195A0C10007FE17D /* PTDBleDevice.h in Headers */,
 				2FB1B35E1975E29600903F59 /* PTDBleDevice.h in Headers */,
 				52BF98A119352E59008DCA31 /* BatteryProfile.h in Headers */,
+				52D67F521A1E938300C434BE /* PTDBeanFirmwareVersionManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -580,6 +588,7 @@
 				969FDE97191A9DE80068B99A /* PTDBean.m in Sources */,
 				52BC523718D96A610083A031 /* AppMessagingLayer.m in Sources */,
 				52D34EB518A9B890002F0C59 /* GattSerialProfile.m in Sources */,
+				52D67F541A1E938F00C434BE /* PTDBeanFirmwareVersionManager.m in Sources */,
 				521A4EA319116C0F005B3097 /* CBPeripheral+isConnected_Universal.m in Sources */,
 				520C8ED7191BF0EC0086C530 /* BleProfile.m in Sources */,
 				52D34EB718A9B890002F0C59 /* GattPacket.m in Sources */,
@@ -614,6 +623,7 @@
 				969FDE9C191A9E200068B99A /* PTDBeanRadioConfig.m in Sources */,
 				969B897F1908971000AA093C /* AppMessagingLayer.m in Sources */,
 				969B89811908971000AA093C /* CBPeripheral+UniqueId.m in Sources */,
+				52D67F551A1E938F00C434BE /* PTDBeanFirmwareVersionManager.m in Sources */,
 				969B89831908971000AA093C /* BEAN_Helper.m in Sources */,
 				969B89851908971000AA093C /* DevInfoProfile.m in Sources */,
 				969B89871908971000AA093C /* GattSerialProfile.m in Sources */,
