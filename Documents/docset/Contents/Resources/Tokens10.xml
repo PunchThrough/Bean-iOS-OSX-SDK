@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tokens version="1.0">
+	<File path="Constants/BeanState.html">
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/c/tdef/BeanState</TokenIdentifier>
+			<Abstract type="html">Represents the state of the Bean connection</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+            
+			
+			<NodeRef refid="10"/>
+		</Token>
+		
+		
+        
+        <Token>
+            <TokenIdentifier>//apple_ref/c/econst/BeanState_Unknown</TokenIdentifier>
+            <Abstract type="html">Used for initialization and unknown error states
+     </Abstract>
+            <Declaration>BeanState_Unknown</Declaration>
+            
+            <DeclaredIn>PTDBean.h</DeclaredIn>
+            
+            <NodeRef refid="10"/>
+        </Token>
+        
+        <Token>
+            <TokenIdentifier>//apple_ref/c/econst/BeanState_Discovered</TokenIdentifier>
+            <Abstract type="html">Bean has been discovered by a central
+     </Abstract>
+            <Declaration>BeanState_Discovered</Declaration>
+            
+            <DeclaredIn>PTDBean.h</DeclaredIn>
+            
+            <NodeRef refid="10"/>
+        </Token>
+        
+        <Token>
+            <TokenIdentifier>//apple_ref/c/econst/BeanState_AttemptingConnection</TokenIdentifier>
+            <Abstract type="html">Bean is attempting to connect with a central
+     </Abstract>
+            <Declaration>BeanState_AttemptingConnection</Declaration>
+            
+            <DeclaredIn>PTDBean.h</DeclaredIn>
+            
+            <NodeRef refid="10"/>
+        </Token>
+        
+        <Token>
+            <TokenIdentifier>//apple_ref/c/econst/BeanState_AttemptingValidation</TokenIdentifier>
+            <Abstract type="html">Bean is undergoing validation
+     </Abstract>
+            <Declaration>BeanState_AttemptingValidation</Declaration>
+            
+            <DeclaredIn>PTDBean.h</DeclaredIn>
+            
+            <NodeRef refid="10"/>
+        </Token>
+        
+        <Token>
+            <TokenIdentifier>//apple_ref/c/econst/BeanState_ConnectedAndValidated</TokenIdentifier>
+            <Abstract type="html">Bean is connected
+     </Abstract>
+            <Declaration>BeanState_ConnectedAndValidated</Declaration>
+            
+            <DeclaredIn>PTDBean.h</DeclaredIn>
+            
+            <NodeRef refid="10"/>
+        </Token>
+        
+        <Token>
+            <TokenIdentifier>//apple_ref/c/econst/BeanState_AttemptingDisconnection</TokenIdentifier>
+            <Abstract type="html">Bean is disconnecting
+     </Abstract>
+            <Declaration>BeanState_AttemptingDisconnection</Declaration>
+            
+            <DeclaredIn>PTDBean.h</DeclaredIn>
+            
+            <NodeRef refid="10"/>
+        </Token>
+        
+        
+	</File>
+</Tokens>

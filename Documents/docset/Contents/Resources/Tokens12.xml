@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tokens version="1.0">
+	<File path="Constants/PTDTxPower_dB.html">
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/c/tdef/PTDTxPower_dB</TokenIdentifier>
+			<Abstract type="html">Transmission power levels availabe to the Bean</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+            
+			
+			<NodeRef refid="12"/>
+		</Token>
+		
+		
+        
+        <Token>
+            <TokenIdentifier>//apple_ref/c/econst/PTDTxPower_neg23dB</TokenIdentifier>
+            <Abstract type="html">-23db. Use this to maximize power savings.
+     </Abstract>
+            <Declaration>PTDTxPower_neg23dB</Declaration>
+            
+            <DeclaredIn>PTDBean.h</DeclaredIn>
+            
+            <NodeRef refid="12"/>
+        </Token>
+        
+        <Token>
+            <TokenIdentifier>//apple_ref/c/econst/PTDTxPower_neg6dB</TokenIdentifier>
+            <Abstract type="html">-6db
+     </Abstract>
+            <Declaration>PTDTxPower_neg6dB</Declaration>
+            
+            <DeclaredIn>PTDBean.h</DeclaredIn>
+            
+            <NodeRef refid="12"/>
+        </Token>
+        
+        <Token>
+            <TokenIdentifier>//apple_ref/c/econst/PTDTxPower_0dB</TokenIdentifier>
+            <Abstract type="html">0db.
+     </Abstract>
+            <Declaration>PTDTxPower_0dB</Declaration>
+            
+            <DeclaredIn>PTDBean.h</DeclaredIn>
+            
+            <NodeRef refid="12"/>
+        </Token>
+        
+        <Token>
+            <TokenIdentifier>//apple_ref/c/econst/PTDTxPower_4dB</TokenIdentifier>
+            <Abstract type="html">4db. This is the default value and maximum transmission strength.
+     </Abstract>
+            <Declaration>PTDTxPower_4dB</Declaration>
+            
+            <DeclaredIn>PTDBean.h</DeclaredIn>
+            
+            <NodeRef refid="12"/>
+        </Token>
+        
+        
+	</File>
+</Tokens>

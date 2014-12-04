@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DocSetNodes version="1.0">
+    <TOC>
+        <Node type="folder">
+            <Name>LightBlue Bean</Name>
+            <Path>index.html</Path>
+			<Subnodes>
+                
+				
+				<Node type="folder">
+					<Name>Classes</Name>
+					<Path>index.html</Path>
+					<Subnodes>
+						<NodeRef refid="1"/>
+						<NodeRef refid="2"/>
+						<NodeRef refid="3"/>
+						<NodeRef refid="4"/>
+						
+					</Subnodes>
+				</Node>
+				
+				
+                
+				<Node>
+					<Name>Protocols</Name>
+					<Path>index.html</Path>
+					<Subnodes>
+						<NodeRef refid="5"/>
+						<NodeRef refid="6"/>
+						
+					</Subnodes>
+				</Node>
+				
+                
+				<Node>
+					<Name>Constants</Name>
+					<Path>index.html</Path>
+					<Subnodes>
+						<NodeRef refid="7"/>
+						<NodeRef refid="8"/>
+						<NodeRef refid="9"/>
+						<NodeRef refid="10"/>
+						<NodeRef refid="11"/>
+						<NodeRef refid="12"/>
+						
+					</Subnodes>
+				</Node>
+				
+                
+			</Subnodes>
+        </Node>
+    </TOC>
+	<Library>
+		
+		<Node id="1" type="file" documentType="reference">
+            <Name>PTDBean</Name>
+            <Path>Classes/PTDBean.html</Path>
+            
+                <Subnodes>
+                <Node type="section">
+                    <Path>Classes/PTDBean.html</Path>
+                    <Name>Overview</Name>
+                    <Anchor>overview</Anchor>
+                </Node>
+                <Node type="section">
+                    <Path>Classes/PTDBean.html</Path>
+                    <Name>Tasks</Name>
+                    <Anchor>tasks</Anchor>
+                </Node>
+                
+                <Node type="section">
+                    <Path>Classes/PTDBean.html</Path>
+                    <Name>Properties</Name>
+                    <Anchor>properties</Anchor>
+                </Node>
+                
+                
+                
+                <Node type="section">
+                    <Path>Classes/PTDBean.html</Path>
+                    <Name>Instance Methods</Name>
+                    <Anchor>instance_methods</Anchor>
+                </Node>
+                
+            </Subnodes>
+            
+        </Node>
+		<Node id="2" type="file" documentType="reference">
+            <Name>PTDBeanManager</Name>
+            <Path>Classes/PTDBeanManager.html</Path>
+            
+                <Subnodes>
+                <Node type="section">
+                    <Path>Classes/PTDBeanManager.html</Path>
+                    <Name>Overview</Name>
+                    <Anchor>overview</Anchor>
+                </Node>
+                <Node type="section">
+                    <Path>Classes/PTDBeanManager.html</Path>
+                    <Name>Tasks</Name>
+                    <Anchor>tasks</Anchor>
+                </Node>
+                
+                <Node type="section">
+                    <Path>Classes/PTDBeanManager.html</Path>
+                    <Name>Properties</Name>
+                    <Anchor>properties</Anchor>
+                </Node>
+                
+                
+                
+                <Node type="section">
+                    <Path>Classes/PTDBeanManager.html</Path>
+                    <Name>Instance Methods</Name>
+                    <Anchor>instance_methods</Anchor>
+                </Node>
+                
+            </Subnodes>
+            
+        </Node>
+		<Node id="3" type="file" documentType="reference">
+            <Name>PTDBeanRadioConfig</Name>
+            <Path>Classes/PTDBeanRadioConfig.html</Path>
+            
+                <Subnodes>
+                <Node type="section">
+                    <Path>Classes/PTDBeanRadioConfig.html</Path>
+                    <Name>Overview</Name>
+                    <Anchor>overview</Anchor>
+                </Node>
+                <Node type="section">
+                    <Path>Classes/PTDBeanRadioConfig.html</Path>
+                    <Name>Tasks</Name>
+                    <Anchor>tasks</Anchor>
+                </Node>
+                
+                <Node type="section">
+                    <Path>Classes/PTDBeanRadioConfig.html</Path>
+                    <Name>Properties</Name>
+                    <Anchor>properties</Anchor>
+                </Node>
+                
+                
+                
+                <Node type="section">
+                    <Path>Classes/PTDBeanRadioConfig.html</Path>
+                    <Name>Instance Methods</Name>
+                    <Anchor>instance_methods</Anchor>
+                </Node>
+                
+            </Subnodes>
+            
+        </Node>
+		<Node id="4" type="file" documentType="reference">
+            <Name>PTDBleDevice</Name>
+            <Path>Classes/PTDBleDevice.html</Path>
+            
+                <Subnodes>
+                <Node type="section">
+                    <Path>Classes/PTDBleDevice.html</Path>
+                    <Name>Overview</Name>
+                    <Anchor>overview</Anchor>
+                </Node>
+                <Node type="section">
+                    <Path>Classes/PTDBleDevice.html</Path>
+                    <Name>Tasks</Name>
+                    <Anchor>tasks</Anchor>
+                </Node>
+                
+                
+                
+                <Node type="section">
+                    <Path>Classes/PTDBleDevice.html</Path>
+                    <Name>Instance Methods</Name>
+                    <Anchor>instance_methods</Anchor>
+                </Node>
+                
+            </Subnodes>
+            
+        </Node>
+		
+		
+        <Node id="5" type="file" documentType="reference">
+            <Name>PTDBeanDelegate</Name>
+            <Path>Protocols/PTDBeanDelegate.html</Path>
+            
+                <Subnodes>
+                <Node type="section">
+                    <Path>Protocols/PTDBeanDelegate.html</Path>
+                    <Name>Overview</Name>
+                    <Anchor>overview</Anchor>
+                </Node>
+                <Node type="section">
+                    <Path>Protocols/PTDBeanDelegate.html</Path>
+                    <Name>Tasks</Name>
+                    <Anchor>tasks</Anchor>
+                </Node>
+                
+                
+                
+                <Node type="section">
+                    <Path>Protocols/PTDBeanDelegate.html</Path>
+                    <Name>Instance Methods</Name>
+                    <Anchor>instance_methods</Anchor>
+                </Node>
+                
+            </Subnodes>
+            
+        </Node>
+		<Node id="6" type="file" documentType="reference">
+            <Name>PTDBeanManagerDelegate</Name>
+            <Path>Protocols/PTDBeanManagerDelegate.html</Path>
+            
+                <Subnodes>
+                <Node type="section">
+                    <Path>Protocols/PTDBeanManagerDelegate.html</Path>
+                    <Name>Overview</Name>
+                    <Anchor>overview</Anchor>
+                </Node>
+                <Node type="section">
+                    <Path>Protocols/PTDBeanManagerDelegate.html</Path>
+                    <Name>Tasks</Name>
+                    <Anchor>tasks</Anchor>
+                </Node>
+                
+                
+                
+                <Node type="section">
+                    <Path>Protocols/PTDBeanManagerDelegate.html</Path>
+                    <Name>Instance Methods</Name>
+                    <Anchor>instance_methods</Anchor>
+                </Node>
+                
+            </Subnodes>
+            
+        </Node>
+		
+        <Node id="7" type="file" documentType="reference">
+            <Name>ArduinoPowerState</Name>
+            <Path>Constants/ArduinoPowerState.html</Path>
+            
+        </Node>
+		<Node id="8" type="file" documentType="reference">
+            <Name>BeanErrors</Name>
+            <Path>Constants/BeanErrors.html</Path>
+            
+        </Node>
+		<Node id="9" type="file" documentType="reference">
+            <Name>BeanManagerState</Name>
+            <Path>Constants/BeanManagerState.html</Path>
+            
+        </Node>
+		<Node id="10" type="file" documentType="reference">
+            <Name>BeanState</Name>
+            <Path>Constants/BeanState.html</Path>
+            
+        </Node>
+		<Node id="11" type="file" documentType="reference">
+            <Name>PTDAdvertisingMode</Name>
+            <Path>Constants/PTDAdvertisingMode.html</Path>
+            
+        </Node>
+		<Node id="12" type="file" documentType="reference">
+            <Name>PTDTxPower_dB</Name>
+            <Path>Constants/PTDTxPower_dB.html</Path>
+            
+        </Node>
+		
+        
+	</Library>
+</DocSetNodes>

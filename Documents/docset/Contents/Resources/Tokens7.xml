@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tokens version="1.0">
+	<File path="Constants/ArduinoPowerState.html">
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/c/tdef/ArduinoPowerState</TokenIdentifier>
+			<Abstract type="html">Represents the Bean&apos;s Arduino power state</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+            
+			
+			<NodeRef refid="7"/>
+		</Token>
+		
+		
+        
+        <Token>
+            <TokenIdentifier>//apple_ref/c/econst/ArduinoPowerState_Unknown</TokenIdentifier>
+            <Abstract type="html">Used for initialization and unknown error states
+     </Abstract>
+            <Declaration>ArduinoPowerState_Unknown</Declaration>
+            
+            <DeclaredIn>PTDBean.h</DeclaredIn>
+            
+            <NodeRef refid="7"/>
+        </Token>
+        
+        <Token>
+            <TokenIdentifier>//apple_ref/c/econst/ArduinoPowerState_Off</TokenIdentifier>
+            <Abstract type="html">Bean has been discovered by a central
+     </Abstract>
+            <Declaration>ArduinoPowerState_Off</Declaration>
+            
+            <DeclaredIn>PTDBean.h</DeclaredIn>
+            
+            <NodeRef refid="7"/>
+        </Token>
+        
+        <Token>
+            <TokenIdentifier>//apple_ref/c/econst/ArduinoPowerState_On</TokenIdentifier>
+            <Abstract type="html">Bean is attempting to connect with a central
+     </Abstract>
+            <Declaration>ArduinoPowerState_On</Declaration>
+            
+            <DeclaredIn>PTDBean.h</DeclaredIn>
+            
+            <NodeRef refid="7"/>
+        </Token>
+        
+        
+	</File>
+</Tokens>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tokens version="1.0">
+	<File path="Classes/PTDBleDevice.html">
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/cl/PTDBleDevice</TokenIdentifier>
+			<Abstract type="html"></Abstract>
+			<DeclaredIn>PTDBleDevice.h</DeclaredIn>
+            
+			
+			<NodeRef refid="4"/>
+		</Token>
+		
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBleDevice/initWithPeripheral:</TokenIdentifier>
+			<Abstract type="html"></Abstract>
+			<DeclaredIn>PTDBleDevice.h</DeclaredIn>
+			
+			<Declaration>- (id)initWithPeripheral:(CBPeripheral *)peripheral</Declaration>
+			
+			
+			<Anchor>//api/name/initWithPeripheral:</Anchor>
+            <NodeRef refid="4"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBleDevice/interrogateAndValidate</TokenIdentifier>
+			<Abstract type="html"></Abstract>
+			<DeclaredIn>PTDBleDevice.h</DeclaredIn>
+			
+			<Declaration>- (void)interrogateAndValidate</Declaration>
+			
+			
+			<Anchor>//api/name/interrogateAndValidate</Anchor>
+            <NodeRef refid="4"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBleDevice/requiredProfilesAreValid</TokenIdentifier>
+			<Abstract type="html"></Abstract>
+			<DeclaredIn>PTDBleDevice.h</DeclaredIn>
+			
+			<Declaration>- (BOOL)requiredProfilesAreValid</Declaration>
+			
+			
+			<Anchor>//api/name/requiredProfilesAreValid</Anchor>
+            <NodeRef refid="4"/>
+		</Token>
+		
+        
+        
+	</File>
+</Tokens>

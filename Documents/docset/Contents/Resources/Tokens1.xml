@@ -1,0 +1,952 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tokens version="1.0">
+	<File path="Classes/PTDBean.html">
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/cl/PTDBean</TokenIdentifier>
+			<Abstract type="html">   An PTDBean object represents a Light Blue Bean that gives access to setting and retrieving of Arduino attributes, such as the name, temperature, accelerometer, look at Other Methods below for more.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+            
+			
+			<NodeRef refid="1"/>
+		</Token>
+		
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/setIdentifier:</TokenIdentifier>
+			<Abstract type="html">The UUID of the CoreBluetooth peripheral associated with the Bean. This is not guaranteed to be the same between different devices. If a bluetooth cache is cleared, this UUID is not guaranteed to stay the same.
+For more info, refer to the Apple identifier documentation</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, readonly) NSUUID *identifier</Declaration>
+			
+			
+			<Anchor>//api/name/identifier</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/identifier</TokenIdentifier>
+			<Abstract type="html">The UUID of the CoreBluetooth peripheral associated with the Bean. This is not guaranteed to be the same between different devices. If a bluetooth cache is cleared, this UUID is not guaranteed to stay the same.
+For more info, refer to the Apple identifier documentation</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, readonly) NSUUID *identifier</Declaration>
+			
+			
+			<Anchor>//api/name/identifier</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instp/PTDBean/identifier</TokenIdentifier>
+			<Abstract type="html">The UUID of the CoreBluetooth peripheral associated with the Bean. This is not guaranteed to be the same between different devices. If a bluetooth cache is cleared, this UUID is not guaranteed to stay the same.
+For more info, refer to the Apple identifier documentation</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, readonly) NSUUID *identifier</Declaration>
+			
+			
+			<Anchor>//api/name/identifier</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/setName:</TokenIdentifier>
+			<Abstract type="html">The Bean&apos;s name.
+For more info, refer to the Apple name documentation</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, readonly) NSString *name</Declaration>
+			
+			
+			<Anchor>//api/name/name</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/name</TokenIdentifier>
+			<Abstract type="html">The Bean&apos;s name.
+For more info, refer to the Apple name documentation</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, readonly) NSString *name</Declaration>
+			
+			
+			<Anchor>//api/name/name</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instp/PTDBean/name</TokenIdentifier>
+			<Abstract type="html">The Bean&apos;s name.
+For more info, refer to the Apple name documentation</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, readonly) NSString *name</Declaration>
+			
+			
+			<Anchor>//api/name/name</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/setDelegate:</TokenIdentifier>
+			<Abstract type="html">The PTDBeanDelegate delegate object for the Bean. Set your class as the delegate to receive messages and responses from the Bean.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, weak) id&lt;PTDBeanDelegate&gt; delegate</Declaration>
+			
+			
+			<Anchor>//api/name/delegate</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/delegate</TokenIdentifier>
+			<Abstract type="html">The PTDBeanDelegate delegate object for the Bean. Set your class as the delegate to receive messages and responses from the Bean.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, weak) id&lt;PTDBeanDelegate&gt; delegate</Declaration>
+			
+			
+			<Anchor>//api/name/delegate</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instp/PTDBean/delegate</TokenIdentifier>
+			<Abstract type="html">The PTDBeanDelegate delegate object for the Bean. Set your class as the delegate to receive messages and responses from the Bean.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, weak) id&lt;PTDBeanDelegate&gt; delegate</Declaration>
+			
+			
+			<Anchor>//api/name/delegate</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/setBeanManager:</TokenIdentifier>
+			<Abstract type="html">Used to create and manage Beans.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+	<RelatedTokens>
+		<TokenIdentifier>//apple_ref/occ/cl/PTDBeanManager</TokenIdentifier>
+		
+	</RelatedTokens>
+	
+			<Declaration>@property (nonatomic, readonly) PTDBeanManager *beanManager</Declaration>
+			
+			
+			<Anchor>//api/name/beanManager</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/beanManager</TokenIdentifier>
+			<Abstract type="html">Used to create and manage Beans.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+	<RelatedTokens>
+		<TokenIdentifier>//apple_ref/occ/cl/PTDBeanManager</TokenIdentifier>
+		
+	</RelatedTokens>
+	
+			<Declaration>@property (nonatomic, readonly) PTDBeanManager *beanManager</Declaration>
+			
+			
+			<Anchor>//api/name/beanManager</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instp/PTDBean/beanManager</TokenIdentifier>
+			<Abstract type="html">Used to create and manage Beans.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+	<RelatedTokens>
+		<TokenIdentifier>//apple_ref/occ/cl/PTDBeanManager</TokenIdentifier>
+		
+	</RelatedTokens>
+	
+			<Declaration>@property (nonatomic, readonly) PTDBeanManager *beanManager</Declaration>
+			
+			
+			<Anchor>//api/name/beanManager</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/setAdvertisementData:</TokenIdentifier>
+			<Abstract type="html">Bluetooth LE advertising data. A dictionary containing CBAdvertisementDataLocalNameKey</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, readonly) NSDictionary *advertisementData</Declaration>
+			
+			
+			<Anchor>//api/name/advertisementData</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/advertisementData</TokenIdentifier>
+			<Abstract type="html">Bluetooth LE advertising data. A dictionary containing CBAdvertisementDataLocalNameKey</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, readonly) NSDictionary *advertisementData</Declaration>
+			
+			
+			<Anchor>//api/name/advertisementData</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instp/PTDBean/advertisementData</TokenIdentifier>
+			<Abstract type="html">Bluetooth LE advertising data. A dictionary containing CBAdvertisementDataLocalNameKey</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, readonly) NSDictionary *advertisementData</Declaration>
+			
+			
+			<Anchor>//api/name/advertisementData</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/setFirmwareVersion:</TokenIdentifier>
+			<Abstract type="html">The version of the Bean&apos;s current firmware.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, readonly) NSString *firmwareVersion</Declaration>
+			
+			
+			<Anchor>//api/name/firmwareVersion</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/firmwareVersion</TokenIdentifier>
+			<Abstract type="html">The version of the Bean&apos;s current firmware.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, readonly) NSString *firmwareVersion</Declaration>
+			
+			
+			<Anchor>//api/name/firmwareVersion</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instp/PTDBean/firmwareVersion</TokenIdentifier>
+			<Abstract type="html">The version of the Bean&apos;s current firmware.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, readonly) NSString *firmwareVersion</Declaration>
+			
+			
+			<Anchor>//api/name/firmwareVersion</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/setLastDiscovered:</TokenIdentifier>
+			<Abstract type="html">Represents last time this Bean was discovered while scanning.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, readonly) NSDate *lastDiscovered</Declaration>
+			
+			
+			<Anchor>//api/name/lastDiscovered</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/lastDiscovered</TokenIdentifier>
+			<Abstract type="html">Represents last time this Bean was discovered while scanning.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, readonly) NSDate *lastDiscovered</Declaration>
+			
+			
+			<Anchor>//api/name/lastDiscovered</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instp/PTDBean/lastDiscovered</TokenIdentifier>
+			<Abstract type="html">Represents last time this Bean was discovered while scanning.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, readonly) NSDate *lastDiscovered</Declaration>
+			
+			
+			<Anchor>//api/name/lastDiscovered</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/isEqualToBean:</TokenIdentifier>
+			<Abstract type="html">Test equality with another Bean. This method returns TRUE if both Beans have the same identifier</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>- (BOOL)isEqualToBean:(PTDBean *)bean</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>bean</Name>
+					<Abstract type="html">The Bean with which to test equality</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/isEqualToBean:</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/setPairingPin:</TokenIdentifier>
+			<Abstract type="html">Sets or clears a Bluetooth pairing pin. This operation can only be used if the Bean is connected. The pairing pin will be cleared/disabled if pinCode is a null pointer.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>- (BOOL)setPairingPin:(NSUInteger *)pinCode</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>pinCode</Name>
+					<Abstract type="html">Bluetooth pairing pin with value between 0 and 999,999 (zero padded 6 digit positive integer). Use a null pointer to clear/disable pairing pin.</Abstract>
+				</Parameter>
+			</Parameters>
+			<ReturnValue><Abstract type="html">A Boolean indicating if the operation was successful.</Abstract></ReturnValue>
+			<Anchor>//api/name/setPairingPin:</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/setState:</TokenIdentifier>
+			<Abstract type="html">The current connection state of the Bean. See BeanState for more details.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, readonly) BeanState state</Declaration>
+			
+			
+			<Anchor>//api/name/state</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/state</TokenIdentifier>
+			<Abstract type="html">The current connection state of the Bean. See BeanState for more details.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, readonly) BeanState state</Declaration>
+			
+			
+			<Anchor>//api/name/state</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instp/PTDBean/state</TokenIdentifier>
+			<Abstract type="html">The current connection state of the Bean. See BeanState for more details.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, readonly) BeanState state</Declaration>
+			
+			
+			<Anchor>//api/name/state</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/setRadioConfig:</TokenIdentifier>
+			<Abstract type="html">Cached data for Bean&apos;s Radio Configuration. Should call readRadioConfig first to ensure this data is fresh.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+	<RelatedTokens>
+		<TokenIdentifier>//apple_ref/occ/instm/PTDBean/readRadioConfig</TokenIdentifier>
+		<TokenIdentifier>//apple_ref/occ/intfm/PTDBeanDelegate/bean:didUpdateRadioConfig:</TokenIdentifier>
+		<TokenIdentifier>//apple_ref/occ/cl/PTDBeanRadioConfig</TokenIdentifier>
+		
+	</RelatedTokens>
+	
+			<Declaration>@property (nonatomic, strong, readonly) PTDBeanRadioConfig *radioConfig</Declaration>
+			
+			
+			<Anchor>//api/name/radioConfig</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/radioConfig</TokenIdentifier>
+			<Abstract type="html">Cached data for Bean&apos;s Radio Configuration. Should call readRadioConfig first to ensure this data is fresh.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+	<RelatedTokens>
+		<TokenIdentifier>//apple_ref/occ/instm/PTDBean/readRadioConfig</TokenIdentifier>
+		<TokenIdentifier>//apple_ref/occ/intfm/PTDBeanDelegate/bean:didUpdateRadioConfig:</TokenIdentifier>
+		<TokenIdentifier>//apple_ref/occ/cl/PTDBeanRadioConfig</TokenIdentifier>
+		
+	</RelatedTokens>
+	
+			<Declaration>@property (nonatomic, strong, readonly) PTDBeanRadioConfig *radioConfig</Declaration>
+			
+			
+			<Anchor>//api/name/radioConfig</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instp/PTDBean/radioConfig</TokenIdentifier>
+			<Abstract type="html">Cached data for Bean&apos;s Radio Configuration. Should call readRadioConfig first to ensure this data is fresh.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+	<RelatedTokens>
+		<TokenIdentifier>//apple_ref/occ/instm/PTDBean/readRadioConfig</TokenIdentifier>
+		<TokenIdentifier>//apple_ref/occ/intfm/PTDBeanDelegate/bean:didUpdateRadioConfig:</TokenIdentifier>
+		<TokenIdentifier>//apple_ref/occ/cl/PTDBeanRadioConfig</TokenIdentifier>
+		
+	</RelatedTokens>
+	
+			<Declaration>@property (nonatomic, strong, readonly) PTDBeanRadioConfig *radioConfig</Declaration>
+			
+			
+			<Anchor>//api/name/radioConfig</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/readRadioConfig</TokenIdentifier>
+			<Abstract type="html">Requests the Bean&apos;s current Radio Configuration.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+	<RelatedTokens>
+		<TokenIdentifier>//apple_ref/occ/intfm/PTDBeanDelegate/bean:didUpdateRadioConfig:</TokenIdentifier>
+		<TokenIdentifier>//apple_ref/occ/cl/PTDBeanRadioConfig</TokenIdentifier>
+		
+	</RelatedTokens>
+	
+			<Declaration>- (void)readRadioConfig</Declaration>
+			
+			
+			<Anchor>//api/name/readRadioConfig</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/setRadioConfig:</TokenIdentifier>
+			<Abstract type="html">Sets the Bean&apos;s radio configuration.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>- (void)setRadioConfig:(PTDBeanRadioConfig *)config</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>config</Name>
+					<Abstract type="html">see PTDBeanRadioConfig</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/setRadioConfig:</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/readRSSI</TokenIdentifier>
+			<Abstract type="html">Requests the Bean&apos;s current RSSI.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+	<RelatedTokens>
+		<TokenIdentifier>//apple_ref/occ/intfm/PTDBeanDelegate/beanDidUpdateRSSI:error:</TokenIdentifier>
+		<TokenIdentifier>//apple_ref/occ/instp/PTDBean/RSSI</TokenIdentifier>
+		
+	</RelatedTokens>
+	
+			<Declaration>- (void)readRSSI</Declaration>
+			
+			
+			<Anchor>//api/name/readRSSI</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/setRSSI:</TokenIdentifier>
+			<Abstract type="html">The Bean&apos;s RSSI.
+For more info, refer to the Apple RSSI documentation</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, readonly) NSNumber *RSSI</Declaration>
+			
+			
+			<Anchor>//api/name/RSSI</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/RSSI</TokenIdentifier>
+			<Abstract type="html">The Bean&apos;s RSSI.
+For more info, refer to the Apple RSSI documentation</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, readonly) NSNumber *RSSI</Declaration>
+			
+			
+			<Anchor>//api/name/RSSI</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instp/PTDBean/RSSI</TokenIdentifier>
+			<Abstract type="html">The Bean&apos;s RSSI.
+For more info, refer to the Apple RSSI documentation</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, readonly) NSNumber *RSSI</Declaration>
+			
+			
+			<Anchor>//api/name/RSSI</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/setArduinoPowerState:</TokenIdentifier>
+			<Abstract type="html">The power state for the Bean&apos;s Arduino. Indicates if the Arduino is powered on or off.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+	<RelatedTokens>
+		<TokenIdentifier>//apple_ref/c/tdef/ArduinoPowerState</TokenIdentifier>
+		
+	</RelatedTokens>
+	
+			<Declaration>@property (nonatomic) ArduinoPowerState arduinoPowerState</Declaration>
+			
+			
+			<Anchor>//api/name/arduinoPowerState</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/arduinoPowerState</TokenIdentifier>
+			<Abstract type="html">The power state for the Bean&apos;s Arduino. Indicates if the Arduino is powered on or off.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+	<RelatedTokens>
+		<TokenIdentifier>//apple_ref/c/tdef/ArduinoPowerState</TokenIdentifier>
+		
+	</RelatedTokens>
+	
+			<Declaration>@property (nonatomic) ArduinoPowerState arduinoPowerState</Declaration>
+			
+			
+			<Anchor>//api/name/arduinoPowerState</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instp/PTDBean/arduinoPowerState</TokenIdentifier>
+			<Abstract type="html">The power state for the Bean&apos;s Arduino. Indicates if the Arduino is powered on or off.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+	<RelatedTokens>
+		<TokenIdentifier>//apple_ref/c/tdef/ArduinoPowerState</TokenIdentifier>
+		
+	</RelatedTokens>
+	
+			<Declaration>@property (nonatomic) ArduinoPowerState arduinoPowerState</Declaration>
+			
+			
+			<Anchor>//api/name/arduinoPowerState</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/setArduinoPowerState:</TokenIdentifier>
+			<Abstract type="html">Temporarily turns the Bean&apos;s Arduino on or off.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>- (void)setArduinoPowerState:(ArduinoPowerState)state</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>&quot;YES&quot;</Name>
+					<Abstract type="html">sets the Arduino to a powered-on state and &quot;NO&quot; is a shutdown state.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/setArduinoPowerState:</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/readArduinoPowerState</TokenIdentifier>
+			<Abstract type="html">Requests the current Arduino power state</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+	<RelatedTokens>
+		<TokenIdentifier>//apple_ref/occ/intfm/PTDBeanDelegate/beanDidUpdateArduinoPowerState:</TokenIdentifier>
+		<TokenIdentifier>//apple_ref/occ/instp/PTDBean/arduinoPowerState</TokenIdentifier>
+		
+	</RelatedTokens>
+	
+			<Declaration>- (void)readArduinoPowerState</Declaration>
+			
+			
+			<Anchor>//api/name/readArduinoPowerState</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/programArduinoWithRawHexImage:andImageName:</TokenIdentifier>
+			<Abstract type="html">Programs the Arduino with raw binary data. (Not Intel Hex)</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+	<RelatedTokens>
+		<TokenIdentifier>//apple_ref/occ/intfm/PTDBeanDelegate/bean:didProgramArduinoWithError:</TokenIdentifier>
+		
+	</RelatedTokens>
+	
+			<Declaration>- (void)programArduinoWithRawHexImage:(NSData *)image andImageName:(NSString *)name</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>image</Name>
+					<Abstract type="html">The raw binary image used to program the Arduino</Abstract>
+				</Parameter><Parameter>
+					<Name>name</Name>
+					<Abstract type="html">The name of the sketch.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/programArduinoWithRawHexImage:andImageName:</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/readArduinoSketchInfo</TokenIdentifier>
+			<Abstract type="html">Requests information about the currently programmed Arduino Sketch.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+	<RelatedTokens>
+		<TokenIdentifier>//apple_ref/occ/intfm/PTDBeanDelegate/bean:didUpdateSketchName:dateProgrammed:crc32:</TokenIdentifier>
+		
+	</RelatedTokens>
+	
+			<Declaration>- (void)readArduinoSketchInfo</Declaration>
+			
+			
+			<Anchor>//api/name/readArduinoSketchInfo</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/setSketchName:</TokenIdentifier>
+			<Abstract type="html">The name of the Arduino Sketch used to program the Bean firmware. Should call &lt;readArduinoSketchinfo&gt; first to ensure this data is fresh.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, strong, readonly) NSString *sketchName</Declaration>
+			
+			
+			<Anchor>//api/name/sketchName</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/sketchName</TokenIdentifier>
+			<Abstract type="html">The name of the Arduino Sketch used to program the Bean firmware. Should call &lt;readArduinoSketchinfo&gt; first to ensure this data is fresh.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, strong, readonly) NSString *sketchName</Declaration>
+			
+			
+			<Anchor>//api/name/sketchName</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instp/PTDBean/sketchName</TokenIdentifier>
+			<Abstract type="html">The name of the Arduino Sketch used to program the Bean firmware. Should call &lt;readArduinoSketchinfo&gt; first to ensure this data is fresh.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, strong, readonly) NSString *sketchName</Declaration>
+			
+			
+			<Anchor>//api/name/sketchName</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/setDateProgrammed:</TokenIdentifier>
+			<Abstract type="html">The date that the Bean&apos;s Arduino sketch was programmed. Should call &lt;readArduinoSketchinfo&gt; first to ensure this data is fresh.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, strong, readonly) NSDate *dateProgrammed</Declaration>
+			
+			
+			<Anchor>//api/name/dateProgrammed</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/dateProgrammed</TokenIdentifier>
+			<Abstract type="html">The date that the Bean&apos;s Arduino sketch was programmed. Should call &lt;readArduinoSketchinfo&gt; first to ensure this data is fresh.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, strong, readonly) NSDate *dateProgrammed</Declaration>
+			
+			
+			<Anchor>//api/name/dateProgrammed</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instp/PTDBean/dateProgrammed</TokenIdentifier>
+			<Abstract type="html">The date that the Bean&apos;s Arduino sketch was programmed. Should call &lt;readArduinoSketchinfo&gt; first to ensure this data is fresh.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, strong, readonly) NSDate *dateProgrammed</Declaration>
+			
+			
+			<Anchor>//api/name/dateProgrammed</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/readBatteryVoltage</TokenIdentifier>
+			<Abstract type="html">Requests the current battery or power supply voltage.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+	<RelatedTokens>
+		<TokenIdentifier>//apple_ref/occ/instp/PTDBean/batteryVoltage</TokenIdentifier>
+		
+	</RelatedTokens>
+	
+			<Declaration>- (void)readBatteryVoltage</Declaration>
+			
+			
+			<Anchor>//api/name/readBatteryVoltage</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/setBatteryVoltage:</TokenIdentifier>
+			<Abstract type="html">Cached representation of the Bean&apos;s battery or power supply voltage. Should call readBatteryVoltage first to ensure this data is fresh.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, readonly) NSNumber *batteryVoltage</Declaration>
+			
+			
+			<Anchor>//api/name/batteryVoltage</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/batteryVoltage</TokenIdentifier>
+			<Abstract type="html">Cached representation of the Bean&apos;s battery or power supply voltage. Should call readBatteryVoltage first to ensure this data is fresh.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, readonly) NSNumber *batteryVoltage</Declaration>
+			
+			
+			<Anchor>//api/name/batteryVoltage</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instp/PTDBean/batteryVoltage</TokenIdentifier>
+			<Abstract type="html">Cached representation of the Bean&apos;s battery or power supply voltage. Should call readBatteryVoltage first to ensure this data is fresh.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>@property (nonatomic, readonly) NSNumber *batteryVoltage</Declaration>
+			
+			
+			<Anchor>//api/name/batteryVoltage</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/setLedColor:</TokenIdentifier>
+			<Abstract type="html">Sets the Bean&apos;s RGB LED color</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+	<RelatedTokens>
+		<TokenIdentifier>//apple_ref/occ/intfm/PTDBeanDelegate/bean:didUpdateLedColor:</TokenIdentifier>
+		
+	</RelatedTokens>
+	
+			<Declaration>- (void)setLedColor:(UIColor *)color</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>color</Name>
+					<Abstract type="html">Color object which is used to set the Led</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/setLedColor:</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/readLedColor</TokenIdentifier>
+			<Abstract type="html">Requests the Bean&apos;s current Led Color.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+	<RelatedTokens>
+		<TokenIdentifier>//apple_ref/occ/intfm/PTDBeanDelegate/bean:didUpdateLedColor:</TokenIdentifier>
+		
+	</RelatedTokens>
+	
+			<Declaration>- (void)readLedColor</Declaration>
+			
+			
+			<Anchor>//api/name/readLedColor</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/sendSerialData:</TokenIdentifier>
+			<Abstract type="html">Sends data over serial to the Bean&apos;s Arduino</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+	<RelatedTokens>
+		<TokenIdentifier>//apple_ref/occ/intfm/PTDBeanDelegate/bean:serialDataReceived:</TokenIdentifier>
+		
+	</RelatedTokens>
+	
+			<Declaration>- (void)sendSerialData:(NSData *)data</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>data</Name>
+					<Abstract type="html">data to send over serial to the Arduino</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/sendSerialData:</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/sendSerialString:</TokenIdentifier>
+			<Abstract type="html">Sends human-readable ASCII data over serial to the Bean&apos;s Arduino</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+	<RelatedTokens>
+		<TokenIdentifier>//apple_ref/occ/intfm/PTDBeanDelegate/bean:serialDataReceived:</TokenIdentifier>
+		
+	</RelatedTokens>
+	
+			<Declaration>- (void)sendSerialString:(NSString *)string</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>string</Name>
+					<Abstract type="html">An NSString which is converted to NSData for sending over serial to the Bean&apos;s Arduino</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/sendSerialString:</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/readAccelerationAxes</TokenIdentifier>
+			<Abstract type="html">Requests the Bean&apos;s current acceleration values
+    </Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+	<RelatedTokens>
+		<TokenIdentifier>//apple_ref/occ/intfm/PTDBeanDelegate/bean:didUpdateAccelerationAxes:</TokenIdentifier>
+		
+	</RelatedTokens>
+	
+			<Declaration>- (void)readAccelerationAxes</Declaration>
+			
+			
+			<Anchor>//api/name/readAccelerationAxes</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/readAccelerationAxis</TokenIdentifier>
+			<Abstract type="html">This method is deprecated. Use [PTDBean readAccelerationAxes] instead. (&lt;b class=&quot;deprecated&quot;&gt;Deprecated:&lt;/b&gt;&lt;span class=&quot;deprecated&quot;&gt; v0.3.2&lt;/span&gt;)</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>- (void)readAccelerationAxis</Declaration>
+			
+			
+			<Anchor>//api/name/readAccelerationAxis</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/setScratchBank:data:</TokenIdentifier>
+			<Abstract type="html">   Stores data in one of the Bean&apos;s scratch banks.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+	<RelatedTokens>
+		<TokenIdentifier>//apple_ref/occ/instm/PTDBean/readScratchBank:</TokenIdentifier>
+		
+	</RelatedTokens>
+	
+			<Declaration>- (void)setScratchBank:(NSInteger)bank data:(NSData *)data</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>bank</Name>
+					<Abstract type="html">The index of the scratch bank to store data, from 1 to 5.</Abstract>
+				</Parameter><Parameter>
+					<Name>data</Name>
+					<Abstract type="html">Data to be stored in the selected bank. Can be up to 20 bytes.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/setScratchBank:data:</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/setScratchNumber:withValue:</TokenIdentifier>
+			<Abstract type="html">This method is deprecated. Use [PTDBean setScratchBank:data:] instead. (&lt;b class=&quot;deprecated&quot;&gt;Deprecated:&lt;/b&gt;&lt;span class=&quot;deprecated&quot;&gt; v0.3.2&lt;/span&gt;)</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+			<Declaration>- (void)setScratchNumber:(NSInteger)scratchNumber withValue:(NSData *)value</Declaration>
+			
+			
+			<Anchor>//api/name/setScratchNumber:withValue:</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/readScratchBank:</TokenIdentifier>
+			<Abstract type="html">Requests Bean&apos;s current scratch bank data.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+	<RelatedTokens>
+		<TokenIdentifier>//apple_ref/occ/intfm/PTDBeanDelegate/bean:didUpdateScratchNumber:withValue:</TokenIdentifier>
+		
+	</RelatedTokens>
+	
+			<Declaration>- (void)readScratchBank:(NSInteger)bank</Declaration>
+			<Parameters>
+				<Parameter>
+					<Name>The</Name>
+					<Abstract type="html">index of the scratch bank to request, from 1 to 5.</Abstract>
+				</Parameter>
+			</Parameters>
+			
+			<Anchor>//api/name/readScratchBank:</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/occ/instm/PTDBean/readTemperature</TokenIdentifier>
+			<Abstract type="html">Requests the Bean&apos;s current temperature reading in Celsius.</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+			
+	<RelatedTokens>
+		<TokenIdentifier>//apple_ref/occ/intfm/PTDBeanDelegate/bean:didUpdateTemperature:</TokenIdentifier>
+		
+	</RelatedTokens>
+	
+			<Declaration>- (void)readTemperature</Declaration>
+			
+			
+			<Anchor>//api/name/readTemperature</Anchor>
+            <NodeRef refid="1"/>
+		</Token>
+		
+        
+        
+	</File>
+</Tokens>

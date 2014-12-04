@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tokens version="1.0">
+	<File path="Constants/BeanManagerState.html">
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/c/tdef/BeanManagerState</TokenIdentifier>
+			<Abstract type="html">The state of the BeanManager bluetooth connection</Abstract>
+			<DeclaredIn>PTDBeanManager.h</DeclaredIn>
+            
+			
+			<NodeRef refid="9"/>
+		</Token>
+		
+		
+        
+        <Token>
+            <TokenIdentifier>//apple_ref/c/econst/BeanManagerState_Unknown</TokenIdentifier>
+            <Abstract type="html">Initializing or an unknown error has occured
+     </Abstract>
+            <Declaration>BeanManagerState_Unknown</Declaration>
+            
+            <DeclaredIn>PTDBeanManager.h</DeclaredIn>
+            
+            <NodeRef refid="9"/>
+        </Token>
+        
+        <Token>
+            <TokenIdentifier>//apple_ref/c/econst/BeanManagerState_Resetting</TokenIdentifier>
+            <Abstract type="html">The bluetooth connection is resetting
+     </Abstract>
+            <Declaration>BeanManagerState_Resetting</Declaration>
+            
+            <DeclaredIn>PTDBeanManager.h</DeclaredIn>
+            
+            <NodeRef refid="9"/>
+        </Token>
+        
+        <Token>
+            <TokenIdentifier>//apple_ref/c/econst/BeanManagerState_Unsupported</TokenIdentifier>
+            <Abstract type="html">An unsupport request has been made
+     </Abstract>
+            <Declaration>BeanManagerState_Unsupported</Declaration>
+            
+            <DeclaredIn>PTDBeanManager.h</DeclaredIn>
+            
+            <NodeRef refid="9"/>
+        </Token>
+        
+        <Token>
+            <TokenIdentifier>//apple_ref/c/econst/BeanManagerState_Unauthorized</TokenIdentifier>
+            <Abstract type="html">Unauthorized access has been attempted
+     </Abstract>
+            <Declaration>BeanManagerState_Unauthorized</Declaration>
+            
+            <DeclaredIn>PTDBeanManager.h</DeclaredIn>
+            
+            <NodeRef refid="9"/>
+        </Token>
+        
+        <Token>
+            <TokenIdentifier>//apple_ref/c/econst/BeanManagerState_PoweredOff</TokenIdentifier>
+            <Abstract type="html">The BeanManager is off
+     </Abstract>
+            <Declaration>BeanManagerState_PoweredOff</Declaration>
+            
+            <DeclaredIn>PTDBeanManager.h</DeclaredIn>
+            
+            <NodeRef refid="9"/>
+        </Token>
+        
+        <Token>
+            <TokenIdentifier>//apple_ref/c/econst/BeanManagerState_PoweredOn</TokenIdentifier>
+            <Abstract type="html">The BeanManager is on
+     </Abstract>
+            <Declaration>BeanManagerState_PoweredOn</Declaration>
+            
+            <DeclaredIn>PTDBeanManager.h</DeclaredIn>
+            
+            <NodeRef refid="9"/>
+        </Token>
+        
+        
+	</File>
+</Tokens>

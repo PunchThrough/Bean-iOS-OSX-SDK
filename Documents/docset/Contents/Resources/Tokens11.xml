@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Tokens version="1.0">
+	<File path="Constants/PTDAdvertisingMode.html">
+		
+		<Token>
+			<TokenIdentifier>//apple_ref/c/tdef/PTDAdvertisingMode</TokenIdentifier>
+			<Abstract type="html">Advertising modes availabe to the Bean</Abstract>
+			<DeclaredIn>PTDBean.h</DeclaredIn>
+            
+			
+			<NodeRef refid="11"/>
+		</Token>
+		
+		
+        
+        <Token>
+            <TokenIdentifier>//apple_ref/c/econst/PTDAdvertisingMode_Standard</TokenIdentifier>
+            <Abstract type="html">4db. Do this to maximize your tranmission strength.
+     </Abstract>
+            <Declaration>PTDAdvertisingMode_Standard</Declaration>
+            
+            <DeclaredIn>PTDBean.h</DeclaredIn>
+            
+            <NodeRef refid="11"/>
+        </Token>
+        
+        <Token>
+            <TokenIdentifier>//apple_ref/c/econst/PTDAdvertisingMode_IBeacon</TokenIdentifier>
+            <Abstract type="html">0db. This is the default value.
+     </Abstract>
+            <Declaration>PTDAdvertisingMode_IBeacon</Declaration>
+            
+            <DeclaredIn>PTDBean.h</DeclaredIn>
+            
+            <NodeRef refid="11"/>
+        </Token>
+        
+        
+	</File>
+</Tokens>
