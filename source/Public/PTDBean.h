@@ -356,6 +356,10 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  *  @see [PTDBeanDelegate bean:serialDataReceived:]
  */
 -(void)sendSerialString:(NSString*)string;
+/**
+ Allows you to bypass the delay where serial data is not allowed to pass through the bean during early connection.
+ */
+- (void)releaseSerialGate;
 
 /// @name Accessing Acceleration Data
 /**
