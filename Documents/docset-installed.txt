@@ -1,4 +1,0 @@
-Documentation set was installed to Xcode!
-
-Path: /Users/kevinmarx/Library/Developer/Shared/Documentation/DocSets/com.punchthrough.LightBlue-Bean.LightBlue-Bean.docset
-Time: 2014-12-04 21:42:20 +0000
