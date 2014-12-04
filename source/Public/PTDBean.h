@@ -211,6 +211,10 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  @param bean The Bean with which to test equality
  */
 - (BOOL)isEqualToBean:(PTDBean *)bean;
+/**
+ Allows you to bypass the delay where serial data is not allowed to pass through the bean during early connection.
+ */
+- (void)releaseSerialGate;
 /// @name Security
 /**
  Sets or clears a Bluetooth pairing pin. This operation can only be used if the Bean is connected. The pairing pin will be cleared/disabled if pinCode is a null pointer.
