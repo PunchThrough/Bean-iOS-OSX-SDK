@@ -2,19 +2,6 @@
 
 Punch Through Design's SDK for speeding up development with the LightBlue Bean development platform. Build iOS and OS X apps that talk to your Beans. To get started with the SDK, look below and check out our [Reference Docs](http://punchthrough.com/files/bean/sdk-docs/index.html).
 
-# How to Clone and Pull from this repo
-
-## Clone
-		git clone REPO_URL --recursive
-
-## Initialize Submodules 
-####(This is unnecessary if the recursive clone works)
-		git submodule update --init --recursive
-
-## Pull
-		git pull
-		git submodule update --recursive
-
 # Installation with CocoaPods 
 
 [CocoaPods](http://cocoapods.org)  is a dependency manager for Objective-C, which automates and simplifies the process of using 3rd-party libraries like the Bean-iOS-OSX-SDK. See the See the ["Getting Started" guide for more information](https://github.com/PunchThrough/Bean-iOS-OSX-SDK/wiki).
@@ -33,7 +20,22 @@ platform :osx, '10.9'
 pod 'Bean-iOS-OSX-SDK'
 ```
 
+# Getting Started & Examples
+Take a look at our "template" prjects as a starting point for using the Bean SDK: https://bitbucket.org/punchthroughdesign/bean-xcode-project-template
 
+# Repo Setup
+Not a fan of cocoapods? Here's how you use Git to get setup with the SDK repo:
+### Clone
+		git clone REPO_URL --recursive
+
+### Initialize Submodules 
+#####(This is unnecessary if the recursive clone works)
+		git submodule update --init --recursive
+
+### Pull
+		git pull
+		git submodule update --recursive
+		
 # Attribution
 
 If you use our SDK to build something cool, we'd appreciate it if you did the following:

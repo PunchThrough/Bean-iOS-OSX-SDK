@@ -31,6 +31,9 @@
 		521A4EA319116C0F005B3097 /* CBPeripheral+isConnected_Universal.m in Sources */ = {isa = PBXBuildFile; fileRef = 521A4EA219116C0F005B3097 /* CBPeripheral+isConnected_Universal.m */; };
 		524E2B8D195A0C10007FE17D /* PTDBleDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 524E2B8B195A0C10007FE17D /* PTDBleDevice.h */; };
 		524E2B8E195A0C10007FE17D /* PTDBleDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 524E2B8C195A0C10007FE17D /* PTDBleDevice.m */; };
+		52BB1B621A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 52BB1B601A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.h */; };
+		52BB1B631A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 52BB1B611A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.m */; };
+		52BB1B641A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 52BB1B611A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.m */; };
 		52BC523718D96A610083A031 /* AppMessagingLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = 52BC523618D96A610083A031 /* AppMessagingLayer.m */; };
 		52BF98A119352E59008DCA31 /* BatteryProfile.h in Headers */ = {isa = PBXBuildFile; fileRef = 52BF989F19352E59008DCA31 /* BatteryProfile.h */; };
 		52BF98A219352E59008DCA31 /* BatteryProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 52BF98A019352E59008DCA31 /* BatteryProfile.m */; };
@@ -108,6 +111,8 @@
 		524E2B8C195A0C10007FE17D /* PTDBleDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PTDBleDevice.m; sourceTree = "<group>"; };
 		5251175218ADA0AC0088DE2D /* GattCharacteristicHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GattCharacteristicHandler.h; path = Transport/GattCharacteristicHandler.h; sourceTree = "<group>"; };
 		5251175318ADA0C80088DE2D /* GattCharacteristicObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GattCharacteristicObserver.h; path = Transport/GattCharacteristicObserver.h; sourceTree = "<group>"; };
+		52BB1B601A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTDBeanRemoteFirmwareVersionManager.h; sourceTree = "<group>"; };
+		52BB1B611A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PTDBeanRemoteFirmwareVersionManager.m; sourceTree = "<group>"; };
 		52BC523518D96A610083A031 /* AppMessagingLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppMessagingLayer.h; path = ../../source/AppMessages/AppMessagingLayer.h; sourceTree = "<group>"; };
 		52BC523618D96A610083A031 /* AppMessagingLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppMessagingLayer.m; path = ../../source/AppMessages/AppMessagingLayer.m; sourceTree = "<group>"; };
 		52BF989F19352E59008DCA31 /* BatteryProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BatteryProfile.h; path = Battery/BatteryProfile.h; sourceTree = "<group>"; };
@@ -359,6 +364,8 @@
 		52D34E9018A9B890002F0C59 /* Helper */ = {
 			isa = PBXGroup;
 			children = (
+				52BB1B601A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.h */,
+				52BB1B611A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.m */,
 				52D34E9118A9B890002F0C59 /* BEAN_Helper.h */,
 				52D34E9218A9B890002F0C59 /* BEAN_Helper.m */,
 			);
@@ -452,6 +459,7 @@
 				524E2B8D195A0C10007FE17D /* PTDBleDevice.h in Headers */,
 				2FB1B35E1975E29600903F59 /* PTDBleDevice.h in Headers */,
 				52BF98A119352E59008DCA31 /* BatteryProfile.h in Headers */,
+				52BB1B621A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -584,6 +592,7 @@
 				520C8ED7191BF0EC0086C530 /* BleProfile.m in Sources */,
 				52D34EB718A9B890002F0C59 /* GattPacket.m in Sources */,
 				521A4E9D19103E5F005B3097 /* NSData+CRC.m in Sources */,
+				52BB1B631A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.m in Sources */,
 				524E2B8E195A0C10007FE17D /* PTDBleDevice.m in Sources */,
 				52D34EB118A9B890002F0C59 /* BEAN_Helper.m in Sources */,
 				52D34EBB18A9B890002F0C59 /* GattSerialMessageRxAssembler.m in Sources */,
@@ -618,6 +627,7 @@
 				969B89851908971000AA093C /* DevInfoProfile.m in Sources */,
 				969B89871908971000AA093C /* GattSerialProfile.m in Sources */,
 				969B898B1908971000AA093C /* GattSerialTransport.m in Sources */,
+				52BB1B641A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.m in Sources */,
 				969B898D1908971000AA093C /* GattSerialMessage.m in Sources */,
 				969B898F1908971000AA093C /* GattSerialMessageRxAssembler.m in Sources */,
 				969B89911908971000AA093C /* GattTransport.m in Sources */,
