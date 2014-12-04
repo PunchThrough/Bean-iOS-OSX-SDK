@@ -128,6 +128,10 @@ typedef enum { //These occur in sequence
 }
 
 #pragma mark SDK
+- (void)releaseSerialGate {
+  [appMessageLayer sendMessageWithID:MSG_ID_BT_END_GATE andPayload:nil];
+}
+
 - (BOOL)setPairingPin:(NSUInteger*)pinCode{
     if(![self connected]) {
         return FALSE;
