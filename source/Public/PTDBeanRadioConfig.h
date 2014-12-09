@@ -11,11 +11,16 @@
 /**
  Represents Radio configuration for the Bean
  
+ Min Advertising Interval: 20ms
+ Max Advertising Interval: 1285ms
+ Min Connection Interval: 20ms
+ Max Connection Interval: 1980ms
+
     Example:
     // sets a config
     PTDBeanRadioConfig *config = [[PTDBeanRadioConfig alloc] init];
-    config.advertisingInterval = 0.1;
-    config.connectionInterval = 0.2;
+    config.advertisingInterval = 100;
+    config.connectionInterval = 200;
     config.power = PTDTxPower_4dB
     config.name = @"myname";
     [self.bean setRadioConfig:config];
