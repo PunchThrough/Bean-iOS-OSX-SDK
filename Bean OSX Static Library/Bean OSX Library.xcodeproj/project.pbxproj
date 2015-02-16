@@ -170,7 +170,6 @@
 		52D34EA218A9B890002F0C59 /* GattSerialTransport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GattSerialTransport.m; sourceTree = "<group>"; };
 		52D34EA318A9B890002F0C59 /* GattTransport.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GattTransport.h; sourceTree = "<group>"; };
 		52D34EA418A9B890002F0C59 /* GattTransport.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GattTransport.m; sourceTree = "<group>"; };
-		52D34EA618A9B890002F0C59 /* oad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = oad.h; sourceTree = "<group>"; };
 		52D34EA718A9B890002F0C59 /* OadProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OadProfile.h; sourceTree = "<group>"; };
 		52D34EA818A9B890002F0C59 /* OadProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OadProfile.m; sourceTree = "<group>"; };
 		52D34EAA18A9B890002F0C59 /* ProfileDelegate_Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProfileDelegate_Protocol.h; sourceTree = "<group>"; };
@@ -453,7 +452,6 @@
 			children = (
 				52D34EA718A9B890002F0C59 /* OadProfile.h */,
 				52D34EA818A9B890002F0C59 /* OadProfile.m */,
-				52D34EA618A9B890002F0C59 /* oad.h */,
 			);
 			path = OAD;
 			sourceTree = "<group>";
