@@ -118,6 +118,8 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
  */
 -(id)initWithDelegate:(id<PTDBeanManagerDelegate>)delegate;
 
+- (instancetype)initWithDelegate:(id<PTDBeanManagerDelegate>)delegate stateRestorationIdentifier:(NSString *)stateRestorationIdentifier;
+
 /// @name Scanning or Stopping Scans for Beans
 /**
  *  Begins scanning for Beans

@@ -36,6 +36,21 @@
     return [self init];
 }
 
+- (instancetype)initWithDelegate:(id<PTDBeanManagerDelegate>)delegate stateRestorationIdentifier:(NSString *)stateRestorationIdentifier
+{
+    if ( stateRestorationIdentifier.length ) {
+        self = [super init];
+        if ( self ) {
+            self.delegate = delegate;
+            beanRecords = [[NSMutableDictionary alloc] init];
+            cbcentralmanager = [[CBCentralManager alloc] initWithDelegate:self queue:nil options:@{CBCentralManagerOptionRestoreIdentifierKey:stateRestorationIdentifier}];
+        }
+    } else {
+        self = [self initWithDelegate:delegate];
+    }
+    return self;
+}
+
 -(BeanManagerState)state{
     return cbcentralmanager?(BeanManagerState)cbcentralmanager.state:0;
 }
@@ -317,5 +332,9 @@
     [self __notifyDelegateOfDisconnectedBean:bean error:error];
 }
 
+- (void)centralManager:(CBCentralManager *)central willRestoreState:(NSDictionary *)dict
+{
+    //nothing needs to happen here
+}
 
 @end
