@@ -20,7 +20,7 @@
 #define ERROR_DOMAIN                    @"OAD"
 #define ERROR_CODE                      100
 
-#define WATCHDOG_TIMER_INTERVAL         (1.5)
+#define WATCHDOG_TIMER_INTERVAL         (.5)
 
 typedef NS_ENUM(NSUInteger, OADState) {
     OADStateIdle,
@@ -73,11 +73,14 @@ typedef struct {
 @property (strong, nonatomic)   NSData              *imageData;
 
 @property (nonatomic)           OADState            oadState;
-@property (nonatomic)           UInt16              nextPacket;
 @property (strong, nonatomic)   NSTimer             *watchdogTimer;
 @property (nonatomic)           BOOL                watchdogSet;
 @property (strong, nonatomic)   NSDate              *downloadStartDate;
 @property (nonatomic)           float               leastSeconds;
+
+@property (nonatomic)           int16_t              nextBlock;
+@property (nonatomic)           int16_t              nextBlockRequest;
+@property (nonatomic)           int16_t              totalBlocks;
 
 @end
 
@@ -122,7 +125,7 @@ typedef struct {
     self.imageAPath = imageAPath;
     self.imageBPath = imageBPath;
     
-    self.nextPacket = 0;
+    //self.nextPacket = 0;
     self.watchdogSet = NO;
     self.watchdogTimer = [NSTimer scheduledTimerWithTimeInterval:WATCHDOG_TIMER_INTERVAL
                                                           target:self
@@ -137,18 +140,7 @@ typedef struct {
     return YES;
 }
 
-- (void)cancelUpdateFirmware
-{
-    if (self.oadState != OADStateIdle) {
-        self.oadState = OADStateIdle;
-        [self.watchdogTimer invalidate];
-        self.watchdogTimer = nil;
-        self.downloadStartDate = nil;
-        self.imageData = nil;
-        [peripheral setNotifyValue:NO forCharacteristic:self.characteristicOADBlock];
-        [peripheral setNotifyValue:NO forCharacteristic:self.characteristicOADIdentify];
-    }
-}
+
 
 #pragma mark - BleProfile
 
@@ -215,28 +207,18 @@ typedef struct {
 - (void)peripheral:(CBPeripheral *)aPeripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
 {
     if ([characteristic isEqual:self.characteristicOADBlock]) {
-        UInt16 requestedPacket = CFSwapInt16LittleToHost(*((UInt16 *)characteristic.value.bytes));
+        UInt16 requestedBlock = CFSwapInt16LittleToHost(*((UInt16 *)characteristic.value.bytes));
         switch (self.oadState) {
             case OADStateSentNewHeader:
                 PTDLog(@"Device accepts transfer\n");
                 self.oadState = OADStateSendingPackets;
-                [self sendPackets];
-                break;
+                self.nextBlock = 0;
+                self.nextBlockRequest = 0;
+                // Fall through
                 
             case OADStateSendingPackets:
-                if (requestedPacket == self.nextPacket) {
-                    PTDLog(@"Device requested block %6d\n", self.nextPacket);
-                    [self sendPackets];
-                }
-                break;
-                
             case OADStateWaitForCompletion:
-                if (requestedPacket == (self.nextPacket - 1)) {
-                    // Device does not notify when complete. Requested last packet, assume complete.
-                    PTDLog(@"Update completed in %f seconds", -[self.downloadStartDate timeIntervalSinceNow]);
-                    [self completeWithError:nil];
-                    return;
-                }
+                [self sendBlocks:requestedBlock];
                 break;
                 
             default:
@@ -267,17 +249,6 @@ typedef struct {
 
 #pragma mark - Internal
 
-- (void)setOadState:(OADState)oadState
-{
-    _watchdogSet = NO;
-    _oadState = oadState;
-}
-
-- (void)setNextPacket:(UInt16)nextPacket
-{
-    _watchdogSet = NO;
-    _nextPacket = nextPacket;
-}
 
 - (BOOL)processCharacteristics
 {
@@ -302,47 +273,64 @@ typedef struct {
     return valid;
 }
 
-- (void)sendPackets
+// Send the requested block number to the OAD Target
+-(void)sendOneBlock:(UInt16)block
+{
+    _watchdogSet = NO;
+    data_block_t    *imageBlocks = (data_block_t *)self.imageData.bytes;
+    NSMutableData *data = [NSMutableData dataWithLength:sizeof(oad_packet_t)];
+    oad_packet_t *packet = (oad_packet_t *)data.bytes;
+    packet->nbr = CFSwapInt16HostToLittle(block);
+    memcpy(&packet->block, &(imageBlocks[block]), sizeof(data_block_t));
+    [peripheral writeValue:data forCharacteristic:self.characteristicOADBlock type:CBCharacteristicWriteWithoutResponse];
+}
+
+// Every time we receive a block request from the OAD Target, add more blocks to the queue if there is room
+// Check for re-requests that indicate a block was missed. Send the missed block and re-fill the queue with the
+// subsequent blocks.
+#define BLOCKS_INFLIGHT 18
+- (void)sendBlocks:(UInt16)requestedBlock
 {
     if (self.oadState != OADStateSendingPackets) {
         return;
     }
     
-    UInt16 nextPacket = self.nextPacket;
-    UInt16 totalPackets = self.imageData.length / sizeof(data_block_t);
+    // A block was re-requested, it must have been lost
+    // Expect to see a re-request for every block that was already in flight, attempt to ignore
+    if (requestedBlock < self.nextBlockRequest) {
+        PTDLog(@"OAD block %d lost in transit! Resending.", requestedBlock);
+        self.nextBlockRequest -= self.nextBlock - requestedBlock - 1; // Compensate for in flight blocks
+        self.nextBlock = requestedBlock;
+    }
+    self.nextBlockRequest++;
     
-    if (self.nextPacket) {
-        NSNumber *percentage = [NSNumber numberWithFloat:(nextPacket * 1.0) / totalPackets];
-        float secondsSoFar = -[self.downloadStartDate timeIntervalSinceNow];
-        self.leastSeconds = MIN(self.leastSeconds, (secondsSoFar / nextPacket) * (totalPackets - nextPacket));
-        NSNumber *seconds = [NSNumber numberWithFloat:self.leastSeconds];
-        [self.delegate device:self OADUploadTimeLeft:seconds withPercentage:percentage];
-    } else {
-        self.downloadStartDate = [NSDate date];
+    // Batch together the sending of up to 18 blocks, but not after every request
+    if( self.nextBlock - requestedBlock < BLOCKS_INFLIGHT/4 ) {
+
+        // Update the delegate on our progress
+        if (self.nextBlock) {
+            NSNumber *percentage = [NSNumber numberWithFloat:(self.nextBlock * 1.0) / self.totalBlocks];
+            float secondsSoFar = -[self.downloadStartDate timeIntervalSinceNow];
+            self.leastSeconds = MIN(self.leastSeconds, (secondsSoFar / self.nextBlock) * (self.totalBlocks - self.nextBlock));
+            NSNumber *seconds = [NSNumber numberWithFloat:self.leastSeconds];
+            [self.delegate device:self OADUploadTimeLeft:seconds withPercentage:percentage];
+        } else {
+            self.downloadStartDate = [NSDate date];
+        }
+        
+        // Send the blocks
+        while( self.nextBlock - requestedBlock < BLOCKS_INFLIGHT && self.nextBlock < self.totalBlocks ){
+            [self sendOneBlock:self.nextBlock];
+            //PTDLog(@"OAD Manager Sent block %d.", nextBlock);
+            self.nextBlock++;
+        }
     }
     
-    data_block_t    *imageBlocks = (data_block_t *)self.imageData.bytes;
-    
-    for (int i = 0; i < 4 && nextPacket < totalPackets; i++, nextPacket++) {
-        NSMutableData *data = [NSMutableData dataWithLength:sizeof(oad_packet_t)];
-        oad_packet_t *packet = (oad_packet_t *)data.bytes;
-        packet->nbr = CFSwapInt16HostToLittle(nextPacket);
-        memcpy(&packet->block, &(imageBlocks[nextPacket]), sizeof(data_block_t));
-        [peripheral writeValue:data forCharacteristic:self.characteristicOADBlock type:CBCharacteristicWriteWithoutResponse];
+    // Watch for last block
+    if (requestedBlock == self.totalBlocks-1) {
+        PTDLog(@"OAD Manager sent last packet.");
+        self.oadState = OADStateWaitForCompletion; // Signal the watchdog timer that we expect to timeout, allows OAD Target to re-request last packet
     }
-    
-    if (nextPacket == totalPackets) {
-        self.oadState = OADStateWaitForCompletion;
-    }
-    
-    if (self.nextPacket == (totalPackets - 1)) {
-        // Corner case when only a single packet was left to send.
-        // Request was for last packet, notify completion here. No additional requests will be made.
-        PTDLog(@"Update completed in %f seconds", -[self.downloadStartDate timeIntervalSinceNow]);
-        [self completeWithError:nil];
-    }
-    
-    self.nextPacket = nextPacket;
 }
 
 - (void)requestCurrentHeader
@@ -378,6 +366,7 @@ typedef struct {
         NSMutableData *data = [NSMutableData dataWithLength:sizeof(request_oad_header_t)];
         request_oad_header_t   *request = (request_oad_header_t *)data.bytes;
         request->ver = imageHeader->ver;
+        PTDLog(@"Loading OAD Image with version %d.", imageHeader->ver);
         request->len = imageHeader->len;
         memcpy(&request->uid, &imageHeader->uid, sizeof(request->uid));
         UInt16  reserved[] = {CFSwapInt16HostToLittle(12), CFSwapInt16HostToLittle(15)};
@@ -406,11 +395,25 @@ typedef struct {
         UInt16 imageVersion = CFSwapInt16LittleToHost(imageHeader->ver);
         if ((version & 0x01) != (imageVersion & 0x01)) {
             self.imageData = data;
+            self.totalBlocks = data.length / sizeof(data_block_t);
             return YES;
         }
     }
     self.imageData = nil;
     return NO;
+}
+
+- (void)cancelUpdateFirmware
+{
+    if (self.oadState != OADStateIdle) {
+        self.oadState = OADStateIdle;
+        [self.watchdogTimer invalidate];
+        self.watchdogTimer = nil;
+        self.downloadStartDate = nil;
+        self.imageData = nil;
+        [peripheral setNotifyValue:NO forCharacteristic:self.characteristicOADBlock];
+        [peripheral setNotifyValue:NO forCharacteristic:self.characteristicOADIdentify];
+    }
 }
 
 - (void)completeWithError:(NSError *)error
@@ -436,10 +439,13 @@ typedef struct {
     if (self.watchdogSet) {
         OADState currentState = self.oadState;
         
-        [self cancelUpdateFirmware];
-        
         NSString *message;
         switch (currentState) {
+            case OADStateWaitForCompletion:
+                PTDLog(@"Update completed in %f seconds", -[self.downloadStartDate timeIntervalSinceNow]);
+                [self completeWithError:nil];
+                break;
+                
             case OADStateEnableNotify:
                 message = @"Timeout configuring OAD characteristics.";
                 break;
@@ -453,7 +459,6 @@ typedef struct {
                 break;
                 
             case OADStateSendingPackets:
-            case OADStateWaitForCompletion:
                 message = @"Timeout sending firmware.";
                 break;
                 
@@ -462,6 +467,7 @@ typedef struct {
                 break;
         }
         
+        [self cancelUpdateFirmware];
         [self completeWithError:[NSError errorWithDomain:ERROR_DOMAIN
                                                     code:ERROR_CODE
                                                 userInfo:@{NSLocalizedDescriptionKey:message}]];
