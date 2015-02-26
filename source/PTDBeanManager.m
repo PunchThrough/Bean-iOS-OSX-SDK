@@ -22,31 +22,30 @@
 
 #pragma mark - Public methods
 
--(id)init{
-    self = [super init];
-    if (self) {
-        beanRecords = [[NSMutableDictionary alloc] init];
-        cbcentralmanager = [[CBCentralManager alloc] initWithDelegate:self queue:nil];
-    }
-    return self;
+-(instancetype)init{
+    return [self initWithDelegate:nil stateRestorationIdentifier:nil];
 }
 
--(id)initWithDelegate:(id<PTDBeanManagerDelegate>)delegate{
-    self.delegate = delegate;
-    return [self init];
+-(instancetype)initWithDelegate:(id<PTDBeanManagerDelegate>)delegate{
+    return [self initWithDelegate:delegate stateRestorationIdentifier:nil];
 }
 
 - (instancetype)initWithDelegate:(id<PTDBeanManagerDelegate>)delegate stateRestorationIdentifier:(NSString *)stateRestorationIdentifier
 {
-    if ( stateRestorationIdentifier.length ) {
-        self = [super init];
-        if ( self ) {
-            self.delegate = delegate;
-            beanRecords = [[NSMutableDictionary alloc] init];
+    self = [super init];
+    if ( self ) {
+        self.delegate = delegate;
+        beanRecords = [[NSMutableDictionary alloc] init];
+        
+        if ( stateRestorationIdentifier.length ) {
+#if TARGET_OS_IPHONE
             cbcentralmanager = [[CBCentralManager alloc] initWithDelegate:self queue:nil options:@{CBCentralManagerOptionRestoreIdentifierKey:stateRestorationIdentifier}];
+#else
+            cbcentralmanager = [[CBCentralManager alloc] initWithDelegate:self queue:nil options:nil];
+#endif
+        } else {
+            cbcentralmanager = [[CBCentralManager alloc] initWithDelegate:self queue:nil options:nil];
         }
-    } else {
-        self = [self initWithDelegate:delegate];
     }
     return self;
 }
