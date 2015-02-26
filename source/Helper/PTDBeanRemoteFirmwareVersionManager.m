@@ -83,7 +83,6 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
             self.availableVersions = [NSMutableDictionary dictionary];
         }
         self.newestFirmwareVersion = self.availableVersions[PTDFirmwareRecentVersionKey];
-        // TODO: purge older firmware files.
     }
     return self;
 }
@@ -132,7 +131,7 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
                                                                         create:YES
                                                                          error:&error];
         if (error) {
-            NSLog(@"Error finding application Library directory: %@\n", error.localizedDescription);
+            DDLogError(@"Error finding application Library directory: %@\n", error.localizedDescription);
         }
     }
     
@@ -161,8 +160,8 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
             if ( !responseDictionary || jsonError ) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     completion(nil, connectionError);
-                    return;
                 });
+                return;
             }
             self.newestFirmwareVersion = responseDictionary[PTDFirmwareVersionJSONKey];
             self.firmwareUrlStringA = responseDictionary[PTDFirmwareUrlBaseKey][PTDFirmwareUrlAKey];
@@ -178,7 +177,9 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
         }];
         
     } else {
-        completion(self.newestFirmwareVersion, nil);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            completion(self.newestFirmwareVersion, nil);
+        });
     }
 }
 
@@ -235,7 +236,7 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
             result.firmwarePath = firmwarePath;
             result.outputStream = outputStream;
         } else {
-            NSLog(@"Unable to create NSOutputStream for %@\n", filename);
+            DDLogError(@"Unable to create NSOutputStream for %@", filename);
         }
     }
     self.updateFailure |= (!result);
@@ -248,7 +249,10 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
         [self cleanupConnectionData:self.connectionA];
         [self cleanupConnectionData:self.connectionB];
         if ( self.fetchCompletion ) {
-            self.fetchCompletion(nil, nil, nil);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.fetchCompletion(nil, nil, nil);
+                self.fetchCompletion = nil;
+            });
         }
     } else {
         self.availableVersions[self.updateVersion] = @{@"version": self.updateVersion,
@@ -257,21 +261,23 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
         self.availableVersions[PTDFirmwareRecentVersionKey] = self.updateVersion;
         [self.availableVersions writeToURL:self.firmwareVersionsURL atomically:YES];
         if ( self.fetchCompletion ) {
-            self.fetchCompletion(self.connectionA.firmwarePath, self.connectionB.firmwarePath, nil);
+            dispatch_async(dispatch_get_main_queue(), ^{
+                self.fetchCompletion(self.connectionA.firmwarePath, self.connectionB.firmwarePath, nil);
+                self.fetchCompletion = nil;
+            });
         }
     }
     
     self.connectionA = nil;
     self.connectionB = nil;
     self.updateInProgress = NO;
-    self.fetchCompletion = nil;
 }
 
 - (void)cleanupConnectionData:(PTDFirmwareURLConnection *)connection
 {
     NSError *fileError = nil;
     if (![[NSFileManager defaultManager] removeItemAtPath:connection.firmwarePath error:&fileError]) {
-        NSLog(@"Error removing failed download file: %@\n", fileError.localizedDescription);
+        DDLogError(@"Error removing failed download file: %@", fileError.localizedDescription);
     }
 }
 
@@ -279,7 +285,7 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
 
 - (void)connection:(PTDFirmwareURLConnection *)connection didFailWithError:(NSError *)error
 {
-    NSLog(@"Bean Firmware download failed: %@\n", error.localizedDescription);
+    DDLogError(@"Bean Firmware download failed: %@\n", error.localizedDescription);
     [connection.outputStream close];
     self.updateRequestsPending--;
     self.updateFailure = YES;
@@ -288,7 +294,10 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
         [self completeUpdate];
     }
     if ( self.fetchCompletion ) {
-        self.fetchCompletion(nil, nil, error);
+        dispatch_async(dispatch_get_main_queue(), ^{
+            self.fetchCompletion(nil, nil, error);
+            self.fetchCompletion = nil;
+        });
     }
 }
 
@@ -303,7 +312,7 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
     while (bytesWritten < totalBytes) {
         NSInteger count = [connection.outputStream write:&dataPtr[bytesWritten] maxLength:totalBytes - bytesWritten];
         if (count == -1) {
-            NSLog(@"Error writing firmware data to file %@\n", connection.filename);
+            DDLogError(@"Error writing firmware data to file %@", connection.filename);
             [connection cancel];
             self.updateFailure = YES;
             break;
@@ -314,7 +323,6 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
 
 - (void)connectionDidFinishLoading:(PTDFirmwareURLConnection *)connection
 {
-    NSLog(@"Bean Firmware download '%@' complete.\n", connection.filename);
     [connection.outputStream close];
     self.updateRequestsPending--;
     
