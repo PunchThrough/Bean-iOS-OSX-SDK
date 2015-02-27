@@ -125,7 +125,6 @@ typedef struct {
     self.imageAPath = imageAPath;
     self.imageBPath = imageBPath;
     
-    //self.nextPacket = 0;
     self.watchdogSet = NO;
     self.watchdogTimer = [NSTimer scheduledTimerWithTimeInterval:WATCHDOG_TIMER_INTERVAL
                                                           target:self
@@ -144,14 +143,15 @@ typedef struct {
 
 #pragma mark - BleProfile
 
-- (void)validate
+/*- (void)validate
 {
     // Discover services
+    PTDLog(@"Searching for OAD service: %@", SERVICE_OAD);
     if(peripheral.state == CBPeripheralStateConnected)
     {
         [peripheral discoverServices:@[[CBUUID UUIDWithString:SERVICE_OAD]]];
     }
-}
+}*/
 
 - (BOOL)isValid:(NSError**)error
 {
@@ -291,10 +291,6 @@ typedef struct {
 #define BLOCKS_INFLIGHT 18
 - (void)sendBlocks:(UInt16)requestedBlock
 {
-    if (self.oadState != OADStateSendingPackets) {
-        return;
-    }
-    
     // A block was re-requested, it must have been lost
     // Expect to see a re-request for every block that was already in flight, attempt to ignore
     if (requestedBlock < self.nextBlockRequest) {
@@ -444,7 +440,8 @@ typedef struct {
             case OADStateWaitForCompletion:
                 PTDLog(@"Update completed in %f seconds", -[self.downloadStartDate timeIntervalSinceNow]);
                 [self completeWithError:nil];
-                break;
+                [self cancelUpdateFirmware];
+                return;
                 
             case OADStateEnableNotify:
                 message = @"Timeout configuring OAD characteristics.";
