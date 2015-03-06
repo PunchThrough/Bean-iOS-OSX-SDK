@@ -27,7 +27,7 @@
 // See callback method: -(void)FirmwareVersion:(NSString*)version isNewer:(BOOL)isNewer;
 //-(BOOL)checkForNewFirmware:(NSString*)newFirmwareVersion;
 
-// Returns false if OAD is not supported on the device. Returns true if OAD is supported. Returns false when the breathalyzer is not connected.
+// Returns true if OAD is supported on the device and the device is connected.
 // Parameters imageApath and imageBpath are full paths to the images .bin files
 // See callback methods:
 //-(void)oadDeviceFailedOADUpload:(OAD_BLEDevice*)oadDevice;
