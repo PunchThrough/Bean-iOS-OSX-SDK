@@ -23,6 +23,9 @@
 /* Begin PBXBuildFile section */
 		2F6B5991196CA72E000CC6E8 /* PTDBleDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 524E2B8C195A0C10007FE17D /* PTDBleDevice.m */; };
 		2FB1B35E1975E29600903F59 /* PTDBleDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 2FB1B35D1975E29600903F59 /* PTDBleDevice.h */; };
+		520A7E141AA0034500CB5B80 /* CBPeripheral+RSSI_Universal.h in Headers */ = {isa = PBXBuildFile; fileRef = 520A7E121AA0034500CB5B80 /* CBPeripheral+RSSI_Universal.h */; };
+		520A7E151AA0034500CB5B80 /* CBPeripheral+RSSI_Universal.m in Sources */ = {isa = PBXBuildFile; fileRef = 520A7E131AA0034500CB5B80 /* CBPeripheral+RSSI_Universal.m */; };
+		520A7E161AA0034500CB5B80 /* CBPeripheral+RSSI_Universal.m in Sources */ = {isa = PBXBuildFile; fileRef = 520A7E131AA0034500CB5B80 /* CBPeripheral+RSSI_Universal.m */; };
 		520C8ED7191BF0EC0086C530 /* BleProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 520C8ED6191BF0EC0086C530 /* BleProfile.m */; };
 		520C8EDE191C31780086C530 /* NSData+CRC.m in Sources */ = {isa = PBXBuildFile; fileRef = 521A4E9C19103E5F005B3097 /* NSData+CRC.m */; };
 		520C8EDF191C318D0086C530 /* CBPeripheral+isConnected_Universal.m in Sources */ = {isa = PBXBuildFile; fileRef = 521A4EA219116C0F005B3097 /* CBPeripheral+isConnected_Universal.m */; };
@@ -99,6 +102,8 @@
 
 /* Begin PBXFileReference section */
 		2FB1B35D1975E29600903F59 /* PTDBleDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTDBleDevice.h; sourceTree = "<group>"; };
+		520A7E121AA0034500CB5B80 /* CBPeripheral+RSSI_Universal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CBPeripheral+RSSI_Universal.h"; sourceTree = "<group>"; };
+		520A7E131AA0034500CB5B80 /* CBPeripheral+RSSI_Universal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CBPeripheral+RSSI_Universal.m"; sourceTree = "<group>"; };
 		520C8ED5191BF0EC0086C530 /* BleProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BleProfile.h; sourceTree = "<group>"; };
 		520C8ED6191BF0EC0086C530 /* BleProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BleProfile.m; sourceTree = "<group>"; };
 		520C8ED8191BF4C50086C530 /* Profile_Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Profile_Protocol.h; sourceTree = "<group>"; };
@@ -350,6 +355,8 @@
 		52D34E8D18A9B890002F0C59 /* Categories */ = {
 			isa = PBXGroup;
 			children = (
+				520A7E121AA0034500CB5B80 /* CBPeripheral+RSSI_Universal.h */,
+				520A7E131AA0034500CB5B80 /* CBPeripheral+RSSI_Universal.m */,
 				52D34E8E18A9B890002F0C59 /* CBPeripheral+UniqueId.h */,
 				52D34E8F18A9B890002F0C59 /* CBPeripheral+UniqueId.m */,
 				521A4E9B19103E5F005B3097 /* NSData+CRC.h */,
@@ -457,6 +464,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				524E2B8D195A0C10007FE17D /* PTDBleDevice.h in Headers */,
+				520A7E141AA0034500CB5B80 /* CBPeripheral+RSSI_Universal.h in Headers */,
 				2FB1B35E1975E29600903F59 /* PTDBleDevice.h in Headers */,
 				52BF98A119352E59008DCA31 /* BatteryProfile.h in Headers */,
 				52BB1B621A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.h in Headers */,
@@ -595,6 +603,7 @@
 				52BB1B631A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.m in Sources */,
 				524E2B8E195A0C10007FE17D /* PTDBleDevice.m in Sources */,
 				52D34EB118A9B890002F0C59 /* BEAN_Helper.m in Sources */,
+				520A7E151AA0034500CB5B80 /* CBPeripheral+RSSI_Universal.m in Sources */,
 				52D34EBB18A9B890002F0C59 /* GattSerialMessageRxAssembler.m in Sources */,
 				52D34EB318A9B890002F0C59 /* DevInfoProfile.m in Sources */,
 				969FDE99191A9DE80068B99A /* PTDBeanRadioConfig.m in Sources */,
@@ -630,6 +639,7 @@
 				52BB1B641A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.m in Sources */,
 				969B898D1908971000AA093C /* GattSerialMessage.m in Sources */,
 				969B898F1908971000AA093C /* GattSerialMessageRxAssembler.m in Sources */,
+				520A7E161AA0034500CB5B80 /* CBPeripheral+RSSI_Universal.m in Sources */,
 				969B89911908971000AA093C /* GattTransport.m in Sources */,
 				969FDE9B191A9E1E0068B99A /* PTDBeanManager.m in Sources */,
 				969B89931908971000AA093C /* GattPacket.m in Sources */,
