@@ -165,6 +165,16 @@
     }
 }
 
+-(void)disconnectFromAllBeans:(NSError **)error {
+    for (NSString* key in beanRecords) {
+        PTDBean* bean = [beanRecords objectForKey:key];
+        if (bean.state == BeanState_ConnectedAndValidated
+            || bean.state == BeanState_AttemptingValidation) {
+            [self disconnectBean:bean error:error];
+        }
+    }
+}
+
 #pragma mark - Protected methods
 -(void)bean:(PTDBean*)device hasBeenValidated_error:(NSError*)error{
     NSError* localError;

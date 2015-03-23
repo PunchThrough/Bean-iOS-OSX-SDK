@@ -159,6 +159,12 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
  *  @param error Nil if successful. See <BeanErrors> for error codes.
  */
 -(void)disconnectBean:(PTDBean*)bean error:(NSError**)error;
+/**
+ * Disconnects all connected Beans
+ *
+ * @param error Nil if successful. See <BeanErrors> for error codes.
+ */
+-(void)disconnectFromAllBeans:(NSError**)error;
 @end
 
 /**
