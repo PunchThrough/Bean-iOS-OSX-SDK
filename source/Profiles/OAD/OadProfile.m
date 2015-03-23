@@ -401,6 +401,9 @@ typedef struct {
 {
     for (NSString *filename in @[self.imageAPath, self.imageBPath]) {
         NSData *data = [NSData dataWithContentsOfFile:filename];
+        if ( !data ) {
+            return NO;
+        }
         img_hdr_t *imageHeader = (img_hdr_t *)data.bytes;
         UInt16 imageVersion = CFSwapInt16LittleToHost(imageHeader->ver);
         if ((version & 0x01) != (imageVersion & 0x01)) {

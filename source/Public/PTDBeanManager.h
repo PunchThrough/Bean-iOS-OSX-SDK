@@ -116,7 +116,19 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
  *
  *  @return an instance of the BeanManager
  */
--(id)initWithDelegate:(id<PTDBeanManagerDelegate>)delegate;
+-(instancetype)initWithDelegate:(id<PTDBeanManagerDelegate>)delegate;
+
+#if TARGET_OS_IPHONE
+/**
+ *  Initializes the BeanManager with a delegate that implements the PTDBeanManagerDelegate protocol with state restoration (iOS only).
+ *
+ *  @param delegate the <delegate> for this object
+ *  @param stateRestorationIdentifier the CoreBluetooth state restoration identifier
+ *
+ *  @return an instance of the BeanManager
+ */
+- (instancetype)initWithDelegate:(id<PTDBeanManagerDelegate>)delegate stateRestorationIdentifier:(NSString *)stateRestorationIdentifier;
+#endif
 
 /// @name Scanning or Stopping Scans for Beans
 /**
@@ -147,6 +159,12 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
  *  @param error Nil if successful. See <BeanErrors> for error codes.
  */
 -(void)disconnectBean:(PTDBean*)bean error:(NSError**)error;
+/**
+ * Disconnects all connected Beans
+ *
+ * @param error Nil if successful. See <BeanErrors> for error codes.
+ */
+-(void)disconnectFromAllBeans:(NSError**)error;
 @end
 
 /**
@@ -171,6 +189,7 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
  @param beanManager the BeanManager whose state was updated
  */
 - (void)beanManagerDidUpdateState:(PTDBeanManager *)beanManager;
+
 /**
  An advertising Bean was discovered.
 

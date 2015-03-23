@@ -8,6 +8,7 @@
 
 #import "PTDBleDevice.h"
 #import "Profile_Protocol.h"
+#import "CBPeripheral+RSSI_Universal.h"
 
 @implementation PTDBleDevice
 
@@ -86,6 +87,8 @@
             }
         }
     }
+    // This callback is deprecated for iOS8. The logic below prevents a nil RSSI from potentially overwriting the actual RSSI in iOS8 in the event that both callbacks are invoked.
+    _RSSI = [_peripheral RSSI_Universal]?[_peripheral RSSI_Universal]:_RSSI;
     [self rssiDidUpdateWithError:error];
 }
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverServices:(NSError *)error{

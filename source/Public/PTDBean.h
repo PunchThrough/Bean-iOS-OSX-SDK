@@ -325,10 +325,11 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  *  Cached representation of the Bean's battery or power supply voltage. Should call <readBatteryVoltage> first to ensure this data is fresh.
  */
 @property (nonatomic, readonly) NSNumber* batteryVoltage;
+
 /// @name Accessing LED colors
 /**
  *  Sets the Bean's RGB LED color
- *  @param color Color object which is used to set the Led
+ *  @param color Color object which is used to set the Led. iOS uses UIColor, while OS X uses NSColor.
  *  @see [PTDBeanDelegate bean:didUpdateLedColor:]
  */
 #if TARGET_OS_IPHONE

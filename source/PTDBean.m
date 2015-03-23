@@ -15,6 +15,7 @@
 #import "AppMessagingLayer.h"
 #import "NSData+CRC.h"
 #import "PTDBeanRadioConfig.h"
+#import "CBPeripheral+RSSI_Universal.h"
 
 #define DELAY_BEFORE_PROFILE_VALIDATION  0.5f
 #define PROFILE_VALIDATION_RETRY_TIMEOUT  10.0f
@@ -87,8 +88,8 @@ typedef enum { //These occur in sequence
 -(NSNumber*)RSSI{
     NSNumber* returnedRSSI;
     if(_peripheral.state == CBPeripheralStateConnected
-    && [_peripheral RSSI]){
-        returnedRSSI = [_peripheral RSSI];
+    && [_peripheral RSSI_Universal]){
+        returnedRSSI = [_peripheral RSSI_Universal];
     }else{
         returnedRSSI = _RSSI;
     }

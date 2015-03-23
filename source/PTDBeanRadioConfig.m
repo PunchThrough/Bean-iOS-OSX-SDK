@@ -13,27 +13,53 @@
 @interface PTDBeanRadioConfig()
 @end
 
+//intervals are in miliseconds
+static CGFloat PTDMinAdInterval = 20;
+static CGFloat PTDMaxAdInterval = 1285;
+static CGFloat PTDMinConnectionInterval = 20;
+static CGFloat PTDMaxConnectionInterval = 1980;
+
 @implementation PTDBeanRadioConfig
 
--(BOOL)validate:(NSError**)error {
-    if (self.name.length>20) {
-        if (error) {
-            *error = [BEAN_Helper basicError:@"Name length can not exceed 20 characters" domain:NSStringFromClass([self class]) code:BeanErrors_InvalidArgument];
+- (BOOL)validate:(NSError **)error
+{
+    // name
+    if ( [[self.name dataUsingEncoding:NSUTF8StringEncoding] length] > 20 ) {
+        if ( error ) {
+            *error = [BEAN_Helper basicError:@"Name length can not exceed 20 bytes" domain:NSStringFromClass([self class]) code:BeanErrors_InvalidArgument];
         }
         return NO;
     }
-    else if (self.connectionInterval <= 0) {
+    // ad interval
+    if ( self.advertisingInterval < PTDMinAdInterval || self.advertisingInterval > PTDMaxAdInterval ) {
         if (error) {
-            *error = [BEAN_Helper basicError:@"Connection interval must be between 20ms and 40ms" domain:NSStringFromClass([self class]) code:BeanErrors_InvalidArgument];
+            *error = [BEAN_Helper basicError:@"Advertising interval must be between 20ms and 1.285 seconds" domain:NSStringFromClass([self class]) code:BeanErrors_InvalidArgument];
         }
         return NO;
     }
-    else if (self.advertisingInterval <= 0) {
+   // connection interval
+    if ( self.connectionInterval < PTDMinConnectionInterval || self.connectionInterval > PTDMaxConnectionInterval ) {
         if (error) {
-            *error = [BEAN_Helper basicError:@"Advertising interval must be between 20ms and 40ms" domain:NSStringFromClass([self class]) code:BeanErrors_InvalidArgument];
+            *error = [BEAN_Helper basicError:@"Connection interval must be between 20ms and 2.02 seconds" domain:NSStringFromClass([self class]) code:BeanErrors_InvalidArgument];
         }
         return NO;
     }
+   // power
+    if ( self.power < PTDTxPower_neg23dB || self.power > PTDTxPower_4dB ) {
+        if (error) {
+            *error = [BEAN_Helper basicError:@"Invalid power level" domain:NSStringFromClass([self class]) code:BeanErrors_InvalidArgument];
+        }
+        return NO;
+    }
+   // ad mode
+    if ( self.advertisingMode != PTDAdvertisingMode_Standard && self.advertisingMode != PTDAdvertisingMode_IBeacon ) {
+        if (error) {
+            *error = [BEAN_Helper basicError:@"Invalid Advertising mode" domain:NSStringFromClass([self class]) code:BeanErrors_InvalidArgument];
+        }
+    }
+    
     return YES;
+//todo: validate ibeacon params
 }
+
 @end
