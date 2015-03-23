@@ -131,7 +131,7 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
                                                                         create:YES
                                                                          error:&error];
         if (error) {
-            DDLogError(@"Error finding application Library directory: %@\n", error.localizedDescription);
+            NSLog(@"Error finding application Library directory: %@\n", error.localizedDescription);
         }
     }
     
@@ -236,7 +236,7 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
             result.firmwarePath = firmwarePath;
             result.outputStream = outputStream;
         } else {
-            DDLogError(@"Unable to create NSOutputStream for %@", filename);
+            NSLog(@"Unable to create NSOutputStream for %@", filename);
         }
     }
     self.updateFailure |= (!result);
@@ -277,7 +277,7 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
 {
     NSError *fileError = nil;
     if (![[NSFileManager defaultManager] removeItemAtPath:connection.firmwarePath error:&fileError]) {
-        DDLogError(@"Error removing failed download file: %@", fileError.localizedDescription);
+        NSLog(@"Error removing failed download file: %@", fileError.localizedDescription);
     }
 }
 
@@ -285,7 +285,7 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
 
 - (void)connection:(PTDFirmwareURLConnection *)connection didFailWithError:(NSError *)error
 {
-    DDLogError(@"Bean Firmware download failed: %@\n", error.localizedDescription);
+    NSLog(@"Bean Firmware download failed: %@\n", error.localizedDescription);
     [connection.outputStream close];
     self.updateRequestsPending--;
     self.updateFailure = YES;
@@ -312,7 +312,7 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
     while (bytesWritten < totalBytes) {
         NSInteger count = [connection.outputStream write:&dataPtr[bytesWritten] maxLength:totalBytes - bytesWritten];
         if (count == -1) {
-            DDLogError(@"Error writing firmware data to file %@", connection.filename);
+            NSLog(@"Error writing firmware data to file %@", connection.filename);
             [connection cancel];
             self.updateFailure = YES;
             break;
