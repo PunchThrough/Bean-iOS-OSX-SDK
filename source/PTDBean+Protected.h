@@ -27,7 +27,7 @@
 -(void)setAdvertisementData:(NSDictionary*)adData;
 -(void)setLastDiscovered:(NSDate*)date;
 -(void)setBeanManager:(id<PTDBeanManager>)manager;
--(BOOL)updateFirmwareWithImageAPath:(NSString*)imageApath andImageBPath:(NSString*)imageBpath;
+-(BOOL)updateFirmwareWithImagePaths:(NSArray*)firmwareImages;
 
 @end
 

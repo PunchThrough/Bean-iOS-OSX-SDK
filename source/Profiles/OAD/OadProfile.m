@@ -68,9 +68,10 @@ typedef struct {
 @property (strong, nonatomic)   CBCharacteristic    *characteristicOADBlock;
 @property (strong, nonatomic)   CBCharacteristic    *characteristicOADIdentify;
 
-@property (strong, nonatomic)   NSString            *imageAPath;
-@property (strong, nonatomic)   NSString            *imageBPath;
+//@property (strong, nonatomic)   NSString            *imageAPath;
+//@property (strong, nonatomic)   NSString            *imageBPath;
 @property (strong, nonatomic)   NSData              *imageData;
+@property (strong, nonatomic)   NSArray             *firmwareImages;
 
 @property (nonatomic)           OADState            oadState;
 @property (strong, nonatomic)   NSTimer             *watchdogTimer;
@@ -101,7 +102,7 @@ typedef struct {
 
 #pragma mark - PTDOADProfile
 
-- (BOOL)updateFirmwareWithImageAPath:(NSString*)imageAPath andImageBPath:(NSString*)imageBPath
+- (BOOL)updateFirmwareWithImagePaths:(NSArray*)firmwareImages
 {
     if (peripheral.state != CBPeripheralStateConnected) {
         
@@ -122,8 +123,9 @@ typedef struct {
         return NO;
     }
     
-    self.imageAPath = imageAPath;
-    self.imageBPath = imageBPath;
+    //self.imageAPath = imageAPath;
+    //self.imageBPath = imageBPath;
+    self.firmwareImages = firmwareImages;
     
     self.watchdogSet = NO;
     self.watchdogTimer = [NSTimer scheduledTimerWithTimeInterval:WATCHDOG_TIMER_INTERVAL
@@ -382,7 +384,7 @@ typedef struct {
 
 - (BOOL)loadImageForVersion:(UInt16)version
 {
-    for (NSString *filename in @[self.imageAPath, self.imageBPath]) {
+    for (NSString *filename in self.firmwareImages) {
         NSData *data = [NSData dataWithContentsOfFile:filename];
         if ( !data ) {
             return NO;

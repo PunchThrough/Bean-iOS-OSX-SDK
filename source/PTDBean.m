@@ -358,9 +358,9 @@ typedef enum { //These occur in sequence
     [appMessageLayer sendMessageWithID:MSG_ID_BT_GET_CONFIG andPayload:nil];
 }
 
--(BOOL)updateFirmwareWithImageAPath:(NSString*)imageApath andImageBPath:(NSString*)imageBpath{
+-(BOOL)updateFirmwareWithImagePaths:(NSArray*)firmwareImages{
     if(!oad_profile)return FALSE;
-    return [oad_profile updateFirmwareWithImageAPath:imageApath andImageBPath:imageBpath];
+    return [oad_profile updateFirmwareWithImagePaths:firmwareImages];
 }
 
 #pragma mark - Protected Methods
