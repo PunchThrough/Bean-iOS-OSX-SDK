@@ -297,6 +297,10 @@
     if(bean){
         //Inform the delegate that we located a Bean
         [self __notifyDelegateOfDiscoveredBean:bean error:nil];
+        if ( bean.state == BeanState_Discovered && bean.autoReconnect ) {
+            PTDLog(@"autoReconnecitng to %@", bean);
+            [self connectToBean:bean error:nil];
+        }
     }
 }
 

@@ -230,6 +230,11 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
      }
  */
 @property (nonatomic, readonly) BeanState state;
+/// @name Auto Reconnect
+/**
+  If true, automatically reconnect to this Bean
+  */
+@property (nonatomic) Boolean autoReconnect;
 /// @name Radio Configuration
 /**
  Cached data for Bean's Radio Configuration. Should call <readRadioConfig> first to ensure this data is fresh.
