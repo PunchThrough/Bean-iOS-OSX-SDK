@@ -25,7 +25,6 @@
 typedef NS_ENUM(NSUInteger, OADState) {
     OADStateIdle,
     OADStateEnableNotify,
-    OADStateRequestCurrentHeader,
     OADStateSentNewHeader,
     OADStateSendingPackets,
     OADStateWaitForCompletion
@@ -71,7 +70,7 @@ typedef struct {
 //@property (strong, nonatomic)   NSString            *imageAPath;
 //@property (strong, nonatomic)   NSString            *imageBPath;
 @property (strong, nonatomic)   NSData              *imageData;
-@property (strong, nonatomic)   NSArray             *firmwareImages;
+@property (strong, nonatomic)   NSMutableArray             *firmwareImages;
 
 @property (nonatomic)           OADState            oadState;
 @property (strong, nonatomic)   NSTimer             *watchdogTimer;
@@ -123,9 +122,7 @@ typedef struct {
         return NO;
     }
     
-    //self.imageAPath = imageAPath;
-    //self.imageBPath = imageBPath;
-    self.firmwareImages = firmwareImages;
+    self.firmwareImages = [NSMutableArray arrayWithArray:firmwareImages];
     
     self.watchdogSet = NO;
     self.watchdogTimer = [NSTimer scheduledTimerWithTimeInterval:WATCHDOG_TIMER_INTERVAL
@@ -200,7 +197,7 @@ typedef struct {
     if (!error) {
         if (self.oadState == OADStateEnableNotify) {
             if (self.characteristicOADBlock.isNotifying && self.characteristicOADIdentify.isNotifying) {
-                [self requestCurrentHeader];
+                [self beginOAD];
             }
         }
     }
@@ -230,16 +227,9 @@ typedef struct {
     } else if ([characteristic isEqual:self.characteristicOADIdentify]) {
         switch (self.oadState) {
                 
-            case OADStateRequestCurrentHeader:
-                [self beginOADForHeaderData:characteristic.value];
-                break;
-                
             case OADStateSentNewHeader:
-                [self completeWithError:[NSError errorWithDomain:ERROR_DOMAIN
-                                                            code:ERROR_CODE
-                                                        userInfo:@{NSLocalizedDescriptionKey:@"Device rejected firmware version."}]];
-                
-                PTDLog(@"Device rejected firmware version\n");
+
+                [self beginOAD];        // Try next firmware image
                 break;
                 
             default:
@@ -331,20 +321,13 @@ typedef struct {
     }
 }
 
-- (void)requestCurrentHeader
-{
-    self.oadState = OADStateRequestCurrentHeader;
-    
-    [peripheral writeValue:[NSMutableData dataWithLength:sizeof(UInt8)] forCharacteristic:self.characteristicOADIdentify type:CBCharacteristicWriteWithoutResponse];
-}
-
 - (void)enableNotify
 {
     self.oadState = OADStateEnableNotify;
     
     if (self.characteristicOADBlock.isNotifying && self.characteristicOADIdentify.isNotifying) {
         // Already enabled
-        [self requestCurrentHeader];
+        [self beginOAD];
     } else {
         if (!self.characteristicOADBlock.isNotifying) {
             [peripheral setNotifyValue:YES forCharacteristic:self.characteristicOADBlock];
@@ -355,50 +338,32 @@ typedef struct {
     }
 }
 
-- (void)beginOADForHeaderData:(NSData *)headerData
+- (void)beginOAD //ForHeaderData:(NSData *)headerData
 {
-    response_oad_header_t *response = (response_oad_header_t *)headerData.bytes;
-    UInt16 version = CFSwapInt16LittleToHost(response->ver);
-    if ([self loadImageForVersion:version]) {
+    if ( [self.firmwareImages count] > 0 ) {
+        NSString *filename = self.firmwareImages[0];
+        PTDLog(@"Offering firmware image %@", filename);
+        [self.firmwareImages removeObjectAtIndex:0];
+        self.imageData = [NSData dataWithContentsOfFile:filename];                          // TODO: make sure file loaded
+        self.totalBlocks = self.imageData.length / sizeof(data_block_t);
         img_hdr_t *imageHeader = (img_hdr_t *)self.imageData.bytes;
+        
         NSMutableData *data = [NSMutableData dataWithLength:sizeof(request_oad_header_t)];
         request_oad_header_t   *request = (request_oad_header_t *)data.bytes;
         request->ver = imageHeader->ver;
-        PTDLog(@"Loading OAD Image with version %d.", imageHeader->ver);
         request->len = imageHeader->len;
         memcpy(&request->uid, &imageHeader->uid, sizeof(request->uid));
         UInt16  reserved[] = {CFSwapInt16HostToLittle(12), CFSwapInt16HostToLittle(15)};
         memcpy(&request->res, reserved, sizeof(request->res));
-        
+            
         self.oadState = OADStateSentNewHeader;
-        
-        [peripheral writeValue:data
-             forCharacteristic:self.characteristicOADIdentify
-                          type:CBCharacteristicWriteWithoutResponse];
+            
+        [peripheral writeValue:data forCharacteristic:self.characteristicOADIdentify type:CBCharacteristicWriteWithoutResponse];
     } else {
         [self completeWithError:[NSError errorWithDomain:ERROR_DOMAIN
                                                     code:ERROR_CODE
-                                                userInfo:@{NSLocalizedDescriptionKey:@"Unable to find accepted firmware version"}]];
+                                                userInfo:@{NSLocalizedDescriptionKey:@"Device rejected all available firmware versions."}]];
     }
-}
-
-- (BOOL)loadImageForVersion:(UInt16)version
-{
-    for (NSString *filename in self.firmwareImages) {
-        NSData *data = [NSData dataWithContentsOfFile:filename];
-        if ( !data ) {
-            return NO;
-        }
-        img_hdr_t *imageHeader = (img_hdr_t *)data.bytes;
-        UInt16 imageVersion = CFSwapInt16LittleToHost(imageHeader->ver);
-        if ((version & 0x01) != (imageVersion & 0x01)) {
-            self.imageData = data;
-            self.totalBlocks = data.length / sizeof(data_block_t);
-            return YES;
-        }
-    }
-    self.imageData = nil;
-    return NO;
 }
 
 - (void)cancelUpdateFirmware
@@ -447,10 +412,6 @@ typedef struct {
                 
             case OADStateEnableNotify:
                 message = @"Timeout configuring OAD characteristics.";
-                break;
-                
-            case OADStateRequestCurrentHeader:
-                message = @"Timeout requesting current firmware version.";
                 break;
                 
             case OADStateSentNewHeader:
