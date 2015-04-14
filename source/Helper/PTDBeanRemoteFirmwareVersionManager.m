@@ -144,7 +144,7 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
 {
     NSURLRequest *firmwareVersionRequest;
     
-    if ( ![self firmwareCheckDate] || abs([[self firmwareCheckDate] timeIntervalSinceNow]) > 3600 ) {
+    if ( ![self firmwareCheckDate] || fabs([[self firmwareCheckDate] timeIntervalSinceNow]) > 3600. ) {
         firmwareVersionRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:PTDFirmwareVersionUrlString] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:10];
         [NSURLConnection sendAsynchronousRequest:firmwareVersionRequest queue:self.operationQueue completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
             NSError *jsonError;
