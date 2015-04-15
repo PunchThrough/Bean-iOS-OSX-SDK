@@ -153,6 +153,14 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
  */
 -(void)connectToBean:(PTDBean*)bean error:(NSError**)error;
 /**
+ *  Connects to Bean
+ *
+ * @param bean The Bean to connect to
+ * @param autoReconnect Automatically reconnect if disconnected.
+ * @param error Nil if successful. See <BeanErrors> for error codes.
+ */
+-(void)connectToBean:(PTDBean*)bean autoReconnect:(BOOL)reconnect error:(NSError**)error;
+/**
  *  Disconnects from a Bean
  *
  *  @param bean  The Bean to disconnect from

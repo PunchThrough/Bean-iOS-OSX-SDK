@@ -113,6 +113,10 @@
 }
 
 -(void)connectToBean:(PTDBean*)bean_ error:(NSError**)error{
+    [self connectToBean:bean_ autoReconnect:bean_.autoReconnect error:error];
+}
+
+-(void)connectToBean:(PTDBean*)bean_ autoReconnect:(BOOL)reconnect error:(NSError**)error{
     //Find BeanRecord that corresponds to this UUID
     PTDBean* bean = [beanRecords objectForKey:bean_.identifier];
     //If there is no such peripheral, return error
@@ -137,6 +141,8 @@
     [bean setState:BeanState_AttemptingConnection];
     //Attempt to connect to the corresponding CBPeripheral
     [cbcentralmanager connectPeripheral:bean.peripheral options:nil];
+    //Auto Reconnect?
+    bean.autoReconnect = reconnect;
 }
 
 -(void)disconnectBean:(PTDBean*)bean_ error:(NSError**)error{
@@ -164,6 +170,8 @@
         [bean setState:BeanState_Discovered];
         [self __notifyDelegateOfDisconnectedBean:bean error:nil];
     }
+    
+    bean.autoReconnect = FALSE;
 }
 
 -(void)disconnectFromAllBeans:(NSError **)error {
@@ -292,15 +300,11 @@
 }
 
 -(void)centralManager:(CBCentralManager *)central didDiscoverPeripheral:(CBPeripheral *)peripheral advertisementData:(NSDictionary *)advertisementData RSSI:(NSNumber *)RSSI{
-    PTDLog(@"centralManager:didDiscoverPeripheral %@", peripheral);
+    //PTDLog(@"centralManager:didDiscoverPeripheral %@", peripheral);
     PTDBean* bean = [self __processBeanRecordFromCBPeripheral:peripheral advertisementData:advertisementData RSSI:RSSI];
     if(bean){
         //Inform the delegate that we located a Bean
         [self __notifyDelegateOfDiscoveredBean:bean error:nil];
-        if ( bean.state == BeanState_Discovered && bean.autoReconnect ) {
-            PTDLog(@"autoReconnecitng to %@", bean);
-            [self connectToBean:bean error:nil];
-        }
     }
 }
 
@@ -341,7 +345,14 @@
         return;
     }
     
+    
     if(!bean) return; //This may not be the best way to handle this case
+    
+    if ( bean.autoReconnect ) {
+     PTDLog(@"autoReconnecting to %@", bean);
+     [self connectToBean:bean error:nil];
+    }
+    
     //Alert the delegate of the disconnect
     [self __notifyDelegateOfDisconnectedBean:bean error:error];
 }
