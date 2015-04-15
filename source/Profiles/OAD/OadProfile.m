@@ -20,7 +20,7 @@
 #define ERROR_DOMAIN                    @"OAD"
 #define ERROR_CODE                      100
 
-#define WATCHDOG_TIMER_INTERVAL         (.5)
+#define WATCHDOG_TIMER_INTERVAL         (2)
 
 typedef NS_ENUM(NSUInteger, OADState) {
     OADStateIdle,
@@ -289,6 +289,7 @@ typedef struct {
         PTDLog(@"OAD block %d lost in transit! Resending.", requestedBlock);
         self.nextBlockRequest -= self.nextBlock - requestedBlock - 1; // Compensate for in flight blocks
         self.nextBlock = requestedBlock;
+        self.oadState = OADStateSendingPackets;
     }
     self.nextBlockRequest++;
     
@@ -299,7 +300,7 @@ typedef struct {
         if (self.nextBlock) {
             NSNumber *percentage = [NSNumber numberWithFloat:(self.nextBlock * 1.0) / self.totalBlocks];
             float secondsSoFar = -[self.downloadStartDate timeIntervalSinceNow];
-            self.leastSeconds = MIN(self.leastSeconds, (secondsSoFar / self.nextBlock) * (self.totalBlocks - self.nextBlock));
+            self.leastSeconds = (secondsSoFar / self.nextBlock) * (self.totalBlocks - self.nextBlock);
             NSNumber *seconds = [NSNumber numberWithFloat:self.leastSeconds];
             [self.delegate device:self OADUploadTimeLeft:seconds withPercentage:percentage];
         } else {
@@ -312,13 +313,12 @@ typedef struct {
             //PTDLog(@"OAD Manager Sent block %d.", nextBlock);
             self.nextBlock++;
         }
+        
     }
-    
+
     // Watch for last block
-    if (requestedBlock == self.totalBlocks-1) {
-        PTDLog(@"OAD Manager sent last packet.");
+    if ( self.nextBlock == self.totalBlocks)
         self.oadState = OADStateWaitForCompletion; // Signal the watchdog timer that we expect to timeout, allows OAD Target to re-request last packet
-    }
 }
 
 - (void)enableNotify
@@ -405,17 +405,14 @@ typedef struct {
         NSString *message;
         switch (currentState) {
             case OADStateWaitForCompletion:
-                PTDLog(@"Update completed in %f seconds", -[self.downloadStartDate timeIntervalSinceNow]);
+            case OADStateSentNewHeader:
+                PTDLog(@"Update completed in %f seconds", -[self.downloadStartDate timeIntervalSinceNow]-WATCHDOG_TIMER_INTERVAL);
                 [self completeWithError:nil];
                 [self cancelUpdateFirmware];
                 return;
                 
             case OADStateEnableNotify:
                 message = @"Timeout configuring OAD characteristics.";
-                break;
-                
-            case OADStateSentNewHeader:
-                message = @"Timeout starting download.";
                 break;
                 
             case OADStateSendingPackets:
