@@ -173,6 +173,7 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
 
     //when the app is upgraded, we lose the documents, so we double check that we have the firmware that we think we have.
     if ( [firmwareImages count] > 0 ) {
+        // TODO: make sure the files exist on disk
         PTDLog(@"Local firmware images: %@", firmwareImages);
         completion(firmwareImages, nil);
     } else {

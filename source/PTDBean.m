@@ -16,6 +16,8 @@
 #import "NSData+CRC.h"
 #import "PTDBeanRadioConfig.h"
 #import "CBPeripheral+RSSI_Universal.h"
+#import "PTDBeanRemoteFirmwareVersionManager.h"
+
 
 #define DELAY_BEFORE_PROFILE_VALIDATION  0.5f
 #define PROFILE_VALIDATION_RETRY_TIMEOUT  10.0f
@@ -52,6 +54,7 @@ typedef enum { //These occur in sequence
     BeanArduinoOADLocalState    localArduinoOADState;
     NSTimer*                    arduinoOADStateTimout;
     NSTimer*                    arduinoOADChunkSendTimer;
+    void (^_firmwareUpdateProgressHandler)(NSNumber *percentageComplete, NSError *error);
     
 }
 
@@ -126,8 +129,9 @@ typedef enum { //These occur in sequence
     if(deviceInfo_profile){
         return deviceInfo_profile.firmwareVersion;
     }
-    return @"";
+    return nil;
 }
+
 -(PTDBeanManager*)beanManager{
     if(_beanManager){
         if([_beanManager isKindOfClass:[PTDBeanManager class]]){
@@ -137,7 +141,7 @@ typedef enum { //These occur in sequence
     return nil;
 }
 
-#pragma mark SDK
+#pragma mark - SDK
 - (void)releaseSerialGate {
   [appMessageLayer sendMessageWithID:MSG_ID_BT_END_GATE andPayload:nil];
 }
@@ -360,7 +364,65 @@ typedef enum { //These occur in sequence
 
 -(BOOL)updateFirmwareWithImagePaths:(NSArray*)firmwareImages{
     if(!oad_profile)return FALSE;
-    return [oad_profile updateFirmwareWithImagePaths:firmwareImages];
+    return [oad_profile updateFirmwareWithImagePaths:firmwareImages progressHandler:nil];
+}
+
+-(BOOL)firmwareCurrent{
+    if ( self.firmwareVersion.integerValue < self.newestAvailableFirmwareVersion.integerValue )
+        return FALSE;
+    else
+        return TRUE;
+}
+    
+- (void)checkFirmwareUpdateAvailableWithHandler:(void (^)(BOOL updateAvailable, NSError *error))handler{
+    
+    // TODO: make sure OAD profile is valid
+    
+    if ( self.updateInProgress ) {
+        if (handler) handler( NO, nil );
+        return;
+    }
+    
+    [[PTDBeanRemoteFirmwareVersionManager sharedInstance] checkForNewFirmwareWithCompletion:^(NSString *mostRecentFirmwareVersion, NSError *error){
+        if(error){ return; }
+        self.newestAvailableFirmwareVersion = mostRecentFirmwareVersion;
+
+        if( [self firmwareCurrent] ){
+            if ( handler ) handler( YES, nil );
+        }
+        else{
+            if ( handler ) handler( NO, nil );
+        }
+    }];
+
+}
+    
+- (void)updateFirmwareWithProgressHandler:(void (^)(NSNumber *percentageComplete, NSError *error))progressHandler{
+    
+    // TODO: make sure OAD profile is valid
+    
+    self.updateInProgress = TRUE;
+    _firmwareUpdateProgressHandler = progressHandler;
+    
+    // Shorter connection interval -> faster transfer
+    PTDBeanRadioConfig *config = [[PTDBeanRadioConfig alloc] init];
+    /*if (self.radioConfig) {
+        config.advertisingInterval = self.radioConfig.advertisingInterval;
+        config.power = self.radioConfig.power;
+        config.name = self.radioConfig.name;
+    } else {*/
+        config.advertisingInterval = 100;
+        config.power = PTDTxPower_4dB;
+        config.name = @"Bean";
+    //
+    config.connectionInterval = 20;
+    [self setRadioConfig:config];
+    
+    [[PTDBeanRemoteFirmwareVersionManager sharedInstance] fetchFirmwareForVersion:self.newestAvailableFirmwareVersion withCompletion:^(NSArray *firmwareImagePaths, NSError *error) {
+        if (!error) {
+            [oad_profile updateFirmwareWithImagePaths:firmwareImagePaths progressHandler:progressHandler];
+        }
+    }];
 }
 
 #pragma mark - Protected Methods
@@ -586,6 +648,17 @@ typedef enum { //These occur in sequence
                 [_beanManager bean:self hasBeenValidated_error:nil];
             }
         }
+        
+        // Check if we are mid-update
+        if ( self.updateInProgress ) {
+            if ( [self firmwareCurrent] ) {
+                PTDLog(@"firmware update complete");
+                self.updateInProgress = FALSE;
+            } else {
+                [self updateFirmwareWithProgressHandler:_firmwareUpdateProgressHandler];
+                PTDLog(@"firmware update continues");
+            }
+        }
     }
 }
     
@@ -769,12 +842,14 @@ typedef enum { //These occur in sequence
 
 #pragma mark OAD callbacks
 -(void)device:(OadProfile*)device completedFirmwareUploadWithError:(NSError*)error{
-    if(_delegate){
+    
+    if(FALSE && _delegate){
         if(/*[_delegate conformsToProtocol:@protocol(PTDBeanExtendedDelegate)]
            && */[_delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]){
             [(id<PTDBeanExtendedDelegate>)_delegate bean:self completedFirmwareUploadWithError:error];
         }
     }
+    
 }
 -(void)device:(OadProfile*)device OADUploadTimeLeft:(NSNumber*)seconds withPercentage:(NSNumber*)percentageComplete{
     if(_delegate){

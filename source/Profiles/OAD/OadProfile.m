@@ -59,7 +59,11 @@ typedef struct {
     data_block_t    block;
 } oad_packet_t;
 
-@interface OadProfile ()
+@interface OadProfile () {
+    
+    void (^_progressHandler)(NSNumber *percentageComplete, NSError *error);
+    
+}
 
 @property (weak, nonatomic)     id<OAD_Delegate>    delegate;
 
@@ -101,7 +105,7 @@ typedef struct {
 
 #pragma mark - PTDOADProfile
 
-- (BOOL)updateFirmwareWithImagePaths:(NSArray*)firmwareImages
+- (BOOL)updateFirmwareWithImagePaths:(NSArray*)firmwareImages progressHandler:(void (^)(NSNumber *percentageComplete, NSError *error))progressHandler
 {
     if (peripheral.state != CBPeripheralStateConnected) {
         
@@ -121,6 +125,8 @@ typedef struct {
         }
         return NO;
     }
+    
+    _progressHandler = progressHandler;
     
     self.firmwareImages = [NSMutableArray arrayWithArray:firmwareImages];
     
@@ -302,7 +308,9 @@ typedef struct {
             float secondsSoFar = -[self.downloadStartDate timeIntervalSinceNow];
             self.leastSeconds = (secondsSoFar / self.nextBlock) * (self.totalBlocks - self.nextBlock);
             NSNumber *seconds = [NSNumber numberWithFloat:self.leastSeconds];
-            [self.delegate device:self OADUploadTimeLeft:seconds withPercentage:percentage];
+            //[self.delegate device:self OADUploadTimeLeft:seconds withPercentage:percentage];
+            if (_progressHandler)
+                _progressHandler(percentage, nil);
         } else {
             self.downloadStartDate = [NSDate date];
         }
@@ -363,6 +371,7 @@ typedef struct {
         [self completeWithError:[NSError errorWithDomain:ERROR_DOMAIN
                                                     code:ERROR_CODE
                                                 userInfo:@{NSLocalizedDescriptionKey:@"Device rejected all available firmware versions."}]];
+        PTDLog(@"Device rejected all available firmware versions.");
     }
 }
 
@@ -406,7 +415,7 @@ typedef struct {
         switch (currentState) {
             case OADStateWaitForCompletion:
             case OADStateSentNewHeader:
-                PTDLog(@"Update completed in %f seconds", -[self.downloadStartDate timeIntervalSinceNow]-WATCHDOG_TIMER_INTERVAL);
+                PTDLog(@"Update completed in %f seconds", MAX(0,-[self.downloadStartDate timeIntervalSinceNow]-WATCHDOG_TIMER_INTERVAL));
                 [self completeWithError:nil];
                 [self cancelUpdateFirmware];
                 return;

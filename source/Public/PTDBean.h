@@ -202,6 +202,22 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  *  The version of the Bean's current firmware.
  */
 @property (nonatomic, readonly) NSString* firmwareVersion;
+
+/**
+ *  The Newest firmware version available
+ */
+@property (nonatomic) NSString* newestAvailableFirmwareVersion;
+
+/**
+ *  Check if a firmware update is available with a handler to be called if so
+ */
+- (void)checkFirmwareUpdateAvailableWithHandler:(void (^)(BOOL updateAvailable, NSError *error))handler;
+
+/**
+ *  Update the firmware with progress handler
+ */
+- (void)updateFirmwareWithProgressHandler:(void (^)(NSNumber *percentageComplete, NSError *error))progressHandler;
+ 
 /**
  *  Represents last time this Bean was discovered while scanning.
  */
@@ -235,6 +251,11 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
   If true, automatically reconnect to this Bean
   */
 @property (nonatomic) Boolean autoReconnect;
+/// @name updateInProgress;
+/**
+  If true, an update is in progress
+ */
+@property (nonatomic) Boolean updateInProgress;
 /// @name Radio Configuration
 /**
  Cached data for Bean's Radio Configuration. Should call <readRadioConfig> first to ensure this data is fresh.
