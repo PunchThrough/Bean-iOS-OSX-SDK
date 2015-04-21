@@ -71,10 +71,8 @@ typedef struct {
 @property (strong, nonatomic)   CBCharacteristic    *characteristicOADBlock;
 @property (strong, nonatomic)   CBCharacteristic    *characteristicOADIdentify;
 
-//@property (strong, nonatomic)   NSString            *imageAPath;
-//@property (strong, nonatomic)   NSString            *imageBPath;
 @property (strong, nonatomic)   NSData              *imageData;
-@property (strong, nonatomic)   NSMutableArray             *firmwareImages;
+@property (strong, nonatomic)   NSMutableArray      *firmwareImages;
 
 @property (nonatomic)           OADState            oadState;
 @property (strong, nonatomic)   NSTimer             *watchdogTimer;
@@ -107,8 +105,10 @@ typedef struct {
 
 - (BOOL)updateFirmwareWithImagePaths:(NSArray*)firmwareImages progressHandler:(void (^)(NSNumber *percentageComplete, NSError *error))progressHandler
 {
+    
+    PTDLog(@"OAD updating firmware with image paths: %@", firmwareImages);
+    
     if (peripheral.state != CBPeripheralStateConnected) {
-        
         if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadWithError:)]) {
             [self.delegate device:self completedFirmwareUploadWithError:[NSError errorWithDomain:ERROR_DOMAIN
                                                                                             code:ERROR_CODE
@@ -168,6 +168,7 @@ typedef struct {
 
 - (void)peripheral:(CBPeripheral *)aPeripheral didDiscoverServices:(NSError *)error
 {
+    self.watchdogSet = NO;
     if (!error && !self.serviceOAD && peripheral.services) {
         CBUUID *oadServiceUUID = [CBUUID UUIDWithString:SERVICE_OAD];
         for (CBService *service in peripheral.services) {
@@ -187,6 +188,7 @@ typedef struct {
 
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error
 {
+    self.watchdogSet = NO;
     if (!error) {
         if ([service isEqual:self.serviceOAD]) {
             if (![self processCharacteristics]) {
@@ -200,6 +202,7 @@ typedef struct {
 
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateNotificationStateForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
 {
+    self.watchdogSet = NO;
     if (!error) {
         if (self.oadState == OADStateEnableNotify) {
             if (self.characteristicOADBlock.isNotifying && self.characteristicOADIdentify.isNotifying) {
@@ -211,6 +214,7 @@ typedef struct {
 
 - (void)peripheral:(CBPeripheral *)aPeripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
 {
+    self.watchdogSet = NO;
     if ([characteristic isEqual:self.characteristicOADBlock]) {
         UInt16 requestedBlock = CFSwapInt16LittleToHost(*((UInt16 *)characteristic.value.bytes));
         switch (self.oadState) {
@@ -274,7 +278,6 @@ typedef struct {
 // Send the requested block number to the OAD Target
 -(void)sendOneBlock:(UInt16)block
 {
-    _watchdogSet = NO;
     data_block_t    *imageBlocks = (data_block_t *)self.imageData.bytes;
     NSMutableData *data = [NSMutableData dataWithLength:sizeof(oad_packet_t)];
     oad_packet_t *packet = (oad_packet_t *)data.bytes;
@@ -305,9 +308,9 @@ typedef struct {
         // Update the delegate on our progress
         if (self.nextBlock) {
             NSNumber *percentage = [NSNumber numberWithFloat:(self.nextBlock * 1.0) / self.totalBlocks];
-            float secondsSoFar = -[self.downloadStartDate timeIntervalSinceNow];
-            self.leastSeconds = (secondsSoFar / self.nextBlock) * (self.totalBlocks - self.nextBlock);
-            NSNumber *seconds = [NSNumber numberWithFloat:self.leastSeconds];
+            //float secondsSoFar = -[self.downloadStartDate timeIntervalSinceNow];
+            //self.leastSeconds = (secondsSoFar / self.nextBlock) * (self.totalBlocks - self.nextBlock);
+            //NSNumber *seconds = [NSNumber numberWithFloat:self.leastSeconds];
             //[self.delegate device:self OADUploadTimeLeft:seconds withPercentage:percentage];
             if (_progressHandler)
                 _progressHandler(percentage, nil);
@@ -390,6 +393,7 @@ typedef struct {
 
 - (void)completeWithError:(NSError *)error
 {
+    if (error) PTDLog(@"OAD completed with error: %@", error);
     self.oadState = OADStateIdle;
     self.downloadStartDate = nil;
     self.imageData = nil;
@@ -404,39 +408,43 @@ typedef struct {
 {
     if (self.oadState == OADStateIdle) {
         // watchdog should never be running in idle.
+        PTDLog(@"OAD State idle.");
         [timer invalidate];
         self.watchdogTimer = nil;
     }
     
     if (self.watchdogSet) {
-        OADState currentState = self.oadState;
-        
-        NSString *message;
-        switch (currentState) {
+        NSError *error;
+        switch (self.oadState) {
             case OADStateWaitForCompletion:
+                PTDLog(@"OAD completed in %f seconds", -[self.downloadStartDate timeIntervalSinceNow]-WATCHDOG_TIMER_INTERVAL);
+                break;
+                
             case OADStateSentNewHeader:
-                PTDLog(@"Update completed in %f seconds", MAX(0,-[self.downloadStartDate timeIntervalSinceNow]-WATCHDOG_TIMER_INTERVAL));
-                [self completeWithError:nil];
-                [self cancelUpdateFirmware];
-                return;
+                PTDLog(@"Bean is resetting to small OAD-only image.");
+                break;
                 
             case OADStateEnableNotify:
-                message = @"Timeout configuring OAD characteristics.";
+                error = [NSError errorWithDomain:ERROR_DOMAIN
+                                            code:ERROR_CODE
+                                        userInfo:@{NSLocalizedDescriptionKey:@"Timeout configuring OAD characteristics."}];
                 break;
                 
             case OADStateSendingPackets:
-                message = @"Timeout sending firmware.";
+                error = [NSError errorWithDomain:ERROR_DOMAIN
+                                            code:ERROR_CODE
+                                        userInfo:@{NSLocalizedDescriptionKey:@"Timeout sending firmware."}];
                 break;
                 
             default:
-                message = @"Unexpected watchdog timeout.";
+                error = [NSError errorWithDomain:ERROR_DOMAIN
+                                            code:ERROR_CODE
+                                        userInfo:@{NSLocalizedDescriptionKey:@"Unexpected watchdog timeout."}];
                 break;
         }
         
         [self cancelUpdateFirmware];
-        [self completeWithError:[NSError errorWithDomain:ERROR_DOMAIN
-                                                    code:ERROR_CODE
-                                                userInfo:@{NSLocalizedDescriptionKey:message}]];
+        [self completeWithError:error];
     } else {
         self.watchdogSet = YES;
     }
