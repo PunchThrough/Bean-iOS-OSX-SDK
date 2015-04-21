@@ -57,6 +57,7 @@
  */
 #if TARGET_OS_IPHONE // This is used in iOS 8
 - (void)peripheral:(CBPeripheral *)peripheral didReadRSSI:(NSNumber *)RSSI error:(NSError *)error{
+    if (error) PTDLog(@"PTDBleDevice error: peripheral:%@ didReadRSSI: %@ error: %@", peripheral, RSSI, error);
     NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
                             peripheral ?: [NSNull null], @"peripheral",
                             RSSI ?: [NSNull null], @"rssi",
@@ -75,6 +76,7 @@
 }
 #endif
 - (void)peripheralDidUpdateRSSI:(CBPeripheral *)peripheral error:(NSError *)error{
+    if (error) PTDLog(@"PTDBleDevice error: peripheralDidUpdateRSSI: %@ error: %@", peripheral, error);
     NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
                             peripheral ?: [NSNull null], @"peripheral",
                             error ?: [NSNull null], @"error",
@@ -92,6 +94,7 @@
     [self rssiDidUpdateWithError:error];
 }
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverServices:(NSError *)error{
+    if (error) PTDLog(@"PTDBleDevice error: peripheral:%@ didDiscoverServices: error:%@", peripheral, error);
     NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
                             peripheral ?: [NSNull null], @"peripheral",
                             error ?: [NSNull null], @"error",
@@ -106,6 +109,7 @@
     }
 }
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverIncludedServicesForService:(CBService *)service error:(NSError *)error{
+    if (error) PTDLog(@"PTDBleDevice error: peripheral:%@ didDiscoverIncludedServicesForService:%@ error:%@", peripheral, service, error);
     NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
                             peripheral ?: [NSNull null], @"peripheral",
                             service ?: [NSNull null], @"service",
@@ -121,6 +125,7 @@
     }
 }
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error{
+    if (error) PTDLog(@"PTDBleDevice error: peripheral:%@ didDiscoverCharacteristicsForService:%@ error:%@", peripheral, service, error);
     NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
                             peripheral ?: [NSNull null], @"peripheral",
                             service ?: [NSNull null], @"service",
@@ -136,6 +141,7 @@
     }
 }
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error{
+    if (error) PTDLog(@"PTDBleDevice error: peripheral:%@ didUpdateValueForCharacteristic:%@ error:%@", peripheral, characteristic, error);
     NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
                             peripheral ?: [NSNull null], @"peripheral",
                             characteristic ?: [NSNull null], @"characteristic",
@@ -151,6 +157,7 @@
     }
 }
 - (void)peripheral:(CBPeripheral *)peripheral didWriteValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error{
+    if (error) PTDLog(@"PTDBleDevice error: peripheral:%@ didWriteValueForCharacteristic:%@ error:%@", peripheral, characteristic, error);
     NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
                             peripheral ?: [NSNull null], @"peripheral",
                             characteristic ?: [NSNull null], @"characteristic",
@@ -166,6 +173,7 @@
     }
 }
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateNotificationStateForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error{
+    if (error) PTDLog(@"PTDBleDevice error: peripheral:%@ didUpdateNotificationStateForCharacteristic:%@ error:%@", peripheral, characteristic, error);
     NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
                             peripheral ?: [NSNull null], @"peripheral",
                             characteristic ?: [NSNull null], @"characteristic",
@@ -181,6 +189,7 @@
     }
 }
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverDescriptorsForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error{
+    if (error) PTDLog(@"PTDBleDevice error: peripheral:%@ didDiscoverDescriptorsForCharacteristic:%@ error:%@", peripheral, characteristic, error);
     NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
                             peripheral ?: [NSNull null], @"peripheral",
                             characteristic ?: [NSNull null], @"characteristic",
@@ -196,6 +205,7 @@
     }
 }
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForDescriptor:(CBDescriptor *)descriptor error:(NSError *)error{
+    if (error) PTDLog(@"PTDBleDevice error: peripheral:%@ didUpdateValueForDescriptor:%@ error:%@", peripheral, descriptor, error);
     NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
                             peripheral ?: [NSNull null], @"peripheral",
                             descriptor ?: [NSNull null], @"descriptor",
@@ -211,6 +221,7 @@
     }
 }
 - (void)peripheral:(CBPeripheral *)peripheral didWriteValueForDescriptor:(CBDescriptor *)descriptor error:(NSError *)error{
+    if (error) PTDLog(@"PTDBleDevice error: peripheral:%@ didWriteValueForDescriptor:%@ error:%@", peripheral, descriptor, error);
     NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
                             peripheral ?: [NSNull null], @"peripheral",
                             descriptor ?: [NSNull null], @"descriptor",
