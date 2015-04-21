@@ -55,6 +55,7 @@ typedef enum { //These occur in sequence
     NSTimer*                    arduinoOADStateTimout;
     NSTimer*                    arduinoOADChunkSendTimer;
     void (^_firmwareUpdateProgressHandler)(NSNumber *percentageComplete, NSError *error);
+    NSDate*                     firmwareUpdateStartTime;
     
 }
 
@@ -402,6 +403,7 @@ typedef enum { //These occur in sequence
     // TODO: make sure OAD profile is valid
     
     self.updateInProgress = TRUE;
+    if (!firmwareUpdateStartTime) firmwareUpdateStartTime = [NSDate date];
     _firmwareUpdateProgressHandler = progressHandler;
     
     // Shorter connection interval -> faster transfer
@@ -648,8 +650,14 @@ typedef enum { //These occur in sequence
         // Check if we are mid-update
         if ( self.updateInProgress ) {
             if ( [self firmwareCurrent] ) {
-                PTDLog(@"firmware update complete");
+                PTDLog(@"firmware update complete in %f seconds.", -[firmwareUpdateStartTime timeIntervalSinceNow]);
+                firmwareUpdateStartTime = NULL;
                 self.updateInProgress = FALSE;
+                if(_delegate){
+                    if([_delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]){
+                            [(id<PTDBeanExtendedDelegate>)_delegate bean:self completedFirmwareUploadWithError:NULL];
+                    }
+                }
             } else {
                 [self updateFirmwareWithProgressHandler:_firmwareUpdateProgressHandler];
                 PTDLog(@"firmware update continues");
