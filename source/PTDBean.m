@@ -598,10 +598,6 @@ typedef enum { //These occur in sequence
     if(_state != BeanState_ConnectedAndValidated ||
        _peripheral.state != CBPeripheralStateConnected) //This second conditional is an assertion
     {
-        if(self.delegate && [self.delegate respondsToSelector:@selector(bean:error:)]) {
-            NSError *error = [BEAN_Helper basicError:@"Bean not connected" domain:NSStringFromClass([self class]) code:BeanErrors_NotConnected];
-            [self.delegate bean:self error:error];
-        }
         return NO;
     }
     return YES;
