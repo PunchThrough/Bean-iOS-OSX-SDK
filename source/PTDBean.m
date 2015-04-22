@@ -602,6 +602,15 @@ typedef enum { //These occur in sequence
     {
         return NO;
     }
+    
+    // Initialize Application Messaging layer - TODO: move elsewhere
+    if ( !appMessageLayer && [(id<Profile_Protocol>)gatt_serial_profile isValid:nil] ) {
+        appMessageLayer = [[AppMessagingLayer alloc] initWithGattSerialProfile:gatt_serial_profile];
+        appMessageLayer.delegate = self;
+        gatt_serial_profile.delegate = appMessageLayer;
+        [self readRadioConfig];
+    }
+    
     return YES;
 }
 -(BOOL)validScratchNumber:(NSInteger)scratchNumber {
@@ -631,12 +640,6 @@ typedef enum { //These occur in sequence
     if(![self requiredProfilesAreValid]) return;
     //At this point, all required profiles are validated
     if(_state != BeanState_ConnectedAndValidated){
-        //Initialize Application Messaging layer
-        if ( [(id<Profile_Protocol>)gatt_serial_profile isValid:nil] ) {
-            appMessageLayer = [[AppMessagingLayer alloc] initWithGattSerialProfile:gatt_serial_profile];
-            appMessageLayer.delegate = self;
-            gatt_serial_profile.delegate = appMessageLayer;
-        }
         
         if(validationRetryTimer)[validationRetryTimer invalidate];
         validationRetryTimer = nil;
