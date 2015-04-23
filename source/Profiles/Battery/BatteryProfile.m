@@ -33,16 +33,7 @@
         }
     }
 }
--(void)validate
-{
-    // Discover services
-    PTDLog(@"Searching for Battery Monitoring service: %@", SERVICE_BATTERY_MONITOR);
-    if(peripheral.state == CBPeripheralStateConnected)
-    {
-        [peripheral discoverServices:[NSArray arrayWithObjects:[CBUUID UUIDWithString:SERVICE_BATTERY_MONITOR]
-                                      , nil]];
-    }
-}
+
 -(BOOL)isValid:(NSError**)error
 {
     return (service_battery &&

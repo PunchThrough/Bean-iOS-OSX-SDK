@@ -44,16 +44,7 @@
     }
     return self;
 }
--(void)validate
-{
-    // Discover services
-    PTDLog(@"Searching for Gatt Serial Pass service: %@", GLOBAL_SERIAL_PASS_SERVICE_UUID);
-    if(peripheral.state == CBPeripheralStateConnected)
-    {
-        [peripheral discoverServices:[NSArray arrayWithObjects:[CBUUID UUIDWithString:GLOBAL_SERIAL_PASS_SERVICE_UUID]
-                                      , nil]];
-    }
-}
+
 -(BOOL)isValid:(NSError**)error
 {
     BOOL valid = (serial_pass_characteristic &&

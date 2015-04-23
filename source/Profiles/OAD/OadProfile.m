@@ -148,16 +148,6 @@ typedef struct {
 
 #pragma mark - BleProfile
 
-/*- (void)validate
-{
-    // Discover services
-    PTDLog(@"Searching for OAD service: %@", SERVICE_OAD);
-    if(peripheral.state == CBPeripheralStateConnected)
-    {
-        [peripheral discoverServices:@[[CBUUID UUIDWithString:SERVICE_OAD]]];
-    }
-}*/
-
 - (BOOL)isValid:(NSError**)error
 {
     return (self.characteristicOADIdentify &&

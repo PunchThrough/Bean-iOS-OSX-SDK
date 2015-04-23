@@ -28,16 +28,7 @@
     }
     return self;
 }
--(void)validate
-{
-    // Discover services
-    PTDLog(@"Searching for Device Information service: %@", SERVICE_DEVICE_INFORMATION);
-    if(peripheral.state == CBPeripheralStateConnected)
-    {
-        [peripheral discoverServices:[NSArray arrayWithObjects:[CBUUID UUIDWithString:SERVICE_DEVICE_INFORMATION]
-                                      , nil]];
-    }
-}
+
 -(BOOL)isValid:(NSError**)error
 {
     return (service_deviceInformation &&
