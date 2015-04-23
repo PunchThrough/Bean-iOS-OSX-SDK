@@ -17,14 +17,28 @@
     CBCharacteristic* characteristic_software_version;
 }
 
++(void)load
+{
+    [super registerProfile:self serviceUUID:SERVICE_DEVICE_INFORMATION];
+}
+
 #pragma mark Public Methods
 
--(id)initWithPeripheral:(CBPeripheral*)aPeripheral
+-(id)initWithService:(CBService*)service
 {
     self = [super init];
     if (self) {
         //Init Code
-        peripheral = aPeripheral;
+        service_deviceInformation = service;
+        peripheral = service.peripheral;
+        
+        // Find characteristics of service
+        NSArray * characteristics = [NSArray arrayWithObjects:
+                                     [CBUUID UUIDWithString:CHARACTERISTIC_HARDWARE_VERSION],
+                                     [CBUUID UUIDWithString:CHARACTERISTIC_FIRMWARE_VERSION],
+                                     [CBUUID UUIDWithString:CHARACTERISTIC_SOFTWARE_VERSION],
+                                     nil];
+        [peripheral discoverCharacteristics:characteristics forService:service];
     }
     return self;
 }
@@ -57,47 +71,47 @@
 }
 
 #pragma mark CBPeripheralDelegate callbacks
--(void)peripheral:(CBPeripheral *)aPeripheral didDiscoverServices:(NSError *)error
-{
-    if (!error) {
-        if(!(service_deviceInformation))
-        {
-            if(peripheral.services)
-            {
-                for (CBService * service in peripheral.services) {
-                    if ([service.UUID isEqual:[CBUUID UUIDWithString:SERVICE_DEVICE_INFORMATION]]) {
-                        PTDLog(@"%@: Device Information profile  found", self.class.description);
-                        
-                        // Save Dev Info service
-                        service_deviceInformation = service;
-
-                        //Check if characterisics are already found.
-                        [self __processCharacteristics];
-                        
-                        //If all characteristics are found
-                        if(characteristic_hardware_version &&
-                             characteristic_firmware_version &&
-                             characteristic_software_version)
-                        {
-                            PTDLog(@"%@: Found all Device Information characteristics", self.class.description);
-                            [peripheral readValueForCharacteristic:characteristic_firmware_version];
-                        }else{
-                            // Find characteristics of service
-                            NSArray * characteristics = [NSArray arrayWithObjects:
-                                                         [CBUUID UUIDWithString:CHARACTERISTIC_HARDWARE_VERSION],
-                                                         [CBUUID UUIDWithString:CHARACTERISTIC_FIRMWARE_VERSION],
-                                                         [CBUUID UUIDWithString:CHARACTERISTIC_SOFTWARE_VERSION],
-                                                         nil];
-                            [peripheral discoverCharacteristics:characteristics forService:service];
-                        }
-                    }
-                }
-            }
-        }
-    }else {
-        PTDLog(@"%@: Service discovery was unsuccessful", self.class.description);
-    }
-}
+//-(void)peripheral:(CBPeripheral *)aPeripheral didDiscoverServices:(NSError *)error
+//{
+//    if (!error) {
+//        if(!(service_deviceInformation))
+//        {
+//            if(peripheral.services)
+//            {
+//                for (CBService * service in peripheral.services) {
+//                    if ([service.UUID isEqual:[CBUUID UUIDWithString:SERVICE_DEVICE_INFORMATION]]) {
+//                        PTDLog(@"%@: Device Information profile  found", self.class.description);
+//                        
+//                        // Save Dev Info service
+//                        service_deviceInformation = service;
+//
+//                        //Check if characterisics are already found.
+//                        [self __processCharacteristics];
+//                        
+//                        //If all characteristics are found
+//                        if(characteristic_hardware_version &&
+//                             characteristic_firmware_version &&
+//                             characteristic_software_version)
+//                        {
+//                            PTDLog(@"%@: Found all Device Information characteristics", self.class.description);
+//                            [peripheral readValueForCharacteristic:characteristic_firmware_version];
+//                        }else{
+//                            // Find characteristics of service
+//                            NSArray * characteristics = [NSArray arrayWithObjects:
+//                                                         [CBUUID UUIDWithString:CHARACTERISTIC_HARDWARE_VERSION],
+//                                                         [CBUUID UUIDWithString:CHARACTERISTIC_FIRMWARE_VERSION],
+//                                                         [CBUUID UUIDWithString:CHARACTERISTIC_SOFTWARE_VERSION],
+//                                                         nil];
+//                            [peripheral discoverCharacteristics:characteristics forService:service];
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }else {
+//        PTDLog(@"%@: Service discovery was unsuccessful", self.class.description);
+//    }
+//}
 
 -(void)peripheral:(CBPeripheral *)aPeripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error
 {

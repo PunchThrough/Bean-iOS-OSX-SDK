@@ -11,6 +11,7 @@
 @protocol Profile_Protocol;
 @protocol ProfileDelegate_Protocol <NSObject>
 
+-(void)profileDiscovered:(id<Profile_Protocol>)profile;
 -(void)profileValidated:(id<Profile_Protocol>)profile;
 
 @end

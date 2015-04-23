@@ -10,9 +10,6 @@
 
 // OAD implementation based on http://processors.wiki.ti.com/images/8/82/OAD_for_CC254x.pdf
 
-// TODO:
-// Stay 2 packets ahead?
-
 #define SERVICE_OAD                     @"0xF000FFC0-0451-4000-B000-000000000000"
 #define CHARACTERISTIC_OAD_IDENTIFY     @"0xF000FFC1-0451-4000-B000-000000000000"
 #define CHARACTERISTIC_OAD_BLOCK        @"0xF000FFC2-0451-4000-B000-000000000000"
@@ -88,15 +85,24 @@ typedef struct {
 
 @implementation OadProfile
 
++(void)load
+{
+    [super registerProfile:self serviceUUID:SERVICE_OAD];
+}
+
 #pragma mark - NSObject
 
-- (instancetype)initWithPeripheral:(CBPeripheral*)aPeripheral delegate:(id<OAD_Delegate>)delegate
+- (instancetype)initWithService:(CBService*)service //delegate:(id<OAD_Delegate>)delegate
 {
     self = [super init];
     if (self) {
-        self.delegate = delegate;
-        peripheral = aPeripheral;
+        //self.delegate = delegate;
+        peripheral = service.peripheral;
         self.oadState = OADStateIdle;
+        self.serviceOAD = service;
+        [peripheral discoverCharacteristics:@[[CBUUID UUIDWithString:CHARACTERISTIC_OAD_IDENTIFY],
+                                              [CBUUID UUIDWithString:CHARACTERISTIC_OAD_BLOCK]]
+                                 forService:service];
     }
     return self;
 }
@@ -156,34 +162,12 @@ typedef struct {
 
 #pragma mark - CBPeripheralDelegate
 
-- (void)peripheral:(CBPeripheral *)aPeripheral didDiscoverServices:(NSError *)error
-{
-    self.watchdogSet = NO;
-    if (!error && !self.serviceOAD && peripheral.services) {
-        CBUUID *oadServiceUUID = [CBUUID UUIDWithString:SERVICE_OAD];
-        for (CBService *service in peripheral.services) {
-            if ([service.UUID isEqual:oadServiceUUID]) {
-                self.serviceOAD = service;
-                
-                if (![self processCharacteristics]) {
-                    [peripheral discoverCharacteristics:@[[CBUUID UUIDWithString:CHARACTERISTIC_OAD_IDENTIFY],
-                                                          [CBUUID UUIDWithString:CHARACTERISTIC_OAD_BLOCK]]
-                                             forService:service];
-                }
-                break;
-            }
-        }
-    }
-}
-
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error
 {
     self.watchdogSet = NO;
     if (!error) {
-        if ([service isEqual:self.serviceOAD]) {
-            if (![self processCharacteristics]) {
-                PTDLog(@"Did not find all OAD characteristics\n");
-            }
+        if (![self processCharacteristics]) {
+            PTDLog(@"Did not find all OAD characteristics\n");
         }
     } else {
         PTDLog(@"Error discovering characteristics: %@", [error localizedDescription]);

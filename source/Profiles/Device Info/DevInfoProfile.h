@@ -20,7 +20,7 @@
 
 @property (nonatomic, strong) NSString *firmwareVersion;
 
--(id)initWithPeripheral:(CBPeripheral*)peripheral;
+-(id)initWithService:(CBService*)service;
 
 @end
 

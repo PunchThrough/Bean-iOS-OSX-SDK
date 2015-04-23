@@ -7,10 +7,21 @@
 //
 
 #import "PTDBleDevice.h"
+#import "BleProfile.h"
 #import "Profile_Protocol.h"
 #import "CBPeripheral+RSSI_Universal.h"
 
 @implementation PTDBleDevice
+
+#pragma mark - Profile_Protocol
+
+-(void)profileDiscovered:(id<Profile_Protocol>)profile
+{
+}
+
+-(void)profileValidated:(id<Profile_Protocol>)profile
+{
+}
 
 #pragma mark - Public Methods
 -(id)initWithPeripheral:(CBPeripheral*)peripheral{
@@ -18,15 +29,16 @@
     if (self) {
         _peripheral = peripheral;
         _peripheral.delegate = self;
+        _profiles = [[NSMutableDictionary alloc] init];
     }
     return self;
 }
 
--(void)interrogateAndValidate{
-    [_peripheral discoverServices:nil];
+-(void)discoverServices{
+    [_peripheral discoverServices:[BleProfile registeredProfiles]];
 }
 
--(BOOL)requiredProfilesAreValid{
+/*-(BOOL)requiredProfilesAreValid{
     for(id<Profile_Protocol> profile in _profiles){
         if([profile isRequired]
            && ![profile isValid:nil]){
@@ -34,7 +46,7 @@
         }
     }
     return TRUE;
-}
+}*/
 
 #pragma mark "Virtual" Methods
 -(void)rssiDidUpdateWithError:(NSError*)error{
@@ -100,14 +112,19 @@
                             error ?: [NSNull null], @"error",
                             nil];
     [[NSNotificationCenter defaultCenter] postNotificationName: @"didDiscoverServices" object:params];
-    for (id<Profile_Protocol> profile in _profiles) {
-        if(profile){
-            if([profile respondsToSelector:@selector(peripheral:didDiscoverServices:)]){
-                [profile peripheral:peripheral didDiscoverServices:error];
+    
+    for ( CBService *service in peripheral.services ) {
+        if ( service && service.UUID && !_profiles[service.UUID] ) {
+ 
+            BleProfile *profile = [BleProfile createBleProfileWithService:service];
+            if (profile) {
+                _profiles[service.UUID] = profile;
+                [self profileDiscovered:profile];
             }
         }
     }
 }
+
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverIncludedServicesForService:(CBService *)service error:(NSError *)error{
     if (error) PTDLog(@"PTDBleDevice error: peripheral:%@ didDiscoverIncludedServicesForService:%@ error:%@", peripheral, service, error);
     NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
@@ -116,14 +133,13 @@
                             error ?: [NSNull null], @"error",
                             nil];
     [[NSNotificationCenter defaultCenter] postNotificationName: @"didDiscoverIncludedServicesForService" object:params];
-    for (id<Profile_Protocol> profile in _profiles) {
-        if(profile){
-            if([profile respondsToSelector:@selector(peripheral:didDiscoverIncludedServicesForService:error:)]){
-                [profile peripheral:peripheral didDiscoverIncludedServicesForService:service error:error];
-            }
-        }
-    }
+    
+    BleProfile* profile = _profiles[service.UUID];
+    if (profile)
+        if ([profile respondsToSelector:@selector(peripheral:didDiscoverIncludedServicesForService:error:)])
+            [profile peripheral:peripheral didDiscoverIncludedServicesForService:service error:error];
 }
+
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error{
     if (error) PTDLog(@"PTDBleDevice error: peripheral:%@ didDiscoverCharacteristicsForService:%@ error:%@", peripheral, service, error);
     NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
@@ -132,14 +148,13 @@
                             error ?: [NSNull null], @"error",
                             nil];
     [[NSNotificationCenter defaultCenter] postNotificationName: @"didDiscoverCharacteristicsForService" object:params];
-    for (id<Profile_Protocol> profile in _profiles) {
-        if(profile){
-            if([profile respondsToSelector:@selector(peripheral:didDiscoverCharacteristicsForService:error:)]){
-                [profile peripheral:peripheral didDiscoverCharacteristicsForService:service error:error];
-            }
-        }
-    }
+
+    BleProfile* profile = _profiles[service.UUID];
+    if(profile)
+        if([profile respondsToSelector:@selector(peripheral:didDiscoverCharacteristicsForService:error:)])
+            [profile peripheral:peripheral didDiscoverCharacteristicsForService:service error:error];
 }
+
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error{
     if (error) PTDLog(@"PTDBleDevice error: peripheral:%@ didUpdateValueForCharacteristic:%@ error:%@", peripheral, characteristic, error);
     NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
@@ -148,14 +163,13 @@
                             error ?: [NSNull null], @"error",
                             nil];
     [[NSNotificationCenter defaultCenter] postNotificationName: @"didUpdateValueForCharacteristic" object:params];
-    for (id<Profile_Protocol> profile in _profiles) {
-        if(profile){
-            if([profile respondsToSelector:@selector(peripheral:didUpdateValueForCharacteristic:error:)]){
-                [profile peripheral:peripheral didUpdateValueForCharacteristic:characteristic error:error];
-            }
-        }
-    }
+    
+    BleProfile* profile = _profiles[characteristic.service.UUID];
+    if(profile)
+        if([profile respondsToSelector:@selector(peripheral:didUpdateValueForCharacteristic:error:)])
+            [profile peripheral:peripheral didUpdateValueForCharacteristic:characteristic error:error];
 }
+
 - (void)peripheral:(CBPeripheral *)peripheral didWriteValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error{
     if (error) PTDLog(@"PTDBleDevice error: peripheral:%@ didWriteValueForCharacteristic:%@ error:%@", peripheral, characteristic, error);
     NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
@@ -164,14 +178,13 @@
                             error ?: [NSNull null], @"error",
                             nil];
     [[NSNotificationCenter defaultCenter] postNotificationName: @"didWriteValueForCharacteristic" object:params];
-    for (id<Profile_Protocol> profile in _profiles) {
-        if(profile){
-            if([profile respondsToSelector:@selector(peripheral:didWriteValueForCharacteristic:error:)]){
-                [profile peripheral:peripheral didWriteValueForCharacteristic:characteristic error:error];
-            }
-        }
-    }
+    
+    BleProfile* profile = _profiles[characteristic.service.UUID];
+    if(profile)
+        if([profile respondsToSelector:@selector(peripheral:didWriteValueForCharacteristic:error:)])
+            [profile peripheral:peripheral didWriteValueForCharacteristic:characteristic error:error];
 }
+
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateNotificationStateForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error{
     if (error) PTDLog(@"PTDBleDevice error: peripheral:%@ didUpdateNotificationStateForCharacteristic:%@ error:%@", peripheral, characteristic, error);
     NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
@@ -180,14 +193,13 @@
                             error ?: [NSNull null], @"error",
                             nil];
     [[NSNotificationCenter defaultCenter] postNotificationName: @"didUpdateNotificationStateForCharacteristic" object:params];
-    for (id<Profile_Protocol> profile in _profiles) {
-        if(profile){
-            if([profile respondsToSelector:@selector(peripheral:didUpdateNotificationStateForCharacteristic:error:)]){
-                [profile peripheral:peripheral didUpdateNotificationStateForCharacteristic:characteristic error:error];
-            }
-        }
-    }
+    
+    BleProfile* profile = _profiles[characteristic.service.UUID];
+    if(profile)
+        if([profile respondsToSelector:@selector(peripheral:didUpdateNotificationStateForCharacteristic:error:)])
+            [profile peripheral:peripheral didUpdateNotificationStateForCharacteristic:characteristic error:error];
 }
+
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverDescriptorsForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error{
     if (error) PTDLog(@"PTDBleDevice error: peripheral:%@ didDiscoverDescriptorsForCharacteristic:%@ error:%@", peripheral, characteristic, error);
     NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
@@ -196,14 +208,13 @@
                             error ?: [NSNull null], @"error",
                             nil];
     [[NSNotificationCenter defaultCenter] postNotificationName: @"didDiscoverDescriptorsForCharacteristic" object:params];
-    for (id<Profile_Protocol> profile in _profiles) {
-        if(profile){
-            if([profile respondsToSelector:@selector(peripheral:didDiscoverDescriptorsForCharacteristic:error:)]){
-                [profile peripheral:peripheral didDiscoverDescriptorsForCharacteristic:characteristic error:error];
-            }
-        }
-    }
+    
+    BleProfile* profile = _profiles[characteristic.service.UUID];
+    if(profile)
+        if([profile respondsToSelector:@selector(peripheral:didDiscoverDescriptorsForCharacteristic:error:)])
+            [profile peripheral:peripheral didDiscoverDescriptorsForCharacteristic:characteristic error:error];
 }
+
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForDescriptor:(CBDescriptor *)descriptor error:(NSError *)error{
     if (error) PTDLog(@"PTDBleDevice error: peripheral:%@ didUpdateValueForDescriptor:%@ error:%@", peripheral, descriptor, error);
     NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
@@ -212,14 +223,14 @@
                             error ?: [NSNull null], @"error",
                             nil];
     [[NSNotificationCenter defaultCenter] postNotificationName: @"didUpdateValueForDescriptor" object:params];
-    for (id<Profile_Protocol> profile in _profiles) {
-        if(profile){
-            if([profile respondsToSelector:@selector(peripheral:didUpdateValueForDescriptor:error:)]){
-                [profile peripheral:peripheral didUpdateValueForDescriptor:descriptor error:error];
-            }
-        }
-    }
+    
+    
+    BleProfile* profile = _profiles[descriptor.characteristic.service.UUID];
+    if(profile)
+        if([profile respondsToSelector:@selector(peripheral:didUpdateValueForDescriptor:error:)])
+            [profile peripheral:peripheral didUpdateValueForDescriptor:descriptor error:error];
 }
+
 - (void)peripheral:(CBPeripheral *)peripheral didWriteValueForDescriptor:(CBDescriptor *)descriptor error:(NSError *)error{
     if (error) PTDLog(@"PTDBleDevice error: peripheral:%@ didWriteValueForDescriptor:%@ error:%@", peripheral, descriptor, error);
     NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
@@ -228,14 +239,13 @@
                             error ?: [NSNull null], @"error",
                             nil];
     [[NSNotificationCenter defaultCenter] postNotificationName: @"didWriteValueForDescriptor" object:params];
-    for (id<Profile_Protocol> profile in _profiles) {
-        if(profile){
-            if([profile respondsToSelector:@selector(peripheral:didWriteValueForDescriptor:error:)]){
-                [profile peripheral:peripheral didWriteValueForDescriptor:descriptor error:error];
-            }
-        }
-    }
+    
+    BleProfile* profile = _profiles[descriptor.characteristic.service.UUID];
+    if(profile)
+        if([profile respondsToSelector:@selector(peripheral:didWriteValueForDescriptor:error:)])
+            [profile peripheral:peripheral didWriteValueForDescriptor:descriptor error:error];
 }
+
 - (void)peripheral:(CBPeripheral *)peripheral didModifyServices:(NSArray *)invalidatedServices{
     NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
                             peripheral ?: [NSNull null], @"peripheral",

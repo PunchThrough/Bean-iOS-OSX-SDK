@@ -16,7 +16,7 @@
 
 @interface PTDBleDevice : NSObject <CBPeripheralDelegate>{
     CBPeripheral*               _peripheral;
-    NSArray*                    _profiles;
+    NSMutableDictionary*        _profiles;
     NSNumber*                   _RSSI;
     NSDictionary*               _advertisementData;
     NSDate*                     _lastDiscovered;
@@ -24,7 +24,7 @@
 
 
 -(id)initWithPeripheral:(CBPeripheral*)peripheral;
--(void)interrogateAndValidate;
--(BOOL)requiredProfilesAreValid;
+-(void)discoverServices;
+//-(BOOL)requiredProfilesAreValid;
 
 @end

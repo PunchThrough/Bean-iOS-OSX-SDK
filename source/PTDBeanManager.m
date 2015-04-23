@@ -315,9 +315,9 @@
     //If there is no such peripheral, return
     if(!bean)return;
     //Mark Bean peripheral as no longer being in a connection attempt
-    bean.state = BeanState_AttemptingValidation;
+    //bean.state = BeanState_AttemptingValidation;
     //Wait for Bean validation before responding to delegate
-    [bean interrogateAndValidate];
+    [bean discoverServices];
 }
 
 - (void)centralManager:(CBCentralManager *)central didFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error{

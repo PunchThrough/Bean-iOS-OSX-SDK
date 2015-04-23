@@ -24,9 +24,15 @@
 }
 
 @property (nonatomic, weak) id<ProfileDelegate_Protocol> profileDelegate;
-@property (nonatomic) BOOL isRequired;
+//@property (nonatomic) BOOL isRequired;
 
 -(void)validate __attribute__((unavailable("You should always override this")));
 -(BOOL)isValid:(NSError**)error __attribute__((unavailable("You should always override this")));
 -(void)__notifyValidity;
+
+
++(void)registerProfile:(Class)subclass serviceUUID:(NSString*)uuid;
++(BleProfile*)createBleProfileWithService:(CBService*)service;
++(NSArray *)registeredProfiles;
+
 @end

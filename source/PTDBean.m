@@ -93,7 +93,9 @@ typedef enum { //These occur in sequence
     return nil;
 }
 -(NSString*)name{
+    //PTDLog(@"Bean advertname: %@", [_advertisementData objectForKey:CBAdvertisementDataLocalNameKey]);
     if(_peripheral.name){
+        //PTDLog(@"Bean _peripheral.name: %@", _peripheral.name);
         return _peripheral.name;
     }
     return [_advertisementData objectForKey:CBAdvertisementDataLocalNameKey]?[_advertisementData objectForKey:CBAdvertisementDataLocalNameKey]:@"Unknown";//Local Name
@@ -235,8 +237,10 @@ typedef enum { //These occur in sequence
 }
 - (void)readRadioConfig {
     if(![self connected]) {
+        PTDLog(@"Can't read radio config, not connect.");
         return;
     }
+    PTDLog(@"Sending command to read radio config.");
     [appMessageLayer sendMessageWithID:MSG_ID_BT_GET_CONFIG andPayload:nil];
 }
 -(void)setRadioConfig:(PTDBeanRadioConfig*)config {
@@ -245,7 +249,7 @@ typedef enum { //These occur in sequence
     }
     NSError *error;
     if (![config validate:&error]) {
-        [self.delegate bean:self error:error];
+
         return;
     }
     BT_RADIOCONFIG_T raw;
@@ -407,18 +411,19 @@ typedef enum { //These occur in sequence
     _firmwareUpdateProgressHandler = progressHandler;
     
     // Shorter connection interval -> faster transfer
+    // TODO: restore orginal radio config
     PTDBeanRadioConfig *config = [[PTDBeanRadioConfig alloc] init];
-    /*if (self.radioConfig) {
-        config.advertisingInterval = self.radioConfig.advertisingInterval;
+    if (self.radioConfig) {
         config.power = self.radioConfig.power;
         config.name = self.radioConfig.name;
-    } else {*/
-        config.advertisingInterval = 100;
+    } else {
         config.power = PTDTxPower_4dB;
         config.name = @"Bean";
-    //
+    }
     config.connectionInterval = 20;
+    config.advertisingInterval = 100;
     [self setRadioConfig:config];
+    [self readRadioConfig];
     
     [[PTDBeanRemoteFirmwareVersionManager sharedInstance] fetchFirmwareForVersion:self.newestAvailableFirmwareVersion withCompletion:^(NSArray *firmwareImagePaths, NSError *error) {
         if (!error) {
@@ -438,11 +443,20 @@ typedef enum { //These occur in sequence
     return self;
 }
 
--(void)interrogateAndValidate{
-    validationRetryCount = 0;
-    if(validationRetryTimer)[validationRetryTimer invalidate];
-    validationRetryTimer = nil;
-    validationRetryTimer = [NSTimer scheduledTimerWithTimeInterval:DELAY_BEFORE_PROFILE_VALIDATION target:self selector:@selector(__interrogateAndValidate) userInfo:nil repeats:NO];
+-(void)discoverServices{
+    
+    [super discoverServices];
+    _state = BeanState_ConnectedAndValidated;
+    if(_beanManager){
+        if([_beanManager respondsToSelector:@selector(bean:hasBeenValidated_error:)]){
+            [_beanManager bean:self hasBeenValidated_error:nil];
+        }
+    }
+    
+//    validationRetryCount = 0;
+//    if(validationRetryTimer)[validationRetryTimer invalidate];
+//    validationRetryTimer = nil;
+//    validationRetryTimer = [NSTimer scheduledTimerWithTimeInterval:DELAY_BEFORE_PROFILE_VALIDATION target:self selector:@selector(__interrogateAndValidate) userInfo:nil repeats:NO];
 }
 -(CBPeripheral*)peripheral{
     return _peripheral;
@@ -464,43 +478,43 @@ typedef enum { //These occur in sequence
 }
 
 #pragma mark - Private Methods
--(void)__interrogateAndValidate{
-    if(validationRetryCount >= PROFILE_VALIDATION_RETRIES){
-        //Clear retry counter
-        if(validationRetryTimer)[validationRetryTimer invalidate];
-        validationRetryTimer = nil;
-        //Notify Bean Manager of the error
-        if(_beanManager){
-            if([_beanManager respondsToSelector:@selector(bean:hasBeenValidated_error:)]){
-                NSError* error = [BEAN_Helper basicError:@"Validation Failed. Retry count exceeded" domain:NSStringFromClass([self class]) code:100];
-                [_beanManager bean:self hasBeenValidated_error:error];
-            }
-        }
-        return;
-    }else{
-        validationRetryTimer = [NSTimer scheduledTimerWithTimeInterval:PROFILE_VALIDATION_RETRY_TIMEOUT target:self selector:@selector(__interrogateAndValidate) userInfo:nil repeats:NO];
-    }
-    
-    //Initialize BLE Profiles
-    validationRetryCount++;
-    deviceInfo_profile = [[DevInfoProfile alloc] initWithPeripheral:_peripheral];
-    deviceInfo_profile.profileDelegate = self;
-    oad_profile = [[OadProfile alloc] initWithPeripheral:_peripheral  delegate:self];
-    oad_profile.profileDelegate = self;
-    gatt_serial_profile = [[GattSerialProfile alloc] initWithPeripheral:_peripheral  delegate:nil];
-    gatt_serial_profile.profileDelegate = self;
-    gatt_serial_profile.isRequired = FALSE;
-    battery_profile = [[BatteryProfile alloc] initWithPeripheral:_peripheral delegate:self];
-    battery_profile.profileDelegate = self;
-    battery_profile.isRequired = FALSE;
-    _profiles = [[NSArray alloc] initWithObjects:deviceInfo_profile,
-                oad_profile,
-                gatt_serial_profile,
-                battery_profile,
-                nil];
-    
-    [super interrogateAndValidate];
-}
+//-(void)__interrogateAndValidate{
+//    if(validationRetryCount >= PROFILE_VALIDATION_RETRIES){
+//        //Clear retry counter
+//        if(validationRetryTimer)[validationRetryTimer invalidate];
+//        validationRetryTimer = nil;
+//        //Notify Bean Manager of the error
+//        if(_beanManager){
+//            if([_beanManager respondsToSelector:@selector(bean:hasBeenValidated_error:)]){
+//                NSError* error = [BEAN_Helper basicError:@"Validation Failed. Retry count exceeded" domain:NSStringFromClass([self class]) code:100];
+//                [_beanManager bean:self hasBeenValidated_error:error];
+//            }
+//        }
+//        return;
+//    }else{
+//        validationRetryTimer = [NSTimer scheduledTimerWithTimeInterval:PROFILE_VALIDATION_RETRY_TIMEOUT target:self selector:@selector(__interrogateAndValidate) userInfo:nil repeats:NO];
+//    }
+//    
+//    //Initialize BLE Profiles
+//    validationRetryCount++;
+//    deviceInfo_profile = [[DevInfoProfile alloc] initWithPeripheral:_peripheral];
+//    deviceInfo_profile.profileDelegate = self;
+//    oad_profile = [[OadProfile alloc] initWithPeripheral:_peripheral  delegate:self];
+//    oad_profile.profileDelegate = self;
+//    gatt_serial_profile = [[GattSerialProfile alloc] initWithPeripheral:_peripheral  delegate:nil];
+//    gatt_serial_profile.profileDelegate = self;
+//    gatt_serial_profile.isRequired = FALSE;
+//    battery_profile = [[BatteryProfile alloc] initWithPeripheral:_peripheral delegate:self];
+//    battery_profile.profileDelegate = self;
+//    battery_profile.isRequired = FALSE;
+//    _profiles = [[NSArray alloc] initWithObjects:deviceInfo_profile,
+//                 oad_profile,
+//                 gatt_serial_profile,
+//                 battery_profile,
+//                 nil];
+//    
+//    [super interrogateAndValidate];
+//}
 
 -(void)__alertDelegateOfArduinoOADCompletion:(NSError*)error{
     [self __resetArduinoOADLocals];
@@ -602,15 +616,6 @@ typedef enum { //These occur in sequence
     {
         return NO;
     }
-    
-    // Initialize Application Messaging layer - TODO: move elsewhere
-    if ( !appMessageLayer && [(id<Profile_Protocol>)gatt_serial_profile isValid:nil] ) {
-        appMessageLayer = [[AppMessagingLayer alloc] initWithGattSerialProfile:gatt_serial_profile];
-        appMessageLayer.delegate = self;
-        gatt_serial_profile.delegate = appMessageLayer;
-        [self readRadioConfig];
-    }
-    
     return YES;
 }
 -(BOOL)validScratchNumber:(NSInteger)scratchNumber {
@@ -636,37 +641,50 @@ typedef enum { //These occur in sequence
 }
     
 #pragma mark Profile Delegate callbacks
+-(void)profileDiscovered:(id<Profile_Protocol>)profile
+{
+    profile.profileDelegate = self;
+    if ([profile isMemberOfClass:[OadProfile class]])
+        oad_profile = profile;
+    else if ([profile isMemberOfClass:[DevInfoProfile class]])
+        deviceInfo_profile = profile;
+    else if ([profile isMemberOfClass:[GattSerialProfile class]])
+        gatt_serial_profile = profile;
+    else if ([profile isMemberOfClass:[BatteryProfile class]])
+        battery_profile = profile;
+
+}
+    
 -(void)profileValidated:(id<Profile_Protocol>)profile{
-    if(![self requiredProfilesAreValid]) return;
-    //At this point, all required profiles are validated
-    if(_state != BeanState_ConnectedAndValidated){
-        
-        if(validationRetryTimer)[validationRetryTimer invalidate];
-        validationRetryTimer = nil;
-        self.state = BeanState_ConnectedAndValidated;
-        if(_beanManager){
-            if([_beanManager respondsToSelector:@selector(bean:hasBeenValidated_error:)]){
-                [_beanManager bean:self hasBeenValidated_error:nil];
-            }
-        }
-        
-        // Check if we are mid-update
-        if ( self.updateInProgress ) {
-            if ( [self firmwareCurrent] ) {
-                PTDLog(@"firmware update complete in %f seconds.", -[firmwareUpdateStartTime timeIntervalSinceNow]);
-                firmwareUpdateStartTime = NULL;
-                self.updateInProgress = FALSE;
-                if(_delegate){
-                    if([_delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]){
-                            [(id<PTDBeanExtendedDelegate>)_delegate bean:self completedFirmwareUploadWithError:NULL];
-                    }
+
+    PTDLog(@"Validated profile %@", profile);
+
+    // Check if we are mid-update
+    if ( profile == deviceInfo_profile && self.updateInProgress ) {
+        if ( [self firmwareCurrent] ) {
+            PTDLog(@"firmware update complete in %f seconds.", -[firmwareUpdateStartTime timeIntervalSinceNow]);
+            firmwareUpdateStartTime = NULL;
+            self.updateInProgress = FALSE;
+            if(_delegate){
+                if([_delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]){
+                    [(id<PTDBeanExtendedDelegate>)_delegate bean:self completedFirmwareUploadWithError:NULL];
                 }
-            } else {
-                [self updateFirmwareWithProgressHandler:_firmwareUpdateProgressHandler];
-                PTDLog(@"firmware update continues");
             }
+        } else {
+            [self updateFirmwareWithProgressHandler:_firmwareUpdateProgressHandler];
+            PTDLog(@"firmware update continues");
         }
     }
+    
+    if ( profile == gatt_serial_profile) {
+        if ( [(id<Profile_Protocol>)gatt_serial_profile isValid:nil] ) {
+            appMessageLayer = [[AppMessagingLayer alloc] initWithGattSerialProfile:gatt_serial_profile];
+            appMessageLayer.delegate = self;
+            gatt_serial_profile.delegate = appMessageLayer;
+            [self readRadioConfig];
+        }
+    }
+
 }
     
 #pragma mark -
@@ -692,22 +710,26 @@ typedef enum { //These occur in sequence
                 PTDLog(@"Invalid length of MSG_ID_BT_GET_CONFIG. Most likely an outdated version of FW");
                 break;
             }
+
+            BT_RADIOCONFIG_T rawData;
+            [payload getBytes:&rawData range:NSMakeRange(0, sizeof(BT_RADIOCONFIG_T))];
+            PTDBeanRadioConfig *config = [[PTDBeanRadioConfig alloc] init];
+            config.advertisingInterval = rawData.adv_int;
+            config.connectionInterval = rawData.conn_int;
+            // The (rawData.adv_mode != 0xFF) check is to catch a FW bug!
+            config.pairingPinEnabled = ((rawData.adv_mode & 0x80) && (rawData.adv_mode != 0xFF) )?TRUE:FALSE;
+            config.advertisingMode = rawData.adv_mode & (~0x80);
+            config.iBeacon_UUID = rawData.ibeacon_uuid;
+            config.iBeacon_majorID = rawData.ibeacon_major;
+            config.iBeacon_minorID = rawData.ibeacon_minor;
+            
+            config.name = [NSString stringWithUTF8String:(char*)rawData.local_name];
+            config.power = rawData.power;
+            _radioConfig = config;
+            
+            PTDLog(@"Radio config - Name: '%@' Advertising interval: %d Connection interval: %d", config.name, rawData.adv_int, rawData.conn_int );
+            
             if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateRadioConfig:)]) {
-                BT_RADIOCONFIG_T rawData;
-                [payload getBytes:&rawData range:NSMakeRange(0, sizeof(BT_RADIOCONFIG_T))];
-                PTDBeanRadioConfig *config = [[PTDBeanRadioConfig alloc] init];
-                config.advertisingInterval = rawData.adv_int;
-                config.connectionInterval = rawData.conn_int;
-                // The (rawData.adv_mode != 0xFF) check is to catch a FW bug!
-                config.pairingPinEnabled = ((rawData.adv_mode & 0x80) && (rawData.adv_mode != 0xFF) )?TRUE:FALSE;
-                config.advertisingMode = rawData.adv_mode & (~0x80);
-                config.iBeacon_UUID = rawData.ibeacon_uuid;
-                config.iBeacon_majorID = rawData.ibeacon_major;
-                config.iBeacon_minorID = rawData.ibeacon_minor;
-                
-                config.name = [NSString stringWithUTF8String:(char*)rawData.local_name];
-                config.power = rawData.power;
-                _radioConfig = config;
                 [self.delegate bean:self didUpdateRadioConfig:config];
             }
             break;
@@ -850,7 +872,7 @@ typedef enum { //These occur in sequence
 #pragma mark OAD callbacks
 -(void)device:(OadProfile*)device completedFirmwareUploadWithError:(NSError*)error{
     
-    if(FALSE && _delegate){
+    if( _delegate){
         if(/*[_delegate conformsToProtocol:@protocol(PTDBeanExtendedDelegate)]
            && */[_delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]){
             [(id<PTDBeanExtendedDelegate>)_delegate bean:self completedFirmwareUploadWithError:error];
