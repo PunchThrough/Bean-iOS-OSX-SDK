@@ -29,12 +29,13 @@
     if (self) {
         _peripheral = peripheral;
         _peripheral.delegate = self;
-        _profiles = [[NSMutableDictionary alloc] init];
-    }
+            }
     return self;
 }
 
 -(void)discoverServices{
+    _profiles = [[NSMutableDictionary alloc] init];
+
     [_peripheral discoverServices:[BleProfile registeredProfiles]];
 }
 

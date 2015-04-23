@@ -171,6 +171,7 @@
         [self __notifyDelegateOfDisconnectedBean:bean error:nil];
     }
     
+    bean.updateInProgress = FALSE;
     bean.autoReconnect = FALSE;
 }
 
