@@ -21,14 +21,12 @@
 
 #pragma mark Public Methods
 
--(id)initWithService:(CBService*)service // delegate:(id<BatteryProfileDelegate>)delegate;
-{
+-(id)initWithService:(CBService*)service{
     self = [super init];
     if (self) {
         //Init Code
         peripheral = service.peripheral;
         service_battery = service;
-        //_delegate = delegate;
         
         // Find characteristics of service
         NSArray * characteristics = [NSArray arrayWithObjects:
@@ -80,44 +78,6 @@
 }
 
 #pragma mark CBPeripheralDelegate callbacks
-//-(void)peripheral:(CBPeripheral *)aPeripheral didDiscoverServices:(NSError *)error
-//{
-//    if (!error) {
-//        if(!(service_battery))
-//        {
-//            if(peripheral.services)
-//            {
-//                for (CBService * service in peripheral.services) {
-//                    if ([service.UUID isEqual:[CBUUID UUIDWithString:SERVICE_BATTERY_MONITOR]]) {
-//                        PTDLog(@"%@: Battery Monitoring profile  found", self.class.description);
-//                        
-//                        // Save Dev Info service
-//                        service_battery = service;
-//                        
-//                        //Check if characterisics are already found.
-//                        [self __processCharacteristics];
-//                        
-//                        //If all characteristics are found
-//                        if(characteristic_battery_level)
-//                        {
-//                            PTDLog(@"%@: Found all Battery Monitoring characteristics", self.class.description);
-//                            //Set Battery Level characteristic to notify
-//                            [peripheral setNotifyValue:TRUE forCharacteristic:characteristic_battery_level];
-//                        }else{
-//                            // Find characteristics of service
-//                            NSArray * characteristics = [NSArray arrayWithObjects:
-//                                                         [CBUUID UUIDWithString:CHARACTERISTIC_BATTERY_MONITOR_LEVEL],
-//                                                         nil];
-//                            [peripheral discoverCharacteristics:characteristics forService:service];
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//    }else {
-//        PTDLog(@"%@: Service discovery was unsuccessful", self.class.description);
-//    }
-//}
 
 -(void)peripheral:(CBPeripheral *)aPeripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error
 {
@@ -156,7 +116,7 @@
         _batteryVoltage = [self __voltageFromPercentage:[NSNumber numberWithInt:byte]];
         PTDLog(@"%@: Battery Level Found: %@ Volts", self.class.description, _batteryVoltage);
         
-        if(_delegate){
+        if(self.delegate){
             if ([self.delegate respondsToSelector:@selector(batteryProfileDidUpdate:)]) {
                 [self.delegate batteryProfileDidUpdate:self];
             }

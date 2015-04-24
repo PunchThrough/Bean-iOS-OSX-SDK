@@ -216,7 +216,7 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
 /**
  *  Update the firmware with progress handler
  */
-- (void)updateFirmwareWithProgressHandler:(void (^)(NSNumber *percentageComplete, NSError *error))progressHandler;
+- (void)updateFirmware; //WithProgressHandler:(void (^)(NSNumber *percentageComplete, NSError *error))progressHandler;
  
 /**
  *  Represents last time this Bean was discovered while scanning.

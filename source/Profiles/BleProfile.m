@@ -42,15 +42,9 @@ static NSMutableDictionary * registeredSubclasses;
 -(void)__notifyValidity
 {
     if(profileHasReportedValidity == FALSE)
-    {
-        if (self.profileDelegate)
-        {
-            if([self.profileDelegate respondsToSelector:@selector(profileValidated:)])
-            {
-                [self.profileDelegate profileValidated:self];
-            }
-        }
-    }
+        if (self.validationCompletetion)
+            self.validationCompletetion(nil);
+
     profileHasReportedValidity = TRUE;
 }
 
@@ -67,6 +61,7 @@ static NSMutableDictionary * registeredSubclasses;
         PTDLog(@"Error, service %@ already registered to %@", uuid, subclass);
 }
 
+// Factory class
 +(BleProfile *)createBleProfileWithService:(CBService*)service
 {
     if ( registeredSubclasses[service.UUID] )

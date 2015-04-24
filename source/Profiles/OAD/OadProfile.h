@@ -34,7 +34,7 @@
 //-(void)oadDeviceCompletedOADUpload:(OAD_BLEDevice*)oadDevice;
 //-(void)oadDevice:(OAD_BLEDevice*)oadDevice OADUploadTimeLeft:(NSNumber*)seconds withPercentage:(NSNumber*)percentageComplete;
 //-(void)oadDeviceOADInvalidImage:(OAD_BLEDevice*)oadDevice;
--(BOOL)updateFirmwareWithImagePaths:(NSArray*)firmwareImages progressHandler:(void (^)(NSNumber *percentageComplete, NSError *error))progressHandler;
+-(BOOL)updateFirmwareWithImagePaths:(NSArray*)firmwareImages;// progressHandler:(void (^)(NSNumber *percentageComplete, NSError *error))progressHandler;
 
 // Cancels firmware update
 // No callbacks needed

@@ -58,8 +58,8 @@
 
 -(BOOL)isValid:(NSError**)error
 {
-    BOOL valid = (serial_pass_characteristic &&
-                  serial_pass_characteristic.isNotifying
+    BOOL valid = (serial_pass_characteristic //&&
+                  //serial_pass_characteristic.isNotifying
                   )?TRUE:FALSE;
     return valid;
 }
@@ -124,50 +124,6 @@
 }
 
 #pragma mark CBPeripheralDelegate callbacks
-////////////////  CBPeripheralDeligate Callbacks ////////////////////////////
-//-(void)peripheral:(CBPeripheral *)aPeripheral didDiscoverServices:(NSError *)error
-//{
-//    if (!error) {
-//        if(peripheral.services)
-//        {
-//            // Discover characteristics of found services
-//            for (CBService * service in peripheral.services) {
-//                // Save Gatt Serail service
-//                if ([service.UUID isEqual:[CBUUID UUIDWithString:GLOBAL_SERIAL_PASS_SERVICE_UUID]]) {
-//                    PTDLog(@"%@: GATT Serial Pass profile  found", self.class.description);
-//                    
-//                    // Save serial pass service
-//                    serial_pass_service = service;
-//                    
-//                    //Check if characterisics are already found.
-//                    [self __processCharacteristics];
-//                    
-//                    //If all characteristics are found
-//                    if(serial_pass_characteristic)
-//                    {
-//                        PTDLog(@"%@: Found all Gatt Serial characteristics", self.class.description);
-//                        if(serial_pass_characteristic.isNotifying){
-//                            [self __notifyValidity];
-//                        }else{
-//                            //Set characteristic to notify
-//                            [peripheral setNotifyValue:YES forCharacteristic:serial_pass_characteristic];
-//                            //Wait until the notification characteristic is registered successfully as "notify" and then alert delegate that device is valid
-//                        }
-//                    }else{
-//                        // Find characteristics of service
-//                        NSArray * characteristics = [NSArray arrayWithObjects:
-//                                                     [CBUUID UUIDWithString:GLOBAL_SERIAL_PASS_CHARACTERISTIC_UUID],
-//                                                     nil];
-//                        [peripheral discoverCharacteristics:characteristics forService:service];
-//                    }
-//                }
-//            }
-//        }
-//    }else {
-//        PTDLog(@"%@: GATT Serial Pass service discovery was unsuccessful", self.class.description);
-//        
-//    }
-//}
 
 -(void)peripheral:(CBPeripheral *)aPeripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error
 {
@@ -175,18 +131,13 @@
         [self __processCharacteristics];
         
         NSError* verificationerror;
-        if ((
-             serial_pass_characteristic
-             )){
+        if ( serial_pass_characteristic ){
             PTDLog(@"%@: Found all GATT Serial Pass characteristics", self.class.description);
             
-            if(serial_pass_characteristic.isNotifying){
-                [self __notifyValidity];
-            }else{
-                //Set characteristic to notify
+            if(!serial_pass_characteristic.isNotifying)
                 [peripheral setNotifyValue:YES forCharacteristic:serial_pass_characteristic];
-                //Wait until the notification characteristic is registered successfully as "notify" and then alert delegate that device is valid
-            }
+            
+            [self __notifyValidity];
         }else{
             // Could not find all characteristics!
             PTDLog(@"%@: Could not find all GATT Serial Pass characteristics!", self.class.description);
@@ -228,7 +179,7 @@
         PTDLog(@"%@: Gatt Serial Characteristic set to \"Notify\"", self.class.description);
         //Alert Delegate that device is connected. At this point, the device should be added to the list of connected devices.
         
-        [self __notifyValidity];
+        //[self __notifyValidity];
     }else{
         PTDLog(@"%@: Error trying to set Characteristic to \"Notify\"", self.class.description);
     }

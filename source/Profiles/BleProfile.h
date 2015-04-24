@@ -17,17 +17,18 @@
 #import "Profile_Protocol.h"
 #import "ProfileDelegate_Protocol.h"
 
-@interface BleProfile : NSObject <Profile_Protocol>
+@interface BleProfile : NSObject <CBPeripheralDelegate>
 {
 @protected CBPeripheral* peripheral;
 @protected BOOL profileHasReportedValidity;
 }
 
-@property (nonatomic, weak) id<ProfileDelegate_Protocol> profileDelegate;
-//@property (nonatomic) BOOL isRequired;
+@property (nonatomic, copy) void (^validationCompletetion)(NSError *error);
+@property (nonatomic, weak) id delegate;
+
 
 -(void)validate __attribute__((unavailable("You should always override this")));
--(BOOL)isValid:(NSError**)error __attribute__((unavailable("You should always override this")));
+-(BOOL)isValid:(NSError**)error; // __attribute__((unavailable("You should always override this")));
 -(void)__notifyValidity;
 
 

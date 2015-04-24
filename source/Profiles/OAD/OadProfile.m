@@ -56,13 +56,9 @@ typedef struct {
     data_block_t    block;
 } oad_packet_t;
 
-@interface OadProfile () {
-    
-    void (^_progressHandler)(NSNumber *percentageComplete, NSError *error);
-    
-}
+@interface OadProfile ()
 
-@property (weak, nonatomic)     id<OAD_Delegate>    delegate;
+//@property (weak, nonatomic)     id<OAD_Delegate>    delegate;
 
 @property (strong, nonatomic)   CBService           *serviceOAD;
 @property (strong, nonatomic)   CBCharacteristic    *characteristicOADBlock;
@@ -109,7 +105,7 @@ typedef struct {
 
 #pragma mark - PTDOADProfile
 
-- (BOOL)updateFirmwareWithImagePaths:(NSArray*)firmwareImages progressHandler:(void (^)(NSNumber *percentageComplete, NSError *error))progressHandler
+- (BOOL)updateFirmwareWithImagePaths:(NSArray*)firmwareImages// progressHandler:(void (^)(NSNumber *percentageComplete, NSError *error))progressHandler
 {
     
     PTDLog(@"OAD updating firmware with image paths: %@", firmwareImages);
@@ -132,7 +128,7 @@ typedef struct {
         return NO;
     }
     
-    _progressHandler = progressHandler;
+    //_progressHandler = progressHandler;
     
     self.firmwareImages = [NSMutableArray arrayWithArray:firmwareImages];
     
@@ -243,6 +239,7 @@ typedef struct {
     
     BOOL valid = self.characteristicOADBlock && self.characteristicOADIdentify;
     if (valid) {
+        PTDLog(@"%@: OAD found", self.class.description);
         [self __notifyValidity];
     }
     
@@ -282,12 +279,12 @@ typedef struct {
         // Update the delegate on our progress
         if (self.nextBlock) {
             NSNumber *percentage = [NSNumber numberWithFloat:(self.nextBlock * 1.0) / self.totalBlocks];
-            //float secondsSoFar = -[self.downloadStartDate timeIntervalSinceNow];
-            //self.leastSeconds = (secondsSoFar / self.nextBlock) * (self.totalBlocks - self.nextBlock);
-            //NSNumber *seconds = [NSNumber numberWithFloat:self.leastSeconds];
-            //[self.delegate device:self OADUploadTimeLeft:seconds withPercentage:percentage];
-            if (_progressHandler)
-                _progressHandler(percentage, nil);
+            float secondsSoFar = -[self.downloadStartDate timeIntervalSinceNow];
+            self.leastSeconds = (secondsSoFar / self.nextBlock) * (self.totalBlocks - self.nextBlock);
+            NSNumber *seconds = [NSNumber numberWithFloat:self.leastSeconds];
+            [self.delegate device:self OADUploadTimeLeft:seconds withPercentage:percentage];
+            //if (_progressHandler)
+            //    _progressHandler(percentage, nil);
         } else {
             self.downloadStartDate = [NSDate date];
         }

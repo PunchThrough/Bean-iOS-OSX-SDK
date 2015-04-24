@@ -8,18 +8,13 @@
 
 #import "PTDBleDevice.h"
 #import "BleProfile.h"
-#import "Profile_Protocol.h"
+//#import "Profile_Protocol.h"
 #import "CBPeripheral+RSSI_Universal.h"
 
 @implementation PTDBleDevice
 
-#pragma mark - Profile_Protocol
-
--(void)profileDiscovered:(id<Profile_Protocol>)profile
-{
-}
-
--(void)profileValidated:(id<Profile_Protocol>)profile
+// Meant to be subclassed.
+-(void)profileDiscovered:(BleProfile*)profile
 {
 }
 
@@ -35,19 +30,9 @@
 
 -(void)discoverServices{
     _profiles = [[NSMutableDictionary alloc] init];
-
     [_peripheral discoverServices:[BleProfile registeredProfiles]];
 }
 
-/*-(BOOL)requiredProfilesAreValid{
-    for(id<Profile_Protocol> profile in _profiles){
-        if([profile isRequired]
-           && ![profile isValid:nil]){
-            return FALSE;
-        }
-    }
-    return TRUE;
-}*/
 
 #pragma mark "Virtual" Methods
 -(void)rssiDidUpdateWithError:(NSError*)error{
@@ -77,7 +62,7 @@
                             error ?: [NSNull null], @"error",
                             nil];
     [[NSNotificationCenter defaultCenter] postNotificationName: @"peripheral:didReadRSSI:error:" object:params];
-    for (id<Profile_Protocol> profile in _profiles) {
+    for (BleProfile *profile in _profiles) {
         if(profile){
             if([profile respondsToSelector:@selector(peripheral:didReadRSSI:error:)]){
                 [profile peripheral:peripheral didReadRSSI:RSSI error:error];
@@ -95,7 +80,7 @@
                             error ?: [NSNull null], @"error",
                             nil];
     [[NSNotificationCenter defaultCenter] postNotificationName: @"peripheralDidUpdateRSSI:error:" object:params];
-    for (id<Profile_Protocol> profile in _profiles) {
+    for (BleProfile *profile in _profiles) {
         if(profile){
             if([profile respondsToSelector:@selector(peripheralDidUpdateRSSI:error:)]){
                 [profile peripheralDidUpdateRSSI:peripheral error:error];
@@ -120,8 +105,10 @@
             BleProfile *profile = [BleProfile createBleProfileWithService:service];
             if (profile) {
                 _profiles[service.UUID] = profile;
+                profile.delegate = self;
                 [self profileDiscovered:profile];
-            }
+            } else
+                PTDLog(@"Unknown service profile UUID: %@", service.UUID);
         }
     }
 }

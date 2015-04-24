@@ -18,7 +18,7 @@
 
 @interface GattSerialProfile : BleProfile
 
-@property (nonatomic, weak) id<GattSerialProfileDelegate> delegate;
+//@property (nonatomic, weak) id<GattSerialProfileDelegate> delegate;
 
 //-(id)initWithPeripheral:(CBPeripheral*)peripheral delegate:(id<GattSerialProfileDelegate>)delegate;
 -(void)sendMessage:(GattSerialMessage*)message;
