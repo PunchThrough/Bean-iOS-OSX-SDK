@@ -14,4 +14,6 @@
 
 @interface PTDBeanManager (Protected)<PTDBeanManager>
 
+-(CBCentralManager*)centralManager;
+
 @end

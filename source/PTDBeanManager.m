@@ -196,6 +196,10 @@
     [self __notifyDelegateOfConnectedBean:device error:error];
 }
 
+-(CBCentralManager *)centralManager {
+    return cbcentralmanager;
+}
+
 
 #pragma mark - Private methods
 -(PTDBean *)__processBeanRecordFromCBPeripheral:(CBPeripheral*)peripheral advertisementData:(NSDictionary *)advertisementData RSSI:(NSNumber *)RSSI{
