@@ -21,6 +21,8 @@
     NSMutableDictionary* beanRecords; //Uses NSUUID as key
 }
 
+NSString * const PTDBeanManagerConnectionOptionAutoReconnect = @"PTDBeanManagerConnectionOptionAutoReconnect";
+
 #pragma mark - Public methods
 
 -(instancetype)init{
@@ -113,10 +115,10 @@
 }
 
 -(void)connectToBean:(PTDBean*)bean_ error:(NSError**)error{
-    [self connectToBean:bean_ autoReconnect:bean_.autoReconnect error:error];
+    [self connectToBean:bean_ withOptions:NULL error:error];
 }
 
--(void)connectToBean:(PTDBean*)bean_ autoReconnect:(BOOL)reconnect error:(NSError**)error{
+-(void)connectToBean:(PTDBean*)bean_ withOptions:(NSDictionary*)options error:(NSError**)error{
     //Find BeanRecord that corresponds to this UUID
     PTDBean* bean = [beanRecords objectForKey:bean_.identifier];
     //If there is no such peripheral, return error
@@ -142,7 +144,8 @@
     //Attempt to connect to the corresponding CBPeripheral
     [cbcentralmanager connectPeripheral:bean.peripheral options:nil];
     //Auto Reconnect?
-    bean.autoReconnect = reconnect;
+    if (options && options[PTDBeanManagerConnectionOptionAutoReconnect] )
+        bean.autoReconnect = TRUE;
 }
 
 -(void)disconnectBean:(PTDBean*)bean_ error:(NSError**)error{

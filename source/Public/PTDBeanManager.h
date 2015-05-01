@@ -44,6 +44,11 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
     BeanManagerState_PoweredOn,
 };
 
+/**
+ *  Bean connection options
+ */
+extern NSString * const PTDBeanManagerConnectionOptionAutoReconnect;
+
 @protocol PTDBeanManagerDelegate;
 
 /**
@@ -156,10 +161,10 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
  *  Connects to Bean
  *
  * @param bean The Bean to connect to
- * @param autoReconnect Automatically reconnect if disconnected.
+ * @param options A dictionary of connection options
  * @param error Nil if successful. See <BeanErrors> for error codes.
  */
--(void)connectToBean:(PTDBean*)bean autoReconnect:(BOOL)reconnect error:(NSError**)error;
+-(void)connectToBean:(PTDBean*)bean withOptions:(NSDictionary*)options error:(NSError**)error;
 /**
  *  Disconnects from a Bean
  *
