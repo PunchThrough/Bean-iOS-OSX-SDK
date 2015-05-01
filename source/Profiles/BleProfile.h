@@ -23,7 +23,7 @@
 @protected BOOL profileHasReportedValidity;
 }
 
-@property (nonatomic, copy) void (^validationCompletetion)(NSError *error);
+@property (nonatomic, copy) void (^validationcompletion)(NSError *error);
 @property (nonatomic, weak) id delegate;
 
 

@@ -42,8 +42,8 @@ static NSMutableDictionary * registeredSubclasses;
 -(void)__notifyValidity
 {
     if(profileHasReportedValidity == FALSE)
-        if (self.validationCompletetion)
-            self.validationCompletetion(nil);
+        if (self.validationcompletion)
+            self.validationcompletion(nil);
 
     profileHasReportedValidity = TRUE;
 }

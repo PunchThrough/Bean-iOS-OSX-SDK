@@ -632,15 +632,15 @@ typedef enum { //These occur in sequence
     
     if ([profile isMemberOfClass:[OadProfile class]]) {
         oad_profile = (OadProfile*)profile;
-        oad_profile.validationCompletetion = checkFirmwareUpdateInProgress;
+        oad_profile.validationcompletion = checkFirmwareUpdateInProgress;
 
     } else if ([profile isMemberOfClass:[DevInfoProfile class]]) {
         deviceInfo_profile = (DevInfoProfile*)profile;
-        deviceInfo_profile.validationCompletetion = checkFirmwareUpdateInProgress;
+        deviceInfo_profile.validationcompletion = checkFirmwareUpdateInProgress;
     }
     else if ([profile isMemberOfClass:[GattSerialProfile class]]) {
         gatt_serial_profile = (GattSerialProfile*)profile;
-        gatt_serial_profile.validationCompletetion = ^(NSError* error) {
+        gatt_serial_profile.validationcompletion = ^(NSError* error) {
             if ( !error && [gatt_serial_profile isValid:nil] ) {
                 appMessageLayer = [[AppMessagingLayer alloc] initWithGattSerialProfile:gatt_serial_profile];
                 appMessageLayer.delegate = self;
@@ -652,7 +652,7 @@ typedef enum { //These occur in sequence
         };
     } else if ([profile isMemberOfClass:[BatteryProfile class]]) {
         battery_profile = (BatteryProfile*)profile;
-        battery_profile.validationCompletetion = ^(NSError *error) {
+        battery_profile.validationcompletion = ^(NSError *error) {
             [self batteryProfileDidUpdate:battery_profile];
         };
     }
