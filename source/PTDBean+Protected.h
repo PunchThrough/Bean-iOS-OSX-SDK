@@ -18,7 +18,6 @@
 @interface PTDBean (Protected)
 
 -(id)initWithPeripheral:(CBPeripheral*)peripheral beanManager:(id<PTDBeanManager>)manager;
--(void)interrogateAndValidate;
 
 -(CBPeripheral*)peripheral;
 

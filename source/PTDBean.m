@@ -402,7 +402,7 @@ typedef enum { //These occur in sequence
     
     // TODO: make sure OAD profile is valid
     
-    self.updateInProgress = TRUE;
+    _updateInProgress = TRUE;
     if (!firmwareUpdateStartTime) firmwareUpdateStartTime = [NSDate date];
     
     // Shorter connection interval -> faster transfer
@@ -425,6 +425,14 @@ typedef enum { //These occur in sequence
             [oad_profile updateFirmwareWithImagePaths:firmwareImagePaths];
         }
     }];
+}
+
+- (void)cancelFirmwareUpdate{
+    if (self.updateInProgress) {
+        _updateInProgress = FALSE;
+        if (oad_profile)
+            [oad_profile cancel];
+    }
 }
 
 #pragma mark - Protected Methods
@@ -610,7 +618,7 @@ typedef enum { //These occur in sequence
                     if ( [self firmwareCurrent] ) {
                         PTDLog(@"firmware update complete in %f seconds.", -[firmwareUpdateStartTime timeIntervalSinceNow]);
                         firmwareUpdateStartTime = NULL;
-                        self.updateInProgress = FALSE;
+                        _updateInProgress = FALSE;
                         if(_delegate){
                             if([_delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]){
                                 [(id<PTDBeanExtendedDelegate>)_delegate bean:self completedFirmwareUploadWithError:NULL];
@@ -844,6 +852,8 @@ typedef enum { //These occur in sequence
 #pragma mark OAD callbacks
 -(void)device:(OadProfile*)device completedFirmwareUploadWithError:(NSError*)error
 {
+    if ( error ) _updateInProgress = FALSE;
+    
     if ( error && _delegate && [_delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)] )
         [(id<PTDBeanExtendedDelegate>)_delegate bean:self completedFirmwareUploadWithError:error];
 }

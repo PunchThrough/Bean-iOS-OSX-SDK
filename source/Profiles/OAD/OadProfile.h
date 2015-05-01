@@ -38,7 +38,7 @@
 
 // Cancels firmware update
 // No callbacks needed
--(void)cancelUpdateFirmware;
+-(void)cancel;
 
 @end
 

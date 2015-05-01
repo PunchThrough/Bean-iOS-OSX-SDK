@@ -349,16 +349,10 @@ typedef struct {
     }
 }
 
-- (void)cancelUpdateFirmware
+- (void)cancel
 {
     if (self.oadState != OADStateIdle) {
-        self.oadState = OADStateIdle;
-        [self.watchdogTimer invalidate];
-        self.watchdogTimer = nil;
-        self.downloadStartDate = nil;
-        self.imageData = nil;
-        [peripheral setNotifyValue:NO forCharacteristic:self.characteristicOADBlock];
-        [peripheral setNotifyValue:NO forCharacteristic:self.characteristicOADIdentify];
+        [self completeWithError:NULL];
     }
 }
 
@@ -370,6 +364,8 @@ typedef struct {
     self.imageData = nil;
     [self.watchdogTimer invalidate];
     self.watchdogTimer = nil;
+    [peripheral setNotifyValue:NO forCharacteristic:self.characteristicOADBlock];
+    [peripheral setNotifyValue:NO forCharacteristic:self.characteristicOADIdentify];
     if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadWithError:)]) {
         [self.delegate device:self completedFirmwareUploadWithError:error];
     }
@@ -413,8 +409,7 @@ typedef struct {
                                         userInfo:@{NSLocalizedDescriptionKey:@"Unexpected watchdog timeout."}];
                 break;
         }
-        
-        [self cancelUpdateFirmware];
+
         [self completeWithError:error];
     } else {
         self.watchdogSet = YES;

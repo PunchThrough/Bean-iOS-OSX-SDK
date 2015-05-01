@@ -217,7 +217,12 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  *  Update the firmware with progress handler
  */
 - (void)updateFirmware; //WithProgressHandler:(void (^)(NSNumber *percentageComplete, NSError *error))progressHandler;
- 
+
+/**
+ *  Cancel firmware update
+ */
+- (void)cancelFirmwareUpdate;
+
 /**
  *  Represents last time this Bean was discovered while scanning.
  */
@@ -255,7 +260,7 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
 /**
   If true, an update is in progress
  */
-@property (nonatomic) Boolean updateInProgress;
+@property (nonatomic, readonly) Boolean updateInProgress;
 /// @name Radio Configuration
 /**
  Cached data for Bean's Radio Configuration. Should call <readRadioConfig> first to ensure this data is fresh.
