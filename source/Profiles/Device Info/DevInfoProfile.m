@@ -15,6 +15,7 @@
     CBCharacteristic* characteristic_hardware_version;
     CBCharacteristic* characteristic_firmware_version;
     CBCharacteristic* characteristic_software_version;
+    NSOperationQueue* firmwareVersionQueue;
 }
 
 +(void)load
@@ -28,7 +29,7 @@
 {
     self = [super init];
     if (self) {
-        //Init Code
+        //Init Code`
         service_deviceInformation = service;
         peripheral = service.peripheral;
         
@@ -39,6 +40,9 @@
                                      //[CBUUID UUIDWithString:CHARACTERISTIC_SOFTWARE_VERSION],
                                      nil];
         [peripheral discoverCharacteristics:characteristics forService:service];
+        firmwareVersionQueue = [[NSOperationQueue alloc] init];
+        firmwareVersionQueue.suspended = YES;
+        [self __notifyValidity];
     }
     return self;
 }
@@ -50,6 +54,22 @@
             characteristic_firmware_version &&
             //characteristic_software_version &&
             _firmwareVersion)?TRUE:FALSE;
+}
+
+-(void)readFirmwareVersionWithCompletion:(void (^)(void))firmwareVersionCompletion
+{
+    [firmwareVersionQueue addOperationWithBlock:firmwareVersionCompletion];
+}
+
+-(NSString*)firmwareVersion
+{
+    if (_firmwareVersion)
+        return _firmwareVersion;
+    PTDLog(@"firmwareVersion call blocking.");
+    // Wait until firmware version is available
+    NSOperation *op = [NSBlockOperation blockOperationWithBlock:^{}];
+    [firmwareVersionQueue addOperations:@[op] waitUntilFinished: YES];
+    return _firmwareVersion;
 }
 
 #pragma mark Private Functions
@@ -116,7 +136,8 @@
         if(characteristic == characteristic_firmware_version){
             _firmwareVersion = [[NSString alloc] initWithData:[characteristic value] encoding:NSUTF8StringEncoding];
             PTDLog(@"%@: Device Firmware Version Found: %@", self.class.description, _firmwareVersion);
-            [self __notifyValidity];
+            firmwareVersionQueue.suspended = NO;
+            //[self __notifyValidity];
         }
     }
 }

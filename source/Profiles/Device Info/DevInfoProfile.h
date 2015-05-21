@@ -21,6 +21,7 @@
 @property (nonatomic, strong) NSString *firmwareVersion;
 
 -(id)initWithService:(CBService*)service;
+-(void)readFirmwareVersionWithCompletion:(void (^)(void))firmwareVersionCompletion;
 
 @end
 
