@@ -14,4 +14,6 @@
 
 @interface PTDBeanManager (Protected)<PTDBeanManager>
 
+@property (nonatomic, readonly) CBCentralManager *centralManager;
+
 @end

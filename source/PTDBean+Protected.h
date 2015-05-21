@@ -20,7 +20,7 @@
 -(id)initWithPeripheral:(CBPeripheral*)peripheral beanManager:(id<PTDBeanManager>)manager;
 -(void)interrogateAndValidate;
 
--(CBPeripheral*)peripheral;
+@property (nonatomic, readonly) CBPeripheral *peripheral;
 
 -(void)setState:(BeanState)state;
 -(void)setRSSI:(NSNumber*)rssi;
