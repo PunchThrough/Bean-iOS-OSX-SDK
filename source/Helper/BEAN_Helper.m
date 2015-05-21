@@ -68,7 +68,9 @@
 {
     if (!UUID) return "NULL";
     CFStringRef s = CFUUIDCreateString(NULL, UUID);
-    return CFStringGetCStringPtr(s, 0);
+    const char *r = CFStringGetCStringPtr(s, 0);
+    CFRelease(s);
+    return r;
 }
     
 +(NSString *) UUIDToNSString:(CFUUIDRef) UUID
