@@ -35,7 +35,7 @@
 
 @optional
 
--(void)batteryProfileDidUpdate:(BatteryProfile*)profile;
+-(void)batteryProfileDidUpdate;
 
 
 @end

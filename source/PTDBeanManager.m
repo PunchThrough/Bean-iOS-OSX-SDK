@@ -22,6 +22,7 @@
 }
 
 NSString * const PTDBeanManagerConnectionOptionAutoReconnect = @"PTDBeanManagerConnectionOptionAutoReconnect";
+NSString * const PTDBeanManagerConnectionOptionConfigSave    = @"PTDBeanManagerConnectionOptionConfigSave";
 
 #pragma mark - Public methods
 

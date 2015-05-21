@@ -117,8 +117,8 @@
         PTDLog(@"%@: Battery Level Found: %@ Volts", self.class.description, _batteryVoltage);
         
         if(self.delegate){
-            if ([self.delegate respondsToSelector:@selector(batteryProfileDidUpdate:)]) {
-                [self.delegate batteryProfileDidUpdate:self];
+            if ([self.delegate respondsToSelector:@selector(batteryProfileDidUpdate)]) {
+                [self.delegate batteryProfileDidUpdate];
             }
         }
     }

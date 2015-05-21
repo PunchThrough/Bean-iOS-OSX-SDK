@@ -152,6 +152,7 @@
                             nil];
     [[NSNotificationCenter defaultCenter] postNotificationName: @"didUpdateValueForCharacteristic" object:params];
     
+    //PTDLog(@"didUpdateValueForCharacteristic: %@", characteristic);
     BleProfile* profile = _profiles[characteristic.service.UUID];
     if(profile)
         if([profile respondsToSelector:@selector(peripheral:didUpdateValueForCharacteristic:error:)])

@@ -269,7 +269,11 @@ typedef enum { //These occur in sequence
     raw.local_name_size = nameBytesLength;
     raw.power = config.power;
     NSData *data = [NSData dataWithBytes:&raw length: sizeof(BT_RADIOCONFIG_T)];
-    [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_CONFIG andPayload:data];
+    if ( config.configSave )
+        [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_CONFIG andPayload:data];
+    else
+        [appMessageLayer sendMessageWithID:MSG_ID_BT_SET_CONFIG_NOSAVE andPayload:data];
+
 }
 -(void)readAccelerationAxes {
     if(![self connected]) {
@@ -377,6 +381,8 @@ typedef enum { //These occur in sequence
 -(BOOL)firmwareCurrent{
     if ( [self connected] ) {
         PTDLog(@"Current firmware: %ld newest available firmware: %ld", self.firmwareVersion.integerValue, self.newestAvailableFirmwareVersion.integerValue);
+        
+        // Special case: OAD only image
         if ( self.firmwareVersion.integerValue >= self.newestAvailableFirmwareVersion.integerValue )
             return TRUE;
     }
@@ -406,7 +412,6 @@ typedef enum { //These occur in sequence
     if (!firmwareUpdateStartTime) firmwareUpdateStartTime = [NSDate date];
     
     // Shorter connection interval -> faster transfer
-    // TODO: restore orginal radio config
     PTDBeanRadioConfig *config = [[PTDBeanRadioConfig alloc] init];
     if (self.radioConfig) {
         config.power = self.radioConfig.power;
@@ -417,11 +422,13 @@ typedef enum { //These occur in sequence
     }
     config.connectionInterval = 20;
     config.advertisingInterval = 100;
+    config.configSave = FALSE;
     [self setRadioConfig:config];
-    [self readRadioConfig];
-    
+
     [[PTDBeanRemoteFirmwareVersionManager sharedInstance] fetchFirmwareForVersion:self.newestAvailableFirmwareVersion withCompletion:^(NSArray *firmwareImagePaths, NSError *error) {
+            PTDLog(@"Updating bean firmware.");
         if (!error) {
+
             [oad_profile updateFirmwareWithImagePaths:firmwareImagePaths];
         }
     }];
@@ -610,58 +617,58 @@ typedef enum { //These occur in sequence
 #pragma mark Profile Delegate callbacks
 -(void)profileDiscovered:(BleProfile*)profile
 {
-    
-    void (^checkFirmwareUpdateInProgress)(NSError *error) = ^(NSError *error){
-        if (!error) {
-            if ( oad_profile && [oad_profile isValid:nil] && deviceInfo_profile && [deviceInfo_profile isValid:nil] ) {
-                if (self.updateInProgress) {
-                    if ( [self firmwareCurrent] ) {
-                        PTDLog(@"firmware update complete in %f seconds.", -[firmwareUpdateStartTime timeIntervalSinceNow]);
-                        firmwareUpdateStartTime = NULL;
-                        _updateInProgress = FALSE;
-                        if(_delegate){
-                            if([_delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]){
-                                [(id<PTDBeanExtendedDelegate>)_delegate bean:self completedFirmwareUploadWithError:NULL];
-                            }
-                        }
-                    } else {
-                        [self updateFirmware];
-                        PTDLog(@"firmware update continues");
-                    }
-                } else if ( firmwareUpdateAvailableHandler ){
-                    [self checkFirmwareUpdateAvailableWithHandler:firmwareUpdateAvailableHandler];
-                    firmwareUpdateAvailableHandler = nil;
-                    
-                }
-            }
-        }
-        
-    };
+
     
     if ([profile isMemberOfClass:[OadProfile class]]) {
         oad_profile = (OadProfile*)profile;
-        oad_profile.validationcompletion = checkFirmwareUpdateInProgress;
 
     } else if ([profile isMemberOfClass:[DevInfoProfile class]]) {
+        
         deviceInfo_profile = (DevInfoProfile*)profile;
-        deviceInfo_profile.validationcompletion = checkFirmwareUpdateInProgress;
+        
+        [deviceInfo_profile readFirmwareVersionWithCompletion:^{
+            if (self.updateInProgress) {
+                if ( [self firmwareCurrent] ) {
+                    PTDLog(@"firmware update complete in %f seconds.", -[firmwareUpdateStartTime timeIntervalSinceNow]);
+                    firmwareUpdateStartTime = NULL;
+                    _updateInProgress = FALSE;
+                    if(_delegate){
+                        if([_delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]){
+                            [(id<PTDBeanExtendedDelegate>)_delegate bean:self completedFirmwareUploadWithError:NULL];
+                        }
+                    }
+                } else {
+                    PTDLog(@"firmware update continues");
+                    [self updateFirmware];
+                }
+            } else if ( [self.firmwareVersion rangeOfString:@"OAD Only"].location != NSNotFound ) {
+                    PTDLog(@"Discovered partially updated Bean. Update Required.");
+                    [self updateFirmware];
+            } else if ( firmwareUpdateAvailableHandler ){
+                [self checkFirmwareUpdateAvailableWithHandler:firmwareUpdateAvailableHandler];
+                firmwareUpdateAvailableHandler = nil;
+                
+            }
+        }];
+
     }
     else if ([profile isMemberOfClass:[GattSerialProfile class]]) {
         gatt_serial_profile = (GattSerialProfile*)profile;
+        appMessageLayer = [[AppMessagingLayer alloc] initWithGattSerialProfile:gatt_serial_profile];
+        appMessageLayer.delegate = self;
+        gatt_serial_profile.delegate = appMessageLayer;
+        __weak typeof(self) weakSelf = self;
         gatt_serial_profile.validationcompletion = ^(NSError* error) {
             if ( !error && [gatt_serial_profile isValid:nil] ) {
-                appMessageLayer = [[AppMessagingLayer alloc] initWithGattSerialProfile:gatt_serial_profile];
-                appMessageLayer.delegate = self;
-                gatt_serial_profile.delegate = appMessageLayer;
-                [self readRadioConfig];
-
-
+                [weakSelf releaseSerialGate];
+                //[weakSelf readRadioConfig];
             }
         };
     } else if ([profile isMemberOfClass:[BatteryProfile class]]) {
         battery_profile = (BatteryProfile*)profile;
+        __weak typeof(self) weakSelf = self;
         battery_profile.validationcompletion = ^(NSError *error) {
-            [self batteryProfileDidUpdate:battery_profile];
+            [weakSelf batteryProfileDidUpdate];
         };
     }
 }
@@ -865,7 +872,7 @@ typedef enum { //These occur in sequence
 }
     
 #pragma mark Battery Monitoring Delegate callbacks
--(void)batteryProfileDidUpdate:(BatteryProfile*)profile
+-(void)batteryProfileDidUpdate
 {
     if(_delegate){
         if([_delegate respondsToSelector:@selector(beanDidUpdateBatteryVoltage:error:)]){
