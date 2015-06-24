@@ -326,7 +326,22 @@ typedef struct {
         NSString *filename = self.firmwareImages[0];
         PTDLog(@"Offering firmware image %@", filename);
         [self.firmwareImages removeObjectAtIndex:0];
-        self.imageData = [NSData dataWithContentsOfFile:filename];                          // TODO: make sure file loaded
+        
+        NSError* error = nil;
+        self.imageData = [NSData dataWithContentsOfFile:filename options:0 error:&error];
+        
+        if (error) {
+            PTDLog(@"Couldn't load firmware file: %@", error);
+        }
+        
+        if (!self.imageData) {
+            [self completeWithError:[NSError errorWithDomain:ERROR_DOMAIN
+                                                        code:ERROR_CODE
+                                                    userInfo:@{NSLocalizedDescriptionKey:@"Couldn't load firmware image."}]];
+            return;
+        }
+        
+        
         self.totalBlocks = self.imageData.length / sizeof(data_block_t);
         img_hdr_t *imageHeader = (img_hdr_t *)self.imageData.bytes;
         

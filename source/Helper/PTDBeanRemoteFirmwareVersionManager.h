@@ -7,7 +7,6 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "PTDBean.h"
 
 typedef void(^PTDFirmwareVersionCheckCompletion) (NSString *mostRecentFirmwareVersion, NSError *error);
 typedef void (^PTDFirmwareFetchCompletion)(NSArray *firmwareImagePaths, NSError *error);

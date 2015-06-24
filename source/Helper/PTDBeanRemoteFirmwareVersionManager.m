@@ -167,16 +167,23 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
 
 - (void)fetchFirmwareForVersion:(NSString *)version withCompletion:(PTDFirmwareFetchCompletion)completion
 {
-    NSMutableArray *firmwareImages;
-    
-    firmwareImages = self.availableVersions[version];
+    NSURL *libraryDirectory = [self libraryDirectoryURL];
+    NSMutableArray *firmwareImages = [NSMutableArray new];
+
+    // Make sure all the expected files are present
+    for (NSString *filename in self.availableVersions[version]) {
+        
+        NSString* firmwarePath = [[libraryDirectory URLByAppendingPathComponent:filename] path];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:firmwarePath])
+            [firmwareImages addObject:firmwarePath];
+    }
 
     //when the app is upgraded, we lose the documents, so we double check that we have the firmware that we think we have.
     if ( [firmwareImages count] > 0 ) {
-        // TODO: make sure the files exist on disk
         PTDLog(@"Local firmware images: %@", firmwareImages);
         completion(firmwareImages, nil);
     } else {
+        PTDLog(@"Fetching firmware images.");
         self.updateVersion = version;	
         self.fetchCompletion = completion;
         self.updateFailure = NO;
@@ -231,7 +238,7 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
 
         NSMutableArray *result = [NSMutableArray new];
         for ( PTDFirmwareURLConnection *connection in self.connections ) {
-            [result addObject:connection.firmwarePath];
+            [result addObject:connection.filename];
         }
         self.availableVersions[self.updateVersion] = result;
         self.availableVersions[PTDFirmwareRecentVersionKey] = self.updateVersion;

@@ -380,10 +380,10 @@ typedef enum { //These occur in sequence
 
 -(BOOL)firmwareCurrent{
     if ( [self connected] ) {
-        PTDLog(@"Current firmware: %ld newest available firmware: %ld", self.firmwareVersion.integerValue, self.newestAvailableFirmwareVersion.integerValue);
+        PTDLog(@"Current firmware: %lld newest available firmware: %lld", self.firmwareVersion.longLongValue, self.newestAvailableFirmwareVersion.longLongValue);
         
         // Special case: OAD only image
-        if ( self.firmwareVersion.integerValue >= self.newestAvailableFirmwareVersion.integerValue )
+        if ( self.firmwareVersion.longLongValue >= self.newestAvailableFirmwareVersion.longLongValue )
             return TRUE;
     }
     return FALSE;
@@ -424,13 +424,18 @@ typedef enum { //These occur in sequence
     config.advertisingInterval = 100;
     config.configSave = FALSE;
     [self setRadioConfig:config];
-
-    [[PTDBeanRemoteFirmwareVersionManager sharedInstance] fetchFirmwareForVersion:self.newestAvailableFirmwareVersion withCompletion:^(NSArray *firmwareImagePaths, NSError *error) {
+    
+    [[PTDBeanRemoteFirmwareVersionManager sharedInstance] checkForNewFirmwareWithCompletion:^(NSString *mostRecentFirmwareVersion, NSError *error){
+        if(error){ return; }
+        self.newestAvailableFirmwareVersion = mostRecentFirmwareVersion;
+    
+    
+        [[PTDBeanRemoteFirmwareVersionManager sharedInstance] fetchFirmwareForVersion:self.newestAvailableFirmwareVersion withCompletion:^(NSArray *firmwareImagePaths, NSError *error) {
             PTDLog(@"Updating bean firmware.");
-        if (!error) {
-
-            [oad_profile updateFirmwareWithImagePaths:firmwareImagePaths];
-        }
+            if (!error)
+                [oad_profile updateFirmwareWithImagePaths:firmwareImagePaths];
+            
+        }];
     }];
 }
 
@@ -644,7 +649,8 @@ typedef enum { //These occur in sequence
             } else if ( [self.firmwareVersion rangeOfString:@"OAD Only"].location != NSNotFound ) {
                     PTDLog(@"Discovered partially updated Bean. Update Required.");
                     [self updateFirmware];
-            } else if ( firmwareUpdateAvailableHandler ){
+            }
+            if ( !self.updateInProgress && firmwareUpdateAvailableHandler ){
                 [self checkFirmwareUpdateAvailableWithHandler:firmwareUpdateAvailableHandler];
                 firmwareUpdateAvailableHandler = nil;
                 

@@ -351,9 +351,10 @@ NSString * const PTDBeanManagerConnectionOptionConfigSave    = @"PTDBeanManagerC
     }
     
     
-    if(!bean) return; //This may not be the best way to handle this case
+    if(!bean)
+        return; //This may not be the best way to handle this case
     
-    if ( bean.autoReconnect ) {
+    if ( bean.autoReconnect || bean.updateInProgress ) {
      PTDLog(@"autoReconnecting to %@", bean);
      [self connectToBean:bean error:nil];
     }
