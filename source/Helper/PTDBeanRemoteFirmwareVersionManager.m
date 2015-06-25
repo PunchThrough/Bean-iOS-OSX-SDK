@@ -93,13 +93,13 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
     return _firmwareCheckDate;
 }
 
-- (NSString *)newestFirmwareVersion
+/*- (NSString *)newestFirmwareVersion
 {
     if ( !_newestFirmwareVersion ) {
         _newestFirmwareVersion = [self cachedNewestFirmwareVersion];
     }
     return _newestFirmwareVersion;
-}
+}*/
 
 
 - (NSURL *)libraryDirectoryURL
@@ -125,7 +125,7 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
 {
     NSURLRequest *firmwareVersionRequest;
     
-    if ( ![self firmwareCheckDate] || fabs([[self firmwareCheckDate] timeIntervalSinceNow]) > 3600. ) {
+    if ( ![self firmwareCheckDate] || ![self newestFirmwareVersion] || fabs([[self firmwareCheckDate] timeIntervalSinceNow]) > 3600 ) {
         firmwareVersionRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:PTDFirmwareVersionUrlString] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:10];
         [NSURLConnection sendAsynchronousRequest:firmwareVersionRequest queue:self.operationQueue completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
             NSError *jsonError;
@@ -245,7 +245,7 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
         [self.availableVersions writeToURL:self.firmwareVersionsURL atomically:YES];
         if ( self.fetchCompletion ) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                self.fetchCompletion(result, nil);
+                [self fetchFirmwareForVersion:self.updateVersion withCompletion:self.fetchCompletion];
                 self.fetchCompletion = nil;
             });
         }
