@@ -848,6 +848,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "Bean OSX LibraryTests/Bean OSX LibraryTests-Info.plist";
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xctest;
 			};
@@ -864,6 +865,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Bean OSX Library/Bean OSX Library-Prefix.pch";
 				INFOPLIST_FILE = "Bean OSX LibraryTests/Bean OSX LibraryTests-Info.plist";
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xctest;
 			};
