@@ -36,6 +36,24 @@
     return TRUE;
 }
 
+-(void)readRSSI {
+    if(_peripheral.state != CBPeripheralStateConnected) {
+        return;
+    }
+    [_peripheral readRSSI];
+}
+-(NSNumber*)RSSI{
+    NSNumber* returnedRSSI;
+    if(_peripheral.state == CBPeripheralStateConnected
+       && [_peripheral RSSI_Universal]){
+        returnedRSSI = [_peripheral RSSI_Universal];
+    }else{
+        returnedRSSI = _RSSI;
+    }
+    // If RSSI == 127, that means it's unavailable. Return nil in this case
+    return (returnedRSSI.integerValue!=127)?returnedRSSI:nil;
+}
+
 #pragma mark "Virtual" Methods
 -(void)rssiDidUpdateWithError:(NSError*)error{
     //[NSException raise:NSInternalInconsistencyException format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];
@@ -72,6 +90,9 @@
     }
     _RSSI = RSSI;
     [self rssiDidUpdateWithError:error];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(deviceDidUpdateRSSI:error:)]) {
+        [self.delegate deviceDidUpdateRSSI:self error:error];
+    }
 }
 #endif
 - (void)peripheralDidUpdateRSSI:(CBPeripheral *)peripheral error:(NSError *)error{
@@ -90,6 +111,9 @@
     // This callback is deprecated for iOS8. The logic below prevents a nil RSSI from potentially overwriting the actual RSSI in iOS8 in the event that both callbacks are invoked.
     _RSSI = [_peripheral RSSI_Universal]?[_peripheral RSSI_Universal]:_RSSI;
     [self rssiDidUpdateWithError:error];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(deviceDidUpdateRSSI:error:)]) {
+        [self.delegate deviceDidUpdateRSSI:self error:error];
+    }
 }
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverServices:(NSError *)error{
     NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
