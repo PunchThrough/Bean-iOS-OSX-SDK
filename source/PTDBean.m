@@ -59,6 +59,9 @@ typedef enum { //These occur in sequence
     NSDate*                     firmwareUpdateStartTime;
     
 }
+// Adding the "dynamic" directive tells the compiler that It doesn't need to create the getter, setter, and ivar.
+// This is assumed to have already been done in a superclass, or will be done during runtime.
+// In this case, getter, setter, and ivar are already up by the superclass, PTDBleDevice
 @dynamic delegate;
 
 //Enforce that you can't use the "init" function of this class
