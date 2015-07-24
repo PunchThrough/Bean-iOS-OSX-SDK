@@ -54,6 +54,10 @@ typedef enum { //These occur in sequence
     NSTimer*                    arduinoOADChunkSendTimer;
     
 }
+// Adding the "dynamic" directive tells the compiler that It doesn't need to create the getter, setter, and ivar.
+// This is assumed to have already been done in a superclass, or will be done during runtime.
+// In this case, getter, setter, and ivar are already up by the superclass, PTDBleDevice
+@dynamic delegate;
 
 //Enforce that you can't use the "init" function of this class
 - (id)init{
@@ -93,17 +97,6 @@ typedef enum { //These occur in sequence
         return _peripheral.name;
     }
     return [_advertisementData objectForKey:CBAdvertisementDataLocalNameKey]?[_advertisementData objectForKey:CBAdvertisementDataLocalNameKey]:@"Unknown";//Local Name
-}
--(NSNumber*)RSSI{
-    NSNumber* returnedRSSI;
-    if(_peripheral.state == CBPeripheralStateConnected
-    && [_peripheral RSSI_Universal]){
-        returnedRSSI = [_peripheral RSSI_Universal];
-    }else{
-        returnedRSSI = _RSSI;
-    }
-    // If RSSI == 127, that means it's unavailable. Return nil in this case
-    return (returnedRSSI.integerValue!=127)?returnedRSSI:nil;
 }
 -(NSNumber*)batteryVoltage{
     if(_peripheral.state == CBPeripheralStateConnected
@@ -271,12 +264,6 @@ typedef enum { //These occur in sequence
 -(void)readAccelerationAxis {
     [self readAccelerationAxes];
 }
--(void)readRSSI {
-    if(![self connected]) {
-        return;
-    }
-    [_peripheral readRSSI];
-}
 -(void)readBatteryVoltage{
     if(battery_profile){
         [battery_profile readBattery];
@@ -439,11 +426,11 @@ typedef enum { //These occur in sequence
 
 -(void)__alertDelegateOfArduinoOADCompletion:(NSError*)error{
     [self __resetArduinoOADLocals];
-    if(_delegate){
-        if([_delegate respondsToSelector:@selector(bean:didProgramArduinoWithError:)]){
-            [_delegate bean:self didProgramArduinoWithError:error];
+    if(self.delegate){
+        if([self.delegate respondsToSelector:@selector(bean:didProgramArduinoWithError:)]){
+            [self.delegate bean:self didProgramArduinoWithError:error];
         }
-    }
+    } 
 }
 -(void)__resetArduinoOADLocals{
     arduinoFwImage = nil;
@@ -478,11 +465,11 @@ typedef enum { //These occur in sequence
         if (arduinoOADChunkSendTimer) [arduinoOADChunkSendTimer invalidate];
         arduinoOADChunkSendTimer = [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(__sendArduinoOADChunk) userInfo:nil repeats:NO];
         
-        if(_delegate){
-            if([_delegate respondsToSelector:@selector(bean:ArduinoProgrammingTimeLeft:withPercentage:)]){
+        if(self.delegate){
+            if([self.delegate respondsToSelector:@selector(bean:ArduinoProgrammingTimeLeft:withPercentage:)]){
                 NSNumber* percentComplete = @(arduinoFwImage_chunkIndex * 1.0f / arduinoFwImage.length);
                 NSNumber* timeRemaining = @(0.2 * ((arduinoFwImage.length - arduinoFwImage_chunkIndex)/ARDUINO_OAD_MAX_CHUNK_SIZE));
-                [_delegate bean:self ArduinoProgrammingTimeLeft:timeRemaining withPercentage:percentComplete];
+                [self.delegate bean:self ArduinoProgrammingTimeLeft:timeRemaining withPercentage:percentComplete];
             }
         }
     }
@@ -766,27 +753,25 @@ typedef enum { //These occur in sequence
 
 #pragma mark OAD callbacks
 -(void)device:(OadProfile*)device completedFirmwareUploadWithError:(NSError*)error{
-    if(_delegate){
-        if(/*[_delegate conformsToProtocol:@protocol(PTDBeanExtendedDelegate)]
-           && */[_delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]){
-            [(id<PTDBeanExtendedDelegate>)_delegate bean:self completedFirmwareUploadWithError:error];
+    if(self.delegate){
+        if([self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]){
+            [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadWithError:error];
         }
     }
 }
 -(void)device:(OadProfile*)device OADUploadTimeLeft:(NSNumber*)seconds withPercentage:(NSNumber*)percentageComplete{
-    if(_delegate){
-        if(/*[_delegate conformsToProtocol:@protocol(PTDBeanExtendedDelegate)]
-           && */[_delegate respondsToSelector:@selector(bean:firmwareUploadTimeLeft:withPercentage:)]){
-            [(id<PTDBeanExtendedDelegate>)_delegate bean:self firmwareUploadTimeLeft:seconds withPercentage:percentageComplete];
+    if(self.delegate){
+        if([self.delegate respondsToSelector:@selector(bean:firmwareUploadTimeLeft:withPercentage:)]){
+            [(id<PTDBeanExtendedDelegate>)self.delegate bean:self firmwareUploadTimeLeft:seconds withPercentage:percentageComplete];
         }
     }
 }
     
 #pragma mark Battery Monitoring Delegate callbacks
 -(void)batteryProfileDidUpdate:(BatteryProfile*)profile{
-    if(_delegate){
-        if([_delegate respondsToSelector:@selector(beanDidUpdateBatteryVoltage:error:)]){
-            [_delegate beanDidUpdateBatteryVoltage:self error:nil];
+    if(self.delegate){
+        if([self.delegate respondsToSelector:@selector(beanDidUpdateBatteryVoltage:error:)]){
+            [self.delegate beanDidUpdateBatteryVoltage:self error:nil];
         }
     }
 }
