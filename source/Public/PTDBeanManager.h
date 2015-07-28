@@ -225,7 +225,7 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
  This method is deprecated. Use <[PTDBeanManager beanManager:didConnectToBean:error:]> instead.
  @deprecated v0.3.2
  */
-- (void)BeanManager:(PTDBeanManager*)beanManager didConnectToBean:(PTDBean*)bean error:(NSError*)error __attribute__((deprecated("use beanManager:didConnectToBean:error:")));
+- (void)BeanManager:(PTDBeanManager*)beanManager didConnectToBean:(PTDBean*)bean error:(NSError*)error __attribute__((deprecated("use beanManager:didConnectBean:error:")));
 /**
  *  A Bean was disconnected
  *
