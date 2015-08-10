@@ -453,7 +453,6 @@ typedef enum { //These occur in sequence
     battery_profile = nil;
     
     [super discoverServices];
-    _state = BeanState_ConnectedAndValidated;
     if(_beanManager){
         if([_beanManager respondsToSelector:@selector(bean:hasBeenValidated_error:)]){
             [_beanManager bean:self hasBeenValidated_error:nil];
