@@ -49,6 +49,7 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
  */
 extern NSString * const PTDBeanManagerConnectionOptionAutoReconnect;
 extern NSString * const PTDBeanManagerConnectionOptionConfigSave;
+extern NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect;
 
 @protocol PTDBeanManagerDelegate;
 

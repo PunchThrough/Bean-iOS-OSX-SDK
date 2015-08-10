@@ -27,6 +27,7 @@
 -(void)setLastDiscovered:(NSDate*)date;
 -(void)setBeanManager:(id<PTDBeanManager>)manager;
 -(BOOL)updateFirmwareWithImagePaths:(NSArray*)firmwareImages;
+-(void)setProfilesRequiredToConnect:(NSArray*)classes;
 
 @end
 

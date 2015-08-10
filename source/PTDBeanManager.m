@@ -23,6 +23,7 @@
 
 NSString * const PTDBeanManagerConnectionOptionAutoReconnect = @"PTDBeanManagerConnectionOptionAutoReconnect";
 NSString * const PTDBeanManagerConnectionOptionConfigSave    = @"PTDBeanManagerConnectionOptionConfigSave";
+NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect    = @"PTDBeanManagerConnectionOptionProfilesRequiredToConnect";
 
 #pragma mark - Public methods
 
@@ -140,13 +141,21 @@ NSString * const PTDBeanManagerConnectionOptionConfigSave    = @"PTDBeanManagerC
         if(error) *error = [BEAN_Helper basicError:@"Attemp to connect to Bean failed. The device's current state is not eligible for a connection attempt." domain:NSStringFromClass([self class]) code:BeanErrors_DeviceNotEligible];
         return;
     }
-    //Mark this BeanRecord as is in the middle of a connection attempt
-    [bean setState:BeanState_AttemptingConnection];
-    //Attempt to connect to the corresponding CBPeripheral
-    [cbcentralmanager connectPeripheral:bean.peripheral options:nil];
+    
     //Auto Reconnect?
     if (options && options[PTDBeanManagerConnectionOptionAutoReconnect] )
         bean.autoReconnect = TRUE;
+    
+    //Custom list of required profiles?
+    if (options
+        && options[PTDBeanManagerConnectionOptionProfilesRequiredToConnect]
+        && [options[PTDBeanManagerConnectionOptionProfilesRequiredToConnect] isKindOfClass:[NSArray class]]){
+        [bean setProfilesRequiredToConnect:options[PTDBeanManagerConnectionOptionProfilesRequiredToConnect]];
+    }
+
+    //Attempt to connect to the corresponding CBPeripheral
+    [bean setState:BeanState_AttemptingConnection];
+    [cbcentralmanager connectPeripheral:bean.peripheral options:nil];
 }
 
 -(void)disconnectBean:(PTDBean*)bean_ error:(NSError**)error{

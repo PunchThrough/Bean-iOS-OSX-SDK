@@ -10,7 +10,6 @@
 #import "PTDBean+Protected.h"
 #import "PTDBeanManager+Protected.h"
 #import "GattSerialProfile.h"
-#import "BatteryProfile.h"
 #import "AppMessages.h"
 #import "AppMessagingLayer.h"
 #import "NSData+CRC.h"
@@ -42,6 +41,8 @@ typedef enum { //These occur in sequence
     
     AppMessagingLayer*          appMessageLayer;
     
+    NSSet*                      profilesRequiredForConnection;
+    NSMutableSet*               profilesValidated;
     NSTimer*                    validationRetryTimer;
     NSInteger                   validationRetryCount;
     DevInfoProfile*             deviceInfo_profile;
@@ -441,6 +442,13 @@ typedef enum { //These occur in sequence
         _beanManager = manager;
         localArduinoOADState = BeanArduinoOADLocalState_Inactive;
         _arduinoPowerState = ArduinoPowerState_Unknown;
+        
+        // Default functionality. Can be overridden with the options parameter in [PTDBeanManager connectToBean:withOptions:error:]
+        [self setProfilesRequiredToConnect:@[[BatteryProfile class],
+                                                     [DevInfoProfile class],
+                                                     [GattSerialProfile class],
+                                                     [OadProfile class]
+                                                     ]];
     }
     return self;
 }
@@ -453,11 +461,7 @@ typedef enum { //These occur in sequence
     battery_profile = nil;
     
     [super discoverServices];
-    if(_beanManager){
-        if([_beanManager respondsToSelector:@selector(bean:hasBeenValidated_error:)]){
-            [_beanManager bean:self hasBeenValidated_error:nil];
-        }
-    }
+    [self __checkIfRequiredProfilesAreValidated];
 }
     
 -(CBPeripheral*)peripheral{
@@ -478,7 +482,10 @@ typedef enum { //These occur in sequence
 -(void)setBeanManager:(id<PTDBeanManager>)manager{
     _beanManager = manager;
 }
-
+-(void)setProfilesRequiredToConnect:(NSArray*)classes{
+    profilesRequiredForConnection = [NSSet setWithArray:classes];
+    profilesValidated = [[NSMutableSet alloc] init];
+}
 #pragma mark - Private Methods
 
 -(void)__alertDelegateOfArduinoOADCompletion:(NSError*)error{
@@ -574,7 +581,27 @@ typedef enum { //These occur in sequence
             break;
     }
 }
- 
+-(void)__profileHasBeenValidated:(BleProfile*)profile{
+    if([profilesRequiredForConnection containsObject:[profile class]]
+       && ![profilesValidated containsObject:[profile class]]){
+        [profilesValidated addObject:[profile class]];
+    }
+    [self __checkIfRequiredProfilesAreValidated];
+}
+-(void)__checkIfRequiredProfilesAreValidated{
+    static BOOL hasNotifiedValidity = false;
+    
+    if([profilesRequiredForConnection isEqualToSet:profilesValidated]
+       && hasNotifiedValidity == false)
+    {
+        hasNotifiedValidity = true;
+        if( _beanManager
+           && [_beanManager respondsToSelector:@selector(bean:hasBeenValidated_error:)])
+        {
+            [_beanManager bean:self hasBeenValidated_error:nil];
+        }
+    }
+}
 -(BOOL)connected {
     if(_state != BeanState_ConnectedAndValidated ||
        _peripheral.state != CBPeripheralStateConnected) //This second conditional is an assertion
@@ -608,16 +635,26 @@ typedef enum { //These occur in sequence
 #pragma mark Profile Delegate callbacks
 -(void)profileDiscovered:(BleProfile*)profile
 {
-
-    
     if ([profile isMemberOfClass:[OadProfile class]]) {
         oad_profile = (OadProfile*)profile;
-        [oad_profile validateWithCompletion:nil];
+        __weak typeof(self) weakSelf = self;
+        [oad_profile validateWithCompletion: ^(NSError* error) {
+            if ( !error && [oad_profile isValid:nil] ) {
+                [weakSelf __profileHasBeenValidated:profile];
+            }
+        }];
 
     } else if ([profile isMemberOfClass:[DevInfoProfile class]]) {
         
         deviceInfo_profile = (DevInfoProfile*)profile;
-        [deviceInfo_profile validateWithCompletion:nil];
+        __weak typeof(self) weakSelf = self;
+        [deviceInfo_profile validateWithCompletion: ^(NSError* error) {
+            if ( !error
+                //&& [deviceInfo_profile isValid:nil]
+                ) {
+                [weakSelf __profileHasBeenValidated:profile];
+            }
+        }];
         
         [deviceInfo_profile readFirmwareVersionWithCompletion:^{
             if (self.updateInProgress) {
@@ -655,6 +692,7 @@ typedef enum { //These occur in sequence
         [gatt_serial_profile validateWithCompletion: ^(NSError* error) {
             if ( !error && [gatt_serial_profile isValid:nil] ) {
                 [weakSelf releaseSerialGate];
+                [weakSelf __profileHasBeenValidated:profile];
                 //[weakSelf readRadioConfig];
             }
         }];
@@ -662,7 +700,10 @@ typedef enum { //These occur in sequence
         battery_profile = (BatteryProfile*)profile;
         __weak typeof(self) weakSelf = self;
         [battery_profile validateWithCompletion: ^(NSError *error) {
-            [weakSelf batteryProfileDidUpdate];
+            if ( !error && [battery_profile isValid:nil] ) {
+                [weakSelf batteryProfileDidUpdate];
+                [weakSelf __profileHasBeenValidated:profile];
+            }
         }];
     }
 }

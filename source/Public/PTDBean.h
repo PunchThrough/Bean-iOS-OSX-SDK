@@ -14,6 +14,7 @@
 #import <AppKit/AppKit.h>
 #endif
 #import "PTDBleDevice.h"
+#import "BatteryProfile.h"
 
 #define ARDUINO_OAD_GENERIC_TIMEOUT_SEC 3
 #define TPDBeanErrorDomain @"TPDBeanErrorDomain"
