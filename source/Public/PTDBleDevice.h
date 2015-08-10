@@ -13,6 +13,7 @@
 #else
 #import <IOBluetooth/IOBluetooth.h>
 #endif
+#import "BleProfile.h"
 
 @protocol PTDBleDeviceDelegate;
 
@@ -28,6 +29,13 @@
 -(id)initWithPeripheral:(CBPeripheral*)peripheral;
 -(void)discoverServices;
 //-(BOOL)requiredProfilesAreValid;
+
+/// @name Virtual methods
+/**
+ *  Called when a BLE profile is discovered.
+ *  @discussion This method can be overridden to notify a subclass when a new BLE profile is discovered. After a profile is discovered, it should then be validated.
+ */
+-(void)profileDiscovered:(BleProfile*)profile;
 
 /**
  *  The <PTDBeanDelegate> delegate object for the Bean. Set your class as the delegate to receive messages and responses from the Bean.

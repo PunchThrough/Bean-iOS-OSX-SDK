@@ -13,6 +13,7 @@
     CBService* service_battery;
     CBCharacteristic* characteristic_battery_level;
 }
+@dynamic delegate; // Delegate is already synthesized by BleProfile subclass
 
 +(void)load
 {
@@ -27,12 +28,6 @@
         //Init Code
         peripheral = service.peripheral;
         service_battery = service;
-        
-        // Find characteristics of service
-        NSArray * characteristics = [NSArray arrayWithObjects:
-                                     [CBUUID UUIDWithString:CHARACTERISTIC_BATTERY_MONITOR_LEVEL],
-                                     nil];
-        [peripheral discoverCharacteristics:characteristics forService:service];
     }
     return self;
 }
@@ -44,6 +39,14 @@
     }
 }
 
+-(void)validate
+{
+    // Find characteristics of service
+    NSArray * characteristics = [NSArray arrayWithObjects:
+                                 [CBUUID UUIDWithString:CHARACTERISTIC_BATTERY_MONITOR_LEVEL],
+                                 nil];
+    [peripheral discoverCharacteristics:characteristics forService:service_battery];
+}
 -(BOOL)isValid:(NSError**)error
 {
     return (service_battery &&

@@ -16,11 +16,10 @@
 #define CHARACTERISTIC_SOFTWARE_VERSION @"2A28"
 
 
-@interface DevInfoProfile : BleProfile
+@interface DevInfoProfile : BleProfile <BleProfile>
 
 @property (nonatomic, strong) NSString *firmwareVersion;
 
--(id)initWithService:(CBService*)service;
 -(void)readFirmwareVersionWithCompletion:(void (^)(void))firmwareVersionCompletion;
 
 @end

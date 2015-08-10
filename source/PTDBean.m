@@ -613,10 +613,12 @@ typedef enum { //These occur in sequence
     
     if ([profile isMemberOfClass:[OadProfile class]]) {
         oad_profile = (OadProfile*)profile;
+        [oad_profile validateWithCompletion:nil];
 
     } else if ([profile isMemberOfClass:[DevInfoProfile class]]) {
         
         deviceInfo_profile = (DevInfoProfile*)profile;
+        [deviceInfo_profile validateWithCompletion:nil];
         
         [deviceInfo_profile readFirmwareVersionWithCompletion:^{
             if (self.updateInProgress) {
@@ -651,18 +653,18 @@ typedef enum { //These occur in sequence
         appMessageLayer.delegate = self;
         gatt_serial_profile.delegate = appMessageLayer;
         __weak typeof(self) weakSelf = self;
-        gatt_serial_profile.validationcompletion = ^(NSError* error) {
+        [gatt_serial_profile validateWithCompletion: ^(NSError* error) {
             if ( !error && [gatt_serial_profile isValid:nil] ) {
                 [weakSelf releaseSerialGate];
                 //[weakSelf readRadioConfig];
             }
-        };
+        }];
     } else if ([profile isMemberOfClass:[BatteryProfile class]]) {
         battery_profile = (BatteryProfile*)profile;
         __weak typeof(self) weakSelf = self;
-        battery_profile.validationcompletion = ^(NSError *error) {
+        [battery_profile validateWithCompletion: ^(NSError *error) {
             [weakSelf batteryProfileDidUpdate];
-        };
+        }];
     }
 }
 

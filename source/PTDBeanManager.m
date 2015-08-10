@@ -203,6 +203,7 @@ NSString * const PTDBeanManagerConnectionOptionConfigSave    = @"PTDBeanManagerC
         [self disconnectBean:bean error:nil];
     }else{
         //Validation is successful
+        bean.state = BeanState_ConnectedAndValidated;
     }
     
     //Notify Delegate

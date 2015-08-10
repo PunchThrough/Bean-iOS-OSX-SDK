@@ -19,6 +19,7 @@
     GattTransport * gatt_transport;
     GattSerialTransport* gatt_serial_transport;
 }
+@dynamic delegate; // Delegate is already synthesized by BleProfile subclass
 
 +(void)load
 {
@@ -47,13 +48,16 @@
         //Assign GattTransport layer's delegate to the serial transport layer
         gatt_transport.delegate = gatt_serial_transport;
         
-        NSArray * characteristics = [NSArray arrayWithObjects:
-                                     [CBUUID UUIDWithString:GLOBAL_SERIAL_PASS_CHARACTERISTIC_UUID],
-                                     nil];
-        [peripheral discoverCharacteristics:characteristics forService:service];
-        
     }
     return self;
+}
+
+-(void)validate
+{
+    NSArray * characteristics = [NSArray arrayWithObjects:
+                                 [CBUUID UUIDWithString:GLOBAL_SERIAL_PASS_CHARACTERISTIC_UUID],
+                                 nil];
+    [peripheral discoverCharacteristics:characteristics forService:serial_pass_service];
 }
 
 -(BOOL)isValid:(NSError**)error

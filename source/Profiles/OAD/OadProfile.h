@@ -19,9 +19,9 @@
 
 @protocol OAD_Delegate;
 
-@interface OadProfile : BleProfile
+@interface OadProfile : BleProfile  <BleProfile>
 
-//-(id)initWithPeripheral:(CBPeripheral*)aPeripheral delegate:(id<OAD_Delegate>)delegate;
+@property (nonatomic, weak) id<OAD_Delegate> delegate;
 
 // Returns FALSE if OAD is not supported on the device. TRUE otherwise
 // See callback method: -(void)FirmwareVersion:(NSString*)version isNewer:(BOOL)isNewer;

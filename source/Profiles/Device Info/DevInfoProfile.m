@@ -32,19 +32,22 @@
         //Init Code`
         service_deviceInformation = service;
         peripheral = service.peripheral;
-        
-        // Find characteristics of service
-        NSArray * characteristics = [NSArray arrayWithObjects:
-                                     [CBUUID UUIDWithString:CHARACTERISTIC_FIRMWARE_VERSION],
-                                     //[CBUUID UUIDWithString:CHARACTERISTIC_HARDWARE_VERSION],
-                                     //[CBUUID UUIDWithString:CHARACTERISTIC_SOFTWARE_VERSION],
-                                     nil];
-        [peripheral discoverCharacteristics:characteristics forService:service];
         firmwareVersionQueue = [[NSOperationQueue alloc] init];
         firmwareVersionQueue.suspended = YES;
-        [self __notifyValidity];
     }
     return self;
+}
+
+-(void)validate
+{
+    // Find characteristics of service
+    NSArray * characteristics = [NSArray arrayWithObjects:
+                                 [CBUUID UUIDWithString:CHARACTERISTIC_FIRMWARE_VERSION],
+                                 //[CBUUID UUIDWithString:CHARACTERISTIC_HARDWARE_VERSION],
+                                 //[CBUUID UUIDWithString:CHARACTERISTIC_SOFTWARE_VERSION],
+                                 nil];
+    [peripheral discoverCharacteristics:characteristics forService:service_deviceInformation];
+    [self __notifyValidity];
 }
 
 -(BOOL)isValid:(NSError**)error

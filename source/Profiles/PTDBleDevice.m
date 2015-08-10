@@ -7,13 +7,12 @@
 //
 
 #import "PTDBleDevice.h"
-#import "BleProfile.h"
-//#import "Profile_Protocol.h"
 #import "CBPeripheral+RSSI_Universal.h"
 
 @implementation PTDBleDevice
 
-// Meant to be subclassed.
+
+#pragma mark - Virtual methods
 -(void)profileDiscovered:(BleProfile*)profile
 {
 }

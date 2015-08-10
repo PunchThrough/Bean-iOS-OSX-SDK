@@ -80,6 +80,7 @@ typedef struct {
 @end
 
 @implementation OadProfile
+@dynamic delegate; // Delegate is already synthesized by BleProfile subclass
 
 +(void)load
 {
@@ -88,17 +89,13 @@ typedef struct {
 
 #pragma mark - NSObject
 
-- (instancetype)initWithService:(CBService*)service //delegate:(id<OAD_Delegate>)delegate
+- (instancetype)initWithService:(CBService*)service
 {
     self = [super init];
     if (self) {
-        //self.delegate = delegate;
         peripheral = service.peripheral;
         self.oadState = OADStateIdle;
         self.serviceOAD = service;
-        [peripheral discoverCharacteristics:@[[CBUUID UUIDWithString:CHARACTERISTIC_OAD_IDENTIFY],
-                                              [CBUUID UUIDWithString:CHARACTERISTIC_OAD_BLOCK]]
-                                 forService:service];
     }
     return self;
 }
@@ -149,7 +146,12 @@ typedef struct {
 
 
 #pragma mark - BleProfile
-
+-(void)validate
+{
+    [peripheral discoverCharacteristics:@[[CBUUID UUIDWithString:CHARACTERISTIC_OAD_IDENTIFY],
+                                          [CBUUID UUIDWithString:CHARACTERISTIC_OAD_BLOCK]]
+                             forService:self.serviceOAD];
+}
 - (BOOL)isValid:(NSError**)error
 {
     return (self.characteristicOADIdentify &&

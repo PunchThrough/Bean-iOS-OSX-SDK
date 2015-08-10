@@ -18,12 +18,11 @@
 
 @protocol BatteryProfileDelegate;
 
-@interface BatteryProfile : BleProfile
+@interface BatteryProfile : BleProfile <BleProfile>
 
-//@property (nonatomic, weak) id<BatteryProfileDelegate> delegate;
+@property (nonatomic, weak) id<BatteryProfileDelegate> delegate;
 @property (nonatomic, strong) NSNumber *batteryVoltage; // Voltage
 
-//-(id)initWithPeripheral:(CBPeripheral*)aPeripheral delegate:(id<BatteryProfileDelegate>)delegate;
 -(void)readBattery;
 
 @end
