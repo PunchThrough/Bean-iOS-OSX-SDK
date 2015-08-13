@@ -54,7 +54,6 @@
 // These methods must be implemented in any BleProfile subclasses
 @protocol BleProfile
 @required
--(void)validate;
 -(BOOL)isValid:(NSError**)error;
 -(id)initWithService:(CBService*)service;
 @end
