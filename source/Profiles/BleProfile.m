@@ -26,12 +26,6 @@ static NSMutableDictionary * registeredSubclasses;
     return self;
 }
 
--(id)initWithService:(CBService*)service
-{
-    self = [super init];
-    return self;
-}
-
 -(void)validateWithCompletion:(void (^)(NSError *error))completion
 {
     self.validationcompletion = completion;

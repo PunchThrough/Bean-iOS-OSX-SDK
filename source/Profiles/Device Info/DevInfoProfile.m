@@ -38,7 +38,7 @@
     return self;
 }
 
--(void)validate1
+-(void)validate
 {
     // Find characteristics of service
     NSArray * characteristics = [NSArray arrayWithObjects:
