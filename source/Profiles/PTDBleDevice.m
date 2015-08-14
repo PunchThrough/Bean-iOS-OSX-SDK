@@ -33,6 +33,21 @@
 }
 
 
+-(NSUUID*)identifier{
+    if(_peripheral && _peripheral.identifier){
+        return [_peripheral identifier];
+    }
+    return nil;
+}
+
+-(NSString*)name{
+    if(_peripheral.name){
+        return _peripheral.name;
+    }
+    NSString* localName = [_advertisementData objectForKey:CBAdvertisementDataLocalNameKey];
+    return localName ? localName : @"Unknown";
+}
+
 -(void)readRSSI {
     if(_peripheral.state != CBPeripheralStateConnected) {
         return;

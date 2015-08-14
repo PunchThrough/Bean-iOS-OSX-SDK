@@ -10,7 +10,7 @@
 #define Bean_OSX_Library_ConfigurationConstants_h
 
 
-FOUNDATION_EXPORT const NSString* TestBeanName;
+FOUNDATION_EXPORT NSString* const TestBeanName;
 FOUNDATION_EXPORT const NSInteger kExpectationTimeoutDelay_seconds;
 
 #endif

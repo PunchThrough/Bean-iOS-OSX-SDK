@@ -42,6 +42,18 @@
  */
 @property (nonatomic, weak) id<PTDBleDeviceDelegate> delegate;
 
+/// @name Identifying a Device
+/**
+ *  The UUID of the CoreBluetooth peripheral associated with the Device. This is not guaranteed to be the same between different devices. If a bluetooth cache is cleared, this UUID is not guaranteed to stay the same.
+ *  For more info, refer to the [Apple identifier documentation](https://developer.apple.com/library/ios/documentation/CoreBluetooth/Reference/CBPeripheral_Class/translated_content/CBPeripheral.html#//apple_ref/occ/instp/CBPeripheral/identifier)
+ */
+@property (nonatomic, readonly) NSUUID* identifier;
+/**
+ *  The Device's name.
+ *  For more info, refer to the [Apple name documentation](https://developer.apple.com/library/ios/documentation/CoreBluetooth/Reference/CBPeripheral_Class/translated_content/CBPeripheral.html#//apple_ref/occ/instp/CBPeripheral/name)
+ */
+@property (nonatomic, readonly) NSString* name;
+
 /// @name Accessing a Device's Received Signal Strength Indicator (RSSI) Data
 /**
  *  Requests the Device's current RSSI.

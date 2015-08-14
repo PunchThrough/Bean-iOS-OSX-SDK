@@ -63,7 +63,7 @@ typedef enum { //These occur in sequence
 // Adding the "dynamic" directive tells the compiler that It doesn't need to create the getter, setter, and ivar.
 // This is assumed to have already been done in a superclass, or will be done during runtime.
 // In this case, getter, setter, and ivar are already up by the superclass, PTDBleDevice
-@dynamic delegate;
+@dynamic delegate, name, identifier;
 
 //Enforce that you can't use the "init" function of this class
 - (id)init{
@@ -92,20 +92,6 @@ typedef enum { //These occur in sequence
     [gatt_serial_profile sendMessage:message];
 }
 
--(NSUUID*)identifier{
-    if(_peripheral && _peripheral.identifier){
-        return [_peripheral identifier];
-    }
-    return nil;
-}
--(NSString*)name{
-    //PTDLog(@"Bean advertname: %@", [_advertisementData objectForKey:CBAdvertisementDataLocalNameKey]);
-    if(_peripheral.name){
-        //PTDLog(@"Bean _peripheral.name: %@", _peripheral.name);
-        return _peripheral.name;
-    }
-    return [_advertisementData objectForKey:CBAdvertisementDataLocalNameKey]?[_advertisementData objectForKey:CBAdvertisementDataLocalNameKey]:@"Unknown";//Local Name
-}
 -(NSNumber*)batteryVoltage{
     if([self connected]
        && battery_profile

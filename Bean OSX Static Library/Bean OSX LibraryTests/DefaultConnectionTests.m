@@ -91,6 +91,18 @@
     NSLog(@"Bean RSSI: %@", testBean.RSSI);
 }
 
+// Connects to a Bean and then reads its name
+- (void)testReadName
+{
+    XCTAssert([testBean.name isEqualToString:TestBeanName]);
+}
+
+// Connects to a Bean and then reads its identifier
+- (void)testReadIdentifier
+{
+    XCTAssert(testBean.identifier);
+}
+
 #pragma - mark Internal Methods
 - (void)beanManagerDidUpdateState:(PTDBeanManager *)manager{
     if(manager.state == BeanManagerState_PoweredOn){
@@ -100,7 +112,7 @@
 
 - (void)beanManager:(PTDBeanManager*)manager didDiscoverBean:(PTDBean*)bean error:(NSError*)error{
     XCTAssert(!error);
-    if ([[bean name] isEqualToString:[NSString stringWithFormat:@"%@",TestBeanName]]){
+    if ([[bean name] isEqualToString:TestBeanName]){
         testBean = bean;
         [beanManager stopScanningForBeans_error:nil];
         [beanManager connectToBean:bean error:nil];

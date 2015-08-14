@@ -8,5 +8,5 @@
 
 #import <Foundation/Foundation.h>
 
-const NSString* TestBeanName = @"TestBean";
+NSString* const TestBeanName = @"TestBean";
 const NSInteger kExpectationTimeoutDelay_seconds = 30;
