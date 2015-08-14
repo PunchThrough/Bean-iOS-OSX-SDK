@@ -17,10 +17,6 @@
 #import "CBPeripheral+RSSI_Universal.h"
 #import "PTDBeanRemoteFirmwareVersionManager.h"
 
-
-#define DELAY_BEFORE_PROFILE_VALIDATION  0.5f
-#define PROFILE_VALIDATION_RETRY_TIMEOUT  10.0f
-#define PROFILE_VALIDATION_RETRIES    2
 #define ARDUINO_OAD_MAX_CHUNK_SIZE 64
 
 typedef enum { //These occur in sequence
@@ -43,8 +39,7 @@ typedef enum { //These occur in sequence
     
     NSSet*                      profilesRequiredForConnection;
     NSMutableSet*               profilesValidated;
-    NSTimer*                    validationRetryTimer;
-    NSInteger                   validationRetryCount;
+
     DevInfoProfile*             deviceInfo_profile;
     OadProfile*                 oad_profile;
     GattSerialProfile*          gatt_serial_profile;
