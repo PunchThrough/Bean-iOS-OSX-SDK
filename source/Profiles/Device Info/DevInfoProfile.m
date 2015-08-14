@@ -61,7 +61,11 @@
 
 -(void)readFirmwareVersionWithCompletion:(void (^)(void))firmwareVersionCompletion
 {
-    [firmwareVersionQueue addOperationWithBlock:firmwareVersionCompletion];
+    [firmwareVersionQueue addOperationWithBlock:^{
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            firmwareVersionCompletion();
+        }];
+    }];
 }
 
 -(NSString*)firmwareVersion
