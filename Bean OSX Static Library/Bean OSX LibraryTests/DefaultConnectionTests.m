@@ -7,6 +7,7 @@
 //
 
 #import <XCTest/XCTest.h>
+#import <OCMock/OCMock.h>
 #import "PTDBeanManager.h"
 #import "ConfigurationConstants.h"
 
@@ -101,6 +102,48 @@
 - (void)testReadIdentifier
 {
     XCTAssert(testBean.identifier);
+}
+
+// Tests the isEqual: and isEqualToBean: methods
+- (void)testDeviceEquality
+{
+    id deviceMock = OCMPartialMock([[PTDBleDevice alloc] init]);
+    OCMStub([deviceMock identifier]).andReturn(testBean.identifier);
+    
+    id beanMock = OCMPartialMock([[PTDBean alloc] initWithPeripheral:nil]);
+    OCMStub([beanMock identifier]).andReturn(testBean.identifier);
+    
+    XCTAssert([testBean isEqual:deviceMock]);
+    XCTAssert([testBean isEqual:beanMock]);
+    XCTAssert([testBean isEqualToBean:beanMock]);
+}
+
+// Tests the isEqual: and isEqualToBean: methods
+- (void)testDeviceInequality_nil
+{
+    id deviceMock = OCMPartialMock([[PTDBleDevice alloc] init]);
+    OCMStub([deviceMock identifier]).andReturn(nil);
+    
+    id beanMock = OCMPartialMock([[PTDBean alloc] initWithPeripheral:nil]);
+    OCMStub([beanMock identifier]).andReturn(nil);
+    
+    XCTAssertFalse([testBean isEqual:deviceMock]);
+    XCTAssertFalse([testBean isEqual:beanMock]);
+    XCTAssertFalse([testBean isEqualToBean:beanMock]);
+}
+
+// Tests the isEqual: and isEqualToBean: methods
+- (void)testDeviceInequality
+{
+    id deviceMock = OCMPartialMock([[PTDBleDevice alloc] init]);
+    OCMStub([deviceMock identifier]).andReturn([[NSUUID alloc] initWithUUIDString:@"00000000-0000-0000-0000-000000000000"]);
+    
+    id beanMock = OCMPartialMock([[PTDBean alloc] initWithPeripheral:nil]);
+    OCMStub([beanMock identifier]).andReturn([[NSUUID alloc] initWithUUIDString:@"00000000-0000-0000-0000-000000000000"]);
+    
+    XCTAssertFalse([testBean isEqual:deviceMock]);
+    XCTAssertFalse([testBean isEqual:beanMock]);
+    XCTAssertFalse([testBean isEqualToBean:beanMock]);
 }
 
 #pragma - mark Internal Methods

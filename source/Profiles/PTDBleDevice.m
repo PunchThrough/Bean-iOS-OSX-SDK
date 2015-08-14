@@ -32,6 +32,14 @@
     [_peripheral discoverServices:[BleProfile registeredProfiles]];
 }
 
+- (BOOL)isEqual:(id)object {
+    if( ![object isKindOfClass:[PTDBleDevice class]] ) { return NO; }
+    return [self.identifier isEqual:((PTDBleDevice*)object).identifier];
+}
+
+- (NSUInteger)hash {
+    return self.identifier.hash;
+}
 
 -(NSUUID*)identifier{
     if(_peripheral && _peripheral.identifier){

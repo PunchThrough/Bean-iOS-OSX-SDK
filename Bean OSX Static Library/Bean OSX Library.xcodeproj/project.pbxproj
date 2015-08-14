@@ -41,7 +41,10 @@
 		5223458C1B7950E300186320 /* SpeedConnectionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 5223458B1B7950E300186320 /* SpeedConnectionTests.m */; };
 		524E2B8D195A0C10007FE17D /* PTDBleDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 524E2B8B195A0C10007FE17D /* PTDBleDevice.h */; };
 		524E2B8E195A0C10007FE17D /* PTDBleDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 524E2B8C195A0C10007FE17D /* PTDBleDevice.m */; };
+		525AB3DC1B7E72B9007D6DE1 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 520B14581B571CFC00BA41E1 /* CoreBluetooth.framework */; };
+		525AB3DE1B7E7525007D6DE1 /* OCMock.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 525AB3DD1B7E7525007D6DE1 /* OCMock.framework */; };
 		526966C71B7956A40059CE7E /* ConfigurationConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 526966C61B7956A40059CE7E /* ConfigurationConstants.m */; };
+		526966CC1B7E70030059CE7E /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D34E2718A9B455002F0C59 /* Cocoa.framework */; };
 		52BB1B621A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 52BB1B601A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.h */; };
 		52BB1B631A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 52BB1B611A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.m */; };
 		52BB1B641A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 52BB1B611A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.m */; };
@@ -50,7 +53,6 @@
 		52BF98A219352E59008DCA31 /* BatteryProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 52BF98A019352E59008DCA31 /* BatteryProfile.m */; };
 		52D34E2818A9B455002F0C59 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D34E2718A9B455002F0C59 /* Cocoa.framework */; };
 		52D34E3918A9B455002F0C59 /* XCTest.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D34E3818A9B455002F0C59 /* XCTest.framework */; };
-		52D34E3A18A9B455002F0C59 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D34E2718A9B455002F0C59 /* Cocoa.framework */; };
 		52D34E3D18A9B455002F0C59 /* libBean OSX Library.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D34E2418A9B455002F0C59 /* libBean OSX Library.a */; };
 		52D34E4318A9B455002F0C59 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 52D34E4118A9B455002F0C59 /* InfoPlist.strings */; };
 		52D34E4518A9B455002F0C59 /* DefaultConnectionTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E4418A9B455002F0C59 /* DefaultConnectionTests.m */; };
@@ -139,6 +141,7 @@
 		524E2B8C195A0C10007FE17D /* PTDBleDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PTDBleDevice.m; sourceTree = "<group>"; };
 		5251175218ADA0AC0088DE2D /* GattCharacteristicHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GattCharacteristicHandler.h; path = Transport/GattCharacteristicHandler.h; sourceTree = "<group>"; };
 		5251175318ADA0C80088DE2D /* GattCharacteristicObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GattCharacteristicObserver.h; path = Transport/GattCharacteristicObserver.h; sourceTree = "<group>"; };
+		525AB3DD1B7E7525007D6DE1 /* OCMock.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OCMock.framework; path = Frameworks/OCMock.framework; sourceTree = "<group>"; };
 		526966C61B7956A40059CE7E /* ConfigurationConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigurationConstants.m; sourceTree = "<group>"; };
 		52BB1B601A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTDBeanRemoteFirmwareVersionManager.h; sourceTree = "<group>"; };
 		52BB1B611A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PTDBeanRemoteFirmwareVersionManager.m; sourceTree = "<group>"; };
@@ -217,9 +220,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				A9448BF11C7B94DE0031DA2C /* IOBluetooth.framework in Frameworks */,
-				52D34E3A18A9B455002F0C59 /* Cocoa.framework in Frameworks */,
-				52D34E3918A9B455002F0C59 /* XCTest.framework in Frameworks */,
+				525AB3DC1B7E72B9007D6DE1 /* CoreBluetooth.framework in Frameworks */,
+				525AB3DE1B7E7525007D6DE1 /* OCMock.framework in Frameworks */,
+				526966CC1B7E70030059CE7E /* Cocoa.framework in Frameworks */,
 				52D34E3D18A9B455002F0C59 /* libBean OSX Library.a in Frameworks */,
+				52D34E3918A9B455002F0C59 /* XCTest.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -325,6 +330,7 @@
 			children = (
 				A9448BEF1C7B94D10031DA2C /* IOBluetoothUI.framework */,
 				A9448BED1C7B94C80031DA2C /* CoreBluetooth.framework */,
+				525AB3DD1B7E7525007D6DE1 /* OCMock.framework */,
 				969B8974190896BC00AA093C /* CoreBluetooth.framework */,
 				52DE25C018AAC53900E69929 /* IOBluetooth.framework */,
 				52D34E2718A9B455002F0C59 /* Cocoa.framework */,
@@ -836,6 +842,10 @@
 		52D34E4918A9B455002F0C59 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks/OCMock/OSX",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Bean OSX Library/Bean OSX Library-Prefix.pch";
 				ONLY_ACTIVE_ARCH = YES;
@@ -846,6 +856,10 @@
 		52D34E4A18A9B455002F0C59 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks/OCMock/OSX",
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Bean OSX Library/Bean OSX Library-Prefix.pch";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -859,6 +873,8 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks",
+					"$(PROJECT_DIR)/Frameworks/OCMock/OSX",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Bean OSX Library/Bean OSX Library-Prefix.pch";
@@ -867,6 +883,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "Bean OSX LibraryTests/Bean OSX LibraryTests-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(PROJECT_DIR)/Frameworks";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xctest;
@@ -880,10 +897,13 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks",
+					"$(PROJECT_DIR)/Frameworks/OCMock/OSX",
 				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "Bean OSX Library/Bean OSX Library-Prefix.pch";
 				INFOPLIST_FILE = "Bean OSX LibraryTests/Bean OSX LibraryTests-Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(PROJECT_DIR)/Frameworks";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xctest;

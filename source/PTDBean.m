@@ -68,19 +68,8 @@ typedef enum { //These occur in sequence
 
 #pragma mark - Public Methods
 
-- (BOOL)isEqual:(id)object {
-    return [object isKindOfClass:[self class]] ? [self isEqualToBean:object] : NO;
-}
-
-- (NSUInteger)hash {
-    return self.identifier.hash;
-}
-
 - (BOOL)isEqualToBean:(PTDBean *)bean {
-    if([self.identifier isEqual:bean.identifier]){
-        return YES;
-    }
-    return NO;
+    return [self isEqual:bean];
 }
 
 -(void)sendMessage:(GattSerialMessage*)message{
