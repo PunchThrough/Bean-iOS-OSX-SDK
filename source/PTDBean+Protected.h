@@ -14,17 +14,12 @@
 
 #import "PTDBean.h"
 #import "PTDBeanManager+Protected.h"
+#import "PTDBleDevice+Protected.h"
 
 @interface PTDBean (Protected)
 
 -(id)initWithPeripheral:(CBPeripheral*)peripheral beanManager:(id<PTDBeanManager>)manager;
 
--(CBPeripheral*)peripheral;
-
--(void)setState:(BeanState)state;
--(void)setRSSI:(NSNumber*)rssi;
--(void)setAdvertisementData:(NSDictionary*)adData;
--(void)setLastDiscovered:(NSDate*)date;
 -(void)setBeanManager:(id<PTDBeanManager>)manager;
 -(BOOL)updateFirmwareWithImagePaths:(NSArray*)firmwareImages;
 -(void)setProfilesRequiredToConnect:(NSArray*)classes;

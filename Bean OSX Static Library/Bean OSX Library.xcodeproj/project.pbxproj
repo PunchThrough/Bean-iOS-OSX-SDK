@@ -43,6 +43,7 @@
 		524E2B8E195A0C10007FE17D /* PTDBleDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 524E2B8C195A0C10007FE17D /* PTDBleDevice.m */; };
 		525AB3DC1B7E72B9007D6DE1 /* CoreBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 520B14581B571CFC00BA41E1 /* CoreBluetooth.framework */; };
 		525AB3DE1B7E7525007D6DE1 /* OCMock.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 525AB3DD1B7E7525007D6DE1 /* OCMock.framework */; };
+		525AB3E01B7E8135007D6DE1 /* PTDBleDevice+Protected.h in Headers */ = {isa = PBXBuildFile; fileRef = 525AB3DF1B7E8135007D6DE1 /* PTDBleDevice+Protected.h */; };
 		526966C71B7956A40059CE7E /* ConfigurationConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 526966C61B7956A40059CE7E /* ConfigurationConstants.m */; };
 		526966CC1B7E70030059CE7E /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D34E2718A9B455002F0C59 /* Cocoa.framework */; };
 		52BB1B621A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 52BB1B601A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.h */; };
@@ -142,6 +143,7 @@
 		5251175218ADA0AC0088DE2D /* GattCharacteristicHandler.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GattCharacteristicHandler.h; path = Transport/GattCharacteristicHandler.h; sourceTree = "<group>"; };
 		5251175318ADA0C80088DE2D /* GattCharacteristicObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GattCharacteristicObserver.h; path = Transport/GattCharacteristicObserver.h; sourceTree = "<group>"; };
 		525AB3DD1B7E7525007D6DE1 /* OCMock.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OCMock.framework; path = Frameworks/OCMock.framework; sourceTree = "<group>"; };
+		525AB3DF1B7E8135007D6DE1 /* PTDBleDevice+Protected.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PTDBleDevice+Protected.h"; sourceTree = "<group>"; };
 		526966C61B7956A40059CE7E /* ConfigurationConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigurationConstants.m; sourceTree = "<group>"; };
 		52BB1B601A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTDBeanRemoteFirmwareVersionManager.h; sourceTree = "<group>"; };
 		52BB1B611A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PTDBeanRemoteFirmwareVersionManager.m; sourceTree = "<group>"; };
@@ -251,6 +253,7 @@
 		524E2B8A195A0BDB007FE17D /* BLE Device */ = {
 			isa = PBXGroup;
 			children = (
+				525AB3DF1B7E8135007D6DE1 /* PTDBleDevice+Protected.h */,
 				524E2B8B195A0C10007FE17D /* PTDBleDevice.h */,
 				524E2B8C195A0C10007FE17D /* PTDBleDevice.m */,
 				52D34E9318A9B890002F0C59 /* BLE Profiles */,
@@ -540,6 +543,7 @@
 				524E2B8D195A0C10007FE17D /* PTDBleDevice.h in Headers */,
 				520A7E141AA0034500CB5B80 /* CBPeripheral+RSSI_Universal.h in Headers */,
 				2FB1B35E1975E29600903F59 /* PTDBleDevice.h in Headers */,
+				525AB3E01B7E8135007D6DE1 /* PTDBleDevice+Protected.h in Headers */,
 				52BF98A119352E59008DCA31 /* BatteryProfile.h in Headers */,
 				36539CB31C7CEB4C00F4926F /* PTDIntelHex.h in Headers */,
 				52BB1B621A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.h in Headers */,

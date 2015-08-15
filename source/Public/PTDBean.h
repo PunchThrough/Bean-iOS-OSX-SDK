@@ -382,7 +382,7 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
         NSLog(@"Bean connected, try calling an API");
      }
  */
-@property (nonatomic, readonly) BeanState state;
+@property (nonatomic, readonly) PTDBleDeviceState state;
 /// @name Auto Reconnect
 /**
   If true, automatically reconnect to this Bean

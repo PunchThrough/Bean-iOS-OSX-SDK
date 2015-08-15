@@ -15,6 +15,37 @@
 #endif
 #import "BleProfile.h"
 
+/**
+ *  Represents the Device's connection state
+ */
+typedef NS_ENUM(NSInteger, PTDBleDeviceState) {
+    /**
+     *  Used for initialization and unknown error states
+     */
+    PTDBleDeviceState_Unknown = 0,
+    /**
+     *  Device has been discovered by a central
+     */
+    PTDBleDeviceState_Discovered,
+    /**
+     *  Device is attempting to connect with a central
+     */
+    PTDBleDeviceState_AttemptingConnection,
+    /**
+     *  Device is undergoing setup/validation
+     */
+    PTDBleDeviceState_AttemptingValidation,
+    /**
+     *  Device is connected
+     */
+    PTDBleDeviceState_ConnectedAndValidated,
+    /**
+     *  Device is disconnecting
+     */
+    PTDBleDeviceState_AttemptingDisconnection
+};
+
+
 @protocol PTDBleDeviceDelegate;
 
 @interface PTDBleDevice : NSObject <CBPeripheralDelegate>{
@@ -38,7 +69,7 @@
 -(void)profileDiscovered:(BleProfile*)profile;
 
 /**
- *  The <PTDBeanDelegate> delegate object for the Bean. Set your class as the delegate to receive messages and responses from the Bean.
+ *  The <PTDBleDeviceDelegate> delegate object for the device. Set your class as the delegate to receive messages and responses from the device.
  */
 @property (nonatomic, weak) id<PTDBleDeviceDelegate> delegate;
 
@@ -54,10 +85,33 @@
  */
 @property (nonatomic, readonly) NSString* name;
 
+/**
+ *  Represents last time this device was discovered while scanning.
+ */
+@property (nonatomic, readonly) NSDate* lastDiscovered;
+
+/**
+ *  Bluetooth LE advertising data. A dictionary containing [CBAdvertisementDataLocalNameKey](https://developer.apple.com/library/ios/documentation/CoreBluetooth/Reference/CBCentralManagerDelegate_Protocol/translated_content/CBCentralManagerDelegate.html)
+ */
+@property (nonatomic, readonly) NSDictionary* advertisementData;
+
+/// @name Monitoring a Device's Connection State
+/**
+ The current connection state of the Device. See <PTDBleDeviceState> for more details.
+ 
+ if (device.state == PTDBleDeviceState_Discovered) {
+ NSLog(@"Device discovered, try connecting");
+ }
+ else if (device.state == PTDBleDeviceState_ConnectedAndValidated) {
+ NSLog(@"Device connected, try calling an API");
+ }
+ */
+@property (nonatomic, readonly) PTDBleDeviceState state;
+
 /// @name Accessing a Device's Received Signal Strength Indicator (RSSI) Data
 /**
  *  Requests the Device's current RSSI.
- *  @discussion When you call this method to read the Device's RSSI, the bean calls the [PTDBleDeviceDelegate deviceDidUpdateRSSI:error:] method of its delegate object. If the Device's RSSI is successfully retrieved, you can access it through the Device's <RSSI> property.
+ *  @discussion When you call this method to read the Device's RSSI, the device calls the [PTDBleDeviceDelegate deviceDidUpdateRSSI:error:] method of its delegate object. If the Device's RSSI is successfully retrieved, you can access it through the Device's <RSSI> property.
  *  @see [PTDBleDeviceDelegate deviceDidUpdateRSSI:error:]
  *  @see RSSI
  */
@@ -76,7 +130,7 @@
 /**
  *  Sent in response when a Device's RSSI is requested
  *
- *  @param bean            The Device whose RSSI data has been requested.
+ *  @param device            The Device whose RSSI data has been requested.
  *  @param error           Nil if successful, or an NSError if the reading was unsuccessful.
  *  @see [PTDBleDevice readRSSI];
  */

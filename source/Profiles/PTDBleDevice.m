@@ -74,6 +74,23 @@
     return (returnedRSSI.integerValue!=127)?returnedRSSI:nil;
 }
 
+#pragma mark - Protected methods
+-(CBPeripheral*)peripheral{
+    return _peripheral;
+}
+-(void)setState:(PTDBleDeviceState)state{
+    _state = state;
+}
+-(void)setRSSI:(NSNumber*)rssi{
+    _RSSI = rssi;
+}
+-(void)setAdvertisementData:(NSDictionary*)adData{
+    _advertisementData = adData;
+}
+-(void)setLastDiscovered:(NSDate*)date{
+    _lastDiscovered = date;
+}
+
 #pragma mark "Virtual" Methods
 -(void)rssiDidUpdateWithError:(NSError*)error{
     //[NSException raise:NSInternalInconsistencyException format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];

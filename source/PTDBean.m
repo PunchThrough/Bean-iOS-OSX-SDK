@@ -32,7 +32,6 @@ typedef enum { //These occur in sequence
 
 @implementation PTDBean
 {
-	BeanState                   _state;
 	id<PTDBeanManager>          _beanManager;
     
     AppMessagingLayer*          appMessageLayer;
@@ -58,7 +57,7 @@ typedef enum { //These occur in sequence
 // Adding the "dynamic" directive tells the compiler that It doesn't need to create the getter, setter, and ivar.
 // This is assumed to have already been done in a superclass, or will be done during runtime.
 // In this case, getter, setter, and ivar are already up by the superclass, PTDBleDevice
-@dynamic delegate, name, identifier;
+@dynamic delegate, name, state, identifier, lastDiscovered, advertisementData;
 
 //Enforce that you can't use the "init" function of this class
 - (id)init{
@@ -72,10 +71,7 @@ typedef enum { //These occur in sequence
     return [self isEqual:bean];
 }
 
--(void)sendMessage:(GattSerialMessage*)message{
-    [gatt_serial_profile sendMessage:message];
-}
-
+#pragma mark - SDK
 -(NSNumber*)batteryVoltage{
     if([self connected]
        && battery_profile
@@ -83,15 +79,6 @@ typedef enum { //These occur in sequence
         return [battery_profile batteryVoltage];
     }
     return nil;
-}
--(BeanState)state{
-    return _state;
-}
--(NSDictionary*)advertisementData{
-    return _advertisementData;
-}
--(NSDate*)lastDiscovered{
-    return _lastDiscovered;
 }
 -(NSString*)firmwareVersion{
     if(deviceInfo_profile && [deviceInfo_profile isValid:nil]){
@@ -109,7 +96,6 @@ typedef enum { //These occur in sequence
     return nil;
 }
 
-#pragma mark - SDK
 - (void)releaseSerialGate {
   [appMessageLayer sendMessageWithID:MSG_ID_BT_END_GATE andPayload:nil];
 }
@@ -151,8 +137,8 @@ typedef enum { //These occur in sequence
     [appMessageLayer sendMessageWithID:MSG_ID_CC_GET_AR_POWER andPayload:nil];
 }
 -(void)programArduinoWithRawHexImage:(NSData*)hexImage andImageName:(NSString*)name{
-    if(_state == BeanState_ConnectedAndValidated &&
-       _peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
+    if(self.state == BeanState_ConnectedAndValidated &&
+       self.peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
     {
         [self __resetArduinoOADLocals];
         arduinoFwImage = hexImage?hexImage:[[NSData alloc] init];
@@ -434,21 +420,6 @@ typedef enum { //These occur in sequence
     [self __checkIfRequiredProfilesAreValidated];
 }
     
--(CBPeripheral*)peripheral{
-    return _peripheral;
-}
--(void)setState:(BeanState)state{
-    _state = state;
-}
--(void)setRSSI:(NSNumber*)rssi{
-    _RSSI = rssi;
-}
--(void)setAdvertisementData:(NSDictionary*)adData{
-    _advertisementData = adData;
-}
--(void)setLastDiscovered:(NSDate*)date{
-    _lastDiscovered = date;
-}
 -(void)setBeanManager:(id<PTDBeanManager>)manager{
     _beanManager = manager;
 }
@@ -456,6 +427,10 @@ typedef enum { //These occur in sequence
     profilesRequiredForConnection = [NSSet setWithArray:classes];
     profilesValidated = [[NSMutableSet alloc] init];
 }
+-(void)sendMessage:(GattSerialMessage*)message{
+    [gatt_serial_profile sendMessage:message];
+}
+
 #pragma mark - Private Methods
 
 -(void)__alertDelegateOfArduinoOADCompletion:(NSError*)error{
@@ -573,8 +548,8 @@ typedef enum { //These occur in sequence
     }
 }
 -(BOOL)connected {
-    if(_state != BeanState_ConnectedAndValidated ||
-       _peripheral.state != CBPeripheralStateConnected) //This second conditional is an assertion
+    if(self.state != BeanState_ConnectedAndValidated ||
+       self.peripheral.state != CBPeripheralStateConnected) //This second conditional is an assertion
     {
         return NO;
     }
