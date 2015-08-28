@@ -53,6 +53,8 @@ typedef enum { //These occur in sequence
     void (^firmwareUpdateAvailableHandler)(BOOL updateAvailable, NSError *error);
     NSDate*                     firmwareUpdateStartTime;
     
+    BOOL                        hasNotifiedValidity;
+    
 }
 // Adding the "dynamic" directive tells the compiler that It doesn't need to create the getter, setter, and ivar.
 // This is assumed to have already been done in a superclass, or will be done during runtime.
@@ -398,6 +400,7 @@ typedef enum { //These occur in sequence
         _beanManager = manager;
         localArduinoOADState = BeanArduinoOADLocalState_Inactive;
         _arduinoPowerState = ArduinoPowerState_Unknown;
+        hasNotifiedValidity = NO;
         
         // Default functionality. Can be overridden with the options parameter in [PTDBeanManager connectToBean:withOptions:error:]
         [self setProfilesRequiredToConnect:@[[BatteryProfile class],
@@ -534,7 +537,6 @@ typedef enum { //These occur in sequence
     [self __checkIfRequiredProfilesAreValidated];
 }
 -(void)__checkIfRequiredProfilesAreValidated{
-    static BOOL hasNotifiedValidity = false;
     
     if([profilesRequiredForConnection isEqualToSet:profilesValidated]
        && hasNotifiedValidity == false)
