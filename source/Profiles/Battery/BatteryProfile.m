@@ -27,7 +27,7 @@
     return self;
 }
 -(void)readBattery{
-    if([peripheral isConnected_Universal]){
+    if(peripheral.state == CBPeripheralStateConnected){
         if(characteristic_battery_level){
             [peripheral readValueForCharacteristic:characteristic_battery_level];
         }

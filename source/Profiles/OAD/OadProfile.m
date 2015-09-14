@@ -8,8 +8,6 @@
 
 #import "OadProfile.h"
 
-#import "CBPeripheral+isConnected_Universal.h"
-
 // OAD implementation based on http://processors.wiki.ti.com/images/8/82/OAD_for_CC254x.pdf
 
 // TODO:
@@ -102,7 +100,7 @@ typedef struct {
 
 - (BOOL)updateFirmwareWithImageAPath:(NSString*)imageAPath andImageBPath:(NSString*)imageBPath
 {
-    if (![peripheral isConnected_Universal]) {
+    if (peripheral.state != CBPeripheralStateConnected) {
         
         if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadWithError:)]) {
             [self.delegate device:self completedFirmwareUploadWithError:[NSError errorWithDomain:ERROR_DOMAIN

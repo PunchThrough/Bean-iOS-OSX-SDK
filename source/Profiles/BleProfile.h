@@ -16,7 +16,6 @@
 
 #import "Profile_Protocol.h"
 #import "ProfileDelegate_Protocol.h"
-#import "CBPeripheral+isConnected_Universal.h"
 
 @interface BleProfile : NSObject <Profile_Protocol>
 {
