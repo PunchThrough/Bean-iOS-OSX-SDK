@@ -592,9 +592,8 @@ typedef enum { //These occur in sequence
         deviceInfo_profile = (DevInfoProfile*)profile;
         __weak typeof(self) weakSelf = self;
         [deviceInfo_profile validateWithCompletion: ^(NSError* error) {
-            if ( !error
-                //&& [deviceInfo_profile isValid:nil]
-                ) {
+            if ( !error)
+            {
                 [weakSelf __profileHasBeenValidated:profile];
             }
         }];
@@ -636,7 +635,6 @@ typedef enum { //These occur in sequence
             if ( !error && [gatt_serial_profile isValid:nil] ) {
                 [weakSelf releaseSerialGate];
                 [weakSelf __profileHasBeenValidated:profile];
-                //[weakSelf readRadioConfig];
             }
         }];
     } else if ([profile isMemberOfClass:[BatteryProfile class]]) {
