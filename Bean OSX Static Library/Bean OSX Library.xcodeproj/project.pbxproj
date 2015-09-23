@@ -28,10 +28,8 @@
 		520A7E161AA0034500CB5B80 /* CBPeripheral+RSSI_Universal.m in Sources */ = {isa = PBXBuildFile; fileRef = 520A7E131AA0034500CB5B80 /* CBPeripheral+RSSI_Universal.m */; };
 		520C8ED7191BF0EC0086C530 /* BleProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 520C8ED6191BF0EC0086C530 /* BleProfile.m */; };
 		520C8EDE191C31780086C530 /* NSData+CRC.m in Sources */ = {isa = PBXBuildFile; fileRef = 521A4E9C19103E5F005B3097 /* NSData+CRC.m */; };
-		520C8EDF191C318D0086C530 /* CBPeripheral+isConnected_Universal.m in Sources */ = {isa = PBXBuildFile; fileRef = 521A4EA219116C0F005B3097 /* CBPeripheral+isConnected_Universal.m */; };
 		520C8EE0191C31970086C530 /* BleProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = 520C8ED6191BF0EC0086C530 /* BleProfile.m */; };
 		521A4E9D19103E5F005B3097 /* NSData+CRC.m in Sources */ = {isa = PBXBuildFile; fileRef = 521A4E9C19103E5F005B3097 /* NSData+CRC.m */; };
-		521A4EA319116C0F005B3097 /* CBPeripheral+isConnected_Universal.m in Sources */ = {isa = PBXBuildFile; fileRef = 521A4EA219116C0F005B3097 /* CBPeripheral+isConnected_Universal.m */; };
 		524E2B8D195A0C10007FE17D /* PTDBleDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 524E2B8B195A0C10007FE17D /* PTDBleDevice.h */; };
 		524E2B8E195A0C10007FE17D /* PTDBleDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 524E2B8C195A0C10007FE17D /* PTDBleDevice.m */; };
 		52BB1B621A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 52BB1B601A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.h */; };
@@ -109,8 +107,6 @@
 		520C8ED8191BF4C50086C530 /* Profile_Protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Profile_Protocol.h; sourceTree = "<group>"; };
 		521A4E9B19103E5F005B3097 /* NSData+CRC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+CRC.h"; sourceTree = "<group>"; };
 		521A4E9C19103E5F005B3097 /* NSData+CRC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+CRC.m"; sourceTree = "<group>"; };
-		521A4EA119116C0F005B3097 /* CBPeripheral+isConnected_Universal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CBPeripheral+isConnected_Universal.h"; sourceTree = "<group>"; };
-		521A4EA219116C0F005B3097 /* CBPeripheral+isConnected_Universal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CBPeripheral+isConnected_Universal.m"; sourceTree = "<group>"; };
 		5242A60C18D9101200DDB29F /* AppMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppMessages.h; path = "../../App Message Definitions/AppMessages.h"; sourceTree = "<group>"; };
 		524E2B8B195A0C10007FE17D /* PTDBleDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PTDBleDevice.h; path = ../Public/PTDBleDevice.h; sourceTree = "<group>"; };
 		524E2B8C195A0C10007FE17D /* PTDBleDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PTDBleDevice.m; sourceTree = "<group>"; };
@@ -361,8 +357,6 @@
 				52D34E8F18A9B890002F0C59 /* CBPeripheral+UniqueId.m */,
 				521A4E9B19103E5F005B3097 /* NSData+CRC.h */,
 				521A4E9C19103E5F005B3097 /* NSData+CRC.m */,
-				521A4EA119116C0F005B3097 /* CBPeripheral+isConnected_Universal.h */,
-				521A4EA219116C0F005B3097 /* CBPeripheral+isConnected_Universal.m */,
 			);
 			name = Categories;
 			path = ../../source/Categories;
@@ -596,7 +590,6 @@
 				969FDE97191A9DE80068B99A /* PTDBean.m in Sources */,
 				52BC523718D96A610083A031 /* AppMessagingLayer.m in Sources */,
 				52D34EB518A9B890002F0C59 /* GattSerialProfile.m in Sources */,
-				521A4EA319116C0F005B3097 /* CBPeripheral+isConnected_Universal.m in Sources */,
 				520C8ED7191BF0EC0086C530 /* BleProfile.m in Sources */,
 				52D34EB718A9B890002F0C59 /* GattPacket.m in Sources */,
 				521A4E9D19103E5F005B3097 /* NSData+CRC.m in Sources */,
@@ -627,7 +620,6 @@
 				2F6B5991196CA72E000CC6E8 /* PTDBleDevice.m in Sources */,
 				96506ECA1937E82A00D02440 /* BatteryProfile.m in Sources */,
 				520C8EE0191C31970086C530 /* BleProfile.m in Sources */,
-				520C8EDF191C318D0086C530 /* CBPeripheral+isConnected_Universal.m in Sources */,
 				520C8EDE191C31780086C530 /* NSData+CRC.m in Sources */,
 				969FDE9C191A9E200068B99A /* PTDBeanRadioConfig.m in Sources */,
 				969B897F1908971000AA093C /* AppMessagingLayer.m in Sources */,
