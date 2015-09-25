@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.author             = { "Punch Through Design" => "info@punchthrough.com" }
   s.documentation_url = 'http://punchthrough.com/files/bean/sdk-docs/index.html'
 
-  s.ios.deployment_target = "9.0"
+  s.ios.deployment_target = "7.0"
   s.osx.deployment_target = "10.9"
 
   s.source       = { :git => "https://github.com/PunchThrough/Bean-iOS-OSX-SDK.git", :tag => s.version.to_s, :submodules => true }
