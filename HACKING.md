@@ -27,7 +27,6 @@ Build the docs:
 --no-warn-invalid-crossref \
 --ignore "*.m" \
 --ignore "LoadableCategory.h" \
---index-desc "README.md" \
 source/
 ```
 
