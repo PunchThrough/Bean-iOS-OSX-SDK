@@ -32,3 +32,19 @@ source/
 ```
 
 Once the docs are built you can open `build/html/index.html` in a web browser.
+
+## Deploying Docs
+
+The section above (Building the Docs) can be entirely automated, including the deployment to `gh-pages`.
+
+First, `cd` into `docs/` and install the script dependencies:
+
+```bash
+$ npm install
+```
+
+Then deploy to `gh-pages`!
+
+```bash
+$ npm run gulp deploy
+```
