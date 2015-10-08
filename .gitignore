@@ -18,3 +18,5 @@ DerivedData
 *.xcuserstate
 Documents
 docset-installed.txt
+docs/node_modules/
+docs/.publish
