@@ -640,7 +640,9 @@ typedef enum { //These occur in sequence
             if (self.delegate) {
                 BT_SCRATCH_T rawData;
                 [payload getBytes:&rawData range:NSMakeRange(0, payload.length)];
-                NSData *scratch = [NSData dataWithBytes:rawData.scratch length:payload.length];
+                // syoung-smallwisdom 10/11/2015 The data length is the paylod length minus the size of the BT_SCRATCH_T.number
+                NSUInteger dataLength = (payload.length - sizeof(rawData.number));
+                NSData *scratch = [NSData dataWithBytes:rawData.scratch length:dataLength];
                 //This delegate call has been deprecated!
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
