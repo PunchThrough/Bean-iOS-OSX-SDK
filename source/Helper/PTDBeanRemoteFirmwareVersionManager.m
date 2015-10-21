@@ -12,7 +12,7 @@ static NSString *PTDFirmwareCheckDateKey = @"PTDFirmwareCheckDateKey";
 static NSString *PTDNewestFirmwareVersionKey = @"PTDNewestFirmwareVersionKey";
 
 static NSString *PTDFirmwareUrlStringsKey = @"PTDFirmwareUrlStringsKey";
-static NSString *PTDFirmwareVersionUrlString = @"http://punchthrough.com/files/bean/oad-images/v2/";
+static NSString *PTDFirmwareVersionUrlString = @"https://punchthrough.com/files/bean/oad-images/v2/";
 
 static NSString *PTDFirmwareVersionJSONKey = @"version";
 static NSString *PTDFirmwareImagesJSONKey = @"images";

@@ -833,6 +833,13 @@ typedef enum { //These occur in sequence
 
 
 #pragma mark OAD callbacks
+-(void)device:(OadProfile*)device completedFirmwareUploadWithError:(NSError*)error
+{
+    if ( error ) _updateInProgress = FALSE;
+    
+    if ( self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)] )
+        [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadWithError:error];
+}
 
 -(void)device:(OadProfile*)device completedFirmwareUploadWithError:(NSError*)error{
     if(self.delegate){
