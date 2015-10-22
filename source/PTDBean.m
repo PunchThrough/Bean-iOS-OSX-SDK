@@ -837,7 +837,7 @@ typedef enum { //These occur in sequence
 {
     if ( error ) _updateInProgress = FALSE;
     
-    if ( self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)] )
+    if ( error && self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)] )
         [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadWithError:error];
 }
 
