@@ -404,10 +404,6 @@ typedef struct {
                 PTDLog(@"OAD completed in %f seconds", -[self.downloadStartDate timeIntervalSinceNow]-WATCHDOG_TIMER_INTERVAL);
                 break;
                 
-            case OADStateSentNewHeader:
-                PTDLog(@"Bean is resetting to small OAD-only image.");
-                break;
-                
             case OADStateEnableNotify:
                 error = [NSError errorWithDomain:ERROR_DOMAIN
                                             code:ERROR_CODE
@@ -415,9 +411,13 @@ typedef struct {
                 break;
                 
             case OADStateSendingPackets:
-                error = [NSError errorWithDomain:ERROR_DOMAIN
-                                            code:ERROR_CODE
-                                        userInfo:@{NSLocalizedDescriptionKey:@"Timeout sending firmware."}];
+                if (self.nextBlockRequest == 1) {
+                    PTDLog(@"Bean is restting to small OAD-only image.");
+                } else {
+                    error = [NSError errorWithDomain:ERROR_DOMAIN
+                                                code:ERROR_CODE
+                                            userInfo:@{NSLocalizedDescriptionKey:@"Timeout sending firmware."}];
+                }
                 break;
                 
             default:
