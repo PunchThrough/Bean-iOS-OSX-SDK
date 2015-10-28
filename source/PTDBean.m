@@ -619,7 +619,7 @@ typedef enum { //These occur in sequence
                     PTDLog(@"firmware update continues");
                     [self updateFirmware];
                 }
-            } else if ( [self.firmwareVersion rangeOfString:@"OAD Only"].location != NSNotFound ) {
+            } else if ( [self.firmwareVersion rangeOfString:@"OAD"].location != NSNotFound ) {
                     PTDLog(@"Discovered partially updated Bean. Update Required.");
                     [self updateFirmware];
             }
