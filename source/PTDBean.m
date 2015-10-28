@@ -81,13 +81,13 @@ typedef enum { //These occur in sequence
     return nil;
 }
 -(NSString*)firmwareVersion{
-    if(deviceInfo_profile && [deviceInfo_profile isValid:nil]){
+    if(deviceInfo_profile){
         return deviceInfo_profile.firmwareVersion;
     }
     return nil;
 }
 -(NSString*)hardwareVersion{
-    if(deviceInfo_profile && [deviceInfo_profile isValid:nil]){
+    if(deviceInfo_profile){
         return deviceInfo_profile.hardwareVersion;
     }
     return nil;
