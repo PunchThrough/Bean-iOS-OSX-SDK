@@ -334,7 +334,10 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  *  The version of the Bean's current firmware.
  */
 @property (nonatomic, readonly) NSString* firmwareVersion;
-
+/**
+ *  The version of the Bean's hardware.
+ */
+@property (nonatomic, readonly) NSString* hardwareVersion;
 /**
  *  The Newest firmware version available
  */

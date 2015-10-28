@@ -86,6 +86,12 @@ typedef enum { //These occur in sequence
     }
     return nil;
 }
+-(NSString*)hardwareVersion{
+    if(deviceInfo_profile && [deviceInfo_profile isValid:nil]){
+        return deviceInfo_profile.hardwareVersion;
+    }
+    return nil;
+}
 
 -(PTDBeanManager*)beanManager{
     if(_beanManager){

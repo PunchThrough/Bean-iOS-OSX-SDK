@@ -16,6 +16,7 @@
     CBCharacteristic* characteristic_firmware_version;
     CBCharacteristic* characteristic_software_version;
     NSOperationQueue* firmwareVersionQueue;
+    NSOperationQueue* hardwareVersionQueue;
 }
 
 +(void)load
@@ -34,6 +35,8 @@
         peripheral = service.peripheral;
         firmwareVersionQueue = [[NSOperationQueue alloc] init];
         firmwareVersionQueue.suspended = YES;
+        hardwareVersionQueue = [[NSOperationQueue alloc] init];
+        hardwareVersionQueue.suspended = YES;
     }
     return self;
 }
@@ -43,7 +46,7 @@
     // Find characteristics of service
     NSArray * characteristics = [NSArray arrayWithObjects:
                                  [CBUUID UUIDWithString:CHARACTERISTIC_FIRMWARE_VERSION],
-                                 //[CBUUID UUIDWithString:CHARACTERISTIC_HARDWARE_VERSION],
+                                 [CBUUID UUIDWithString:CHARACTERISTIC_HARDWARE_VERSION],
                                  //[CBUUID UUIDWithString:CHARACTERISTIC_SOFTWARE_VERSION],
                                  nil];
     [peripheral discoverCharacteristics:characteristics forService:service_deviceInformation];
@@ -53,10 +56,10 @@
 -(BOOL)isValid:(NSError**)error
 {
     return (service_deviceInformation &&
-            //characteristic_hardware_version &&
+            characteristic_hardware_version &&
             characteristic_firmware_version &&
             //characteristic_software_version &&
-            _firmwareVersion)?TRUE:FALSE;
+            _firmwareVersion && _hardwareVersion)?TRUE:FALSE;
 }
 
 -(void)readFirmwareVersionWithCompletion:(void (^)(void))firmwareVersionCompletion
@@ -64,6 +67,15 @@
     [firmwareVersionQueue addOperationWithBlock:^{
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             firmwareVersionCompletion();
+        }];
+    }];
+}
+
+-(void)readHardwareVersionWithCompletion:(void (^)(void))hardwareVersionCompletion
+{
+    [hardwareVersionQueue addOperationWithBlock:^{
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            hardwareVersionCompletion();
         }];
     }];
 }
@@ -77,6 +89,17 @@
     NSOperation *op = [NSBlockOperation blockOperationWithBlock:^{}];
     [firmwareVersionQueue addOperations:@[op] waitUntilFinished: YES];
     return _firmwareVersion;
+}
+
+-(NSString*)hardwareVersion
+{
+    if (_hardwareVersion)
+        return _hardwareVersion;
+    PTDLog(@"hardwareVersion call blocking.");
+    // Wait until hardware version is available
+    NSOperation *op = [NSBlockOperation blockOperationWithBlock:^{}];
+    [hardwareVersionQueue addOperations:@[op] waitUntilFinished: YES];
+    return _hardwareVersion;
 }
 
 #pragma mark Private Functions
@@ -117,7 +140,7 @@
     
     [self __processCharacteristics];
     
-    if(characteristic_firmware_version == nil) {
+    if(characteristic_firmware_version == nil || characteristic_hardware_version == nil) {
         // Could not find all characteristics!
         PTDLog(@"%@: Could not find all Device Information characteristics!", self.class.description);
         return;
@@ -126,17 +149,23 @@
     PTDLog(@"%@: Found all Device Information characteristics", self.class.description);
     //Read device firmware version
     [peripheral readValueForCharacteristic:characteristic_firmware_version];
+    //Read device hardware version
+    [peripheral readValueForCharacteristic:characteristic_hardware_version];
 }
 
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
 {
     if( error ) { return; }
     // Is this not the characteristic that we're interested in?
-    if(![characteristic isEqual:characteristic_firmware_version]) { return; }
-    
-    _firmwareVersion = [[NSString alloc] initWithData:[characteristic value] encoding:NSUTF8StringEncoding];
-    PTDLog(@"%@: Device Firmware Version Found: %@", self.class.description, _firmwareVersion);
-    firmwareVersionQueue.suspended = NO;
+    if([characteristic isEqual:characteristic_firmware_version]) {
+        _firmwareVersion = [[NSString alloc] initWithData:[characteristic value] encoding:NSUTF8StringEncoding];
+        PTDLog(@"%@: Device Firmware Version Found: %@", self.class.description, _firmwareVersion);
+        firmwareVersionQueue.suspended = NO;
+    }else if([characteristic isEqual:characteristic_hardware_version]) {
+        _hardwareVersion = [[NSString alloc] initWithData:[characteristic value] encoding:NSUTF8StringEncoding];
+        PTDLog(@"%@: Device Hardware Version Found: %@", self.class.description, _hardwareVersion);
+        hardwareVersionQueue.suspended = NO;
+    }
 }
 
 

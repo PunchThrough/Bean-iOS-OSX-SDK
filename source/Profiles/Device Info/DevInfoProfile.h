@@ -19,8 +19,10 @@
 @interface DevInfoProfile : BleProfile <BleProfile>
 
 @property (nonatomic, strong) NSString *firmwareVersion;
+@property (nonatomic, strong) NSString *hardwareVersion;
 
 -(void)readFirmwareVersionWithCompletion:(void (^)(void))firmwareVersionCompletion;
+-(void)readHardwareVersionWithCompletion:(void (^)(void))hardwareVersionCompletion;
 
 @end
 
