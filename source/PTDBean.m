@@ -359,6 +359,7 @@ typedef enum { //These occur in sequence
     // TODO: make sure OAD profile is valid
     
     _updateInProgress = TRUE;
+    _updateStepNumber++;
     if (!firmwareUpdateStartTime) firmwareUpdateStartTime = [NSDate date];
     
     // Shorter connection interval -> faster transfer
@@ -610,9 +611,10 @@ typedef enum { //These occur in sequence
                     PTDLog(@"firmware update complete in %f seconds.", -[firmwareUpdateStartTime timeIntervalSinceNow]);
                     firmwareUpdateStartTime = NULL;
                     _updateInProgress = FALSE;
-                    if(_delegate){
-                        if([_delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]){
-                            [(id<PTDBeanExtendedDelegate>)_delegate bean:self completedFirmwareUploadWithError:NULL];
+                    _updateStepNumber = 0;
+                    if(self.delegate){
+                        if([self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]){
+                            [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadWithError:NULL];
                         }
                     }
                 } else {
@@ -621,6 +623,7 @@ typedef enum { //These occur in sequence
                 }
             } else if ( [self.firmwareVersion rangeOfString:@"OAD"].location != NSNotFound ) {
                     PTDLog(@"Discovered partially updated Bean. Update Required.");
+                    _updateStepNumber = 0;
                     [self updateFirmware];
             }
             if ( !self.updateInProgress && firmwareUpdateAvailableHandler ){
@@ -843,17 +846,10 @@ typedef enum { //These occur in sequence
 {
     if ( error ) _updateInProgress = FALSE;
     
-    if ( error && self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)] )
+    if ( self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)] )
         [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadWithError:error];
 }
 
--(void)device:(OadProfile*)device completedFirmwareUploadWithError:(NSError*)error{
-    if(self.delegate){
-        if([self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]){
-            [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadWithError:error];
-        }
-    }
-}
 -(void)device:(OadProfile*)device OADUploadTimeLeft:(NSNumber*)seconds withPercentage:(NSNumber*)percentageComplete{
     if(self.delegate){
         if([self.delegate respondsToSelector:@selector(bean:firmwareUploadTimeLeft:withPercentage:)]){

@@ -396,6 +396,11 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
   If true, an update is in progress
  */
 @property (nonatomic, readonly) Boolean updateInProgress;
+/// @name updateStepNumber
+/**
+ While an update is in progress, the current step number
+ */
+@property (nonatomic, readonly) NSInteger updateStepNumber;
 /// @name Radio Configuration
 /**
  Cached data for Bean's Radio Configuration. Should call <readRadioConfig> first to ensure this data is fresh.
