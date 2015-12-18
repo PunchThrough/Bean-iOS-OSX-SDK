@@ -17,3 +17,7 @@ DerivedData
 *.ipa
 *.xcuserstate
 Documents
+docset-installed.txt
+docs/node_modules/
+docs/.publish
+docs/npm-debug.log
