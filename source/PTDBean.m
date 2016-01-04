@@ -51,6 +51,7 @@ typedef enum { //These occur in sequence
     NSTimer*                    arduinoOADChunkSendTimer;
     
     void (^firmwareUpdateAvailableHandler)(BOOL updateAvailable, NSError *error);
+    void (^hardwareVersionAvailableHandler)(BOOL hardwareAvailable, NSError *error);
     NSDate*                     firmwareUpdateStartTime;
         
 }
@@ -354,6 +355,14 @@ typedef enum { //These occur in sequence
         firmwareUpdateAvailableHandler = handler;   // Wait until device info is valid
 }
 
+- (void)checkHardwareVersionAvailableWithHandler:(void (^)(BOOL updateAvailable, NSError *error))handler{
+    
+    if ( [self hardwareVersion] ) {
+        handler( YES, nil );
+    } else
+        hardwareVersionAvailableHandler = handler;   // Wait until device info is valid
+}
+
 - (void)updateFirmware{
     
     // TODO: make sure OAD profile is valid
@@ -629,6 +638,14 @@ typedef enum { //These occur in sequence
             if ( !self.updateInProgress && firmwareUpdateAvailableHandler ){
                 [self checkFirmwareUpdateAvailableWithHandler:firmwareUpdateAvailableHandler];
                 firmwareUpdateAvailableHandler = nil;
+                
+            }
+        }];
+        
+        [deviceInfo_profile readHardwareVersionWithCompletion:^{
+            if ( hardwareVersionAvailableHandler ){
+                [self checkHardwareVersionAvailableWithHandler:hardwareVersionAvailableHandler];
+                hardwareVersionAvailableHandler = nil;
                 
             }
         }];

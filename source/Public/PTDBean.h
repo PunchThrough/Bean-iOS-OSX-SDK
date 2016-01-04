@@ -349,6 +349,11 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
 - (void)checkFirmwareUpdateAvailableWithHandler:(void (^)(BOOL updateAvailable, NSError *error))handler;
 
 /**
+ *  Check if a firmware update is available with a handler to be called if so
+ */
+- (void)checkHardwareVersionAvailableWithHandler:(void (^)(BOOL hardwareAvailable, NSError *error))handler;
+
+/**
  *  Update the firmware with progress handler
  */
 - (void)updateFirmware; //WithProgressHandler:(void (^)(NSNumber *percentageComplete, NSError *error))progressHandler;
