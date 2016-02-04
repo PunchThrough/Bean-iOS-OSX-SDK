@@ -363,9 +363,9 @@ typedef enum { //These occur in sequence
         hardwareVersionAvailableHandler = handler;   // Wait until device info is valid
 }
 
-- (void)updateFirmware{
+- (void)updateFirmwareWithImages:(NSArray *)images{
     
-    // TODO: make sure OAD profile is valid
+    if(!oad_profile)return;
     
     _updateInProgress = TRUE;
     _updateStepNumber++;
@@ -385,18 +385,8 @@ typedef enum { //These occur in sequence
     config.configSave = FALSE;
     [self setRadioConfig:config];
     
-    [[PTDBeanRemoteFirmwareVersionManager sharedInstance] checkForNewFirmwareWithCompletion:^(NSString *mostRecentFirmwareVersion, NSError *error){
-        if(error){ return; }
-        self.newestAvailableFirmwareVersion = mostRecentFirmwareVersion;
-    
-    
-        [[PTDBeanRemoteFirmwareVersionManager sharedInstance] fetchFirmwareForVersion:self.newestAvailableFirmwareVersion withCompletion:^(NSArray *firmwareImagePaths, NSError *error) {
-            PTDLog(@"Updating bean firmware.");
-            if (!error)
-                [oad_profile updateFirmwareWithImagePaths:firmwareImagePaths];
-            
-        }];
-    }];
+    PTDLog(@"Updating bean firmware.");
+    [oad_profile updateFirmwareWithImagePaths:images];
 }
 
 - (void)cancelFirmwareUpdate{
@@ -628,17 +618,21 @@ typedef enum { //These occur in sequence
                     }
                 } else {
                     PTDLog(@"firmware update continues");
-                    [self updateFirmware];
+                    if(self.delegate){
+                        if([self.delegate respondsToSelector:@selector(beanFoundWithIncompleteFirmware:)]){
+                            PTDLog(@"calling delegate");
+                            [self.delegate beanFoundWithIncompleteFirmware:self];
+                        }
+                    }
                 }
             } else if ( [self.firmwareVersion rangeOfString:@"OAD"].location != NSNotFound ) {
                     PTDLog(@"Discovered partially updated Bean. Update Required.");
-                    _updateStepNumber = 0;
-                    [self updateFirmware];
-            }
-            if ( !self.updateInProgress && firmwareUpdateAvailableHandler ){
-                [self checkFirmwareUpdateAvailableWithHandler:firmwareUpdateAvailableHandler];
-                firmwareUpdateAvailableHandler = nil;
-                
+                    if(self.delegate){
+                        if([self.delegate respondsToSelector:@selector(beanFoundWithIncompleteFirmware:)]){
+                            PTDLog(@"calling delegate");
+                            [self.delegate beanFoundWithIncompleteFirmware:self];
+                        }
+                    }
             }
         }];
         
