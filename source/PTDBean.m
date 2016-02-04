@@ -50,7 +50,7 @@ typedef enum { //These occur in sequence
     NSTimer*                    arduinoOADStateTimout;
     NSTimer*                    arduinoOADChunkSendTimer;
     
-    void (^firmwareUpdateAvailableHandler)(BOOL updateAvailable, NSError *error);
+    void (^firmwareVersionAvailableHandler)(BOOL firmwareAvailable, NSError *error);
     void (^hardwareVersionAvailableHandler)(BOOL hardwareAvailable, NSError *error);
     NSDate*                     firmwareUpdateStartTime;
         
@@ -333,29 +333,25 @@ typedef enum { //These occur in sequence
     if ( [self connected] ) {
         PTDLog(@"Current firmware: %lld newest available firmware: %lld", self.firmwareVersion.longLongValue, self.newestAvailableFirmwareVersion.longLongValue);
         
+        NSNumber *version = self.firmwareVersion;
+        
         // Special case: OAD only image
-        if ( self.firmwareVersion.longLongValue >= self.newestAvailableFirmwareVersion.longLongValue )
+        if ( ![version isEqualToValue:0] )
             return TRUE;
     }
     return FALSE;
 }
     
-- (void)checkFirmwareUpdateAvailableWithHandler:(void (^)(BOOL updateAvailable, NSError *error))handler{
+- (void)checkFirmwareAvailableWithHandler:(void (^)(BOOL firmwareAvailable, NSError *error))handler{
     
 
     if ( [self firmwareVersion] ) {
-        [[PTDBeanRemoteFirmwareVersionManager sharedInstance] checkForNewFirmwareWithCompletion:^(NSString *mostRecentFirmwareVersion, NSError *error){
-            if(error){ return; }
-            self.newestAvailableFirmwareVersion = mostRecentFirmwareVersion;
-            
-            handler( ![self firmwareCurrent], nil );
-            
-        }];
+        handler( YES, nil );
     } else
-        firmwareUpdateAvailableHandler = handler;   // Wait until device info is valid
+        firmwareVersionAvailableHandler = handler;   // Wait until device info is valid
 }
 
-- (void)checkHardwareVersionAvailableWithHandler:(void (^)(BOOL updateAvailable, NSError *error))handler{
+- (void)checkHardwareVersionAvailableWithHandler:(void (^)(BOOL hardwareAvailable, NSError *error))handler{
     
     if ( [self hardwareVersion] ) {
         handler( YES, nil );

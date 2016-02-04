@@ -283,6 +283,12 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  *  @see [PTDBean readArduinoSketchInfo];
  */
 -(void)bean:(PTDBean*)bean didUpdateSketchName:(NSString*)name dateProgrammed:(NSDate*)date crc32:(UInt32)crc;
+/**
+ *  Sent to alert that the firmware update process is incomplete.
+ *
+ *  @param bean            The Bean whose firmware was found incomplete.
+ */
+-(void)beanFoundWithIncompleteFirmware:(PTDBean*)bean;
 @end
 
 
@@ -346,7 +352,7 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
 /**
  *  Check if a firmware update is available with a handler to be called if so
  */
-- (void)checkFirmwareUpdateAvailableWithHandler:(void (^)(BOOL updateAvailable, NSError *error))handler;
+- (void)checkFirmwareAvailableWithHandler:(void (^)(BOOL firmwareAvailable, NSError *error))handler;
 
 /**
  *  Check if a firmware update is available with a handler to be called if so
@@ -357,6 +363,11 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  *  Update the firmware with progress handler
  */
 - (void)updateFirmware; //WithProgressHandler:(void (^)(NSNumber *percentageComplete, NSError *error))progressHandler;
+
+/**
+ *  Update the firmware with images
+ */
+- (void)updateFirmwareWithImages:(NSArray *)images;
 
 /**
  *  Cancel firmware update
