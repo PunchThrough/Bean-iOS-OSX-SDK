@@ -58,8 +58,6 @@ typedef struct {
 
 @interface OadProfile ()
 
-//@property (weak, nonatomic)     id<OAD_Delegate>    delegate;
-
 @property (strong, nonatomic)   CBService           *serviceOAD;
 @property (strong, nonatomic)   CBCharacteristic    *characteristicOADBlock;
 @property (strong, nonatomic)   CBCharacteristic    *characteristicOADIdentify;
@@ -102,7 +100,7 @@ typedef struct {
 
 #pragma mark - PTDOADProfile
 
-- (BOOL)updateFirmwareWithImagePaths:(NSArray*)firmwareImages// progressHandler:(void (^)(NSNumber *percentageComplete, NSError *error))progressHandler
+- (BOOL)updateFirmwareWithImagePaths:(NSArray*)firmwareImages
 {
     
     PTDLog(@"OAD updating firmware with image paths: %@", firmwareImages);
@@ -124,8 +122,6 @@ typedef struct {
         }
         return NO;
     }
-    
-    //_progressHandler = progressHandler;
     
     self.firmwareImages = [NSMutableArray arrayWithArray:firmwareImages];
     
@@ -285,8 +281,6 @@ typedef struct {
             self.leastSeconds = (secondsSoFar / self.nextBlock) * (self.totalBlocks - self.nextBlock);
             NSNumber *seconds = [NSNumber numberWithFloat:self.leastSeconds];
             [self.delegate device:self OADUploadTimeLeft:seconds withPercentage:percentage];
-            //if (_progressHandler)
-            //    _progressHandler(percentage, nil);
         } else {
             self.downloadStartDate = [NSDate date];
         }
@@ -294,15 +288,15 @@ typedef struct {
         // Send the blocks
         while( self.nextBlock - requestedBlock < BLOCKS_INFLIGHT && self.nextBlock < self.totalBlocks ){
             [self sendOneBlock:self.nextBlock];
-            //PTDLog(@"OAD Manager Sent block %d.", nextBlock);
             self.nextBlock++;
         }
         
     }
 
     // Watch for last block
-    if ( self.nextBlock == self.totalBlocks)
+    if ( self.nextBlock == self.totalBlocks) {
         self.oadState = OADStateWaitForCompletion; // Signal the watchdog timer that we expect to timeout, allows OAD Target to re-request last packet
+    }
 }
 
 - (void)enableNotify
@@ -322,7 +316,7 @@ typedef struct {
     }
 }
 
-- (void)beginOAD //ForHeaderData:(NSData *)headerData
+- (void)beginOAD
 {
     if ( [self.firmwareImages count] > 0 ) {
         NSString *filename = self.firmwareImages[0];
@@ -412,7 +406,7 @@ typedef struct {
                 
             case OADStateSendingPackets:
                 if (self.nextBlockRequest == 1) {
-                    PTDLog(@"Bean is restting to small OAD-only image.");
+                    PTDLog(@"Bean is resetting to small OAD-only image.");
                 } else {
                     error = [NSError errorWithDomain:ERROR_DOMAIN
                                                 code:ERROR_CODE
