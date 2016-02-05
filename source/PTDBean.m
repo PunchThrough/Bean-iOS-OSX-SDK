@@ -53,6 +53,7 @@ typedef enum { //These occur in sequence
     void (^firmwareVersionAvailableHandler)(BOOL firmwareAvailable, NSError *error);
     void (^hardwareVersionAvailableHandler)(BOOL hardwareAvailable, NSError *error);
     NSDate*                     firmwareUpdateStartTime;
+    NSArray*                    cachedFirmwareImages;
         
 }
 // Adding the "dynamic" directive tells the compiler that It doesn't need to create the getter, setter, and ivar.
@@ -328,19 +329,6 @@ typedef enum { //These occur in sequence
     if(!oad_profile)return FALSE;
     return [oad_profile updateFirmwareWithImagePaths:firmwareImages];
 }
-
--(BOOL)firmwareCurrent{
-    if ( [self connected] ) {
-        PTDLog(@"Current firmware: %lld newest available firmware: %lld", self.firmwareVersion.longLongValue, self.newestAvailableFirmwareVersion.longLongValue);
-        
-        NSNumber *version = self.firmwareVersion;
-        
-        // Special case: OAD only image
-        if ( ![version isEqualToValue:0] )
-            return TRUE;
-    }
-    return FALSE;
-}
     
 - (void)checkFirmwareAvailableWithHandler:(void (^)(BOOL firmwareAvailable, NSError *error))handler{
     
@@ -380,6 +368,11 @@ typedef enum { //These occur in sequence
     config.advertisingInterval = 100;
     config.configSave = FALSE;
     [self setRadioConfig:config];
+    
+    // update cached images
+    if (!cachedFirmwareImages) {
+        cachedFirmwareImages = images;
+    }
     
     PTDLog(@"Updating bean firmware.");
     [oad_profile updateFirmwareWithImagePaths:images];
@@ -602,8 +595,11 @@ typedef enum { //These occur in sequence
         
         [deviceInfo_profile readFirmwareVersionWithCompletion:^{
             if (self.updateInProgress) {
-                if ( [self firmwareCurrent] ) {
+                if ( [self.firmwareVersion rangeOfString:@"OAD"].location == NSNotFound) {
                     PTDLog(@"firmware update complete in %f seconds.", -[firmwareUpdateStartTime timeIntervalSinceNow]);
+                    if (cachedFirmwareImages){
+                        cachedFirmwareImages = nil;
+                    }
                     firmwareUpdateStartTime = NULL;
                     _updateInProgress = FALSE;
                     _updateStepNumber = 0;
@@ -614,7 +610,10 @@ typedef enum { //These occur in sequence
                     }
                 } else {
                     PTDLog(@"firmware update continues");
-                    if(self.delegate){
+                    if (cachedFirmwareImages){
+                        PTDLog(@"using cached images");
+                        [self updateFirmwareWithImagePaths:cachedFirmwareImages];
+                    } else if(self.delegate){
                         if([self.delegate respondsToSelector:@selector(beanFoundWithIncompleteFirmware:)]){
                             PTDLog(@"calling delegate");
                             [self.delegate beanFoundWithIncompleteFirmware:self];
@@ -623,7 +622,10 @@ typedef enum { //These occur in sequence
                 }
             } else if ( [self.firmwareVersion rangeOfString:@"OAD"].location != NSNotFound ) {
                     PTDLog(@"Discovered partially updated Bean. Update Required.");
-                    if(self.delegate){
+                    if (cachedFirmwareImages){
+                        PTDLog(@"using cached images");
+                        [self updateFirmwareWithImagePaths:cachedFirmwareImages];
+                    }else if(self.delegate){
                         if([self.delegate respondsToSelector:@selector(beanFoundWithIncompleteFirmware:)]){
                             PTDLog(@"calling delegate");
                             [self.delegate beanFoundWithIncompleteFirmware:self];
