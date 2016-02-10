@@ -53,7 +53,6 @@ typedef enum { //These occur in sequence
     void (^firmwareVersionAvailableHandler)(BOOL firmwareAvailable, NSError *error);
     void (^hardwareVersionAvailableHandler)(BOOL hardwareAvailable, NSError *error);
     NSDate*                     firmwareUpdateStartTime;
-    NSArray*                    cachedFirmwareImages;
         
 }
 // Adding the "dynamic" directive tells the compiler that It doesn't need to create the getter, setter, and ivar.
@@ -369,11 +368,6 @@ typedef enum { //These occur in sequence
     config.configSave = FALSE;
     [self setRadioConfig:config];
     
-    // update cached images
-    if (!cachedFirmwareImages) {
-        cachedFirmwareImages = images;
-    }
-    
     PTDLog(@"Updating bean firmware.");
     [oad_profile updateFirmwareWithImagePaths:images];
 }
@@ -597,9 +591,6 @@ typedef enum { //These occur in sequence
             if (self.updateInProgress) {
                 if ( [self.firmwareVersion rangeOfString:@"OAD"].location == NSNotFound) {
                     PTDLog(@"firmware update complete in %f seconds.", -[firmwareUpdateStartTime timeIntervalSinceNow]);
-                    if (cachedFirmwareImages){
-                        cachedFirmwareImages = nil;
-                    }
                     firmwareUpdateStartTime = NULL;
                     _updateInProgress = FALSE;
                     _updateStepNumber = 0;
@@ -610,10 +601,7 @@ typedef enum { //These occur in sequence
                     }
                 } else {
                     PTDLog(@"firmware update continues");
-                    if (cachedFirmwareImages){
-                        PTDLog(@"using cached images");
-                        [self updateFirmwareWithImagePaths:cachedFirmwareImages];
-                    } else if(self.delegate){
+                    if(self.delegate){
                         if([self.delegate respondsToSelector:@selector(beanFoundWithIncompleteFirmware:)]){
                             PTDLog(@"calling delegate");
                             [self.delegate beanFoundWithIncompleteFirmware:self];
@@ -622,10 +610,7 @@ typedef enum { //These occur in sequence
                 }
             } else if ( [self.firmwareVersion rangeOfString:@"OAD"].location != NSNotFound ) {
                     PTDLog(@"Discovered partially updated Bean. Update Required.");
-                    if (cachedFirmwareImages){
-                        PTDLog(@"using cached images");
-                        [self updateFirmwareWithImagePaths:cachedFirmwareImages];
-                    }else if(self.delegate){
+                    if(self.delegate){
                         if([self.delegate respondsToSelector:@selector(beanFoundWithIncompleteFirmware:)]){
                             PTDLog(@"calling delegate");
                             [self.delegate beanFoundWithIncompleteFirmware:self];
