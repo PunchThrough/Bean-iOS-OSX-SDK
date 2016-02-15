@@ -333,21 +333,29 @@ typedef enum { //These occur in sequence
     
     if ( [self firmwareVersion] ) {
         handler( YES, nil );
-    } else
+    } else {
         firmwareVersionAvailableHandler = handler;   // Wait until device info is valid
+    }
 }
 
 - (void)checkHardwareVersionAvailableWithHandler:(void (^)(BOOL hardwareAvailable, NSError *error))handler{
     
     if ( [self hardwareVersion] ) {
         handler( YES, nil );
-    } else
+    } else {
         hardwareVersionAvailableHandler = handler;   // Wait until device info is valid
+    }
+}
+
 }
 
 - (void)updateFirmwareWithImages:(NSArray *)images{
     
-    if(!oad_profile)return;
+    if(!oad_profile && self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]) {
+        NSError* error = [BEAN_Helper basicError:@"OAD profile not present!" domain:NSStringFromClass([self class]) code:0];
+        [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadWithError:error];
+        return;
+    }
     
     _updateInProgress = TRUE;
     _updateStepNumber++;
@@ -588,41 +596,41 @@ typedef enum { //These occur in sequence
         
         [deviceInfo_profile readFirmwareVersionWithCompletion:^{
             if (self.updateInProgress) {
-                if ( [self.firmwareVersion rangeOfString:@"OAD"].location == NSNotFound) {
+                if ( [self.firmwareVersion rangeOfString:@"OAD"].location == NSNotFound) { // OAD in Firmware version denotes we are in a firmware update
                     PTDLog(@"firmware update complete in %f seconds.", -[firmwareUpdateStartTime timeIntervalSinceNow]);
                     firmwareUpdateStartTime = NULL;
                     _updateInProgress = FALSE;
                     _updateStepNumber = 0;
-                    if(self.delegate){
-                        if([self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]){
-                            [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadWithError:NULL];
-                        }
+                    if(self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]){
+                        [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadWithError:NULL];
                     }
                 } else {
                     PTDLog(@"firmware update continues");
-                    if(self.delegate){
-                        if([self.delegate respondsToSelector:@selector(beanFoundWithIncompleteFirmware:)]){
-                            PTDLog(@"calling delegate");
-                            [self.delegate beanFoundWithIncompleteFirmware:self];
-                        }
+                    if(self.delegate && [self.delegate respondsToSelector:@selector(beanFoundWithIncompleteFirmware:)]){
+                        PTDLog(@"calling delegate");
+                        [self.delegate beanFoundWithIncompleteFirmware:self];
                     }
                 }
-            } else if ( [self.firmwareVersion rangeOfString:@"OAD"].location != NSNotFound ) {
+            } else if ( [self.firmwareVersion rangeOfString:@"OAD"].location != NSNotFound ) { // OAD in Firmware version denotes we are in a firmware update
                     PTDLog(@"Discovered partially updated Bean. Update Required.");
-                    if(self.delegate){
-                        if([self.delegate respondsToSelector:@selector(beanFoundWithIncompleteFirmware:)]){
-                            PTDLog(@"calling delegate");
-                            [self.delegate beanFoundWithIncompleteFirmware:self];
-                        }
+                    if(self.delegate && [self.delegate respondsToSelector:@selector(beanFoundWithIncompleteFirmware:)]){
+                        PTDLog(@"calling delegate");
+                        [self.delegate beanFoundWithIncompleteFirmware:self];
                     }
+            }
+            if (!self.updateInProgress && firmwareVersionAvailableHandler){
+                [self checkFirmwareVersionAvailableWithHandler:firmwareVersionAvailableHandler];
+                firmwareVersionAvailableHandler = nil;
             }
         }];
         
         [deviceInfo_profile readHardwareVersionWithCompletion:^{
-            if ( hardwareVersionAvailableHandler ){
+            if (!self.updateInProgress && hardwareVersionAvailableHandler ){
                 [self checkHardwareVersionAvailableWithHandler:hardwareVersionAvailableHandler];
                 hardwareVersionAvailableHandler = nil;
-                
+            }
+        }];
+        
             }
         }];
 
