@@ -329,9 +329,8 @@ typedef enum { //These occur in sequence
     return [oad_profile updateFirmwareWithImagePaths:firmwareImages];
 }
     
-- (void)checkFirmwareAvailableWithHandler:(void (^)(BOOL firmwareAvailable, NSError *error))handler{
+- (void)checkFirmwareVersionAvailableWithHandler:(void (^)(BOOL firmwareAvailable, NSError *error))handler{
     
-
     if ( [self firmwareVersion] ) {
         handler( YES, nil );
     } else
