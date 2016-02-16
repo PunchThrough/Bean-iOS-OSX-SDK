@@ -347,8 +347,6 @@ typedef enum { //These occur in sequence
     }
 }
 
-}
-
 - (void)updateFirmwareWithImages:(NSArray *)images{
     
     if(!oad_profile && self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]) {
@@ -631,9 +629,6 @@ typedef enum { //These occur in sequence
             }
         }];
         
-            }
-        }];
-
     }
     else if ([profile isMemberOfClass:[GattSerialProfile class]]) {
         gatt_serial_profile = (GattSerialProfile*)profile;
