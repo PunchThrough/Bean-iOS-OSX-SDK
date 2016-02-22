@@ -7,8 +7,11 @@
 //
 
 #import <XCTest/XCTest.h>
+#import "PTDBeanManager.h"
 
-@interface Bean_OSX_LibraryTests : XCTestCase
+@interface Bean_OSX_LibraryTests : XCTestCase <PTDBeanManagerDelegate>
+
+@property (nonatomic, strong) void (^beanDiscovered)(PTDBean *bean);
 
 @end
 
@@ -26,9 +29,58 @@
     [super tearDown];
 }
 
-- (void)testExample
+#pragma mark - tests
+
+- (void)testFindBean
 {
-    XCTFail(@"No implementation for \"%s\"", __PRETTY_FUNCTION__);
+    // given
+    NSString *beanName = @"NEO";
+    PTDBeanManager *beanManager = [[PTDBeanManager alloc] initWithDelegate:self];
+
+    // Delay for some time (??) so that CBCentralManager connection state becomes PoweredOn
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        
+        // given
+        __block PTDBean *targetBean;
+        NSError *error;
+
+        // when
+        XCTestExpectation *beanFound = [self expectationWithDescription:@"Target Bean found"];
+        self.beanDiscovered = ^void(PTDBean *bean) {
+            NSLog(@"Found Bean: %@", bean);
+            if ([bean.name isEqualToString:beanName]) {
+                PTDLog(@"Found target Bean: %@", bean);
+                targetBean = bean;
+                [beanFound fulfill];
+            }
+        };
+        
+        [beanManager startScanningForBeans_error:&error];
+        if (error) {
+            XCTFail(@"startScanningForBeans should not fail");
+            return;
+        }
+        
+        [self waitForExpectationsWithTimeout:5 handler:^(NSError * _Nullable error) {
+            XCTFail(@"Timeout while waiting to discover target Bean: %@", beanName);
+            return;
+        }];
+        
+        // then
+        XCTAssertNotNil(targetBean, @"targetBean should not be nil");
+    });
 }
+
+#pragma mark - bean manager delegate
+
+- (void)BeanManager:(PTDBeanManager *)beanManager didDiscoverBean:(PTDBean *)bean error:(NSError *)error
+{
+    PTDLog(@"Discovered Bean: %@", bean);
+    if (self.beanDiscovered) {
+        self.beanDiscovered(bean);
+    }
+}
+
+#pragma mark - bean delegates
 
 @end

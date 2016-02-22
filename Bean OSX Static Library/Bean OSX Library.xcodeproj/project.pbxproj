@@ -74,6 +74,7 @@
 		969FDE9A191A9E190068B99A /* PTDBean.m in Sources */ = {isa = PBXBuildFile; fileRef = 969FDE94191A9DE80068B99A /* PTDBean.m */; };
 		969FDE9B191A9E1E0068B99A /* PTDBeanManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 969FDE95191A9DE80068B99A /* PTDBeanManager.m */; };
 		969FDE9C191A9E200068B99A /* PTDBeanRadioConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 969FDE96191A9DE80068B99A /* PTDBeanRadioConfig.m */; };
+		A9448BF11C7B94DE0031DA2C /* IOBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52DE25C018AAC53900E69929 /* IOBluetooth.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -167,6 +168,8 @@
 		96E63F481919912F00A58608 /* PTDBean.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTDBean.h; sourceTree = "<group>"; };
 		96E63F4A1919912F00A58608 /* PTDBeanManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTDBeanManager.h; sourceTree = "<group>"; };
 		96E63F4C1919912F00A58608 /* PTDBeanRadioConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTDBeanRadioConfig.h; sourceTree = "<group>"; };
+		A9448BED1C7B94C80031DA2C /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
+		A9448BEF1C7B94D10031DA2C /* IOBluetoothUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOBluetoothUI.framework; path = System/Library/Frameworks/IOBluetoothUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -183,6 +186,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A9448BF11C7B94DE0031DA2C /* IOBluetooth.framework in Frameworks */,
 				52D34E3A18A9B455002F0C59 /* Cocoa.framework in Frameworks */,
 				52D34E3918A9B455002F0C59 /* XCTest.framework in Frameworks */,
 				52D34E3D18A9B455002F0C59 /* libBean OSX Library.a in Frameworks */,
@@ -280,6 +284,8 @@
 		52D34E2618A9B455002F0C59 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				A9448BEF1C7B94D10031DA2C /* IOBluetoothUI.framework */,
+				A9448BED1C7B94C80031DA2C /* CoreBluetooth.framework */,
 				969B8974190896BC00AA093C /* CoreBluetooth.framework */,
 				52DE25C018AAC53900E69929 /* IOBluetooth.framework */,
 				52D34E2718A9B455002F0C59 /* Cocoa.framework */,
