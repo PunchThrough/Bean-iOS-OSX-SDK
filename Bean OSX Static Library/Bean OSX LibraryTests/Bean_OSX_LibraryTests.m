@@ -47,7 +47,6 @@
     // when
     XCTestExpectation *beanFound = [self expectationWithDescription:@"Target Bean found"];
     self.beanDiscovered = ^void(PTDBean *bean) {
-        NSLog(@"Found Bean: %@", bean);
         if ([bean.name isEqualToString:beanName]) {
             NSLog(@"Found target Bean: %@", bean);
             targetBean = bean;
@@ -79,7 +78,6 @@
     
     XCTestExpectation *beanConnected = [self expectationWithDescription:@"Target Bean connected"];
     self.beanConnected = ^void(PTDBean *bean) {
-        NSLog(@"Connected Bean: %@", bean);
         if ([bean.name isEqualToString:beanName]) {
             NSLog(@"Connected target Bean: %@", bean);
             [beanConnected fulfill];
@@ -87,7 +85,6 @@
     };
     
     self.beanDiscovered = ^void(PTDBean *bean) {
-        NSLog(@"Found Bean: %@", bean);
         if ([bean.name isEqualToString:beanName]) {
             NSLog(@"Found target Bean: %@", bean);
             targetBean = bean;
@@ -116,8 +113,6 @@
     NSError *disconnectError;
     [self.beanManager disconnectBean:targetBean error:&disconnectError];
     XCTAssertNil(disconnectError);
-    
-    [self delayForSeconds:2];
 }
 
 #pragma mark - bean manager delegate
