@@ -36,8 +36,42 @@
     // given
     NSString *beanName = @"NEO";
     PTDBeanManager *beanManager = [[PTDBeanManager alloc] initWithDelegate:self];
+    XCTestExpectation *waitedForBTPoweredOn = [self expectationWithDescription:@"Waited for Bluetooth to power on"];
 
     // Delay for some time (??) so that CBCentralManager connection state becomes PoweredOn
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [waitedForBTPoweredOn fulfill];
+    });
+    
+    [self waitForExpectationsWithTimeout:10 handler:nil];
+    
+    // given
+    __block PTDBean *targetBean;
+    NSError *error;
+    
+    // when
+    XCTestExpectation *beanFound = [self expectationWithDescription:@"Target Bean found"];
+    self.beanDiscovered = ^void(PTDBean *bean) {
+        NSLog(@"Found Bean: %@", bean);
+        if ([bean.name isEqualToString:beanName]) {
+            NSLog(@"Found target Bean: %@", bean);
+            targetBean = bean;
+            [beanFound fulfill];
+        }
+    };
+    
+    [beanManager startScanningForBeans_error:&error];
+    if (error) {
+        XCTFail(@"startScanningForBeans should not fail");
+        return;
+    }
+    
+    [self waitForExpectationsWithTimeout:10 handler:nil];
+    
+    // then
+    XCTAssertNotNil(targetBean, @"targetBean should not be nil");
+}
+
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         
         // given
@@ -71,11 +105,12 @@
     });
 }
 
+
 #pragma mark - bean manager delegate
 
 - (void)BeanManager:(PTDBeanManager *)beanManager didDiscoverBean:(PTDBean *)bean error:(NSError *)error
 {
-    PTDLog(@"Discovered Bean: %@", bean);
+    NSLog(@"Discovered Bean: %@", bean);
     if (self.beanDiscovered) {
         self.beanDiscovered(bean);
     }
