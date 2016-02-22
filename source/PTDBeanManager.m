@@ -78,7 +78,7 @@
         }else{ //If this bean's peripheral is connected and not in our records, another app could have connected to it.
             if((bean = [[PTDBean alloc] initWithPeripheral:beanPeripheral beanManager:self])){
                 [beanRecords setObject:bean forKey:bean.identifier];
-                bean.RSSI = [beanPeripheral RSSI_Universal];
+                [bean readRSSI];  // This sets the bean.RSSI property when it is received from CoreBluetooth.
                 bean.lastDiscovered = [NSDate date];
                 bean.state = BeanState_Discovered;
                 [self __notifyDelegateOfDiscoveredBean:bean error:nil];
