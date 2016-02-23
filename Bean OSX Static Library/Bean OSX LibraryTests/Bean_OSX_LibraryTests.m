@@ -22,7 +22,7 @@
 @property (nonatomic, strong) void (^beanDiscovered)(PTDBean *bean);
 @property (nonatomic, strong) void (^beanConnected)(PTDBean *bean);
 @property (nonatomic, strong) void (^beanLedUpdated)(PTDBean *bean, NSColor *color);
-@property (nonatomic, strong) void (^beanSketchUpdated)(PTDBean *bean, NSString *name);
+@property (nonatomic, strong) void (^beanSketchUploaded)(PTDBean *bean, NSError *error);
 
 @end
 
@@ -76,7 +76,7 @@
 {
     [self discoverBean];
     [self connectBean];
-    [self sketchUpload];
+    [self uploadSketchToBean];
     [self disconnectBean];
 }
 
@@ -117,11 +117,11 @@
     }
 }
 
-- (void)bean:(PTDBean *)bean didUpdateSketchName:(NSString *)name dateProgrammed:(NSDate *)date crc32:(UInt32)crc
+- (void)bean:(PTDBean *)bean didProgramArduinoWithError:(NSError *)error
 {
     NSLog(@"Uploaded sketch to Bean: %@", bean);
-    if (self.beanSketchUpdated) {
-        self.beanSketchUpdated(bean, name);
+    if (self.beanSketchUploaded) {
+        self.beanSketchUploaded(bean, error);
     }
 }
 
@@ -145,7 +145,7 @@
     self.beanDiscovered = nil;
     self.beanConnected = nil;
     self.beanLedUpdated = nil;
-    self.beanSketchUpdated = nil;
+    self.beanSketchUploaded = nil;
 }
 
 /**
@@ -253,16 +253,16 @@
     [self delayForSeconds:1];
 }
 
-- (void)sketchUpload
+- (void)uploadSketchToBean
 {
     // given
     NSString *imageName = @"TestSketch";
-    NSData *imageHex = [NSData dataWithContentsOfFile:@"/Resources/blink.hex"];
+    NSData *imageHex = [self hexDataFromResource:@"blink"];
     XCTestExpectation *uploadSketch = [self expectationWithDescription:@"Target Bean uploaded sketch"];
-    self.beanSketchUpdated = ^void(PTDBean *bean, NSString *name) {
+    self.beanSketchUploaded = ^void(PTDBean *bean, NSError *error) {
         if ([bean.name isEqualToString:self.beanName]) {
-            NSLog(@"Read color from target Bean: %@", bean);
-            XCTAssertTrue([name isEqual:imageName], @"Bean sketch should be TestSketch");
+            NSLog(@"Uploaded sketch to target Bean: %@", bean);
+            XCTAssertNil(error, @"Bean sketch should be TestSketch");
             [uploadSketch fulfill];
         }
     };
@@ -271,7 +271,7 @@
     [self.testBean programArduinoWithRawHexImage:imageHex andImageName:imageName];
     
     // then
-    [self waitForExpectationsWithTimeout:60 handler:nil];
+    [self waitForExpectationsWithTimeout:120 handler:nil];
 
 }
 

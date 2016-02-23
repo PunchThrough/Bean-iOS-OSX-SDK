@@ -76,6 +76,7 @@
 		969FDE9C191A9E200068B99A /* PTDBeanRadioConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 969FDE96191A9DE80068B99A /* PTDBeanRadioConfig.m */; };
 		A9448BF11C7B94DE0031DA2C /* IOBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52DE25C018AAC53900E69929 /* IOBluetooth.framework */; };
 		A94C7A6B1C7CC89B0018A161 /* blink.hex in Resources */ = {isa = PBXBuildFile; fileRef = A94C7A6A1C7CC89B0018A161 /* blink.hex */; };
+		A94C7A6C1C7CCD1F0018A161 /* NSData+CRC.m in Sources */ = {isa = PBXBuildFile; fileRef = 521A4E9C19103E5F005B3097 /* NSData+CRC.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -628,6 +629,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				52D34E4518A9B455002F0C59 /* Bean_OSX_LibraryTests.m in Sources */,
+				A94C7A6C1C7CCD1F0018A161 /* NSData+CRC.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
