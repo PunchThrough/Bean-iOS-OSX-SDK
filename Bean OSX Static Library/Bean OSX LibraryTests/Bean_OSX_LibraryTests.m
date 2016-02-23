@@ -37,82 +37,14 @@
 
 #pragma mark - tests
 
-- (void)testFindBean
+- (void)testDiscoverBean
 {
-    // given
-    NSString *beanName = @"NEO";
-    __block PTDBean *targetBean;
-    NSError *error;
-    
-    // when
-    XCTestExpectation *beanFound = [self expectationWithDescription:@"Target Bean found"];
-    self.beanDiscovered = ^void(PTDBean *bean) {
-        if ([bean.name isEqualToString:beanName]) {
-            NSLog(@"Found target Bean: %@", bean);
-            targetBean = bean;
-            [beanFound fulfill];
-        }
-    };
-    
-    // scan
-    [self.beanManager startScanningForBeans_error:&error];
-    if (error) {
-        XCTFail(@"startScanningForBeans should not fail");
-        return;
-    }
-    
-    [self waitForExpectationsWithTimeout:10 handler:nil];
-    
-    // then
-    XCTAssertNotNil(targetBean, @"targetBean should not be nil");
+    [self discoverBean];
 }
 
 - (void)testConnectBean
 {
-    // given
-    NSString *beanName = @"NEO";
-    __block PTDBean *targetBean;
-    NSError *error;
-    
-    // when
-    
-    XCTestExpectation *beanConnected = [self expectationWithDescription:@"Target Bean connected"];
-    self.beanConnected = ^void(PTDBean *bean) {
-        if ([bean.name isEqualToString:beanName]) {
-            NSLog(@"Connected target Bean: %@", bean);
-            [beanConnected fulfill];
-        }
-    };
-    
-    self.beanDiscovered = ^void(PTDBean *bean) {
-        if ([bean.name isEqualToString:beanName]) {
-            NSLog(@"Found target Bean: %@", bean);
-            targetBean = bean;
-
-            
-            // connect
-            NSError *connectError;
-            [self.beanManager connectToBean:targetBean error:&connectError];
-            // connectError always throws a "connection in progress" error, so don't assert that it is not nil
-            // TODO: Isolate, reproduce error, figure out why this happens
-        }
-    };
-    
-    // scan
-    [self.beanManager startScanningForBeans_error:&error];
-    if (error) {
-        XCTFail(@"startScanningForBeans should not fail");
-        return;
-    }
-    
-    // then
-    [self waitForExpectationsWithTimeout:20 handler:nil];
-    XCTAssertTrue(targetBean.state == BeanState_ConnectedAndValidated);
-    
-    // cleanup
-    NSError *disconnectError;
-    [self.beanManager disconnectBean:targetBean error:&disconnectError];
-    XCTAssertNil(disconnectError);
+    [self connectBean];
 }
 
 #pragma mark - bean manager delegate
@@ -145,6 +77,96 @@
     });
     
     [self waitForExpectationsWithTimeout:seconds + 1 handler:nil];
+}
+
+- (void)cleanup
+{
+    // reset blocks so no test interference occurs, since blocks are triggered by BeanManager delegates
+    self.beanDiscovered = nil;
+    self.beanConnected = nil;
+}
+
+- (void)discoverBean
+{
+    // given
+    NSString *beanName = @"NEO";
+    __block PTDBean *targetBean;
+    NSError *error;
+    
+    // when
+    XCTestExpectation *beanDiscover = [self expectationWithDescription:@"Target Bean found"];
+    self.beanDiscovered = ^void(PTDBean *bean) {
+        if ([bean.name isEqualToString:beanName]) {
+            NSLog(@"Discovered target Bean: %@", bean);
+            targetBean = bean;
+            [beanDiscover fulfill];
+        }
+    };
+    
+    // scan
+    [self.beanManager startScanningForBeans_error:&error];
+    if (error) {
+        XCTFail(@"startScanningForBeans should not fail");
+        return;
+    }
+    
+    [self waitForExpectationsWithTimeout:10 handler:nil];
+    
+    // then
+    XCTAssertNotNil(targetBean, @"targetBean should not be nil");
+    
+    // clean up
+    [self cleanup];
+}
+
+- (void)connectBean
+{
+    // given
+    NSString *beanName = @"NEO";
+    __block PTDBean *targetBean;
+    NSError *error;
+    
+    // when
+    
+    XCTestExpectation *beanConnect = [self expectationWithDescription:@"Target Bean connected"];
+    self.beanConnected = ^void(PTDBean *bean) {
+        if ([bean.name isEqualToString:beanName]) {
+            NSLog(@"Connected target Bean: %@", bean);
+            [beanConnect fulfill];
+        }
+    };
+    
+    self.beanDiscovered = ^void(PTDBean *bean) {
+        if ([bean.name isEqualToString:beanName]) {
+            NSLog(@"Discovered target Bean: %@", bean);
+            targetBean = bean;
+            
+            // connect
+            NSError *connectError;
+            [self.beanManager connectToBean:targetBean error:&connectError];
+            // connectError always throws a "connection in progress" error, so don't assert that it is not nil
+            // TODO: Isolate, reproduce error, figure out why this happens
+        }
+    };
+    
+    // scan
+    [self.beanManager startScanningForBeans_error:&error];
+    if (error) {
+        XCTFail(@"startScanningForBeans should not fail");
+        return;
+    }
+    
+    // then
+    [self waitForExpectationsWithTimeout:20 handler:nil];
+    XCTAssertTrue(targetBean.state == BeanState_ConnectedAndValidated);
+    
+    // disconnect
+    NSError *disconnectError;
+    [self.beanManager disconnectBean:targetBean error:&disconnectError];
+    XCTAssertNil(disconnectError);
+    
+    // clean up
+    [self cleanup];
 }
 
 @end
