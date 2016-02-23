@@ -52,11 +52,17 @@
 
 #pragma mark - Tests
 
+/**
+ *  Verify that we can see our test Bean advertising.
+ */
 - (void)testDiscoverBean
 {
     [self discoverBean];
 }
 
+/**
+ *  Verify that we can connect to our test Bean.
+ */
 - (void)testConnectBean
 {
     [self discoverBean];
@@ -64,6 +70,9 @@
     [self disconnectBean];
 }
 
+/**
+ *  Verify that the LED on our test Bean can be blinked.
+ */
 - (void)testBlinkBean
 {
     [self discoverBean];
@@ -72,6 +81,9 @@
     [self disconnectBean];
 }
 
+/**
+ *  Verify that we can upload a sketch to our test Bean.
+ */
 - (void)testSketchUpload
 {
     [self discoverBean];
@@ -81,7 +93,7 @@
 }
 
 /**
- * Verify that the hexDataFromResource helper is properly reading the example sketch.
+ *  Verify that the hexDataFromResource helper is properly reading the example sketch.
  */
 - (void)testReadHex
 {
@@ -133,7 +145,11 @@
 
 #pragma mark - Test helpers
 
-- (void)delayForSeconds:(NSInteger)seconds
+/**
+ *  Delay for a specified period of time.
+ *  @param seconds The amount of time to delay, in seconds
+ */
+- (void)delayForSeconds:(NSTimeInterval)seconds
 {
     XCTestExpectation *waitedForXSeconds = [self expectationWithDescription:@"Waited for some specific time"];
     
@@ -145,9 +161,12 @@
     [self waitForExpectationsWithTimeout:seconds + 1 handler:nil];
 }
 
+/**
+ *  Clear our callback blocks so no test interference occurs. This is necessary because blocks are triggered by
+ *  BeanManagerDelegate and BeanDelegate.
+ */
 - (void)cleanup
 {
-    // reset blocks so no test interference occurs, since blocks are triggered by BeanManager and Bean delegates
     self.beanDiscovered = nil;
     self.beanConnected = nil;
     self.beanLedUpdated = nil;
@@ -155,9 +174,9 @@
 }
 
 /**
- * Get the data from a .hex file in the test resources folder.
- * @param hexFileName The name of the hex file. For example, to read from mysketch.hex, hexFileName should be "mysketch"
- * @return An NSData object with the contents of the file, or nil if the file couldn't be opened
+ *  Get the data from a .hex file in the test resources folder.
+ *  @param hexFileName The name of the hex file. For example, to read from mysketch.hex, hexFileName should be "mysketch"
+ *  @return An NSData object with the contents of the file, or nil if the file couldn't be opened
  */
 - (NSData *)hexDataFromResource:(NSString *)hexFileName
 {
@@ -166,6 +185,9 @@
     return [NSData dataWithContentsOfFile:path];
 }
 
+/**
+ *  Discover the Bean with name `beanName` and store it in `testBean`.
+ */
 - (void)discoverBean
 {
     // given
@@ -202,6 +224,9 @@
     XCTAssertNotNil(self.testBean, @"targetBean should not be nil");
 }
 
+/**
+ *  Connect to `testBean`.
+ */
 - (void)connectBean
 {
     // given
@@ -229,6 +254,9 @@
     XCTAssertTrue(self.testBean.state == BeanState_ConnectedAndValidated);
 }
 
+/**
+ *  Disconnect from `testBean`.
+ */
 - (void)disconnectBean
 {
     NSError *disconnectError;
@@ -236,6 +264,9 @@
     XCTAssertNil(disconnectError);
 }
 
+/**
+ *  Set the LED on `testBean` to #00FFFF and verify its color is set, then turn it off.
+ */
 - (void)blinkBean
 {
     // given
@@ -259,6 +290,9 @@
     [self delayForSeconds:1];
 }
 
+/**
+ *  Upload a blink sketch to `testBean`.
+ */
 - (void)uploadSketchToBean
 {
     // given
@@ -268,7 +302,7 @@
     self.beanSketchUploaded = ^void(PTDBean *bean, NSError *error) {
         if ([bean.name isEqualToString:self.beanName]) {
             NSLog(@"Uploaded sketch to target Bean: %@", bean);
-            XCTAssertNil(error, @"Bean sketch should be TestSketch");
+            XCTAssertNil(error, @"Bean sketch should upload successfully");
             [uploadSketch fulfill];
         }
     };
