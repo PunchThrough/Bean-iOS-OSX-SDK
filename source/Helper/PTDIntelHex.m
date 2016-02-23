@@ -16,14 +16,12 @@
 
 + (PTDIntelHex *)intelHexFromHexString:(NSString *)hexString
 {
-    PTDIntelHex *h = [PTDIntelHex alloc];
-    return [h initWithHexString:hexString];
+    return [[PTDIntelHex alloc] initWithHexString:hexString];
 }
 
 + (PTDIntelHex *)intelHexFromFileURL:(NSURL *)file
 {
-    PTDIntelHex *h = [PTDIntelHex alloc];
-    return [h initWithFileURL:file];
+    return [[PTDIntelHex alloc] initWithFileURL:file];
 }
 
 - (id)initWithHexString:(NSString *)hexString
@@ -69,6 +67,11 @@
     return [imageData copy];
 }
 
+/**
+ *  Parse a string of Intel HEX data into the internal <code>self.lines</code> list of Intel HEX lines.
+ *  @param hexString the string of Intel HEX to parse
+ *  @return YES if parsing succeeded, NO otherwise
+ */
 - (BOOL)parseHexString:(NSString *)hexString
 {
     NSArray *rawlines = [hexString componentsSeparatedByString:@"\n"];
@@ -77,29 +80,55 @@
             if (![[rawline substringWithRange:NSMakeRange(0, 1)] isEqual:@":"]) {
                 return FALSE;
             }
-            
+
             PTDIntelHexLine *line = [[PTDIntelHexLine alloc] init];
-            
-            line.byteCount = (UInt8)[self numberFromHexString:[rawline substringWithRange:NSMakeRange(1, 2)]];
-            line.address = (UInt16)[self numberFromHexString:[rawline substringWithRange:NSMakeRange(3, 4)]];
-            line.recordType = (PTDIntelHexLineRecordType)[self numberFromHexString:[rawline substringWithRange:NSMakeRange(7, 2)]];
-            line.data = [self bytesFromHexString:[rawline substringWithRange:NSMakeRange(9, line.byteCount * 2)]];
-            line.checksum = (UInt8)[self numberFromHexString:[rawline substringWithRange:NSMakeRange(9 + (line.byteCount * 2), 2)]];
-            
-            [self.lines addObject:line];
-            
+
+            // Byte count: offset 1, 2 chars
+            line.byteCount = [self numberFromHexString:rawline offset:1 len:2];
+
+            // Address: offset 3, 4 chars
+            line.address = [self numberFromHexString:rawline offset:3 len:4];
+
+            // Record type: offset 7, 2 chars
+            line.recordType = (PTDIntelHexLineRecordType)[self numberFromHexString:rawline offset:7 len:2];
+
+            // Data: offset 9, (byte count x 2) chars
+            line.data = [self bytesFromHexString:rawline offset:9 len:line.byteCount * 2];
             if (!line.data) {
                 return FALSE;
             }
             if ([line.data length] != line.byteCount) {
                 return FALSE;
             }
+
+            // Checksum: offset (9 + byte count x 2), len 2
+            line.checksum = [self numberFromHexString:rawline offset:(9 + (line.byteCount * 2)) len:2];
+
+            [self.lines addObject:line];
         }
     }
     return TRUE;
 }
 
-- (unsigned)numberFromHexString:(NSString *)hexString
+/**
+ *  Parse an unsigned integer from a slice of a string containing ASCII hex characters.
+ *  @param hexString The string with ASCII hex characters
+ *  @param offset The offset of the first character in the slice. 0 starts from the beginning of the string.
+ *  @param len The number of characters in the slice
+ *  @return The unsigned integer parsed from the slice of hex characters
+ */
+- (NSUInteger)numberFromHexString:(NSString *)hexString offset:(NSUInteger)offset len:(NSUInteger)len
+{
+    NSString *sliced = [hexString substringWithRange:NSMakeRange(offset, len)];
+    return [self numberFromHexString:sliced];
+}
+
+/**
+ *  Parse an unsigned integer from a string containing ASCII hex characters.
+ *  @param hexString The string with ASCII hex characters
+ *  @return The unsigned integer parsed from the hex characters
+ */
+- (NSUInteger)numberFromHexString:(NSString *)hexString
 {
     unsigned result = 0;
     NSScanner *scanner = [NSScanner scannerWithString:hexString];
@@ -107,6 +136,24 @@
     return result;
 }
 
+/**
+ *  Parse raw bytes from a string containing ASCII hex characters.
+ *  @param The string with ASCII hex characters
+ *  @param offset The offset of the first character in the slice. 0 starts from the beginning of the string.
+ *  @param len The number of characters in the slice
+ *  @return An NSData object containing the raw bytes from the hex string
+ */
+- (NSData *)bytesFromHexString:(NSString *)hexString offset:(NSUInteger)offset len:(NSUInteger)len
+{
+    NSString *sliced = [hexString substringWithRange:NSMakeRange(offset, len)];
+    return [self bytesFromHexString:sliced];
+}
+
+/**
+ *  Parse raw bytes from a string containing ASCII hex characters.
+ *  @param The string with ASCII hex characters
+ *  @return An NSData object containing the raw bytes from the hex string
+ */
 - (NSData *)bytesFromHexString:(NSString *)hexString
 {
     NSMutableData *data = [NSMutableData data];
@@ -114,8 +161,9 @@
         NSString *hexByteStr = [hexString substringWithRange:NSMakeRange(i, 2)];
         NSScanner *scanner = [NSScanner scannerWithString:hexByteStr];
         unsigned int intValue;
-        if ([scanner scanHexInt:&intValue])
+        if ([scanner scanHexInt:&intValue]) {
             [data appendBytes:&intValue length:1];
+        }
     }
     return [data copy];
 }
