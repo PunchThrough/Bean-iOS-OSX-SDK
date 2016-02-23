@@ -80,6 +80,15 @@
     [self disconnectBean];
 }
 
+/**
+ * Verify that the hexDataFromResource helper is properly reading the example sketch.
+ */
+- (void)testReadHex
+{
+    NSInteger len = [self hexDataFromResource:@"blink"].length;
+    XCTAssertEqual(len, 14414);
+}
+
 #pragma mark - BeanManager delegate
 
 - (void)BeanManager:(PTDBeanManager *)beanManager didDiscoverBean:(PTDBean *)bean error:(NSError *)error
@@ -136,6 +145,18 @@
     self.beanDiscovered = nil;
     self.beanConnected = nil;
     self.beanLedUpdated = nil;
+}
+
+/**
+ * Get the data from a .hex file in the test resources folder.
+ * @param hexFileName The name of the hex file. For example, to read from mysketch.hex, hexFileName should be "mysketch"
+ * @return An NSData object with the contents of the file, or nil if the file couldn't be opened
+ */
+- (NSData *)hexDataFromResource:(NSString *)hexFileName
+{
+    NSBundle *bundle = [NSBundle bundleForClass:[self class]];
+    NSString *path = [bundle pathForResource:hexFileName ofType:@"hex"];
+    return [NSData dataWithContentsOfFile:path];
 }
 
 - (void)discoverBean
