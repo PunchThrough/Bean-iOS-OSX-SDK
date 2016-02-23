@@ -15,9 +15,7 @@
 @property (nonatomic, strong) NSString *beanName;
 @property (nonatomic, strong) __block PTDBean *testBean;
 
-@property (nonatomic, strong) void (^beanDiscovered)(PTDBean *bean);
-@property (nonatomic, strong) void (^beanConnected)(PTDBean *bean);
-@property (nonatomic, strong) void (^beanBlinked)(PTDBean *bean);
+@property (nonatomic, strong) void (^beanBlock)(PTDBean *bean);
 
 @end
 
@@ -70,16 +68,16 @@
 - (void)BeanManager:(PTDBeanManager *)beanManager didDiscoverBean:(PTDBean *)bean error:(NSError *)error
 {
     NSLog(@"Discovered Bean: %@", bean);
-    if (self.beanDiscovered) {
-        self.beanDiscovered(bean);
+    if (self.beanBlock) {
+        self.beanBlock(bean);
     }
 }
 
 - (void)BeanManager:(PTDBeanManager *)beanManager didConnectToBean:(PTDBean *)bean error:(NSError *)error
 {
     NSLog(@"Connected Bean: %@", bean);
-    if (self.beanConnected) {
-        self.beanConnected(bean);
+    if (self.beanBlock) {
+        self.beanBlock(bean);
     }
 }
 
@@ -88,8 +86,8 @@
 - (void)bean:(PTDBean *)bean didUpdateLedColor:(NSColor *)color
 {
     NSLog(@"Blinked Bean: %@", bean);
-    if (self.beanBlinked) {
-        self.beanBlinked(bean);
+    if (self.beanBlock) {
+        self.beanBlock(bean);
     }
 }
 
@@ -110,9 +108,7 @@
 - (void)cleanup
 {
     // reset blocks so no test interference occurs, since blocks are triggered by BeanManager delegates
-    self.beanDiscovered = nil;
-    self.beanConnected = nil;
-    self.beanBlinked = nil;
+    self.beanBlock = nil;
 }
 
 - (void)discoverBean
@@ -123,7 +119,7 @@
     
     // when
     XCTestExpectation *beanDiscover = [self expectationWithDescription:@"Target Bean found"];
-    self.beanDiscovered = ^void(PTDBean *bean) {
+    self.beanBlock = ^void(PTDBean *bean) {
         if ([bean.name isEqualToString:self.beanName]) {
             NSLog(@"Discovered target Bean: %@", bean);
             self.testBean = bean;
@@ -158,7 +154,7 @@
     
     // when
     XCTestExpectation *beanConnect = [self expectationWithDescription:@"Target Bean connected"];
-    self.beanConnected = ^void(PTDBean *bean) {
+    self.beanBlock = ^void(PTDBean *bean) {
         if ([bean.name isEqualToString:self.beanName]) {
             NSLog(@"Connected target Bean: %@", bean);
             bean.delegate = self;
@@ -190,7 +186,7 @@
 {
     // when
     XCTestExpectation *beanBlink = [self expectationWithDescription:@"Target Bean blinked"];
-    self.beanBlinked = ^void(PTDBean *bean) {
+    self.beanBlock = ^void(PTDBean *bean) {
         if ([bean.name isEqualToString:self.beanName]) {
             NSLog(@"Blinked target Bean: %@", bean);
             [beanBlink fulfill];
