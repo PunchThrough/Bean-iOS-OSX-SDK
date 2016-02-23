@@ -22,6 +22,7 @@
 @property (nonatomic, strong) void (^beanDiscovered)(PTDBean *bean);
 @property (nonatomic, strong) void (^beanConnected)(PTDBean *bean);
 @property (nonatomic, strong) void (^beanLedUpdated)(PTDBean *bean, NSColor *color);
+@property (nonatomic, strong) void (^beanSketchUpdated)(PTDBean *bean, NSString *name);
 
 @end
 
@@ -71,6 +72,14 @@
     [self disconnectBean];
 }
 
+- (void)testSketchUpload
+{
+    [self discoverBean];
+    [self connectBean];
+    [self sketchUpload];
+    [self disconnectBean];
+}
+
 #pragma mark - BeanManager delegate
 
 - (void)BeanManager:(PTDBeanManager *)beanManager didDiscoverBean:(PTDBean *)bean error:(NSError *)error
@@ -96,6 +105,14 @@
     NSLog(@"Read color from Bean: %@", bean);
     if (self.beanLedUpdated) {
         self.beanLedUpdated(bean, color);
+    }
+}
+
+- (void)bean:(PTDBean *)bean didUpdateSketchName:(NSString *)name dateProgrammed:(NSDate *)date crc32:(UInt32)crc
+{
+    NSLog(@"Uploaded sketch to Bean: %@", bean);
+    if (self.beanSketchUpdated) {
+        self.beanSketchUpdated(bean, name);
     }
 }
 
@@ -214,6 +231,27 @@
     [self delayForSeconds:1];
 }
 
+- (void)sketchUpload
+{
+    // given
+    NSString *imageName = @"TestSketch";
+    NSData *imageHex = [NSData dataWithContentsOfFile:@"/Resources/blink.hex"];
+    XCTestExpectation *uploadSketch = [self expectationWithDescription:@"Target Bean uploaded sketch"];
+    self.beanSketchUpdated = ^void(PTDBean *bean, NSString *name) {
+        if ([bean.name isEqualToString:self.beanName]) {
+            NSLog(@"Read color from target Bean: %@", bean);
+            XCTAssertTrue([name isEqual:imageName], @"Bean sketch should be TestSketch");
+            [uploadSketch fulfill];
+        }
+    };
+    
+    // when
+    [self.testBean programArduinoWithRawHexImage:imageHex andImageName:imageName];
+    
+    // then
+    [self waitForExpectationsWithTimeout:60 handler:nil];
+
+}
 
 
 @end

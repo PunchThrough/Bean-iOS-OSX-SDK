@@ -75,6 +75,7 @@
 		969FDE9B191A9E1E0068B99A /* PTDBeanManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 969FDE95191A9DE80068B99A /* PTDBeanManager.m */; };
 		969FDE9C191A9E200068B99A /* PTDBeanRadioConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 969FDE96191A9DE80068B99A /* PTDBeanRadioConfig.m */; };
 		A9448BF11C7B94DE0031DA2C /* IOBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52DE25C018AAC53900E69929 /* IOBluetooth.framework */; };
+		A94C7A6B1C7CC89B0018A161 /* blink.hex in Resources */ = {isa = PBXBuildFile; fileRef = A94C7A6A1C7CC89B0018A161 /* blink.hex */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -170,6 +171,7 @@
 		96E63F4C1919912F00A58608 /* PTDBeanRadioConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTDBeanRadioConfig.h; sourceTree = "<group>"; };
 		A9448BED1C7B94C80031DA2C /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
 		A9448BEF1C7B94D10031DA2C /* IOBluetoothUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOBluetoothUI.framework; path = System/Library/Frameworks/IOBluetoothUI.framework; sourceTree = SDKROOT; };
+		A94C7A6A1C7CC89B0018A161 /* blink.hex */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = blink.hex; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -340,6 +342,7 @@
 			isa = PBXGroup;
 			children = (
 				52D34E4418A9B455002F0C59 /* Bean_OSX_LibraryTests.m */,
+				A94C7A691C7CC7D10018A161 /* Resources */,
 				52D34E3F18A9B455002F0C59 /* Supporting Files */,
 			);
 			path = "Bean OSX LibraryTests";
@@ -456,6 +459,14 @@
 			path = ../../source/Public;
 			sourceTree = "<group>";
 		};
+		A94C7A691C7CC7D10018A161 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				A94C7A6A1C7CC89B0018A161 /* blink.hex */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -560,6 +571,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A94C7A6B1C7CC89B0018A161 /* blink.hex in Resources */,
 				52D34E4318A9B455002F0C59 /* InfoPlist.strings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
