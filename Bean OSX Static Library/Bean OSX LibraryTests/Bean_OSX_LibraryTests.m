@@ -11,9 +11,13 @@
 
 @interface Bean_OSX_LibraryTests : XCTestCase <PTDBeanManagerDelegate, PTDBeanDelegate>
 
+#pragma mark Local variables
+
 @property (nonatomic, strong) PTDBeanManager *beanManager;
 @property (nonatomic, strong) NSString *beanName;
 @property (nonatomic, strong) __block PTDBean *testBean;
+
+#pragma mark Delegate callbacks
 
 @property (nonatomic, strong) void (^beanDiscovered)(PTDBean *bean);
 @property (nonatomic, strong) void (^beanConnected)(PTDBean *bean);
@@ -22,6 +26,8 @@
 @end
 
 @implementation Bean_OSX_LibraryTests
+
+#pragma mark - Test prep
 
 - (void)setUp
 {
@@ -43,7 +49,7 @@
     [self cleanup];
 }
 
-#pragma mark - tests
+#pragma mark - Tests
 
 - (void)testDiscoverBean
 {
@@ -65,7 +71,7 @@
     [self disconnectBean];
 }
 
-#pragma mark - bean manager delegate
+#pragma mark - BeanManager delegate
 
 - (void)BeanManager:(PTDBeanManager *)beanManager didDiscoverBean:(PTDBean *)bean error:(NSError *)error
 {
@@ -83,7 +89,7 @@
     }
 }
 
-#pragma mark - bean delegate
+#pragma mark - Bean delegate
 
 - (void)bean:(PTDBean *)bean didUpdateLedColor:(NSColor *)color
 {
@@ -93,7 +99,7 @@
     }
 }
 
-#pragma mark - test helpers
+#pragma mark - Test helpers
 
 - (void)delayForSeconds:(NSInteger)seconds
 {
