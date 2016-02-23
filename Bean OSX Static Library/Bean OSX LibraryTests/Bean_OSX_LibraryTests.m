@@ -141,10 +141,11 @@
 
 - (void)cleanup
 {
-    // reset blocks so no test interference occurs, since blocks are triggered by BeanManager delegates
+    // reset blocks so no test interference occurs, since blocks are triggered by BeanManager and Bean delegates
     self.beanDiscovered = nil;
     self.beanConnected = nil;
     self.beanLedUpdated = nil;
+    self.beanSketchUpdated = nil;
 }
 
 /**
