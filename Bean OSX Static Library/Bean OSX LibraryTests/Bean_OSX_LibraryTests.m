@@ -125,6 +125,12 @@
     }
 }
 
+- (void)bean:(PTDBean *)bean ArduinoProgrammingTimeLeft:(NSNumber *)seconds withPercentage:(NSNumber *)percentageComplete
+{
+    NSLog(@"Upload programming time left: %@", seconds);
+    NSLog(@"Upload percentage complete: %@", percentageComplete);
+}
+
 #pragma mark - Test helpers
 
 - (void)delayForSeconds:(NSInteger)seconds
@@ -272,7 +278,6 @@
     
     // then
     [self waitForExpectationsWithTimeout:120 handler:nil];
-
 }
 
 
