@@ -3,13 +3,16 @@
 
 @interface PTDIntelHex ()
 
-@property NSURL *url;
+/**
+ *  The intermediate list of <code>PTDIntelHexLine</code>s.
+ *
+ *  These are created when Intel HEX is parsed. They're read to generate <code>- (NSData *)bytes</code>.
+ */
+@property (nonatomic, strong) NSMutableArray *lines;
 
 @end
 
-@implementation PTDIntelHex {
-    NSMutableArray *lines;
-}
+@implementation PTDIntelHex
 
 + (PTDIntelHex *)intelHexFromHexString:(NSString *)hexString
 {
@@ -26,8 +29,8 @@
 - (id)initWithHexString:(NSString *)hexString
 {
     self = [super init];
-    lines = [[NSMutableArray alloc] init];
     if (self) {
+        _lines = [[NSMutableArray alloc] init];
         if (![self parseHexString:hexString]) {
             return nil;
         }
@@ -39,18 +42,14 @@
 {
     self = [super init];
     if (self) {
-        NSString *tempName = [file lastPathComponent];
-        NSRange range = [tempName rangeOfString:@"."];
-        tempName = [tempName substringToIndex:range.location];
-        _name = tempName;
-        
-        lines = [[NSMutableArray alloc] init];
-        
+        _lines = [[NSMutableArray alloc] init];
+
         NSError *err;
-        NSString *fileContents =
-        [NSString stringWithContentsOfFile:file.path
-                                  encoding:NSUTF8StringEncoding
-                                     error:&err];
+        NSString *fileContents = [NSString stringWithContentsOfFile:file.path encoding:NSUTF8StringEncoding error:&err];
+        if (err) {
+            return nil;
+        }
+
         if (![self parseHexString:fileContents]) {
             return nil;
         }
@@ -62,7 +61,7 @@
 {
     NSMutableData *imageData = [[NSMutableData alloc] init];
     
-    for (PTDIntelHexLine *line in lines) {
+    for (PTDIntelHexLine *line in self.lines) {
         if (line.recordType == PTDIntelHexLineRecordType_Data) {
             [imageData appendData:line.data];
         }
@@ -87,7 +86,7 @@
             line.data = [self bytesFromHexString:[rawline substringWithRange:NSMakeRange(9, line.byteCount * 2)]];
             line.checksum = (UInt8)[self numberFromHexString:[rawline substringWithRange:NSMakeRange(9 + (line.byteCount * 2), 2)]];
             
-            [lines addObject:line];
+            [self.lines addObject:line];
             
             if (!line.data) {
                 return FALSE;
