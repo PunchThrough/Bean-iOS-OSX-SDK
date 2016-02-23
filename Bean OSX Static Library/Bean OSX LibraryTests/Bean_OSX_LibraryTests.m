@@ -15,7 +15,9 @@
 @property (nonatomic, strong) NSString *beanName;
 @property (nonatomic, strong) __block PTDBean *testBean;
 
-@property (nonatomic, strong) void (^beanBlock)(PTDBean *bean);
+@property (nonatomic, strong) void (^beanDiscovered)(PTDBean *bean);
+@property (nonatomic, strong) void (^beanConnected)(PTDBean *bean);
+@property (nonatomic, strong) void (^beanLedUpdated)(PTDBean *bean, NSColor *color);
 
 @end
 
@@ -68,16 +70,16 @@
 - (void)BeanManager:(PTDBeanManager *)beanManager didDiscoverBean:(PTDBean *)bean error:(NSError *)error
 {
     NSLog(@"Discovered Bean: %@", bean);
-    if (self.beanBlock) {
-        self.beanBlock(bean);
+    if (self.beanDiscovered) {
+        self.beanDiscovered(bean);
     }
 }
 
 - (void)BeanManager:(PTDBeanManager *)beanManager didConnectToBean:(PTDBean *)bean error:(NSError *)error
 {
     NSLog(@"Connected Bean: %@", bean);
-    if (self.beanBlock) {
-        self.beanBlock(bean);
+    if (self.beanConnected) {
+        self.beanConnected(bean);
     }
 }
 
@@ -85,9 +87,9 @@
 
 - (void)bean:(PTDBean *)bean didUpdateLedColor:(NSColor *)color
 {
-    NSLog(@"Blinked Bean: %@", bean);
-    if (self.beanBlock) {
-        self.beanBlock(bean);
+    NSLog(@"Read color from Bean: %@", bean);
+    if (self.beanLedUpdated) {
+        self.beanLedUpdated(bean, color);
     }
 }
 
@@ -108,7 +110,9 @@
 - (void)cleanup
 {
     // reset blocks so no test interference occurs, since blocks are triggered by BeanManager delegates
-    self.beanBlock = nil;
+    self.beanDiscovered = nil;
+    self.beanConnected = nil;
+    self.beanLedUpdated = nil;
 }
 
 - (void)discoverBean
@@ -119,7 +123,7 @@
     
     // when
     XCTestExpectation *beanDiscover = [self expectationWithDescription:@"Target Bean found"];
-    self.beanBlock = ^void(PTDBean *bean) {
+    self.beanDiscovered = ^void(PTDBean *bean) {
         if ([bean.name isEqualToString:self.beanName]) {
             NSLog(@"Discovered target Bean: %@", bean);
             self.testBean = bean;
@@ -154,7 +158,7 @@
     
     // when
     XCTestExpectation *beanConnect = [self expectationWithDescription:@"Target Bean connected"];
-    self.beanBlock = ^void(PTDBean *bean) {
+    self.beanConnected = ^void(PTDBean *bean) {
         if ([bean.name isEqualToString:self.beanName]) {
             NSLog(@"Connected target Bean: %@", bean);
             bean.delegate = self;
@@ -176,7 +180,6 @@
 
 - (void)disconnectBean
 {
-    // disconnect
     NSError *disconnectError;
     [self.beanManager disconnectBean:self.testBean error:&disconnectError];
     XCTAssertNil(disconnectError);
@@ -184,22 +187,25 @@
 
 - (void)blinkBean
 {
-    // when
+    // given
+    NSColor *lightBlue = [NSColor colorWithRed:0 green:1 blue:1 alpha:1];
     XCTestExpectation *beanBlink = [self expectationWithDescription:@"Target Bean blinked"];
-    self.beanBlock = ^void(PTDBean *bean) {
+    self.beanLedUpdated = ^void(PTDBean *bean, NSColor *color) {
         if ([bean.name isEqualToString:self.beanName]) {
-            NSLog(@"Blinked target Bean: %@", bean);
+            NSLog(@"Read color from target Bean: %@", bean);
+            XCTAssertTrue([color isEqual:lightBlue], @"Bean LED color should be light blue");
             [beanBlink fulfill];
         }
     };
     
-    // blink
-    [self.testBean setLedColor: [NSColor blueColor]];
+    // when
+    [self.testBean setLedColor: lightBlue];
     [self.testBean readLedColor];
     
     // then
-    [self waitForExpectationsWithTimeout:20 handler:nil];
-    [self.testBean setLedColor: [NSColor colorWithSRGBRed:0 green:0 blue:0 alpha:0]];
+    [self waitForExpectationsWithTimeout:10 handler:nil];
+    [self.testBean setLedColor: [NSColor colorWithRed:0 green:0 blue:0 alpha:0]];
+    [self delayForSeconds:1];
 }
 
 
