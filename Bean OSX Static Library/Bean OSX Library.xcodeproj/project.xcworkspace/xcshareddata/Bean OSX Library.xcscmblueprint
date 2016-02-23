@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "4E972D5D7D21C90D5F21CCCB7813586DCADDD8A1",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "4E972D5D7D21C90D5F21CCCB7813586DCADDD8A1" : 0,
+    "39572FF45BBA82D9E0A47E8917BFD83331580CAC" : 0
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "5A1CDAE5-196D-4C64-B63A-8E094A5AEA85",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "4E972D5D7D21C90D5F21CCCB7813586DCADDD8A1" : "bean-apple-sdk\/",
+    "39572FF45BBA82D9E0A47E8917BFD83331580CAC" : "bean-apple-sdk\/App%20Message%20Definitions\/"
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "Bean OSX Library",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "Bean OSX Static Library\/Bean OSX Library.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/bitbucket.org\/punchthroughdesign\/bean-application-message-definitions.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "39572FF45BBA82D9E0A47E8917BFD83331580CAC"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "bitbucket.org:punchthroughdesign\/bean-apple-sdk.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "4E972D5D7D21C90D5F21CCCB7813586DCADDD8A1"
+    }
+  ]
+}
