@@ -842,20 +842,19 @@ typedef enum { //These occur in sequence
 {
     if ( error ) _updateInProgress = FALSE;
     
-    if ( self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)] )
+    if ( error && self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)] )
         [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadWithError:error];
 }
 
--(void)device:(OadProfile*)device OADUploadTimeLeft:(NSNumber*)seconds withPercentage:(NSNumber*)percentageComplete{
-    if(self.delegate){
-        if([self.delegate respondsToSelector:@selector(bean:firmwareUploadTimeLeft:withPercentage:)]){
-            [(id<PTDBeanExtendedDelegate>)self.delegate bean:self firmwareUploadTimeLeft:seconds withPercentage:percentageComplete];
-        }
-    }
+-(void)device:(OadProfile*)device OADUploadTimeLeft:(NSNumber*)seconds withPercentage:(NSNumber*)percentageComplete
+{
+    if ( self.delegate && [self.delegate respondsToSelector:@selector(bean:firmwareUploadTimeLeft:withPercentage:)] )
+        [(id<PTDBeanExtendedDelegate>)self.delegate bean:self firmwareUploadTimeLeft:seconds withPercentage:percentageComplete];
 }
-    
+
 #pragma mark Battery Monitoring Delegate callbacks
--(void)batteryProfileDidUpdate:(BatteryProfile*)profile{
+-(void)batteryProfileDidUpdate
+{
     if(self.delegate){
         if([self.delegate respondsToSelector:@selector(beanDidUpdateBatteryVoltage:error:)]){
             [self.delegate beanDidUpdateBatteryVoltage:self error:nil];
