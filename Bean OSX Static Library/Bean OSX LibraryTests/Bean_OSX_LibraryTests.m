@@ -8,6 +8,7 @@
 
 #import <XCTest/XCTest.h>
 #import "PTDBeanManager.h"
+#import "PTDIntelHex.h"
 
 @interface Bean_OSX_LibraryTests : XCTestCase <PTDBeanManagerDelegate, PTDBeanDelegate>
 
@@ -97,8 +98,8 @@
  */
 - (void)testReadHex
 {
-    NSInteger len = [self hexDataFromResource:@"blink"].length;
-    XCTAssertEqual(len, 14414);
+    NSInteger len = [self bytesFromIntelHexResource:@"blink"].length;
+    XCTAssertEqual(len, 5114);  // Verified by hand - blink.hex represents 5114 bytes of raw data
 }
 
 #pragma mark - BeanManager delegate
@@ -139,8 +140,9 @@
 
 - (void)bean:(PTDBean *)bean ArduinoProgrammingTimeLeft:(NSNumber *)seconds withPercentage:(NSNumber *)percentageComplete
 {
-    NSLog(@"Upload programming time left: %@", seconds);
-    NSLog(@"Upload percentage complete: %@", percentageComplete);
+    NSLog(@"Upload progress: %ld%%, %ld seconds remaining",
+          (NSInteger)([percentageComplete floatValue] * 100),
+          [seconds integerValue]);
 }
 
 #pragma mark - Test helpers
@@ -174,15 +176,17 @@
 }
 
 /**
- *  Get the data from a .hex file in the test resources folder.
- *  @param hexFileName The name of the hex file. For example, to read from mysketch.hex, hexFileName should be "mysketch"
+ *  Parse an Intel HEX file with the extension .hex into raw bytes.
+ *  @param intelHexFileName The name of the Intel HEX file. For example, to read from mysketch.hex,
+ *      intelHexFileName should be "mysketch"
  *  @return An NSData object with the contents of the file, or nil if the file couldn't be opened
  */
-- (NSData *)hexDataFromResource:(NSString *)hexFileName
+- (NSData *)bytesFromIntelHexResource:(NSString *)intelHexFilename
 {
     NSBundle *bundle = [NSBundle bundleForClass:[self class]];
-    NSString *path = [bundle pathForResource:hexFileName ofType:@"hex"];
-    return [NSData dataWithContentsOfFile:path];
+    NSURL *url = [bundle URLForResource:intelHexFilename withExtension:@"hex"];
+    PTDIntelHex *intelHex = [PTDIntelHex intelHexFromFileURL:url];
+    return [intelHex bytes];
 }
 
 /**
@@ -230,9 +234,6 @@
 - (void)connectBean
 {
     // given
-    NSError *error;
-    
-    // when
     XCTestExpectation *beanConnect = [self expectationWithDescription:@"Target Bean connected"];
     self.beanConnected = ^void(PTDBean *bean) {
         if ([bean.name isEqualToString:self.beanName]) {
@@ -243,7 +244,7 @@
         }
     };
     
-    // connect
+    // when
     NSError *connectError;
     [self.beanManager connectToBean:self.testBean error:&connectError];
     // connectError always throws a "connection in progress" error, so don't assert that it is not nil
@@ -297,7 +298,7 @@
 {
     // given
     NSString *imageName = @"TestSketch";
-    NSData *imageHex = [self hexDataFromResource:@"blink"];
+    NSData *imageHex = [self bytesFromIntelHexResource:@"blink"];
     XCTestExpectation *uploadSketch = [self expectationWithDescription:@"Target Bean uploaded sketch"];
     self.beanSketchUploaded = ^void(PTDBean *bean, NSError *error) {
         if ([bean.name isEqualToString:self.beanName]) {
