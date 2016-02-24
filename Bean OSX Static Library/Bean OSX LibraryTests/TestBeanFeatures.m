@@ -1,16 +1,8 @@
-//
-//  Bean_OSX_LibraryTests.m
-//  Bean OSX LibraryTests
-//
-//  Created by Raymond Kampmeier on 2/10/14.
-//  Copyright (c) 2014 Punch Through Design. All rights reserved.
-//
-
 #import <XCTest/XCTest.h>
 #import "PTDBeanManager.h"
 #import "PTDIntelHex.h"
 
-@interface Bean_OSX_LibraryTests : XCTestCase <PTDBeanManagerDelegate, PTDBeanDelegate>
+@interface TestBeanFeatures : XCTestCase <PTDBeanManagerDelegate, PTDBeanDelegate>
 
 #pragma mark Local variables
 
@@ -27,7 +19,7 @@
 
 @end
 
-@implementation Bean_OSX_LibraryTests
+@implementation TestBeanFeatures
 
 #pragma mark - Test prep
 
@@ -178,7 +170,7 @@
 - (void)discoverBean
 {
     // given
-    __weak Bean_OSX_LibraryTests *self_ = self;
+    __weak TestBeanFeatures *self_ = self;
     NSError *error;
     self.testBean = nil;
     
@@ -218,7 +210,7 @@
 - (void)connectBean
 {
     // given
-    __weak Bean_OSX_LibraryTests *self_ = self;
+    __weak TestBeanFeatures *self_ = self;
 
     XCTestExpectation *beanConnect = [self expectationWithDescription:@"Target Bean connected"];
     self.beanConnected = ^void(PTDBean *bean) {
@@ -258,7 +250,7 @@
 - (void)blinkBeanWithColor:(NSColor *)goalColor
 {
     // given
-    __weak Bean_OSX_LibraryTests *self_ = self;
+    __weak TestBeanFeatures *self_ = self;
     XCTestExpectation *beanBlink = [self expectationWithDescription:@"Target Bean blinked"];
     __block NSColor *colorReadFromBean;
 
@@ -292,7 +284,7 @@
 - (void)uploadBinarySketchToBean:(NSString *)hexName
 {
     // given
-    __weak Bean_OSX_LibraryTests *self_ = self;
+    __weak TestBeanFeatures *self_ = self;
     NSString *imageName = hexName;
     NSData *imageHex = [self bytesFromIntelHexResource:hexName];
     __block NSError *uploadError;
