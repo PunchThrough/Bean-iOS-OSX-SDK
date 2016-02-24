@@ -54,24 +54,6 @@
 #pragma mark - Tests
 
 /**
- *  Verify that we can see our test Bean advertising.
- */
-- (void)testDiscoverBean
-{
-    [self discoverBean];
-}
-
-/**
- *  Verify that we can connect to our test Bean.
- */
-- (void)testConnectBean
-{
-    [self discoverBean];
-    [self connectBean];
-    [self disconnectBean];
-}
-
-/**
  *  Verify that the LED on our test Bean can be blinked.
  */
 - (void)testBlinkBean
