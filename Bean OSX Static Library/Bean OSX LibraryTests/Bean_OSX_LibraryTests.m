@@ -76,9 +76,10 @@
  */
 - (void)testBlinkBean
 {
+    NSColor *magenta = [NSColor colorWithRed:1 green:0 blue:1 alpha:1];
     [self discoverBean];
     [self connectBean];
-    [self blinkBean];
+    [self blinkBeanWithColor:magenta];
     [self disconnectBean];
 }
 
@@ -89,7 +90,7 @@
 {
     [self discoverBean];
     [self connectBean];
-    [self uploadSketchToBean];
+    [self uploadBinarySketchToBean:@"blink"];
     [self disconnectBean];
 }
 
@@ -269,44 +270,49 @@
 }
 
 /**
- *  Set the LED on `testBean` to #00FFFF and verify its color is set, then turn it off.
+ *  Set the LED on `testBean` to a color and verify its color is set properly, then turn it off.
+ *  @param goalColor The color to set Bean's LED to and verify
  */
-- (void)blinkBean
+- (void)blinkBeanWithColor:(NSColor *)goalColor
 {
     // given
     __weak Bean_OSX_LibraryTests *self_ = self;
-    NSColor *lightBlue = [NSColor colorWithRed:0 green:1 blue:1 alpha:1];
     XCTestExpectation *beanBlink = [self expectationWithDescription:@"Target Bean blinked"];
-    __block NSColor *beanColor;
+    __block NSColor *colorReadFromBean;
 
-    self.beanLedUpdated = ^void(PTDBean *bean, NSColor *color) {
+    self.beanLedUpdated = ^void(PTDBean *bean, NSColor *colorReceived) {
         if ([bean.name isEqualToString:self_.beanName]) {
             NSLog(@"Read color from target Bean: %@", bean);
-            beanColor = color;
+            colorReadFromBean = colorReceived;
             [beanBlink fulfill];
         }
     };
     
     // when
-    [self.testBean setLedColor: lightBlue];
+    [self.testBean setLedColor:goalColor];
     [self.testBean readLedColor];
     
     // then
     [self waitForExpectationsWithTimeout:10 handler:nil];
-    XCTAssertTrue([beanColor isEqual:lightBlue], @"Bean LED color should be light blue");
-    [self.testBean setLedColor: [NSColor colorWithRed:0 green:0 blue:0 alpha:0]];
+    XCTAssertTrue([colorReadFromBean isEqual:goalColor], @"Bean LED color should be %@", goalColor);
+    [self.testBean setLedColor:[NSColor colorWithRed:0 green:0 blue:0 alpha:0]];
     [self delayForSeconds:1];
 }
 
 /**
- *  Upload a blink sketch to `testBean`.
+ *  Upload a sketch compiled as a raw binary hex file to `testBean`.
+ *  @param hexName The name of the hex file to upload.
+ *      This name will be used for the Bean's programmed sketch name as well.
+ *      This resource must be present in the test bundle.
+ *      For example, to upload <code>mysketch.hex</code>, <code>hexName</code> should be <code>mysketch</code>.
+ *      The name of Bean's sketch will be set to <code>mysketch</code>.
  */
-- (void)uploadSketchToBean
+- (void)uploadBinarySketchToBean:(NSString *)hexName
 {
     // given
     __weak Bean_OSX_LibraryTests *self_ = self;
-    NSString *imageName = @"TestSketch";
-    NSData *imageHex = [self bytesFromIntelHexResource:@"blink"];
+    NSString *imageName = hexName;
+    NSData *imageHex = [self bytesFromIntelHexResource:hexName];
     __block NSError *uploadError;
 
     XCTestExpectation *uploadSketch = [self expectationWithDescription:@"Target Bean uploaded sketch"];
