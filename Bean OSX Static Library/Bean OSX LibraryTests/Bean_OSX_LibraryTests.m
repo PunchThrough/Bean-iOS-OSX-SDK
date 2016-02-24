@@ -195,15 +195,16 @@
 - (void)discoverBean
 {
     // given
+    __weak Bean_OSX_LibraryTests *self_ = self;
     NSError *error;
     self.testBean = nil;
     
     // when
     XCTestExpectation *beanDiscover = [self expectationWithDescription:@"Target Bean found"];
     self.beanDiscovered = ^void(PTDBean *bean) {
-        if ([bean.name isEqualToString:self.beanName]) {
+        if ([bean.name isEqualToString:self_.beanName]) {
             NSLog(@"Discovered target Bean: %@", bean);
-            self.testBean = bean;
+            self_.testBean = bean;
             [beanDiscover fulfill];
         }
     };
@@ -234,12 +235,14 @@
 - (void)connectBean
 {
     // given
+    __weak Bean_OSX_LibraryTests *self_ = self;
+
     XCTestExpectation *beanConnect = [self expectationWithDescription:@"Target Bean connected"];
     self.beanConnected = ^void(PTDBean *bean) {
-        if ([bean.name isEqualToString:self.beanName]) {
+        if ([bean.name isEqualToString:self_.beanName]) {
             NSLog(@"Connected target Bean: %@", bean);
-            bean.delegate = self;
-            self.testBean = bean;
+            bean.delegate = self_;
+            self_.testBean = bean;
             [beanConnect fulfill];
         }
     };
@@ -271,12 +274,15 @@
 - (void)blinkBean
 {
     // given
+    __weak Bean_OSX_LibraryTests *self_ = self;
     NSColor *lightBlue = [NSColor colorWithRed:0 green:1 blue:1 alpha:1];
     XCTestExpectation *beanBlink = [self expectationWithDescription:@"Target Bean blinked"];
+    __block NSColor *beanColor;
+
     self.beanLedUpdated = ^void(PTDBean *bean, NSColor *color) {
-        if ([bean.name isEqualToString:self.beanName]) {
+        if ([bean.name isEqualToString:self_.beanName]) {
             NSLog(@"Read color from target Bean: %@", bean);
-            XCTAssertTrue([color isEqual:lightBlue], @"Bean LED color should be light blue");
+            beanColor = color;
             [beanBlink fulfill];
         }
     };
@@ -287,6 +293,7 @@
     
     // then
     [self waitForExpectationsWithTimeout:10 handler:nil];
+    XCTAssertTrue([beanColor isEqual:lightBlue], @"Bean LED color should be light blue");
     [self.testBean setLedColor: [NSColor colorWithRed:0 green:0 blue:0 alpha:0]];
     [self delayForSeconds:1];
 }
@@ -297,13 +304,16 @@
 - (void)uploadSketchToBean
 {
     // given
+    __weak Bean_OSX_LibraryTests *self_ = self;
     NSString *imageName = @"TestSketch";
     NSData *imageHex = [self bytesFromIntelHexResource:@"blink"];
+    __block NSError *uploadError;
+
     XCTestExpectation *uploadSketch = [self expectationWithDescription:@"Target Bean uploaded sketch"];
     self.beanSketchUploaded = ^void(PTDBean *bean, NSError *error) {
-        if ([bean.name isEqualToString:self.beanName]) {
+        if ([bean.name isEqualToString:self_.beanName]) {
             NSLog(@"Uploaded sketch to target Bean: %@", bean);
-            XCTAssertNil(error, @"Bean sketch should upload successfully");
+            uploadError = error;
             [uploadSketch fulfill];
         }
     };
@@ -313,6 +323,7 @@
     
     // then
     [self waitForExpectationsWithTimeout:120 handler:nil];
+    XCTAssertNil(uploadError, @"Bean sketch should upload successfully");
 }
 
 
