@@ -42,7 +42,6 @@
 		524E2B8E195A0C10007FE17D /* PTDBleDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 524E2B8C195A0C10007FE17D /* PTDBleDevice.m */; };
 		525AB3DE1B7E7525007D6DE1 /* OCMock.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 525AB3DD1B7E7525007D6DE1 /* OCMock.framework */; };
 		525AB3E01B7E8135007D6DE1 /* PTDBleDevice+Protected.h in Headers */ = {isa = PBXBuildFile; fileRef = 525AB3DF1B7E8135007D6DE1 /* PTDBleDevice+Protected.h */; };
-		526966C71B7956A40059CE7E /* ConfigurationConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 526966C61B7956A40059CE7E /* ConfigurationConstants.m */; };
 		526966CC1B7E70030059CE7E /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52D34E2718A9B455002F0C59 /* Cocoa.framework */; };
 		52BB1B621A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 52BB1B601A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.h */; };
 		52BB1B631A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 52BB1B611A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.m */; };
@@ -130,7 +129,6 @@
 		520C8ED6191BF0EC0086C530 /* BleProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BleProfile.m; sourceTree = "<group>"; };
 		521A4E9B19103E5F005B3097 /* NSData+CRC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSData+CRC.h"; sourceTree = "<group>"; };
 		521A4E9C19103E5F005B3097 /* NSData+CRC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSData+CRC.m"; sourceTree = "<group>"; };
-		5223458F1B7952D800186320 /* ConfigurationConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigurationConstants.h; sourceTree = "<group>"; };
 		5242A60C18D9101200DDB29F /* AppMessages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppMessages.h; path = "../../App Message Definitions/AppMessages.h"; sourceTree = "<group>"; };
 		524E2B8B195A0C10007FE17D /* PTDBleDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PTDBleDevice.h; path = ../Public/PTDBleDevice.h; sourceTree = "<group>"; };
 		524E2B8C195A0C10007FE17D /* PTDBleDevice.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PTDBleDevice.m; sourceTree = "<group>"; };
@@ -138,7 +136,6 @@
 		5251175318ADA0C80088DE2D /* GattCharacteristicObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = GattCharacteristicObserver.h; path = Transport/GattCharacteristicObserver.h; sourceTree = "<group>"; };
 		525AB3DD1B7E7525007D6DE1 /* OCMock.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OCMock.framework; path = Frameworks/OCMock.framework; sourceTree = "<group>"; };
 		525AB3DF1B7E8135007D6DE1 /* PTDBleDevice+Protected.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PTDBleDevice+Protected.h"; sourceTree = "<group>"; };
-		526966C61B7956A40059CE7E /* ConfigurationConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ConfigurationConstants.m; sourceTree = "<group>"; };
 		52BB1B601A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTDBeanRemoteFirmwareVersionManager.h; sourceTree = "<group>"; };
 		52BB1B611A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PTDBeanRemoteFirmwareVersionManager.m; sourceTree = "<group>"; };
 		52BC523518D96A610083A031 /* AppMessagingLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppMessagingLayer.h; path = ../../source/AppMessages/AppMessagingLayer.h; sourceTree = "<group>"; };
@@ -247,15 +244,6 @@
 				3677A1841C7E4EDC0063ECF3 /* TestBeanFeatures.m */,
 			);
 			name = "Integration Tests";
-			sourceTree = "<group>";
-		};
-		522345921B79556500186320 /* Configuration */ = {
-			isa = PBXGroup;
-			children = (
-				5223458F1B7952D800186320 /* ConfigurationConstants.h */,
-				526966C61B7956A40059CE7E /* ConfigurationConstants.m */,
-			);
-			name = Configuration;
 			sourceTree = "<group>";
 		};
 		524E2B8A195A0BDB007FE17D /* BLE Device */ = {
@@ -398,7 +386,6 @@
 				3677A1861C7E6D5C0063ECF3 /* Unit Tests */,
 				3677A1871C7E6D5F0063ECF3 /* Integration Tests */,
 				A94C7A691C7CC7D10018A161 /* Resources */,
-				522345921B79556500186320 /* Configuration */,
 				52D34E3F18A9B455002F0C59 /* Supporting Files */,
 			);
 			path = "Bean OSX LibraryTests";
@@ -711,7 +698,6 @@
 			files = (
 				3677A1851C7E4EDC0063ECF3 /* TestBeanFeatures.m in Sources */,
 				36539CBA1C7CEFE400F4926F /* TestPTDIntelHex.m in Sources */,
-				526966C71B7956A40059CE7E /* ConfigurationConstants.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
