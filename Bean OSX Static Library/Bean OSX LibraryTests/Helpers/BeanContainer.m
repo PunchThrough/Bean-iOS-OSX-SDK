@@ -23,7 +23,6 @@
 {
     return [[BeanContainer alloc] initWithTestCase:testCase andBeanNamePrefix:prefix];
 }
-
 - (instancetype)initWithTestCase:(XCTestCase *)testCase andBeanNamePrefix:(NSString *)prefix
 {
     self = [super init];

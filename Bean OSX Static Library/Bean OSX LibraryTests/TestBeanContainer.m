@@ -12,6 +12,9 @@
     self.continueAfterFailure = NO;
 }
 
+/**
+ *  Test that Bean's LED can be set to a specific color.
+ */
 - (void)testBlinkBean
 {
     BeanContainer *c = [BeanContainer containerWithTestCase:self andBeanNamePrefix:@"TEST_BEAN_"];
