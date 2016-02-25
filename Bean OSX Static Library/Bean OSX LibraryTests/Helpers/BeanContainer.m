@@ -9,6 +9,7 @@
 
 @property (nonatomic, strong) XCTestCase *testCase;
 @property (nonatomic, strong) PTDBeanManager *beanManager;
+@property (nonatomic, strong) XCTestExpectation *beanManagerPoweredOn;
 @property (nonatomic, strong) NSString *beanNamePrefix;
 @property (nonatomic, strong) PTDBean *bean;
 
@@ -43,9 +44,12 @@
     _testCase = testCase;
     _beanNamePrefix = prefix;
 
-    // Set up BeanManager and give it one second to power Bluetooth on
     _beanManager = [[PTDBeanManager alloc] initWithDelegate:self];
-    [StatelessUtils delayTestCase:testCase forSeconds:1];
+    if (_beanManager.state != BeanManagerState_PoweredOn) {
+        _beanManagerPoweredOn = [testCase expectationWithDescription:@"Bean Manager powered on"];
+        [testCase waitForExpectationsWithTimeout:5 handler:nil];
+        _beanManagerPoweredOn = nil;
+    }
 
     _beanDiscovered = [testCase expectationWithDescription:@"Bean with prefix found"];
 
@@ -132,6 +136,12 @@
 }
 
 #pragma mark - PTDBeanManagerDelegate
+
+- (void)beanManagerDidUpdateState:(PTDBeanManager *)beanManager
+{
+    if (beanManager.state != BeanManagerState_PoweredOn) return;
+    [self.beanManagerPoweredOn fulfill];
+}
 
 - (void)beanManager:(PTDBeanManager *)beanManager didDiscoverBean:(PTDBean *)bean error:(NSError *)error
 {
