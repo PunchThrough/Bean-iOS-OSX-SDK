@@ -31,6 +31,7 @@
 		36539CBD1C7D18D000F4926F /* IntelHexBinary.bin in Resources */ = {isa = PBXBuildFile; fileRef = 36539CBB1C7D18D000F4926F /* IntelHexBinary.bin */; };
 		36539CBE1C7D18D000F4926F /* IntelHexSource.hex in Resources */ = {isa = PBXBuildFile; fileRef = 36539CBC1C7D18D000F4926F /* IntelHexSource.hex */; };
 		3677A1851C7E4EDC0063ECF3 /* TestBeanFeatures.m in Sources */ = {isa = PBXBuildFile; fileRef = 3677A1841C7E4EDC0063ECF3 /* TestBeanFeatures.m */; };
+		36B669B41C7F88D800E3CC36 /* TestStatelessUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 36B669B31C7F88D800E3CC36 /* TestStatelessUtils.m */; };
 		4B47A3232C69C1732EB0894C /* TestBeanContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B47ABC5CF3064F79F555688 /* TestBeanContainer.m */; };
 		4B47ABED67A694D6E47F3BBB /* BeanContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B47A94F596638ED2BF707B4 /* BeanContainer.m */; };
 		4B47AE1E869A421D22D6E284 /* StatelessUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B47A3497E527B70A3B023A4 /* StatelessUtils.m */; };
@@ -123,6 +124,7 @@
 		36539CBB1C7D18D000F4926F /* IntelHexBinary.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = IntelHexBinary.bin; sourceTree = "<group>"; };
 		36539CBC1C7D18D000F4926F /* IntelHexSource.hex */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = IntelHexSource.hex; sourceTree = "<group>"; };
 		3677A1841C7E4EDC0063ECF3 /* TestBeanFeatures.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestBeanFeatures.m; sourceTree = "<group>"; };
+		36B669B31C7F88D800E3CC36 /* TestStatelessUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestStatelessUtils.m; sourceTree = "<group>"; };
 		4B47A3497E527B70A3B023A4 /* StatelessUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatelessUtils.m; sourceTree = "<group>"; };
 		4B47A65BC4A7023EFD6985BE /* StatelessUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatelessUtils.h; sourceTree = "<group>"; };
 		4B47A94F596638ED2BF707B4 /* BeanContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeanContainer.m; sourceTree = "<group>"; };
@@ -236,6 +238,7 @@
 			isa = PBXGroup;
 			children = (
 				36539CB91C7CEFE400F4926F /* TestPTDIntelHex.m */,
+				36B669B31C7F88D800E3CC36 /* TestStatelessUtils.m */,
 			);
 			name = "Unit Tests";
 			sourceTree = "<group>";
@@ -699,6 +702,7 @@
 			files = (
 				3677A1851C7E4EDC0063ECF3 /* TestBeanFeatures.m in Sources */,
 				36539CBA1C7CEFE400F4926F /* TestPTDIntelHex.m in Sources */,
+				36B669B41C7F88D800E3CC36 /* TestStatelessUtils.m in Sources */,
 				4B47ABED67A694D6E47F3BBB /* BeanContainer.m in Sources */,
 				4B47AE1E869A421D22D6E284 /* StatelessUtils.m in Sources */,
 				4B47A3232C69C1732EB0894C /* TestBeanContainer.m in Sources */,
