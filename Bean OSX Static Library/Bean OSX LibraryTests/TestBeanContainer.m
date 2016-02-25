@@ -27,4 +27,17 @@
     XCTAssertTrue([c disconnect]);
 }
 
+/**
+ *  Test that sketches can be uploaded to Bean.
+ */
+- (void)testUploadSketchToBean
+{
+    BeanContainer *c = [BeanContainer containerWithTestCase:self andBeanNamePrefix:@"TEST_BEAN_"];
+    XCTAssertNotNil(c);
+
+    XCTAssertTrue([c connect]);
+    XCTAssertTrue([c uploadSketch:@"blink"]);
+    XCTAssertTrue([c disconnect]);
+}
+
 @end

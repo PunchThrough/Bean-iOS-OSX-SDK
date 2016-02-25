@@ -48,4 +48,15 @@
  */
 - (BOOL)blinkWithColor:(NSColor *)color;
 
+/**
+ *  Upload a sketch compiled as a raw binary hex file to `testBean`.
+ *  @param hexName The name of the hex file to upload.
+ *      This name will be used for the Bean's programmed sketch name as well.
+ *      This resource must be present in the test bundle.
+ *      For example, to upload <code>mysketch.hex</code>, <code>hexName</code> should be <code>mysketch</code>.
+ *      The name of Bean's sketch will be set to <code>mysketch</code>.
+ *  @return YES if sketch was uploaded successfully
+ */
+- (BOOL)uploadSketch:(NSString *)hexName;
+
 @end

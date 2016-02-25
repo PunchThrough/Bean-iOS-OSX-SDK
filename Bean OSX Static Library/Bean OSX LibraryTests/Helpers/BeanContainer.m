@@ -14,6 +14,9 @@
 @property (nonatomic, strong) XCTestExpectation *beanDisconnected;
 @property (nonatomic, strong) XCTestExpectation *beanDidUpdateLedColor;
 @property (nonatomic, strong) NSColor *ledColor;
+@property (nonatomic, strong) XCTestExpectation *beanDidProgramArduino;
+@property (nonatomic, strong) NSError *programArduinoError;
+
 
 @end
 
@@ -92,12 +95,25 @@
     return [self.ledColor isEqualTo:color];
 }
 
+- (BOOL)uploadSketch:(NSString *)hexName {
+    NSData *imageHex = [StatelessUtils bytesFromIntelHexResource:hexName usingBundleForClass:[self class]];
+    self.beanDidProgramArduino = [self.testCase expectationWithDescription:@"Sketch uploaded to Bean"];
+
+    [self.bean programArduinoWithRawHexImage:imageHex andImageName:hexName];
+    [self.testCase waitForExpectationsWithTimeout:120 handler:nil];
+    self.beanDidProgramArduino = nil;
+
+    return !self.programArduinoError;
+}
+
+
 - (void)beanManager:(PTDBeanManager *)beanManager didDiscoverBean:(PTDBean *)bean error:(NSError *)error
 {
-    if (self.bean) return;
     if ([bean.name hasPrefix:self.beanNamePrefix]) {
-        self.bean = bean;
-        if (self.beanDiscovered) [self.beanDiscovered fulfill];
+        if (self.beanDiscovered) {
+            self.bean = bean;
+            [self.beanDiscovered fulfill];
+        }
     }
 }
 
@@ -124,5 +140,19 @@
     }
 }
 
+- (void)bean:(PTDBean *)bean ArduinoProgrammingTimeLeft:(NSNumber *)seconds withPercentage:(NSNumber *)percentageComplete
+{
+    NSLog(@"Upload progress: %ld%%, %ld seconds remaining",
+            (NSInteger)([percentageComplete floatValue] * 100),
+            [seconds integerValue]);
+}
+
+- (void)bean:(PTDBean *)bean didProgramArduinoWithError:(NSError *)error
+{
+    if (![bean isEqualToBean:self.bean]) return;
+    if (!self.beanDidProgramArduino) return;
+    self.programArduinoError = error;
+    [self.beanDidProgramArduino fulfill];
+}
 
 @end
