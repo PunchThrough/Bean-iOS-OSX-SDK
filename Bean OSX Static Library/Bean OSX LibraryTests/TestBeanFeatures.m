@@ -8,7 +8,7 @@
 #pragma mark Local variables
 
 @property (nonatomic, strong) PTDBeanManager *beanManager;
-@property (nonatomic, strong) NSString *beanName;
+@property (nonatomic, strong) NSString *beanNamePrefix;
 @property (nonatomic, strong) __block PTDBean *testBean;
 
 #pragma mark Delegate callbacks
@@ -35,7 +35,7 @@
     self.beanManager = [[PTDBeanManager alloc] initWithDelegate:self];
     [self delayForSeconds:1];
     
-    self.beanName = @"NEO";
+    self.beanNamePrefix = @"TEST_BEAN_";
 }
 
 - (void)tearDown
@@ -226,7 +226,7 @@
     // when
     XCTestExpectation *beanDiscover = [self expectationWithDescription:@"Target Bean found"];
     self.beanDiscovered = ^void(PTDBean *bean) {
-        if ([bean.name isEqualToString:self_.beanName]) {
+        if ([bean.name hasPrefix:self_.beanNamePrefix]) {
             NSLog(@"Discovered target Bean: %@", bean);
             self_.testBean = bean;
             [beanDiscover fulfill];
@@ -263,10 +263,9 @@
 
     XCTestExpectation *beanConnect = [self expectationWithDescription:@"Target Bean connected"];
     self.beanConnected = ^void(PTDBean *bean) {
-        if ([bean.name isEqualToString:self_.beanName]) {
+        if ([bean isEqualToBean:self_.testBean]) {
             NSLog(@"Connected target Bean: %@", bean);
             bean.delegate = self_;
-            self_.testBean = bean;
             [beanConnect fulfill];
         }
     };
@@ -304,7 +303,7 @@
     __block NSColor *colorReadFromBean;
 
     self.beanLedUpdated = ^void(PTDBean *bean, NSColor *colorReceived) {
-        if ([bean.name isEqualToString:self_.beanName]) {
+        if ([bean isEqualToBean:self_.testBean]) {
             NSLog(@"Read color from target Bean: %@", bean);
             colorReadFromBean = colorReceived;
             [beanBlink fulfill];
@@ -340,7 +339,7 @@
 
     XCTestExpectation *uploadSketch = [self expectationWithDescription:@"Target Bean uploaded sketch"];
     self.beanSketchUploaded = ^void(PTDBean *bean, NSError *error) {
-        if ([bean.name isEqualToString:self_.beanName]) {
+        if ([bean isEqualToBean:self_.testBean]) {
             NSLog(@"Uploaded sketch to target Bean: %@", bean);
             uploadError = error;
             [uploadSketch fulfill];
@@ -367,7 +366,7 @@
     
     XCTestExpectation *updateFirmware = [self expectationWithDescription:@"Target Bean updated firmware"];
     self.beanFirmwareUpdated = ^void(PTDBean *bean, NSError *error) {
-        if ([bean.name isEqualToString:self_.beanName]) {
+        if ([bean isEqualToBean:self_.testBean]) {
             NSLog(@"Completed firmware update for Bean: %@", bean);
             updateError = error;
             [updateFirmware fulfill];
