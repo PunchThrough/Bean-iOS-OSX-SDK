@@ -7,10 +7,14 @@
 
 @implementation TestBeanContainer
 
+#pragma mark - Test configuration
+
 - (void)setUp
 {
     self.continueAfterFailure = NO;
 }
+
+#pragma mark - Feature tests
 
 /**
  *  Test that Bean's LED can be set to a specific color.

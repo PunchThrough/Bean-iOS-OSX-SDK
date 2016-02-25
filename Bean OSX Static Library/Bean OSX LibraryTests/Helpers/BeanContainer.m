@@ -4,10 +4,14 @@
 
 @interface BeanContainer () <PTDBeanManagerDelegate, PTDBeanDelegate>
 
+#pragma mark Local state set in constructor
+
 @property (nonatomic, strong) XCTestCase *testCase;
 @property (nonatomic, strong) PTDBeanManager *beanManager;
 @property (nonatomic, strong) NSString *beanNamePrefix;
 @property (nonatomic, strong) PTDBean *bean;
+
+#pragma mark Test expectations and delegate callback values
 
 @property (nonatomic, strong) XCTestExpectation *beanDiscovered;
 @property (nonatomic, strong) XCTestExpectation *beanConnected;
@@ -22,6 +26,8 @@
 
 @implementation BeanContainer
 
+#pragma mark - Constructors
+
 + (BeanContainer *)containerWithTestCase:(XCTestCase *)testCase andBeanNamePrefix:(NSString *)prefix
 {
     return [[BeanContainer alloc] initWithTestCase:testCase andBeanNamePrefix:prefix];
@@ -29,26 +35,29 @@
 - (instancetype)initWithTestCase:(XCTestCase *)testCase andBeanNamePrefix:(NSString *)prefix
 {
     self = [super init];
-    if (self) {
-        _testCase = testCase;
-        _beanNamePrefix = prefix;
+    if (!self) return nil;
 
-        // Set up BeanManager and give it one second to power Bluetooth on
-        _beanManager = [[PTDBeanManager alloc] initWithDelegate:self];
-        [StatelessUtils delayTestCase:testCase forSeconds:1];
+    _testCase = testCase;
+    _beanNamePrefix = prefix;
 
-        _beanDiscovered = [testCase expectationWithDescription:@"Bean with prefix found"];
+    // Set up BeanManager and give it one second to power Bluetooth on
+    _beanManager = [[PTDBeanManager alloc] initWithDelegate:self];
+    [StatelessUtils delayTestCase:testCase forSeconds:1];
 
-        NSError *error;
-        [_beanManager startScanningForBeans_error:&error];
-        if (error) return nil;
+    _beanDiscovered = [testCase expectationWithDescription:@"Bean with prefix found"];
 
-        [testCase waitForExpectationsWithTimeout:10 handler:nil];
-        self.beanDiscovered = nil;
-        if (!_bean) return nil;
-    }
+    NSError *error;
+    [_beanManager startScanningForBeans_error:&error];
+    if (error) return nil;
+
+    [testCase waitForExpectationsWithTimeout:10 handler:nil];
+    self.beanDiscovered = nil;
+    if (!_bean) return nil;
+
     return self;
 }
+
+#pragma mark - Interact with Bean
 
 - (BOOL)connect
 {
@@ -106,38 +115,41 @@
     return !self.programArduinoError;
 }
 
+#pragma mark - PTDBeanManagerDelegate
 
 - (void)beanManager:(PTDBeanManager *)beanManager didDiscoverBean:(PTDBean *)bean error:(NSError *)error
 {
-    if ([bean.name hasPrefix:self.beanNamePrefix]) {
-        if (self.beanDiscovered) {
-            self.bean = bean;
-            [self.beanDiscovered fulfill];
-        }
-    }
+    if (![bean.name hasPrefix:self.beanNamePrefix]) return;
+    if (!self.beanDiscovered) return;
+
+    self.bean = bean;
+    [self.beanDiscovered fulfill];
 }
 
 - (void)beanManager:(PTDBeanManager *)beanManager didConnectBean:(PTDBean *)bean error:(NSError *)error
 {
-    if ([bean isEqualToBean:self.bean]) {
-        if (self.beanConnected) [self.beanConnected fulfill];
-    }
+    if (![bean isEqualToBean:self.bean]) return;
+    if (!self.beanConnected) return;
+
+    [self.beanConnected fulfill];
 }
 
 - (void)beanManager:(PTDBeanManager *)beanManager didDisconnectBean:(PTDBean *)bean error:(NSError *)error
 {
-    if ([bean isEqualToBean:self.bean]) {
-        if (self.beanDisconnected) [self.beanDisconnected fulfill];
-    }
+    if (![bean isEqualToBean:self.bean]) return;
+    if (!self.beanDisconnected) return;
+
+    [self.beanDisconnected fulfill];
 }
 
+#pragma mark - PTDBeanDelegate
+
 - (void)bean:(PTDBean *)bean didUpdateLedColor:(NSColor *)color {
-    if ([bean isEqualToBean:self.bean]) {
-        if (self.beanDidUpdateLedColor) {
-            self.ledColor = color;
-            [self.beanDidUpdateLedColor fulfill];
-        }
-    }
+    if (![bean isEqualToBean:self.bean]) return;
+    if (!self.beanDidUpdateLedColor) return;
+
+    self.ledColor = color;
+    [self.beanDidUpdateLedColor fulfill];
 }
 
 - (void)bean:(PTDBean *)bean ArduinoProgrammingTimeLeft:(NSNumber *)seconds withPercentage:(NSNumber *)percentageComplete
@@ -151,6 +163,7 @@
 {
     if (![bean isEqualToBean:self.bean]) return;
     if (!self.beanDidProgramArduino) return;
+
     self.programArduinoError = error;
     [self.beanDidProgramArduino fulfill];
 }
