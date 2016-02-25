@@ -31,6 +31,9 @@
 		36539CBD1C7D18D000F4926F /* IntelHexBinary.bin in Resources */ = {isa = PBXBuildFile; fileRef = 36539CBB1C7D18D000F4926F /* IntelHexBinary.bin */; };
 		36539CBE1C7D18D000F4926F /* IntelHexSource.hex in Resources */ = {isa = PBXBuildFile; fileRef = 36539CBC1C7D18D000F4926F /* IntelHexSource.hex */; };
 		3677A1851C7E4EDC0063ECF3 /* TestBeanFeatures.m in Sources */ = {isa = PBXBuildFile; fileRef = 3677A1841C7E4EDC0063ECF3 /* TestBeanFeatures.m */; };
+		4B47A3232C69C1732EB0894C /* TestBeanContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B47ABC5CF3064F79F555688 /* TestBeanContainer.m */; };
+		4B47ABED67A694D6E47F3BBB /* BeanContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B47A94F596638ED2BF707B4 /* BeanContainer.m */; };
+		4B47AE1E869A421D22D6E284 /* StatelessUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B47A3497E527B70A3B023A4 /* StatelessUtils.m */; };
 		520A7E141AA0034500CB5B80 /* CBPeripheral+RSSI_Universal.h in Headers */ = {isa = PBXBuildFile; fileRef = 520A7E121AA0034500CB5B80 /* CBPeripheral+RSSI_Universal.h */; };
 		520A7E151AA0034500CB5B80 /* CBPeripheral+RSSI_Universal.m in Sources */ = {isa = PBXBuildFile; fileRef = 520A7E131AA0034500CB5B80 /* CBPeripheral+RSSI_Universal.m */; };
 		520A7E161AA0034500CB5B80 /* CBPeripheral+RSSI_Universal.m in Sources */ = {isa = PBXBuildFile; fileRef = 520A7E131AA0034500CB5B80 /* CBPeripheral+RSSI_Universal.m */; };
@@ -120,6 +123,11 @@
 		36539CBB1C7D18D000F4926F /* IntelHexBinary.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = IntelHexBinary.bin; sourceTree = "<group>"; };
 		36539CBC1C7D18D000F4926F /* IntelHexSource.hex */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = IntelHexSource.hex; sourceTree = "<group>"; };
 		3677A1841C7E4EDC0063ECF3 /* TestBeanFeatures.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestBeanFeatures.m; sourceTree = "<group>"; };
+		4B47A3497E527B70A3B023A4 /* StatelessUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatelessUtils.m; sourceTree = "<group>"; };
+		4B47A65BC4A7023EFD6985BE /* StatelessUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatelessUtils.h; sourceTree = "<group>"; };
+		4B47A94F596638ED2BF707B4 /* BeanContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeanContainer.m; sourceTree = "<group>"; };
+		4B47AA85E4FF98BE9F401392 /* BeanContainer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BeanContainer.h; sourceTree = "<group>"; };
+		4B47ABC5CF3064F79F555688 /* TestBeanContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestBeanContainer.m; sourceTree = "<group>"; };
 		520A7E121AA0034500CB5B80 /* CBPeripheral+RSSI_Universal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CBPeripheral+RSSI_Universal.h"; sourceTree = "<group>"; };
 		520A7E131AA0034500CB5B80 /* CBPeripheral+RSSI_Universal.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CBPeripheral+RSSI_Universal.m"; sourceTree = "<group>"; };
 		520C8ED5191BF0EC0086C530 /* BleProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BleProfile.h; sourceTree = "<group>"; };
@@ -236,8 +244,20 @@
 			isa = PBXGroup;
 			children = (
 				3677A1841C7E4EDC0063ECF3 /* TestBeanFeatures.m */,
+				4B47ABC5CF3064F79F555688 /* TestBeanContainer.m */,
 			);
 			name = "Integration Tests";
+			sourceTree = "<group>";
+		};
+		4B47AB360A829C6410E00332 /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				4B47A94F596638ED2BF707B4 /* BeanContainer.m */,
+				4B47AA85E4FF98BE9F401392 /* BeanContainer.h */,
+				4B47A3497E527B70A3B023A4 /* StatelessUtils.m */,
+				4B47A65BC4A7023EFD6985BE /* StatelessUtils.h */,
+			);
+			path = Helpers;
 			sourceTree = "<group>";
 		};
 		524E2B8A195A0BDB007FE17D /* BLE Device */ = {
@@ -381,6 +401,7 @@
 				3677A1871C7E6D5F0063ECF3 /* Integration Tests */,
 				A94C7A691C7CC7D10018A161 /* Resources */,
 				52D34E3F18A9B455002F0C59 /* Supporting Files */,
+				4B47AB360A829C6410E00332 /* Helpers */,
 			);
 			path = "Bean OSX LibraryTests";
 			sourceTree = "<group>";
@@ -678,6 +699,9 @@
 			files = (
 				3677A1851C7E4EDC0063ECF3 /* TestBeanFeatures.m in Sources */,
 				36539CBA1C7CEFE400F4926F /* TestPTDIntelHex.m in Sources */,
+				4B47ABED67A694D6E47F3BBB /* BeanContainer.m in Sources */,
+				4B47AE1E869A421D22D6E284 /* StatelessUtils.m in Sources */,
+				4B47A3232C69C1732EB0894C /* TestBeanContainer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
