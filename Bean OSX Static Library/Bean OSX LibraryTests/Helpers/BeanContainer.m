@@ -12,6 +12,8 @@
 @property (nonatomic, strong) XCTestExpectation *beanDiscovered;
 @property (nonatomic, strong) XCTestExpectation *beanConnected;
 @property (nonatomic, strong) XCTestExpectation *beanDisconnected;
+@property (nonatomic, strong) XCTestExpectation *beanDidUpdateLedColor;
+@property (nonatomic, strong) NSColor *ledColor;
 
 @end
 
@@ -56,6 +58,9 @@
 
     [self.testCase waitForExpectationsWithTimeout:30 handler:nil];
     self.beanConnected = nil;
+
+    self.bean.delegate = self;
+
     return (self.bean.state == BeanState_ConnectedAndValidated);
 }
 
@@ -74,11 +79,23 @@
 
 - (BOOL)blinkWithColor:(NSColor *)color
 {
-    return YES;
+    self.beanDidUpdateLedColor = [self.testCase expectationWithDescription:@"Bean LED blinked"];
+    [self.bean setLedColor:color];
+
+    [self.bean readLedColor];
+    [self.testCase waitForExpectationsWithTimeout:10 handler:nil];
+    self.beanDidUpdateLedColor = nil;
+
+    NSColor *black = [NSColor colorWithRed:0 green:0 blue:0 alpha:1];
+    [self.bean setLedColor:black];
+    [StatelessUtils delayTestCase:self.testCase forSeconds:1];
+
+    return [self.ledColor isEqualTo:color];
 }
 
 - (void)beanManager:(PTDBeanManager *)beanManager didDiscoverBean:(PTDBean *)bean error:(NSError *)error
 {
+    if (self.bean) return;
     if ([bean.name hasPrefix:self.beanNamePrefix]) {
         self.bean = bean;
         if (self.beanDiscovered) [self.beanDiscovered fulfill];
@@ -98,5 +115,15 @@
         if (self.beanDisconnected) [self.beanDisconnected fulfill];
     }
 }
+
+- (void)bean:(PTDBean *)bean didUpdateLedColor:(NSColor *)color {
+    if ([bean isEqualToBean:self.bean]) {
+        if (self.beanDidUpdateLedColor) {
+            self.ledColor = color;
+            [self.beanDidUpdateLedColor fulfill];
+        }
+    }
+}
+
 
 @end
