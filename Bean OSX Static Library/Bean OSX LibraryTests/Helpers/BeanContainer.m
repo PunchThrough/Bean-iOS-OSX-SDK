@@ -8,7 +8,10 @@
 @property (nonatomic, strong) PTDBeanManager *beanManager;
 @property (nonatomic, strong) NSString *beanNamePrefix;
 @property (nonatomic, strong) PTDBean *bean;
+
 @property (nonatomic, strong) XCTestExpectation *beanDiscovered;
+@property (nonatomic, strong) XCTestExpectation *beanConnected;
+@property (nonatomic, strong) XCTestExpectation *beanDisconnected;
 
 @end
 
@@ -34,22 +37,65 @@
 
         NSError *error;
         [_beanManager startScanningForBeans_error:&error];
-        if (error) {
-            return nil;
-        }
+        if (error) return nil;
 
         [testCase waitForExpectationsWithTimeout:10 handler:nil];
-        if (!_bean) {
-            return nil;
-        }
+        self.beanDiscovered = nil;
+        if (!_bean) return nil;
     }
     return self;
 }
 
-- (void)beanManager:(PTDBeanManager *)beanManager didDiscoverBean:(PTDBean *)bean error:(NSError *)error {
+- (BOOL)connect
+{
+    self.beanConnected = [self.testCase expectationWithDescription:@"Bean connected"];
+
+    NSError *error;
+    [self.beanManager connectToBean:self.bean error:&error];
+    if (error) return NO;
+
+    [self.testCase waitForExpectationsWithTimeout:30 handler:nil];
+    self.beanConnected = nil;
+    return (self.bean.state == BeanState_ConnectedAndValidated);
+}
+
+- (BOOL)disconnect
+{
+    self.beanDisconnected = [self.testCase expectationWithDescription:@"Bean connected"];
+
+    NSError *error;
+    [self.beanManager disconnectBean:self.bean error:&error];
+    if (error) return NO;
+
+    [self.testCase waitForExpectationsWithTimeout:10 handler:nil];
+    self.beanDisconnected = nil;
+    return (self.bean.state != BeanState_ConnectedAndValidated);
+}
+
+- (BOOL)blinkWithColor:(NSColor *)color
+{
+    return YES;
+}
+
+- (void)beanManager:(PTDBeanManager *)beanManager didDiscoverBean:(PTDBean *)bean error:(NSError *)error
+{
     if ([bean.name hasPrefix:self.beanNamePrefix]) {
         self.bean = bean;
-        [self.beanDiscovered fulfill];
+        if (self.beanDiscovered) [self.beanDiscovered fulfill];
+    }
+}
+
+- (void)beanManager:(PTDBeanManager *)beanManager didConnectBean:(PTDBean *)bean error:(NSError *)error
+{
+    if ([bean isEqualToBean:self.bean]) {
+        if (self.beanConnected) [self.beanConnected fulfill];
+    }
+}
+
+- (void)beanManager:(PTDBeanManager *)beanManager didDisconnectBean:(PTDBean *)bean error:(NSError *)error
+{
+    if ([bean isEqualToBean:self.bean]) {
+        if (self.beanDisconnected) [self.beanDisconnected fulfill];
     }
 }
 

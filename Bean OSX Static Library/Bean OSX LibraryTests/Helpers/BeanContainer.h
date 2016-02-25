@@ -6,4 +6,9 @@
 + (BeanContainer *)containerWithTestCase:(XCTestCase *)testCase andBeanNamePrefix:(NSString *)prefix;
 - (instancetype)initWithTestCase:(XCTestCase *)testCase andBeanNamePrefix:(NSString *)prefix;
 
+- (BOOL)connect;
+- (BOOL)disconnect;
+
+- (BOOL)blinkWithColor:(NSColor *)color;
+
 @end
