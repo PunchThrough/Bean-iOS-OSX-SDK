@@ -29,6 +29,8 @@
 {
     [super setUp];
 
+    self.continueAfterFailure = NO;
+
     // Prepare BeanManager and make sure it's happy with Bluetooth powered on
     self.beanManager = [[PTDBeanManager alloc] initWithDelegate:self];
     [self delayForSeconds:1];
