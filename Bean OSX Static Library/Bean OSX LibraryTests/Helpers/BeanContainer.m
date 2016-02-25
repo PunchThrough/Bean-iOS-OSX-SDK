@@ -1,6 +1,7 @@
 #import "BeanContainer.h"
 #import "PTDBeanManager.h"
 #import "StatelessUtils.h"
+#import "PTDBean+Protected.h"
 
 @interface BeanContainer () <PTDBeanManagerDelegate, PTDBeanDelegate>
 
@@ -20,7 +21,8 @@
 @property (nonatomic, strong) NSColor *ledColor;
 @property (nonatomic, strong) XCTestExpectation *beanDidProgramArduino;
 @property (nonatomic, strong) NSError *programArduinoError;
-
+@property (nonatomic, strong) XCTestExpectation *beanCompletedFirmwareUpload;
+@property (nonatomic, strong) NSError *firmwareUploadError;
 
 @end
 
@@ -32,6 +34,7 @@
 {
     return [[BeanContainer alloc] initWithTestCase:testCase andBeanNamePrefix:prefix];
 }
+
 - (instancetype)initWithTestCase:(XCTestCase *)testCase andBeanNamePrefix:(NSString *)prefix
 {
     self = [super init];
@@ -104,7 +107,8 @@
     return [self.ledColor isEqualTo:color];
 }
 
-- (BOOL)uploadSketch:(NSString *)hexName {
+- (BOOL)uploadSketch:(NSString *)hexName
+{
     NSData *imageHex = [StatelessUtils bytesFromIntelHexResource:hexName usingBundleForClass:[self class]];
     self.beanDidProgramArduino = [self.testCase expectationWithDescription:@"Sketch uploaded to Bean"];
 
@@ -113,6 +117,18 @@
     self.beanDidProgramArduino = nil;
 
     return !self.programArduinoError;
+}
+
+- (BOOL)updateFirmware
+{
+    NSArray *imagePaths = [StatelessUtils firmwareImagesFromResource:@"Firmware Images"];
+    self.beanCompletedFirmwareUpload = [self.testCase expectationWithDescription:@"Firmware updated for Bean"];
+    
+    [self.bean updateFirmwareWithImages:imagePaths];
+    [self.testCase waitForExpectationsWithTimeout:480 handler:nil];
+    self.beanCompletedFirmwareUpload = nil;
+    
+    return !self.firmwareUploadError;
 }
 
 #pragma mark - PTDBeanManagerDelegate
@@ -144,7 +160,8 @@
 
 #pragma mark - PTDBeanDelegate
 
-- (void)bean:(PTDBean *)bean didUpdateLedColor:(NSColor *)color {
+- (void)bean:(PTDBean *)bean didUpdateLedColor:(NSColor *)color
+{
     if (![bean isEqualToBean:self.bean]) return;
     if (!self.beanDidUpdateLedColor) return;
 
@@ -166,6 +183,15 @@
 
     self.programArduinoError = error;
     [self.beanDidProgramArduino fulfill];
+}
+
+- (void)bean:(PTDBean *)bean completedFirmwareUploadWithError:(NSError *)error
+{
+    if (![bean isEqualToBean:self.bean]) return;
+    if (!self.beanCompletedFirmwareUpload) return;
+    
+    self.firmwareUploadError = error;
+    [self.beanCompletedFirmwareUpload fulfill];
 }
 
 @end

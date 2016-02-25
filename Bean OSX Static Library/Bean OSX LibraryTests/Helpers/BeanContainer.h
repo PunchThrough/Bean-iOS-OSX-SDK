@@ -49,7 +49,7 @@
 - (BOOL)blinkWithColor:(NSColor *)color;
 
 /**
- *  Upload a sketch compiled as a raw binary hex file to `testBean`.
+ *  Upload a sketch compiled as a raw binary hex file to Bean.
  *  @param hexName The name of the hex file to upload.
  *      This name will be used for the Bean's programmed sketch name as well.
  *      This resource must be present in the test bundle.
@@ -58,5 +58,11 @@
  *  @return YES if sketch was uploaded successfully
  */
 - (BOOL)uploadSketch:(NSString *)hexName;
+
+/**
+ *  Update the firmware on Bean with the images inside the "Firmware Images" folder.
+ *  @return YES if firmware update was successful
+ */
+- (BOOL)updateFirmware;
 
 @end

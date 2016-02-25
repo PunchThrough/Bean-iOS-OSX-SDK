@@ -3,6 +3,8 @@
 
 @interface TestBeanContainer : XCTestCase
 
+@property (nonatomic, strong) BeanContainer *beanContainer;
+
 @end
 
 @implementation TestBeanContainer
@@ -12,6 +14,14 @@
 - (void)setUp
 {
     self.continueAfterFailure = NO;
+
+    self.beanContainer = [BeanContainer containerWithTestCase:self andBeanNamePrefix:@"TEST_BEAN_"];
+    XCTAssertNotNil(self.beanContainer);
+}
+
+- (void)tearDown
+{
+    self.beanContainer = nil;
 }
 
 #pragma mark - Feature tests
@@ -21,14 +31,11 @@
  */
 - (void)testBlinkBean
 {
-    BeanContainer *c = [BeanContainer containerWithTestCase:self andBeanNamePrefix:@"TEST_BEAN_"];
-    XCTAssertNotNil(c);
-
     NSColor *magenta = [NSColor colorWithRed:1 green:0 blue:1 alpha:1];
 
-    XCTAssertTrue([c connect]);
-    XCTAssertTrue([c blinkWithColor:magenta]);
-    XCTAssertTrue([c disconnect]);
+    XCTAssertTrue([self.beanContainer connect]);
+    XCTAssertTrue([self.beanContainer blinkWithColor:magenta]);
+    XCTAssertTrue([self.beanContainer disconnect]);
 }
 
 /**
@@ -36,12 +43,19 @@
  */
 - (void)testUploadSketchToBean
 {
-    BeanContainer *c = [BeanContainer containerWithTestCase:self andBeanNamePrefix:@"TEST_BEAN_"];
-    XCTAssertNotNil(c);
+    XCTAssertTrue([self.beanContainer connect]);
+    XCTAssertTrue([self.beanContainer uploadSketch:@"blink"]);
+    XCTAssertTrue([self.beanContainer disconnect]);
+}
 
-    XCTAssertTrue([c connect]);
-    XCTAssertTrue([c uploadSketch:@"blink"]);
-    XCTAssertTrue([c disconnect]);
+/**
+ *  Test that Bean firmware can be updated.
+ */
+- (void)testBeanFirmwareUpdate
+{
+    XCTAssertTrue([self.beanContainer connect]);
+    XCTAssertTrue([self.beanContainer updateFirmware]);
+    XCTAssertTrue([self.beanContainer disconnect]);
 }
 
 @end

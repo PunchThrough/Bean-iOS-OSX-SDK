@@ -19,4 +19,11 @@
  */
 + (NSData *)bytesFromIntelHexResource:(NSString *)intelHexFilename usingBundleForClass:(id)klass;
 
+/**
+ *  Get the images files from the firmwareImages folder in the test resources folder.
+ *  @param  The imageFolder specifies where the .bin files are stored
+ *  @return An NSArray object with the contents of the folder, or nil if the folder couldn't be opened
+ */
++ (NSArray *)firmwareImagesFromResource:(NSString *)imageFolder;
+
 @end

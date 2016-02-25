@@ -24,4 +24,25 @@
     return [intelHex bytes];
 }
 
++ (NSArray *)firmwareImagesFromResource:(NSString *)imageFolder
+{
+    NSString *resourcePath = [[NSBundle bundleForClass:[self class]] resourcePath];
+    NSString *path = [resourcePath stringByAppendingPathComponent:imageFolder];
+    NSLog(@"Path = %@", path);
+    
+    NSError *error;
+    NSArray *imageNames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:path error:&error];
+    if (error) {
+        return nil;
+    }
+    
+    // build full resource path to each firmware image
+    NSMutableArray *firmwarePaths = [NSMutableArray new];
+    for (NSString *imageName in imageNames){
+        [firmwarePaths addObject:[path stringByAppendingPathComponent:imageName]];
+    }
+    
+    return firmwarePaths;
+}
+
 @end
