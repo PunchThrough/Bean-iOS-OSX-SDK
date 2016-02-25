@@ -85,10 +85,7 @@
 		969FDE9C191A9E200068B99A /* PTDBeanRadioConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 969FDE96191A9DE80068B99A /* PTDBeanRadioConfig.m */; };
 		A9448BF11C7B94DE0031DA2C /* IOBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52DE25C018AAC53900E69929 /* IOBluetooth.framework */; };
 		A94C7A6B1C7CC89B0018A161 /* blink.hex in Resources */ = {isa = PBXBuildFile; fileRef = A94C7A6A1C7CC89B0018A161 /* blink.hex */; };
-		A94C7A721C7CE1180018A161 /* 201511050000_a_BeanSmallImgAPadded.bin in Resources */ = {isa = PBXBuildFile; fileRef = A94C7A6E1C7CE1180018A161 /* 201511050000_a_BeanSmallImgAPadded.bin */; };
-		A94C7A731C7CE1180018A161 /* 201511050000_b_BEAN_OAD_imgB_large.bin in Resources */ = {isa = PBXBuildFile; fileRef = A94C7A6F1C7CE1180018A161 /* 201511050000_b_BEAN_OAD_imgB_large.bin */; };
-		A94C7A741C7CE1180018A161 /* 201511050000_c_BeanSmallImgA.bin in Resources */ = {isa = PBXBuildFile; fileRef = A94C7A701C7CE1180018A161 /* 201511050000_c_BeanSmallImgA.bin */; };
-		A94C7A751C7CE1180018A161 /* 201511050000_d_BeanSmallImgB.bin in Resources */ = {isa = PBXBuildFile; fileRef = A94C7A711C7CE1180018A161 /* 201511050000_d_BeanSmallImgB.bin */; };
+		A99DECD01C7F4B32007F506D /* Firmware Images in Resources */ = {isa = PBXBuildFile; fileRef = A99DECCF1C7F4B32007F506D /* Firmware Images */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -191,10 +188,7 @@
 		A9448BED1C7B94C80031DA2C /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = System/Library/Frameworks/CoreBluetooth.framework; sourceTree = SDKROOT; };
 		A9448BEF1C7B94D10031DA2C /* IOBluetoothUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOBluetoothUI.framework; path = System/Library/Frameworks/IOBluetoothUI.framework; sourceTree = SDKROOT; };
 		A94C7A6A1C7CC89B0018A161 /* blink.hex */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = blink.hex; sourceTree = "<group>"; };
-		A94C7A6E1C7CE1180018A161 /* 201511050000_a_BeanSmallImgAPadded.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = 201511050000_a_BeanSmallImgAPadded.bin; sourceTree = "<group>"; };
-		A94C7A6F1C7CE1180018A161 /* 201511050000_b_BEAN_OAD_imgB_large.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = 201511050000_b_BEAN_OAD_imgB_large.bin; sourceTree = "<group>"; };
-		A94C7A701C7CE1180018A161 /* 201511050000_c_BeanSmallImgA.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = 201511050000_c_BeanSmallImgA.bin; sourceTree = "<group>"; };
-		A94C7A711C7CE1180018A161 /* 201511050000_d_BeanSmallImgB.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = 201511050000_d_BeanSmallImgB.bin; sourceTree = "<group>"; };
+		A99DECCF1C7F4B32007F506D /* Firmware Images */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "Firmware Images"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -506,23 +500,12 @@
 		A94C7A691C7CC7D10018A161 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				A94C7A6D1C7CE1180018A161 /* firmwareImages */,
+				A99DECCF1C7F4B32007F506D /* Firmware Images */,
 				A94C7A6A1C7CC89B0018A161 /* blink.hex */,
 				36539CBB1C7D18D000F4926F /* IntelHexBinary.bin */,
 				36539CBC1C7D18D000F4926F /* IntelHexSource.hex */,
 			);
 			path = Resources;
-			sourceTree = "<group>";
-		};
-		A94C7A6D1C7CE1180018A161 /* firmwareImages */ = {
-			isa = PBXGroup;
-			children = (
-				A94C7A6E1C7CE1180018A161 /* 201511050000_a_BeanSmallImgAPadded.bin */,
-				A94C7A6F1C7CE1180018A161 /* 201511050000_b_BEAN_OAD_imgB_large.bin */,
-				A94C7A701C7CE1180018A161 /* 201511050000_c_BeanSmallImgA.bin */,
-				A94C7A711C7CE1180018A161 /* 201511050000_d_BeanSmallImgB.bin */,
-			);
-			path = firmwareImages;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -633,11 +616,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				36539CBD1C7D18D000F4926F /* IntelHexBinary.bin in Resources */,
-				A94C7A751C7CE1180018A161 /* 201511050000_d_BeanSmallImgB.bin in Resources */,
+				A99DECD01C7F4B32007F506D /* Firmware Images in Resources */,
 				A94C7A6B1C7CC89B0018A161 /* blink.hex in Resources */,
-				A94C7A731C7CE1180018A161 /* 201511050000_b_BEAN_OAD_imgB_large.bin in Resources */,
-				A94C7A721C7CE1180018A161 /* 201511050000_a_BeanSmallImgAPadded.bin in Resources */,
-				A94C7A741C7CE1180018A161 /* 201511050000_c_BeanSmallImgA.bin in Resources */,
 				52D34E4318A9B455002F0C59 /* InfoPlist.strings in Resources */,
 				36539CBE1C7D18D000F4926F /* IntelHexSource.hex in Resources */,
 			);

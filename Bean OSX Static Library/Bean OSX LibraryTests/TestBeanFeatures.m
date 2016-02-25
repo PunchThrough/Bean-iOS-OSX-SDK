@@ -1,6 +1,7 @@
 #import <XCTest/XCTest.h>
 #import "PTDBeanManager.h"
 #import "PTDIntelHex.h"
+#import "PTDBean+Protected.h"
 
 @interface TestBeanFeatures : XCTestCase <PTDBeanManagerDelegate, PTDBeanDelegate>
 
@@ -16,6 +17,7 @@
 @property (nonatomic, strong) void (^beanConnected)(PTDBean *bean);
 @property (nonatomic, strong) void (^beanLedUpdated)(PTDBean *bean, NSColor *color);
 @property (nonatomic, strong) void (^beanSketchUploaded)(PTDBean *bean, NSError *error);
+@property (nonatomic, strong) void (^beanFirmwareUpdated)(PTDBean *bean, NSError *error);
 
 @end
 
@@ -65,6 +67,17 @@
     [self discoverBean];
     [self connectBean];
     [self uploadBinarySketchToBean:@"blink"];
+    [self disconnectBean];
+}
+
+/**
+ *  Verify that we can update firmware for our test Bean.
+ */
+- (void)testFirmwareUpdate
+{
+    [self discoverBean];
+    [self connectBean];
+    [self updateFirmwareForBean];
     [self disconnectBean];
 }
 
@@ -120,6 +133,14 @@
           [seconds integerValue]);
 }
 
+- (void)bean:(PTDBean *)bean completedFirmwareUploadWithError:(NSError *)error
+{
+    NSLog(@"Completed firmware update for Bean: %@", bean);
+    if (self.beanFirmwareUpdated) {
+        self.beanFirmwareUpdated(bean, error);
+    }
+}
+
 #pragma mark - Test helpers
 
 /**
@@ -162,6 +183,32 @@
     NSURL *url = [bundle URLForResource:intelHexFilename withExtension:@"hex"];
     PTDIntelHex *intelHex = [PTDIntelHex intelHexFromFileURL:url];
     return [intelHex bytes];
+}
+
+/**
+ *  Get the images files from the firmwareImages folder in the test resources folder.
+ *  @param  The imageFolder specifies where the .bin files are stored
+ *  @return An NSArray object with the contents of the folder, or nil if the folder couldn't be opened
+ */
+- (NSArray *)firmwareImagesFromResource:(NSString *)imageFolder
+{
+    NSString *resourcePath = [[NSBundle bundleForClass:[self class]] resourcePath];
+    NSString *path = [resourcePath stringByAppendingPathComponent:imageFolder];
+    NSLog(@"Path = %@", path);
+    
+    NSError *error;
+    NSArray *imageNames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:path error:&error];
+    if (error) {
+        return nil;
+    }
+    
+    // build full resource path to each firmware image
+    NSMutableArray *firmwarePaths = [NSMutableArray new];
+    for (NSString *imageName in imageNames){
+        [firmwarePaths addObject:[path stringByAppendingPathComponent:imageName]];
+    }
+    
+    return firmwarePaths;
 }
 
 /**
@@ -306,5 +353,31 @@
     XCTAssertNil(uploadError, @"Bean sketch should upload successfully");
 }
 
+/**
+ *  Update firmware for `testBean`.
+ */
+- (void)updateFirmwareForBean
+{
+    // given
+    __weak TestBeanFeatures *self_ = self;
+    __block NSError *updateError;
+    NSArray *images = [self firmwareImagesFromResource:@"Firmware Images"];
+    
+    XCTestExpectation *updateFirmware = [self expectationWithDescription:@"Target Bean updated firmware"];
+    self.beanFirmwareUpdated = ^void(PTDBean *bean, NSError *error) {
+        if ([bean.name isEqualToString:self_.beanName]) {
+            NSLog(@"Completed firmware update for Bean: %@", bean);
+            updateError = error;
+            [updateFirmware fulfill];
+        }
+    };
+    
+    // when
+    [self.testBean updateFirmwareWithImages:images];
+    
+    // then
+    [self waitForExpectationsWithTimeout:480 handler:nil];
+    XCTAssertNil(updateError, @"Bean sketch should update successfully");
+}
 
 @end
