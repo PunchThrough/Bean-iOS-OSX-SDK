@@ -16,11 +16,10 @@
 
 @protocol GattSerialProfileDelegate;
 
-@interface GattSerialProfile : BleProfile
+@interface GattSerialProfile : BleProfile <BleProfile>
 
 @property (nonatomic, weak) id<GattSerialProfileDelegate> delegate;
 
--(id)initWithPeripheral:(CBPeripheral*)peripheral delegate:(id<GattSerialProfileDelegate>)delegate;
 -(void)sendMessage:(GattSerialMessage*)message;
 
 @end

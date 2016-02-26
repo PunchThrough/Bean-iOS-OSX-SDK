@@ -19,15 +19,22 @@
     GattTransport * gatt_transport;
     GattSerialTransport* gatt_serial_transport;
 }
+@dynamic delegate; // Delegate is already synthesized by BleProfile subclass
+
++(void)load
+{
+    [super registerProfile:self serviceUUID:GLOBAL_SERIAL_PASS_SERVICE_UUID];
+}
 
 
 #pragma mark Public Methods
--(id)initWithPeripheral:(CBPeripheral*)aPeripheral delegate:(id<GattSerialProfileDelegate>)delegate
+-(id)initWithService:(CBService*)service //delegate:(id<GattSerialProfileDelegate>)delegate
 {
     self = [super init];
     if (self) {
-        peripheral = aPeripheral;
-        _delegate = delegate;
+        peripheral = service.peripheral;
+        //_delegate = delegate;
+        serial_pass_service = service;
         
         //Initialize Gatt Transport layer
         gatt_transport = [[GattTransport alloc] initWithCharacteristicHandler:self];
@@ -44,20 +51,19 @@
     }
     return self;
 }
+
 -(void)validate
 {
-    // Discover services
-    PTDLog(@"Searching for Gatt Serial Pass service: %@", GLOBAL_SERIAL_PASS_SERVICE_UUID);
-    if(peripheral.state == CBPeripheralStateConnected)
-    {
-        [peripheral discoverServices:[NSArray arrayWithObjects:[CBUUID UUIDWithString:GLOBAL_SERIAL_PASS_SERVICE_UUID]
-                                      , nil]];
-    }
+    NSArray * characteristics = [NSArray arrayWithObjects:
+                                 [CBUUID UUIDWithString:GLOBAL_SERIAL_PASS_CHARACTERISTIC_UUID],
+                                 nil];
+    [peripheral discoverCharacteristics:characteristics forService:serial_pass_service];
 }
+
 -(BOOL)isValid:(NSError**)error
 {
-    BOOL valid = (serial_pass_characteristic &&
-                  serial_pass_characteristic.isNotifying
+    BOOL valid = (serial_pass_characteristic //&&
+                  //serial_pass_characteristic.isNotifying
                   )?TRUE:FALSE;
     return valid;
 }
@@ -122,80 +128,29 @@
 }
 
 #pragma mark CBPeripheralDelegate callbacks
-////////////////  CBPeripheralDeligate Callbacks ////////////////////////////
--(void)peripheral:(CBPeripheral *)aPeripheral didDiscoverServices:(NSError *)error
-{
-    if (!error) {
-        if(peripheral.services)
-        {
-            // Discover characteristics of found services
-            for (CBService * service in peripheral.services) {
-                // Save Gatt Serail service
-                if ([service.UUID isEqual:[CBUUID UUIDWithString:GLOBAL_SERIAL_PASS_SERVICE_UUID]]) {
-                    PTDLog(@"%@: GATT Serial Pass profile  found", self.class.description);
-                    
-                    // Save serial pass service
-                    serial_pass_service = service;
-                    
-                    //Check if characterisics are already found.
-                    [self __processCharacteristics];
-                    
-                    //If all characteristics are found
-                    if(serial_pass_characteristic)
-                    {
-                        PTDLog(@"%@: Found all Gatt Serial characteristics", self.class.description);
-                        if(serial_pass_characteristic.isNotifying){
-                            [self __notifyValidity];
-                        }else{
-                            //Set characteristic to notify
-                            [peripheral setNotifyValue:YES forCharacteristic:serial_pass_characteristic];
-                            //Wait until the notification characteristic is registered successfully as "notify" and then alert delegate that device is valid
-                        }
-                    }else{
-                        // Find characteristics of service
-                        NSArray * characteristics = [NSArray arrayWithObjects:
-                                                     [CBUUID UUIDWithString:GLOBAL_SERIAL_PASS_CHARACTERISTIC_UUID],
-                                                     nil];
-                        [peripheral discoverCharacteristics:characteristics forService:service];
-                    }
-                }
-            }
-        }
-    }else {
-        PTDLog(@"%@: GATT Serial Pass service discovery was unsuccessful", self.class.description);
-        
-    }
-}
 
 -(void)peripheral:(CBPeripheral *)aPeripheral didDiscoverCharacteristicsForService:(CBService *)service error:(NSError *)error
 {
     if (!error) {
-        if ([service isEqual:serial_pass_service]) {
-            [self __processCharacteristics];
+        [self __processCharacteristics];
+        
+        NSError* verificationerror;
+        if ( serial_pass_characteristic ){
+            PTDLog(@"%@: Found all GATT Serial Pass characteristics", self.class.description);
             
-            NSError* verificationerror;
-            if ((
-                 serial_pass_characteristic
-                 )){
-                PTDLog(@"%@: Found all GATT Serial Pass characteristics", self.class.description);
-                
-                if(serial_pass_characteristic.isNotifying){
-                    [self __notifyValidity];
-                }else{
-                    //Set characteristic to notify
-                    [peripheral setNotifyValue:YES forCharacteristic:serial_pass_characteristic];
-                    //Wait until the notification characteristic is registered successfully as "notify" and then alert delegate that device is valid
-                }
-            }else{
-                // Could not find all characteristics!
-                PTDLog(@"%@: Could not find all GATT Serial Pass characteristics!", self.class.description);
-                
-                NSMutableDictionary *errorDetail = [NSMutableDictionary dictionary];
-                [errorDetail setValue:@"Could not find all GATT Serial Pass characteristics" forKey:NSLocalizedDescriptionKey];
-                verificationerror = [NSError errorWithDomain:@"Bluetooth" code:100 userInfo:errorDetail];
-            }
-            //Alert Delegate
+            if(!serial_pass_characteristic.isNotifying)
+                [peripheral setNotifyValue:YES forCharacteristic:serial_pass_characteristic];
+            
+            [self __notifyValidity];
+        }else{
+            // Could not find all characteristics!
+            PTDLog(@"%@: Could not find all GATT Serial Pass characteristics!", self.class.description);
+            
+            NSMutableDictionary *errorDetail = [NSMutableDictionary dictionary];
+            [errorDetail setValue:@"Could not find all GATT Serial Pass characteristics" forKey:NSLocalizedDescriptionKey];
+            verificationerror = [NSError errorWithDomain:@"Bluetooth" code:100 userInfo:errorDetail];
         }
+        //Alert Delegate
     }
     else {
         PTDLog(@"%@: Characteristics discovery was unsuccessful", self.class.description);
@@ -206,23 +161,18 @@
 -(void)peripheral:(CBPeripheral *)aPeripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
 {
     if (!error) {
-        if ([characteristic isEqual:serial_pass_characteristic]) {
-            [gatt_transport handler:self hasReceivedData:[characteristic value]];
-        }
+        [gatt_transport handler:self hasReceivedData:[characteristic value]];
     }
 }
 
 -(void)peripheral:(CBPeripheral *)aPeripheral didWriteValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
 {
     //Is the serial pass characteristic
-    if([characteristic isEqual:serial_pass_characteristic])
-    {
-        if (error) {
-            // Dropping writeWithoutReponse packets. Stop the firmware upload and notify the delegate
-             PTDLog(@"%@: Error: Dropping writeWithoutReponse packets!!", self.class.description);
-        }else{
-
-        }
+    if (error) {
+        // Dropping writeWithoutReponse packets. Stop the firmware upload and notify the delegate
+        PTDLog(@"%@: Error: Dropping writeWithoutReponse packets!!", self.class.description);
+    }else{
+        
     }
 }
 
@@ -230,13 +180,10 @@
 {
     if(!error)
     {
-        if([characteristic isEqual:serial_pass_characteristic])
-        {
-            PTDLog(@"%@: Gatt Serial Characteristic set to \"Notify\"", self.class.description);
-            //Alert Delegate that device is connected. At this point, the device should be added to the list of connected devices.
-            
-            [self __notifyValidity];
-        }
+        PTDLog(@"%@: Gatt Serial Characteristic set to \"Notify\"", self.class.description);
+        //Alert Delegate that device is connected. At this point, the device should be added to the list of connected devices.
+        
+        //[self __notifyValidity];
     }else{
         PTDLog(@"%@: Error trying to set Characteristic to \"Notify\"", self.class.description);
     }

@@ -19,26 +19,15 @@
 
 @protocol OAD_Delegate;
 
-@interface OadProfile : BleProfile
+@interface OadProfile : BleProfile  <BleProfile>
 
--(id)initWithPeripheral:(CBPeripheral*)aPeripheral delegate:(id<OAD_Delegate>)delegate;
+@property (nonatomic, weak) id<OAD_Delegate> delegate;
 
-// Returns FALSE if OAD is not supported on the device. TRUE otherwise
-// See callback method: -(void)FirmwareVersion:(NSString*)version isNewer:(BOOL)isNewer;
-//-(BOOL)checkForNewFirmware:(NSString*)newFirmwareVersion;
-
-// Returns true if OAD is supported on the device and the device is connected.
-// Parameters imageApath and imageBpath are full paths to the images .bin files
-// See callback methods:
-//-(void)oadDeviceFailedOADUpload:(OAD_BLEDevice*)oadDevice;
-//-(void)oadDeviceCompletedOADUpload:(OAD_BLEDevice*)oadDevice;
-//-(void)oadDevice:(OAD_BLEDevice*)oadDevice OADUploadTimeLeft:(NSNumber*)seconds withPercentage:(NSNumber*)percentageComplete;
-//-(void)oadDeviceOADInvalidImage:(OAD_BLEDevice*)oadDevice;
--(BOOL)updateFirmwareWithImageAPath:(NSString*)imageApath andImageBPath:(NSString*)imageBpath;
+-(BOOL)updateFirmwareWithImagePaths:(NSArray*)firmwareImages;
 
 // Cancels firmware update
 // No callbacks needed
--(void)cancelUpdateFirmware;
+-(void)cancel;
 
 @end
 
