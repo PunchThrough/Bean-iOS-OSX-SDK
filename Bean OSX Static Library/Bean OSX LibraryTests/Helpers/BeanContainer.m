@@ -204,4 +204,11 @@
     [self.beanCompletedFirmwareUpload fulfill];
 }
 
+- (void)beanFoundWithIncompleteFirmware:(PTDBean *)bean
+{
+    NSLog(@"Refetching firmware images and restarting update process");
+    NSArray *imagePaths = [StatelessUtils firmwareImagesFromResource:@"Firmware Images"];
+    [self.bean updateFirmwareWithImages:imagePaths];
+}
+
 @end
