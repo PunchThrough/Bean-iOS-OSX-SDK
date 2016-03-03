@@ -15,7 +15,7 @@
 {
     self.continueAfterFailure = NO;
 
-    self.beanContainer = [BeanContainer containerWithTestCase:self andBeanNamePrefix:@"TEST_BEAN_"];
+    self.beanContainer = [BeanContainer containerWithTestCase:self andBeanNamePrefix:@"TEST_BEAN_" andOptions:nil];
     XCTAssertNotNil(self.beanContainer);
 }
 
@@ -53,9 +53,14 @@
  */
 - (void)testBeanFirmwareUpdate
 {
-    XCTAssertTrue([self.beanContainer connect]);
-    XCTAssertTrue([self.beanContainer updateFirmware]);
-    XCTAssertTrue([self.beanContainer disconnect]);
+    BeanContainer *beanContainer = [BeanContainer containerWithTestCase:self
+                                                      andBeanNamePrefix:@"Bean"
+                                                             andOptions:@{@"connectTimeout": @(300)}];
+    XCTAssertNotNil(beanContainer);
+ 
+    XCTAssertTrue([beanContainer connect]);
+    XCTAssertTrue([beanContainer updateFirmware]);
+    XCTAssertTrue([beanContainer disconnect]);
 }
 
 @end
