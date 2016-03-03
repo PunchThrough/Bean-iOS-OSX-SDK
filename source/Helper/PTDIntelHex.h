@@ -3,6 +3,7 @@
 @interface PTDIntelHex : NSObject
 
 @property(nonatomic, strong) NSString *name;
+@property(nonatomic, strong) NSString *beanHardwareVersion;
 
 /**
  *  Create a PTDIntelHex object from a string of Intel HEX data.
@@ -30,3 +31,4 @@
 - (NSData *)bytes;
 
 @end
+
