@@ -23,6 +23,7 @@
 /* Begin PBXBuildFile section */
 		2F6B5991196CA72E000CC6E8 /* PTDBleDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 524E2B8C195A0C10007FE17D /* PTDBleDevice.m */; };
 		2FB1B35E1975E29600903F59 /* PTDBleDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 2FB1B35D1975E29600903F59 /* PTDBleDevice.h */; };
+		363A1A881C8A329500B005BD /* TestBeanHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 363A1A871C8A329500B005BD /* TestBeanHelpers.m */; };
 		36539CB31C7CEB4C00F4926F /* PTDIntelHex.h in Headers */ = {isa = PBXBuildFile; fileRef = 36539CB11C7CEB4C00F4926F /* PTDIntelHex.h */; };
 		36539CB41C7CEB4C00F4926F /* PTDIntelHex.m in Sources */ = {isa = PBXBuildFile; fileRef = 36539CB21C7CEB4C00F4926F /* PTDIntelHex.m */; };
 		36539CB71C7CEB5700F4926F /* PTDIntelHexLine.h in Headers */ = {isa = PBXBuildFile; fileRef = 36539CB51C7CEB5700F4926F /* PTDIntelHexLine.h */; };
@@ -118,6 +119,7 @@
 
 /* Begin PBXFileReference section */
 		2FB1B35D1975E29600903F59 /* PTDBleDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTDBleDevice.h; sourceTree = "<group>"; };
+		363A1A871C8A329500B005BD /* TestBeanHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestBeanHelpers.m; sourceTree = "<group>"; };
 		36539CB11C7CEB4C00F4926F /* PTDIntelHex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTDIntelHex.h; sourceTree = "<group>"; };
 		36539CB21C7CEB4C00F4926F /* PTDIntelHex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PTDIntelHex.m; sourceTree = "<group>"; };
 		36539CB51C7CEB5700F4926F /* PTDIntelHexLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTDIntelHexLine.h; sourceTree = "<group>"; };
@@ -244,6 +246,7 @@
 				36539CB91C7CEFE400F4926F /* TestPTDIntelHex.m */,
 				36B669B31C7F88D800E3CC36 /* TestStatelessUtils.m */,
 				36DCC8B61C8A251B00BCB3C5 /* TestPTDHardwareLookup.m */,
+				363A1A871C8A329500B005BD /* TestBeanHelpers.m */,
 			);
 			name = "Unit Tests";
 			sourceTree = "<group>";
@@ -713,6 +716,7 @@
 				4B47ABED67A694D6E47F3BBB /* BeanContainer.m in Sources */,
 				4B47AE1E869A421D22D6E284 /* StatelessUtils.m in Sources */,
 				36DCC8B71C8A251B00BCB3C5 /* TestPTDHardwareLookup.m in Sources */,
+				363A1A881C8A329500B005BD /* TestBeanHelpers.m in Sources */,
 				4B47A3232C69C1732EB0894C /* TestBeanFeatures.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
