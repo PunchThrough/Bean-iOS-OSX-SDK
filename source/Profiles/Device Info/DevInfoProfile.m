@@ -14,7 +14,6 @@
     CBService* service_deviceInformation;
     CBCharacteristic* characteristic_hardware_version;
     CBCharacteristic* characteristic_firmware_version;
-    CBCharacteristic* characteristic_software_version;
     NSOperationQueue* firmwareVersionQueue;
     NSOperationQueue* hardwareVersionQueue;
 }
@@ -47,7 +46,6 @@
     NSArray * characteristics = [NSArray arrayWithObjects:
                                  [CBUUID UUIDWithString:CHARACTERISTIC_FIRMWARE_VERSION],
                                  [CBUUID UUIDWithString:CHARACTERISTIC_HARDWARE_VERSION],
-                                 //[CBUUID UUIDWithString:CHARACTERISTIC_SOFTWARE_VERSION],
                                  nil];
     [peripheral discoverCharacteristics:characteristics forService:service_deviceInformation];
     [self __notifyValidity];
@@ -58,7 +56,6 @@
     return (service_deviceInformation &&
             characteristic_hardware_version &&
             characteristic_firmware_version &&
-            //characteristic_software_version &&
             _firmwareVersion && _hardwareVersion)?TRUE:FALSE;
 }
 
@@ -112,8 +109,6 @@
                     characteristic_hardware_version = characteristic;
                 }else if([characteristic.UUID isEqual:[CBUUID UUIDWithString:CHARACTERISTIC_FIRMWARE_VERSION]]){
                     characteristic_firmware_version = characteristic;
-                }else if([characteristic.UUID isEqual:[CBUUID UUIDWithString:CHARACTERISTIC_SOFTWARE_VERSION]]){
-                    characteristic_software_version = characteristic;
                 }
             }
         }
@@ -130,10 +125,7 @@
     }
     
     // Do we already have all of our characteristics?
-    if(characteristic_hardware_version &&
-         characteristic_firmware_version &&
-         characteristic_software_version)
-    { return; }
+    if (characteristic_hardware_version && characteristic_firmware_version) return;
     
     // Is this not the service we're interested in?
     if( ![service isEqual:service_deviceInformation] ) { return; }
@@ -147,17 +139,24 @@
     }
 
     PTDLog(@"%@: Found all Device Information characteristics", self.class.description);
-    //Read device firmware version
     [peripheral readValueForCharacteristic:characteristic_firmware_version];
-    //Read device hardware version
     [peripheral readValueForCharacteristic:characteristic_hardware_version];
 }
 
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
 {
-    if( error ) { return; }
-    // Is this not the characteristic that we're interested in?
-    if([characteristic isEqual:characteristic_firmware_version]) {
+    if (error) {
+        if ([characteristic isEqual:characteristic_hardware_version]) {
+            PTDLog(@"Warning: Couldn't read data for Device Info Profile -> Hardware Version. "
+                   @"This is typically seen when Beans are running an OAD update-only (recovery) image. "
+                   @"You can safely ignore this warning if Bean is in the middle of a firmware update."
+                   @"Error: %@", error);
+
+        } else {
+            PTDLog(@"Error reading characteristic: %@, %@", characteristic.UUID, error);
+        }
+
+    } else if([characteristic isEqual:characteristic_firmware_version]) {
         _firmwareVersion = [[NSString alloc] initWithData:[characteristic value] encoding:NSUTF8StringEncoding];
         PTDLog(@"%@: Device Firmware Version Found: %@", self.class.description, _firmwareVersion);
         firmwareVersionQueue.suspended = NO;

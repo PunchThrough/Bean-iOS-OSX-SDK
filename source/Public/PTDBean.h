@@ -360,11 +360,6 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
 - (void)checkHardwareVersionAvailableWithHandler:(void (^)(BOOL hardwareAvailable, NSError *error))handler;
 
 /**
- *  Update the firmware with progress handler
- */
-- (void)updateFirmware; //WithProgressHandler:(void (^)(NSNumber *percentageComplete, NSError *error))progressHandler;
-
-/**
  *  Update the firmware with images
  */
 - (void)updateFirmwareWithImages:(NSArray *)images;
