@@ -9,6 +9,11 @@
 @interface BeanContainer : NSObject
 
 /**
+ *  The Bean on which this BeanContainer is operating.
+ */
+@property (nonatomic, strong, readonly) PTDBean *bean;
+
+/**
  *  Construct a BeanContainer.
  *
  *  To start using a BeanContainer, pass in the XCTestCase that will use the Bean container and the name prefix to use
