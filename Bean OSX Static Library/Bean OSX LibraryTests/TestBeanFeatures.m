@@ -60,6 +60,7 @@ static BOOL (^outOfBoxFilter)(PTDBean *bean) = ^BOOL(PTDBean *bean) {
  */
 - (void)testBeanFirmwareUpdate
 {
+    // Connection callback doesn't happen until Bean firmware is fully updated. Increase the connection timeout.
     NSDictionary *options = @{@"connectTimeout": @600};
     BeanContainer *beanContainer = [self containerWithBeanFilter:outOfBoxFilter andOptions:options];
     
