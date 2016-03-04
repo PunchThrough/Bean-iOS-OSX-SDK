@@ -139,17 +139,24 @@
     }
 
     PTDLog(@"%@: Found all Device Information characteristics", self.class.description);
-    //Read device firmware version
     [peripheral readValueForCharacteristic:characteristic_firmware_version];
-    //Read device hardware version
     [peripheral readValueForCharacteristic:characteristic_hardware_version];
 }
 
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
 {
-    if( error ) { return; }
-    // Is this not the characteristic that we're interested in?
-    if([characteristic isEqual:characteristic_firmware_version]) {
+    if (error) {
+        if ([characteristic isEqual:characteristic_hardware_version]) {
+            PTDLog(@"Warning: Couldn't read data for Device Info Profile -> Hardware Version. "
+                   @"This is typically seen when Beans are running an OAD update-only (recovery) image. "
+                   @"You can safely ignore this warning if Bean is in the middle of a firmware update."
+                   @"Error: %@", error);
+
+        } else {
+            PTDLog(@"Error reading characteristic: %@, %@", characteristic.UUID, error);
+        }
+
+    } else if([characteristic isEqual:characteristic_firmware_version]) {
         _firmwareVersion = [[NSString alloc] initWithData:[characteristic value] encoding:NSUTF8StringEncoding];
         PTDLog(@"%@: Device Firmware Version Found: %@", self.class.description, _firmwareVersion);
         firmwareVersionQueue.suspended = NO;
