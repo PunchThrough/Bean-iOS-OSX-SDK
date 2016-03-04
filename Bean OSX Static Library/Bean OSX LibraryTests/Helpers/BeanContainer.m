@@ -22,7 +22,7 @@
 @property (nonatomic, strong) NSColor *ledColor;
 @property (nonatomic, strong) XCTestExpectation *beanDidProgramArduino;
 @property (nonatomic, strong) NSError *programArduinoError;
-@property (nonatomic, strong) XCTestExpectation *beanCompletedUploadOfSingleFirmwareImage;
+@property (nonatomic, strong) XCTestExpectation *beanCompletedFirmwareUploadOfSingleImage;
 @property (nonatomic, strong) NSString *imagePath;
 @property (nonatomic, strong) XCTestExpectation *beanCompletedFirmwareUpload;
 @property (nonatomic, strong) NSError *firmwareUploadError;
@@ -160,11 +160,11 @@
 {
     NSArray *imagePaths = [StatelessUtils firmwareImagesFromResource:@"Firmware Images"];
     NSString *desc = @"Single firmware image uploaded to Bean";
-    self.beanCompletedUploadOfSingleFirmwareImage = [self.testCase expectationWithDescription:desc];
+    self.beanCompletedFirmwareUploadOfSingleImage = [self.testCase expectationWithDescription:desc];
     
     [self.bean updateFirmwareWithImages:imagePaths];
     [self.testCase waitForExpectationsWithTimeout:120 handler:nil];
-    self.beanCompletedUploadOfSingleFirmwareImage = nil;
+    self.beanCompletedFirmwareUploadOfSingleImage = nil;
     
     return !self.firmwareUploadError;
 }
@@ -255,13 +255,13 @@
     [self.beanDidProgramArduino fulfill];
 }
 
-- (void)bean:(PTDBean *)bean completedUploadOfSingleFirmwareImage:(NSString *)imagePath
+- (void)bean:(PTDBean *)bean completedFirmwareUploadOfSingleImage:(NSString *)imagePath
 {
     if (![bean isEqualToBean:self.bean]) return;
-    if (!self.beanCompletedUploadOfSingleFirmwareImage) return;
+    if (!self.beanCompletedFirmwareUploadOfSingleImage) return;
 
     self.imagePath = imagePath;
-    [self.beanCompletedUploadOfSingleFirmwareImage fulfill];
+    [self.beanCompletedFirmwareUploadOfSingleImage fulfill];
 }
 
 - (void)bean:(PTDBean *)bean completedFirmwareUploadWithError:(NSError *)error

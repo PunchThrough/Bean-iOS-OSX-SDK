@@ -373,13 +373,26 @@ typedef struct {
 - (void)completeWithError:(NSError *)error
 {
     if (error) PTDLog(@"OAD completed with error: %@", error);
+
     self.oadState = OADStateIdle;
     self.downloadStartDate = nil;
     self.imageData = nil;
+
     [self.watchdogTimer invalidate];
     self.watchdogTimer = nil;
+
     [peripheral setNotifyValue:NO forCharacteristic:self.characteristicOADBlock];
     [peripheral setNotifyValue:NO forCharacteristic:self.characteristicOADIdentify];
+
+    // We've successfully uploaded a single image
+    if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadOfSingleImage:)]) {
+        [self.delegate device:self completedFirmwareUploadOfSingleImage:self.lastImageOffered];
+    }
+
+    // If no more images remain, call the "FW process complete" delegate method
+    // WARNING: Right now this is called for every firmware image.
+    // TODO: Call this only when the entire OAD process is complete.
+    // TODO: Move the logic to determine OAD process completion into this profile from PTDBean.m.
     if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadWithError:)]) {
         [self.delegate device:self completedFirmwareUploadWithError:error];
     }
@@ -399,11 +412,6 @@ typedef struct {
         switch (self.oadState) {
             case OADStateWaitForCompletion:
                 PTDLog(@"OAD completed in %f seconds", -[self.downloadStartDate timeIntervalSinceNow]-WATCHDOG_TIMER_INTERVAL);
-
-                if ([self.delegate respondsToSelector:@selector(device:completedUploadOfSingleFirmwareImage:)]) {
-                    [self.delegate device:self completedUploadOfSingleFirmwareImage:self.lastImageOffered];
-                }
-                
                 break;
                 
             case OADStateEnableNotify:

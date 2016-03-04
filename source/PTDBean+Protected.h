@@ -45,11 +45,12 @@
  *  @param device The OadProfile for the Bean that completed an image upload
  *  @param imagePath The path to the image that was just transferred to Bean
  */
-- (void)bean:(PTDBean *)bean completedUploadOfSingleFirmwareImage:(NSString *)imagePath;
+- (void)bean:(PTDBean *)bean completedFirmwareUploadOfSingleImage:(NSString *)imagePath;
 
 /**
- *  Sent when a Bean's firmware upload is completed.
- *  @param bean         The Bean thats firmware has been updated.
+ *  Sent when a firmware upload process completes. This is called when all images are successfully uploaded to Bean or
+ *  a failure causes the firmware upload process to abort early.
+ *  @param bean         The Bean whose firmware has been updated
  *  @param error        Nil if successful, or an NSError if the upload was unsuccessful. See <BeanErrors>.
  */
 -(void)bean:(PTDBean*)bean completedFirmwareUploadWithError:(NSError*)error;

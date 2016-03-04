@@ -838,10 +838,10 @@ typedef enum { //These occur in sequence
 
 
 #pragma mark OAD callbacks
-- (void)device:(OadProfile *)device completedUploadOfSingleFirmwareImage:(NSString *)imagePath
+- (void)device:(OadProfile *)device completedFirmwareUploadOfSingleImage:(NSString *)imagePath
 {
-    if (self.delegate && [self.delegate respondsToSelector:@selector(bean:completedUploadOfSingleFirmwareImage:)])
-        [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedUploadOfSingleFirmwareImage:imagePath];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadOfSingleImage:)])
+        [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadOfSingleImage:imagePath];
 }
 
 -(void)device:(OadProfile*)device completedFirmwareUploadWithError:(NSError*)error
