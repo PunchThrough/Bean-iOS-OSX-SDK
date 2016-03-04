@@ -31,6 +31,9 @@
 		36539CBD1C7D18D000F4926F /* IntelHexBinary.bin in Resources */ = {isa = PBXBuildFile; fileRef = 36539CBB1C7D18D000F4926F /* IntelHexBinary.bin */; };
 		36539CBE1C7D18D000F4926F /* IntelHexSource.hex in Resources */ = {isa = PBXBuildFile; fileRef = 36539CBC1C7D18D000F4926F /* IntelHexSource.hex */; };
 		36B669B41C7F88D800E3CC36 /* TestStatelessUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 36B669B31C7F88D800E3CC36 /* TestStatelessUtils.m */; };
+		36DCC8B41C8A227700BCB3C5 /* PTDHardwareLookup.h in Headers */ = {isa = PBXBuildFile; fileRef = 36DCC8B21C8A227700BCB3C5 /* PTDHardwareLookup.h */; };
+		36DCC8B51C8A227700BCB3C5 /* PTDHardwareLookup.m in Sources */ = {isa = PBXBuildFile; fileRef = 36DCC8B31C8A227700BCB3C5 /* PTDHardwareLookup.m */; };
+		36DCC8B71C8A251B00BCB3C5 /* TestPTDHardwareLookup.m in Sources */ = {isa = PBXBuildFile; fileRef = 36DCC8B61C8A251B00BCB3C5 /* TestPTDHardwareLookup.m */; };
 		4B47A3232C69C1732EB0894C /* TestBeanFeatures.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B47ABC5CF3064F79F555688 /* TestBeanFeatures.m */; };
 		4B47ABED67A694D6E47F3BBB /* BeanContainer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B47A94F596638ED2BF707B4 /* BeanContainer.m */; };
 		4B47AE1E869A421D22D6E284 /* StatelessUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B47A3497E527B70A3B023A4 /* StatelessUtils.m */; };
@@ -123,6 +126,9 @@
 		36539CBB1C7D18D000F4926F /* IntelHexBinary.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = IntelHexBinary.bin; sourceTree = "<group>"; };
 		36539CBC1C7D18D000F4926F /* IntelHexSource.hex */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = IntelHexSource.hex; sourceTree = "<group>"; };
 		36B669B31C7F88D800E3CC36 /* TestStatelessUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestStatelessUtils.m; sourceTree = "<group>"; };
+		36DCC8B21C8A227700BCB3C5 /* PTDHardwareLookup.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTDHardwareLookup.h; sourceTree = "<group>"; };
+		36DCC8B31C8A227700BCB3C5 /* PTDHardwareLookup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PTDHardwareLookup.m; sourceTree = "<group>"; };
+		36DCC8B61C8A251B00BCB3C5 /* TestPTDHardwareLookup.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestPTDHardwareLookup.m; sourceTree = "<group>"; };
 		4B47A3497E527B70A3B023A4 /* StatelessUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StatelessUtils.m; sourceTree = "<group>"; };
 		4B47A65BC4A7023EFD6985BE /* StatelessUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StatelessUtils.h; sourceTree = "<group>"; };
 		4B47A94F596638ED2BF707B4 /* BeanContainer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BeanContainer.m; sourceTree = "<group>"; };
@@ -237,6 +243,7 @@
 			children = (
 				36539CB91C7CEFE400F4926F /* TestPTDIntelHex.m */,
 				36B669B31C7F88D800E3CC36 /* TestStatelessUtils.m */,
+				36DCC8B61C8A251B00BCB3C5 /* TestPTDHardwareLookup.m */,
 			);
 			name = "Unit Tests";
 			sourceTree = "<group>";
@@ -440,6 +447,8 @@
 				36539CB21C7CEB4C00F4926F /* PTDIntelHex.m */,
 				36539CB51C7CEB5700F4926F /* PTDIntelHexLine.h */,
 				36539CB61C7CEB5700F4926F /* PTDIntelHexLine.m */,
+				36DCC8B21C8A227700BCB3C5 /* PTDHardwareLookup.h */,
+				36DCC8B31C8A227700BCB3C5 /* PTDHardwareLookup.m */,
 			);
 			name = Helper;
 			path = ../../source/Helper;
@@ -538,6 +547,7 @@
 			files = (
 				36539CB71C7CEB5700F4926F /* PTDIntelHexLine.h in Headers */,
 				524E2B8D195A0C10007FE17D /* PTDBleDevice.h in Headers */,
+				36DCC8B41C8A227700BCB3C5 /* PTDHardwareLookup.h in Headers */,
 				520A7E141AA0034500CB5B80 /* CBPeripheral+RSSI_Universal.h in Headers */,
 				2FB1B35E1975E29600903F59 /* PTDBleDevice.h in Headers */,
 				525AB3E01B7E8135007D6DE1 /* PTDBleDevice+Protected.h in Headers */,
@@ -669,6 +679,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				52D34EB918A9B890002F0C59 /* GattSerialMessage.m in Sources */,
+				36DCC8B51C8A227700BCB3C5 /* PTDHardwareLookup.m in Sources */,
 				52D34EBD18A9B890002F0C59 /* GattSerialTransport.m in Sources */,
 				52D34EAF18A9B890002F0C59 /* CBPeripheral+UniqueId.m in Sources */,
 				52D34EC218A9B890002F0C59 /* OadProfile.m in Sources */,
@@ -701,6 +712,7 @@
 				36B669B41C7F88D800E3CC36 /* TestStatelessUtils.m in Sources */,
 				4B47ABED67A694D6E47F3BBB /* BeanContainer.m in Sources */,
 				4B47AE1E869A421D22D6E284 /* StatelessUtils.m in Sources */,
+				36DCC8B71C8A251B00BCB3C5 /* TestPTDHardwareLookup.m in Sources */,
 				4B47A3232C69C1732EB0894C /* TestBeanFeatures.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
