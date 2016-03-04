@@ -56,4 +56,13 @@
     XCTAssertTrue([hexBytes isEqualToData:self.expectedBytes]);
 }
 
+/**
+ *  Ensure PTDIntelHex sets the sketch name when it parses a sketch from an NSURL file object.
+ */
+- (void)testFileSetsName
+{
+    PTDIntelHex *hexObject = [PTDIntelHex intelHexFromFileURL:[NSURL fileURLWithPath:self.intelHexPath]];
+    XCTAssertTrue([hexObject.name isEqualToString:@"IntelHexSource"]);
+}
+
 @end
