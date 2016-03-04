@@ -1,4 +1,6 @@
 #import <XCTest/XCTest.h>
+#import <OCMock/OCMock.h>
+#import "BEAN_Helper.h"
 
 @interface TestBeanHelpers : XCTestCase
 
@@ -11,7 +13,11 @@
  */
 - (void)testfirmwareUpdateRequiredForBean
 {
-    // TBD
+    PTDBean *oldBean = OCMClassMock([PTDBean class]);
+    OCMStub(oldBean.firmwareVersion).andReturn(@"199201110734");
+
+    // Verify our mock works properly
+    XCTAssertTrue([oldBean.firmwareVersion isEqualToString:@"199201110734"]);
 }
 
 @end
