@@ -97,7 +97,6 @@ static BOOL (^outOfBoxFilter)(PTDBean *bean) = ^BOOL(PTDBean *bean) {
     XCTAssertTrue([beanContainer connect]);
     XCTAssertTrue([beanContainer updateFirmware]);
     XCTAssertTrue([beanContainer disconnect]);
-
 }
 
 #pragma mark - Test helpers
