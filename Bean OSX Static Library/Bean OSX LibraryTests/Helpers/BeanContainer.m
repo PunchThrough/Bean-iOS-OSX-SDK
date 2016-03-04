@@ -22,8 +22,14 @@
 @property (nonatomic, strong) NSColor *ledColor;
 @property (nonatomic, strong) XCTestExpectation *beanDidProgramArduino;
 @property (nonatomic, strong) NSError *programArduinoError;
+@property (nonatomic, strong) XCTestExpectation *beanCompletedUploadOfSingleFirmwareImage;
+@property (nonatomic, strong) NSString *imagePath;
 @property (nonatomic, strong) XCTestExpectation *beanCompletedFirmwareUpload;
 @property (nonatomic, strong) NSError *firmwareUploadError;
+
+#pragma mark Helpers to prevent spamming the debug log
+
+@property (nonatomic, assign) NSInteger lastPercentagePrinted;
 
 @end
 
@@ -47,6 +53,8 @@
 {
     self = [super init];
     if (!self) return nil;
+
+    _lastPercentagePrinted = -1;
     
     _testCase = testCase;
     _beanFilter = filter;
@@ -148,6 +156,42 @@
     return !self.firmwareUploadError;
 }
 
+- (BOOL)updateFirmwareOnce
+{
+    NSArray *imagePaths = [StatelessUtils firmwareImagesFromResource:@"Firmware Images"];
+    NSString *desc = @"Single firmware image uploaded to Bean";
+    self.beanCompletedUploadOfSingleFirmwareImage = [self.testCase expectationWithDescription:desc];
+    
+    [self.bean updateFirmwareWithImages:imagePaths];
+    [self.testCase waitForExpectationsWithTimeout:120 handler:nil];
+    self.beanCompletedUploadOfSingleFirmwareImage = nil;
+    
+    return !self.firmwareUploadError;
+}
+
+- (BOOL)cancelFirmwareUpdate
+{
+    NSString *desc = @"Firmware update cancelled without error";
+    self.beanCompletedFirmwareUpload = [self.testCase expectationWithDescription:desc];
+
+    [self.bean cancelFirmwareUpdate];
+    [self.testCase waitForExpectationsWithTimeout:10 handler:nil];
+    self.beanCompletedFirmwareUpload = nil;
+    
+    return !self.firmwareUploadError;
+}
+
+#pragma mark - Helpers that depend on BeanContainer state
+
+- (void)printProgressTimeLeft:(NSNumber *)seconds withPercentage:(NSNumber *)percentageComplete
+{
+    NSInteger percentage = [percentageComplete floatValue] * 100;
+    if (percentage != self.lastPercentagePrinted) {
+        self.lastPercentagePrinted = percentage;
+        NSLog(@"Upload progress: %ld%%, %ld seconds remaining", percentage, [seconds integerValue]);
+    }
+}
+
 #pragma mark - PTDBeanManagerDelegate
 
 - (void)beanManagerDidUpdateState:(PTDBeanManager *)beanManager
@@ -194,16 +238,12 @@
 
 - (void)bean:(PTDBean *)bean ArduinoProgrammingTimeLeft:(NSNumber *)seconds withPercentage:(NSNumber *)percentageComplete
 {
-    NSLog(@"Upload progress: %ld%%, %ld seconds remaining",
-          (NSInteger)([percentageComplete floatValue] * 100),
-          [seconds integerValue]);
+    [self printProgressTimeLeft:seconds withPercentage:percentageComplete];
 }
 
 - (void)bean:(PTDBean *)bean firmwareUploadTimeLeft:(NSNumber *)seconds withPercentage:(NSNumber *)percentageComplete
 {
-    NSLog(@"Firmware update progress: %ld%%, %ld seconds remaining",
-          (NSInteger)([percentageComplete floatValue] * 100),
-          [seconds integerValue]);
+    [self printProgressTimeLeft:seconds withPercentage:percentageComplete];
 }
 
 - (void)bean:(PTDBean *)bean didProgramArduinoWithError:(NSError *)error
@@ -213,6 +253,15 @@
 
     self.programArduinoError = error;
     [self.beanDidProgramArduino fulfill];
+}
+
+- (void)bean:(PTDBean *)bean completedUploadOfSingleFirmwareImage:(NSString *)imagePath
+{
+    if (![bean isEqualToBean:self.bean]) return;
+    if (!self.beanCompletedUploadOfSingleFirmwareImage) return;
+
+    self.imagePath = imagePath;
+    [self.beanCompletedUploadOfSingleFirmwareImage fulfill];
 }
 
 - (void)bean:(PTDBean *)bean completedFirmwareUploadWithError:(NSError *)error

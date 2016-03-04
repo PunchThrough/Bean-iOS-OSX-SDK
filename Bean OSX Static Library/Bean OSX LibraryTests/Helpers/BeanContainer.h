@@ -78,4 +78,17 @@
  */
 - (BOOL)updateFirmware;
 
+/**
+ *  Update the firmware on Bean with ONLY ONE image inside the "Firmware Images" folder.
+ *  Stop after Bean accepts transfer of one image and the image is transferred successfully.
+ *  @return YES after a single image is transferred to Bean successfully
+ */
+- (BOOL)updateFirmwareOnce;
+
+/**
+ *  Cancel a Bean firmware update in progress.
+ *  @return YES if Bean reported update "complete" with no errors, as we expect when we cancel the process
+ */
+- (BOOL)cancelFirmwareUpdate;
+
 @end

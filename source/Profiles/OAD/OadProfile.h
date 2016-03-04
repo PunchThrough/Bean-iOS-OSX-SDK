@@ -46,6 +46,14 @@
 // Called every time the time left changes
 -(void)device:(OadProfile*)device OADUploadTimeLeft:(NSNumber*)seconds withPercentage:(NSNumber*)percentageComplete;
 
+/**
+ *  Called when a single firmware image is successfully uploaded to Bean.
+ *  Since most firmware updates send more than one image and wait for Bean to disconnect, reboot, and reconnect,
+ *  updating a Bean's firmware will most likely result in multiple calls to this delegate - one for each image uploaded.
+ *  @param device The OadProfile for the Bean that completed an image upload
+ *  @param imagePath The path to the image that was just transferred to Bean
+ */
+- (void)device:(OadProfile *)device completedUploadOfSingleFirmwareImage:(NSString *)imagePath;
 
 @end
 

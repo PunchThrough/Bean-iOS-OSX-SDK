@@ -64,6 +64,10 @@ typedef struct {
 
 @property (strong, nonatomic)   NSData              *imageData;
 @property (strong, nonatomic)   NSMutableArray      *firmwareImages;
+/**
+ *  The path to the firmware image that was last offered to Bean for OAD transfer. Bean has not necessarily accepted it.
+ */
+@property (strong, nonatomic)   NSString            *lastImageOffered;
 
 @property (nonatomic)           OADState            oadState;
 @property (strong, nonatomic)   NSTimer             *watchdogTimer;
@@ -187,7 +191,7 @@ typedef struct {
         UInt16 requestedBlock = CFSwapInt16LittleToHost(*((UInt16 *)characteristic.value.bytes));
         switch (self.oadState) {
             case OADStateSentNewHeader:
-                PTDLog(@"Device accepts transfer\n");
+                PTDLog(@"Device accepted image transfer: %@", self.lastImageOffered);
                 self.oadState = OADStateSendingPackets;
                 self.nextBlock = 0;
                 self.nextBlockRequest = 0;
@@ -321,6 +325,7 @@ typedef struct {
     if ( [self.firmwareImages count] > 0 ) {
         NSString *filename = self.firmwareImages[0];
         PTDLog(@"Offering firmware image %@", filename);
+        self.lastImageOffered = self.firmwareImages[0];
         [self.firmwareImages removeObjectAtIndex:0];
         
         NSError* error = nil;
@@ -362,9 +367,7 @@ typedef struct {
 
 - (void)cancel
 {
-    if (self.oadState != OADStateIdle) {
-        [self completeWithError:NULL];
-    }
+    [self completeWithError:nil];
 }
 
 - (void)completeWithError:(NSError *)error
@@ -396,6 +399,11 @@ typedef struct {
         switch (self.oadState) {
             case OADStateWaitForCompletion:
                 PTDLog(@"OAD completed in %f seconds", -[self.downloadStartDate timeIntervalSinceNow]-WATCHDOG_TIMER_INTERVAL);
+
+                if ([self.delegate respondsToSelector:@selector(device:completedUploadOfSingleFirmwareImage:)]) {
+                    [self.delegate device:self completedUploadOfSingleFirmwareImage:self.lastImageOffered];
+                }
+                
                 break;
                 
             case OADStateEnableNotify:
