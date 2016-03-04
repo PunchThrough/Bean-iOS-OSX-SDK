@@ -134,22 +134,25 @@
 
 + (BOOL)firmwareUpdateRequiredForBean:(PTDBean *)bean availableFirmware:(NSString *)version withError:(NSError **)error
 {
-    double bakedFirmwareVersionNumber;
-    double beanFirmwareVersionNumber;
-    
-    // convert baked firmware version to double
-    bakedFirmwareVersionNumber = bakedVersion.doubleValue;
-    
-    // convert bean's firmware version to double
-    beanFirmwareVersionNumber = bean.firmwareVersion.doubleValue;
-    
-    // returns true if baked firmware is newer
-    if ( bakedFirmwareVersionNumber > 0 && beanFirmwareVersionNumber > 0 ) {
-        if ( bakedFirmwareVersionNumber > beanFirmwareVersionNumber) {
-            return true;
-        }
+    // OAD images always need an update
+    if ([bean.firmwareVersion hasPrefix:@"OAD"]) {
+        return YES;
     }
-    return false;
+    
+    NSNumber *onBean = [self toInteger:bean.firmwareVersion];
+    NSNumber *available = [self toInteger:version];
+    
+    if (!onBean) {
+        // TODO: Error: Bean FW version was not OAD and is not integer
+        return NO;
+    }
+    
+    if (!available) {
+        // TODO: Error: Available FW version is not integer
+        return NO;
+    }
+
+    return [available integerValue] > [onBean integerValue];
 }
 
 @end
