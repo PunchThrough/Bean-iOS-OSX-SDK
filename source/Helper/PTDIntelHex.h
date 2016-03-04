@@ -2,8 +2,15 @@
 
 @interface PTDIntelHex : NSObject
 
-@property(nonatomic, strong) NSString *name;
-@property(nonatomic, strong) NSString *beanHardwareVersion;
+/**
+ *  The name of the sketch this hex was compiled from. Used by Bean Loaders to set the name of Bean's sketch.
+ */
+@property (nonatomic, strong) NSString *name;
+/**
+ *  The version prefix of the hardware this sketch is intended for.
+ *  For example, "1" = Bean, "2" = Bean+.
+ */
+@property (nonatomic, strong) NSString *beanHardwareVersion;
 
 /**
  *  Create a PTDIntelHex object from a string of Intel HEX data.
