@@ -14,7 +14,6 @@
     CBService* service_deviceInformation;
     CBCharacteristic* characteristic_hardware_version;
     CBCharacteristic* characteristic_firmware_version;
-    CBCharacteristic* characteristic_software_version;
     NSOperationQueue* firmwareVersionQueue;
     NSOperationQueue* hardwareVersionQueue;
 }
@@ -47,7 +46,6 @@
     NSArray * characteristics = [NSArray arrayWithObjects:
                                  [CBUUID UUIDWithString:CHARACTERISTIC_FIRMWARE_VERSION],
                                  [CBUUID UUIDWithString:CHARACTERISTIC_HARDWARE_VERSION],
-                                 //[CBUUID UUIDWithString:CHARACTERISTIC_SOFTWARE_VERSION],
                                  nil];
     [peripheral discoverCharacteristics:characteristics forService:service_deviceInformation];
     [self __notifyValidity];
@@ -58,7 +56,6 @@
     return (service_deviceInformation &&
             characteristic_hardware_version &&
             characteristic_firmware_version &&
-            //characteristic_software_version &&
             _firmwareVersion && _hardwareVersion)?TRUE:FALSE;
 }
 
@@ -112,8 +109,6 @@
                     characteristic_hardware_version = characteristic;
                 }else if([characteristic.UUID isEqual:[CBUUID UUIDWithString:CHARACTERISTIC_FIRMWARE_VERSION]]){
                     characteristic_firmware_version = characteristic;
-                }else if([characteristic.UUID isEqual:[CBUUID UUIDWithString:CHARACTERISTIC_SOFTWARE_VERSION]]){
-                    characteristic_software_version = characteristic;
                 }
             }
         }
@@ -130,10 +125,7 @@
     }
     
     // Do we already have all of our characteristics?
-    if(characteristic_hardware_version &&
-         characteristic_firmware_version &&
-         characteristic_software_version)
-    { return; }
+    if (characteristic_hardware_version && characteristic_firmware_version) return;
     
     // Is this not the service we're interested in?
     if( ![service isEqual:service_deviceInformation] ) { return; }
