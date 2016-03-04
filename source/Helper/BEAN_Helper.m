@@ -121,6 +121,26 @@
     return [data copy];
 }
 
++ (BOOL)firmwareUpdateRequiredForBean:(PTDBean *)bean withBakedFirmware:(NSString *)bakedVersion
+{
+    double bakedFirmwareVersionNumber;
+    double beanFirmwareVersionNumber;
+    
+    // convert baked firmware version to double
+    bakedFirmwareVersionNumber = bakedVersion.doubleValue;
+    
+    // convert bean's firmware version to double
+    beanFirmwareVersionNumber = bean.firmwareVersion.doubleValue;
+    
+    // returns true if baked firmware is newer
+    if ( bakedFirmwareVersionNumber > 0 && beanFirmwareVersionNumber > 0 ) {
+        if ( bakedFirmwareVersionNumber > beanFirmwareVersionNumber) {
+            return true;
+        }
+    }
+    return false;
+}
+
 @end
 
 

@@ -35,4 +35,6 @@
 +(UInt16) computeCRC16:(NSData*)data startingCRC:(UInt16)startCrc;
 
 + (NSData*)dummyData:(NSInteger)length;
+
++ (BOOL)firmwareUpdateRequiredForBean:(PTDBean *)bean withBakedFirmware:(NSString *)bakedVersion;
 @end
