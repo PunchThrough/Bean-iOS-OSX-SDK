@@ -121,7 +121,18 @@
     return [data copy];
 }
 
-+ (BOOL)firmwareUpdateRequiredForBean:(PTDBean *)bean withBakedFirmware:(NSString *)bakedVersion
+// http://stackoverflow.com/a/11588643
++ (NSNumber *)toInteger:(NSString *)string;
+{
+    NSScanner *scanner = [NSScanner scannerWithString:string];
+    scanner.charactersToBeSkipped = nil;
+    NSInteger parsed;
+    if (![scanner scanInteger:&parsed]) return nil;
+    if (![scanner isAtEnd]) return nil;
+    return [NSNumber numberWithInteger:parsed];
+}
+
++ (BOOL)firmwareUpdateRequiredForBean:(PTDBean *)bean availableFirmware:(NSString *)version withError:(NSError **)error
 {
     double bakedFirmwareVersionNumber;
     double beanFirmwareVersionNumber;
