@@ -51,6 +51,9 @@
         if (![self parseHexString:fileContents]) {
             return nil;
         }
+
+        // Set this object's name property to the filename (without .hex extension) of the NSURL file
+        _name = [[[file absoluteString] lastPathComponent] componentsSeparatedByString:@"."][0];
     }
     return self;
 }
