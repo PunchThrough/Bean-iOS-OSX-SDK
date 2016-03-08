@@ -350,14 +350,19 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
 @property (nonatomic) NSString* newestAvailableFirmwareVersion;
 
 /**
- *  Check if a firmware update is available with a handler to be called if so
+ *  Check if a firmware version is available with a handler to be called if so
  */
 - (void)checkFirmwareVersionAvailableWithHandler:(void (^)(BOOL firmwareAvailable, NSError *error))handler;
 
 /**
- *  Check if a firmware update is available with a handler to be called if so
+ *  Check if hardware version is available with a handler to be called if so
  */
 - (void)checkHardwareVersionAvailableWithHandler:(void (^)(BOOL hardwareAvailable, NSError *error))handler;
+
+/**
+ *  Check if a firmware update is available, return true if bean needs updating
+ */
+- (BOOL)firmwareUpdateAvailable:(NSString *)bakedFirmwareVersion;
 
 /**
  *  Update the firmware with images

@@ -347,6 +347,11 @@ typedef enum { //These occur in sequence
     }
 }
 
+- (BOOL)firmwareUpdateAvailable:(NSString *)bakedFirmwareVersion{
+    NSError *error;
+    return [BEAN_Helper firmwareUpdateRequiredForBean:self availableFirmware:bakedFirmwareVersion withError:&error];
+}
+
 - (void)updateFirmwareWithImages:(NSArray *)images{
     
     if(!oad_profile && self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]) {
