@@ -12,10 +12,10 @@
 @property (nonatomic, strong) PTDBeanManager *beanManager;
 @property (nonatomic, strong) XCTestExpectation *beanManagerPoweredOn;
 @property (nonatomic, strong) PTDBean *bean;
+@property (nonatomic, assign) NSInteger beanRssi;
 
 #pragma mark Test expectations and delegate callback values
 
-@property (nonatomic, strong) XCTestExpectation *beanDiscovered;
 @property (nonatomic, strong) XCTestExpectation *beanConnected;
 @property (nonatomic, strong) XCTestExpectation *beanDisconnected;
 @property (nonatomic, strong) XCTestExpectation *beanDidUpdateLedColor;
@@ -55,7 +55,8 @@
     if (!self) return nil;
 
     _lastPercentagePrinted = -1;
-    
+    _beanRssi = -999;  // very small inital value; any RSSI is > -999
+
     _testCase = testCase;
     _beanFilter = filter;
     _options = options;
@@ -67,16 +68,17 @@
         _beanManagerPoweredOn = nil;
     }
     
-    _beanDiscovered = [testCase expectationWithDescription:@"Bean with prefix found"];
     
     NSError *error;
     [_beanManager startScanningForBeans_error:&error];
     if (error) return nil;
-    
-    [testCase waitForExpectationsWithTimeout:10 handler:nil];
-    self.beanDiscovered = nil;
+
+    // Scan for 10 seconds for a Bean that fits our filter with the highest RSSI
+    [StatelessUtils delayTestCase:testCase forSeconds:10];
     if (!_bean) return nil;
     
+    NSLog(@"Bean selected for testing: %@ (RSSI: %ld)", _bean.name, (long)_beanRssi);
+
     [_beanManager stopScanningForBeans_error:&error];
     if (error) return nil;
     
@@ -203,10 +205,9 @@
 - (void)beanManager:(PTDBeanManager *)beanManager didDiscoverBean:(PTDBean *)bean error:(NSError *)error
 {
     if (!self.beanFilter(bean)) return;
-    if (!self.beanDiscovered) return;
-
+    if ([bean.RSSI integerValue] <= self.beanRssi) return;
+    self.beanRssi = [bean.RSSI integerValue];
     self.bean = bean;
-    [self.beanDiscovered fulfill];
 }
 
 - (void)beanManager:(PTDBeanManager *)beanManager didConnectBean:(PTDBean *)bean error:(NSError *)error
