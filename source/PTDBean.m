@@ -348,7 +348,7 @@ typedef enum { //These occur in sequence
     }
 }
 
-- (BOOL)firmwareUpdateAvailable:(NSString *)bakedFirmwareVersion{
+- (BOOL)firmwareUpdateAvailable:(NSInteger)bakedFirmwareVersion{
     NSError *error;
     return [PTDFirmwareHelper firmwareUpdateRequiredForBean:self availableFirmware:bakedFirmwareVersion withError:&error];
 }

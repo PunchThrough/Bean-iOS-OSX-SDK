@@ -362,7 +362,7 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
 /**
  *  Check if a firmware update is available, return true if bean needs updating
  */
-- (BOOL)firmwareUpdateAvailable:(NSString *)bakedFirmwareVersion;
+- (BOOL)firmwareUpdateAvailable:(NSInteger)bakedFirmwareVersion;
 
 /**
  *  Update the firmware with images
