@@ -3,27 +3,29 @@
 
 @implementation PTDFirmwareHelper
 
-+ (BOOL)firmwareUpdateRequiredForBean:(PTDBean *)bean availableFirmware:(NSString *)version withError:(NSError * __autoreleasing *)error
++ (FirmwareStatus)firmwareUpdateRequiredForBean:(PTDBean *)bean availableFirmware:(NSInteger)version withError:(NSError * __autoreleasing *)error
 {
     // OAD images always need an update
     if ([bean.firmwareVersion hasPrefix:@"OAD"]) {
-        return YES;
+        return FirmwareStatusBeanNeedsUpdate;
     }
-
-    NSNumber *onBean = [PTDUtils parseInteger:bean.firmwareVersion];
-    NSNumber *available = [PTDUtils parseInteger:version];
-
-    if (!onBean) {
-        *error = [self errorForNonIntegerVersion:version deviceName:@"Bean"];
-        return NO;
+    
+    NSNumber *onBeanNumber = [PTDUtils parseLeadingInteger:bean.firmwareVersion];
+    if (!onBeanNumber) {
+        *error = [self errorForNonIntegerVersion:bean.firmwareVersion deviceName:@"Bean"];
+        return FirmwareStatusCouldNotDetermine;
     }
+    
+    NSInteger available = version;
+    NSInteger onBean = [onBeanNumber integerValue];
 
-    if (!available) {
-        *error = [self errorForNonIntegerVersion:version deviceName:@"available firmware"];
-        return NO;
+    if (available > onBean) {
+        return FirmwareStatusBeanNeedsUpdate;
+    } else if (onBean > available) {
+        return FirmwareStatusBeanIsNewerThanAvailable;
+    } else {
+        return FirmwareStatusUpToDate;
     }
-
-    return [available integerValue] > [onBean integerValue];
 }
 
 + (NSError *)errorForNonIntegerVersion:(NSString *)version deviceName:(NSString *)name
