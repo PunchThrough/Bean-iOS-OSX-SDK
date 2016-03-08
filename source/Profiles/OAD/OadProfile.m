@@ -388,14 +388,9 @@ typedef struct {
     if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadOfSingleImage:)]) {
         [self.delegate device:self completedFirmwareUploadOfSingleImage:self.lastImageOffered];
     }
-
-    // If no more images remain, call the "FW process complete" delegate method
-    // WARNING: Right now this is called for every firmware image.
-    // TODO: Call this only when the entire OAD process is complete.
-    // TODO: Move the logic to determine OAD process completion into this profile from PTDBean.m.
-    if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadWithError:)]) {
-        [self.delegate device:self completedFirmwareUploadWithError:error];
-    }
+    
+    // NOTE: Bean delegate method completedFirmwareUploadWithError is called by PTDBean, NOT OadProfile.
+    // PTDBean is responsible for handling the recomplete/continue logic.
 }
 
 - (void)watchdogTimerFired:(NSTimer *)timer

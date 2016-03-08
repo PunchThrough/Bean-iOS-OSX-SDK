@@ -562,6 +562,50 @@ typedef enum { //These occur in sequence
     }
     return YES;
 }
+
+#pragma mark OAD firmware logic and state management
+
+/**
+ *  Called whenever the firmware version profile is read to ensure Bean's firmware update process continues.
+ */
+- (void)manageFirmwareUpdateStatus
+{
+    BOOL runningOadImage = [PTDFirmwareHelper oadImageRunningOnBean:self];
+    
+    if (self.updateInProgress && !runningOadImage) {
+        // Update was in progress last time Bean disconnected, and the image is no longer an OAD update image.
+        // That means the update was successful and Bean is running a fully functional image.
+        [self completeFirmwareUpdate];
+
+    } else if (runningOadImage) {
+        // Any Bean that's still running an OAD update image needs to be updated until it's fully functional.
+        [self continueFirmwareUpdate];
+    }
+}
+
+/**
+ *  Called when a Bean that was in the middle of a firmware update process has just reconnected, and it's now running
+ *  up to date firmware.
+ */
+- (void)completeFirmwareUpdate
+{
+    firmwareUpdateStartTime = NULL;
+    _updateInProgress = FALSE;
+    _updateStepNumber = 0;
+    if (self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]) {
+        [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadWithError:NULL];
+    }
+}
+
+/**
+ *  Called when a Bean has just connected and is still in the middle of a firmware update process.
+ */
+- (void)continueFirmwareUpdate
+{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(beanFoundWithIncompleteFirmware:)]){
+        [self.delegate beanFoundWithIncompleteFirmware:self];
+    }
+}
     
 #pragma mark BleDevice Overridden Methods
 -(void)rssiDidUpdateWithError:(NSError*)error{
@@ -598,31 +642,11 @@ typedef enum { //These occur in sequence
         }];
         
         [deviceInfo_profile readFirmwareVersionWithCompletion:^{
-            if (self.updateInProgress) {
-#warning This is where we need to start
-                if ( [self.firmwareVersion rangeOfString:@"OAD"].location == NSNotFound) { // OAD in Firmware version denotes we are in a firmware update
-                    PTDLog(@"firmware update complete in %f seconds.", -[firmwareUpdateStartTime timeIntervalSinceNow]);
-                    firmwareUpdateStartTime = NULL;
-                    _updateInProgress = FALSE;
-                    _updateStepNumber = 0;
-                    if(self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]){
-                        [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadWithError:NULL];
-                    }
-                } else {
-                    PTDLog(@"firmware update continues");
-                    if(self.delegate && [self.delegate respondsToSelector:@selector(beanFoundWithIncompleteFirmware:)]){
-                        PTDLog(@"calling delegate");
-                        [self.delegate beanFoundWithIncompleteFirmware:self];
-                    }
-                }
-            } else if ( [self.firmwareVersion rangeOfString:@"OAD"].location != NSNotFound ) { // OAD in Firmware version denotes we are in a firmware update
-                    PTDLog(@"Discovered partially updated Bean. Update Required.");
-                    if(self.delegate && [self.delegate respondsToSelector:@selector(beanFoundWithIncompleteFirmware:)]){
-                        PTDLog(@"calling delegate");
-                        [self.delegate beanFoundWithIncompleteFirmware:self];
-                    }
-            }
-            if (!self.updateInProgress && firmwareVersionAvailableHandler){
+            // Continue or complete any firmware update in progress
+            [self manageFirmwareUpdateStatus];
+
+            // Don't send firmware version back to handler when firmware update is still in progress
+            if (firmwareVersionAvailableHandler && !self.updateInProgress) {
                 [self checkFirmwareVersionAvailableWithHandler:firmwareVersionAvailableHandler];
                 firmwareVersionAvailableHandler = nil;
             }
@@ -660,7 +684,6 @@ typedef enum { //These occur in sequence
     }
 }
 
-    
 #pragma mark -
 #pragma mark AppMessagingLayerDelegate callbacks
 -(void)appMessagingLayer:(AppMessagingLayer*)layer recievedIncomingMessageWithID:(UInt16)identifier andPayload:(NSData*)payload{
