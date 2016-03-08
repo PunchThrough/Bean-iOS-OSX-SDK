@@ -7,7 +7,7 @@
 + (FirmwareStatus)firmwareUpdateRequiredForBean:(PTDBean *)bean availableFirmware:(NSInteger)version withError:(NSError * __autoreleasing *)error
 {
     // OAD images always need an update
-    if ([bean.firmwareVersion hasPrefix:@"OAD"]) {
+    if ([self oadImageRunningOnBean:bean]) {
         return FirmwareStatusBeanNeedsUpdate;
     }
     
@@ -26,6 +26,23 @@
         return FirmwareStatusBeanIsNewerThanAvailable;
     } else {
         return FirmwareStatusUpToDate;
+    }
+}
+
++ (BOOL)oadImageRunningOnBean:(PTDBean *)bean
+{
+    NSError *error;
+    NSRegularExpression *rx = [NSRegularExpression regularExpressionWithPattern:@"\\bOAD\\b" options:0 error:&error];
+    if (error) {
+        PTDLog(@"WARNING: Could not create OAD regex: %@", error);
+        return NO;
+    }
+
+    NSTextCheckingResult *match = [rx firstMatchInString:bean.firmwareVersion options:0 range:NSMakeRange(0, bean.firmwareVersion.length)];
+    if (match) {
+        return YES;
+    } else {
+        return NO;
     }
 }
 

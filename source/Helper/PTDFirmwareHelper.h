@@ -37,4 +37,11 @@ typedef NS_ENUM(NSUInteger, FirmwareStatus) {
  */
 + (FirmwareStatus)firmwareUpdateRequiredForBean:(PTDBean *)bean availableFirmware:(NSInteger)version withError:(NSError * __autoreleasing *)error;
 
+/**
+ *  Check if a Bean is running an OAD firmware update image. These images are not fully functional and only support firmware updates.
+ *  @param bean The Bean to be inspected for OAD image state
+ *  @return YES if Bean is running an OAD image, NO if Bean is running any other image
+ */
++ (BOOL)oadImageRunningOnBean:(PTDBean *)bean;
+
 @end

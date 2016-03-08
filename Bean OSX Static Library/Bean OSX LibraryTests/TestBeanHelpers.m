@@ -3,6 +3,7 @@
 #import "PTDBean.h"
 #import "PTDUtils.h"
 #import "PTDFirmwareHelper.h"
+#import "StatelessUtils.h"
 
 @interface TestBeanHelpers : XCTestCase
 
@@ -81,6 +82,35 @@
     error = nil;
     XCTAssertFalse([PTDFirmwareHelper firmwareUpdateRequiredForBean:beanWithInvalidDate availableFirmware:futureDateNumber withError:&error]);
     XCTAssertNotNil(error);
+}
+
+/**
+ *  Ensure the OAD image recognition picks out Beans running OAD images and misses edge cases.
+ */
+- (void)testOadImageRunningOnBean
+{
+    // When OAD is at the start
+    XCTAssertTrue([PTDFirmwareHelper oadImageRunningOnBean:[StatelessUtils fakeBeanWithFirmware:@"OAD Img A"]]);
+    XCTAssertTrue([PTDFirmwareHelper oadImageRunningOnBean:[StatelessUtils fakeBeanWithFirmware:@"OAD XYZ"]]);
+
+    // When OAD is in the middle or at the end
+    XCTAssertTrue([PTDFirmwareHelper oadImageRunningOnBean:[StatelessUtils fakeBeanWithFirmware:@"Test OAD Image"]]);
+    XCTAssertTrue([PTDFirmwareHelper oadImageRunningOnBean:[StatelessUtils fakeBeanWithFirmware:@"Another OAD"]]);
+
+    // When OAD is touching word boundaries
+    XCTAssertTrue([PTDFirmwareHelper oadImageRunningOnBean:[StatelessUtils fakeBeanWithFirmware:@"OAD-Force-One"]]);
+    XCTAssertTrue([PTDFirmwareHelper oadImageRunningOnBean:[StatelessUtils fakeBeanWithFirmware:@"   OAD   "]]);
+    // Underscores will mess it up
+    XCTAssertFalse([PTDFirmwareHelper oadImageRunningOnBean:[StatelessUtils fakeBeanWithFirmware:@"YES_OAD"]]);
+
+    // Not when OAD is part of another word
+    XCTAssertFalse([PTDFirmwareHelper oadImageRunningOnBean:[StatelessUtils fakeBeanWithFirmware:@"RAINBOW ROAD"]]);
+    XCTAssertFalse([PTDFirmwareHelper oadImageRunningOnBean:[StatelessUtils fakeBeanWithFirmware:@"ROADIE"]]);
+
+    // Not when OAD is lowercase
+    XCTAssertFalse([PTDFirmwareHelper oadImageRunningOnBean:[StatelessUtils fakeBeanWithFirmware:@"Frog and Toad"]]);
+    XCTAssertFalse([PTDFirmwareHelper oadImageRunningOnBean:[StatelessUtils fakeBeanWithFirmware:@"super oad jr"]]);
+    XCTAssertFalse([PTDFirmwareHelper oadImageRunningOnBean:[StatelessUtils fakeBeanWithFirmware:@"oad image a"]]);
 }
 
 @end
