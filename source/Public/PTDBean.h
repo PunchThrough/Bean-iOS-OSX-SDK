@@ -15,6 +15,7 @@
 #endif
 #import "PTDBleDevice.h"
 #import "BatteryProfile.h"
+#import "PTDFirmwareHelper.h"
 
 #define ARDUINO_OAD_GENERIC_TIMEOUT_SEC 3
 #define TPDBeanErrorDomain @"TPDBeanErrorDomain"
@@ -360,9 +361,9 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
 - (void)checkHardwareVersionAvailableWithHandler:(void (^)(BOOL hardwareAvailable, NSError *error))handler;
 
 /**
- *  Check if a firmware update is available, return true if bean needs updating
+ *  Check if a firmware update is available
  */
-- (BOOL)firmwareUpdateAvailable:(NSInteger)bakedFirmwareVersion;
+- (FirmwareStatus)firmwareUpdateAvailable:(NSInteger)bakedFirmwareVersion error:(NSError * __autoreleasing *)error;
 
 /**
  *  Update the firmware with images

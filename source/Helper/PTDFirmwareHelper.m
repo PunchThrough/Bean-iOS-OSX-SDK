@@ -1,5 +1,6 @@
 #import "PTDFirmwareHelper.h"
 #import "PTDUtils.h"
+#import "PTDBean.h"
 
 @implementation PTDFirmwareHelper
 

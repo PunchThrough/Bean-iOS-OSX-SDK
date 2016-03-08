@@ -1,10 +1,25 @@
 #import <Foundation/Foundation.h>
-#import "PTDBean.h"
+@class PTDBean;  // to avoid circular import
 
+/**
+ *  Represents the firmware update status of a Bean.
+ */
 typedef NS_ENUM(NSUInteger, FirmwareStatus) {
+    /**
+     *  Could not determine if Bean needs a firmware update. Check the error param for details.
+     */
     FirmwareStatusCouldNotDetermine,
+    /**
+     *  Firmware on Bean is current with the available firmware.
+     */
     FirmwareStatusUpToDate,
+    /**
+     *  Available firmware is newer than firmware on Bean.
+     */
     FirmwareStatusBeanNeedsUpdate,
+    /**
+     *  Firmware on Bean is newer than available firmware.
+     */
     FirmwareStatusBeanIsNewerThanAvailable,
 };
 

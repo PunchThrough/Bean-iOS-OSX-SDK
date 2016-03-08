@@ -16,7 +16,6 @@
 #import "PTDBeanRadioConfig.h"
 #import "CBPeripheral+RSSI_Universal.h"
 #import "PTDBeanRemoteFirmwareVersionManager.h"
-#import "PTDFirmwareHelper.h"
 
 #define ARDUINO_OAD_MAX_CHUNK_SIZE 64
 
@@ -348,9 +347,9 @@ typedef enum { //These occur in sequence
     }
 }
 
-- (BOOL)firmwareUpdateAvailable:(NSInteger)bakedFirmwareVersion{
-    NSError *error;
-    return [PTDFirmwareHelper firmwareUpdateRequiredForBean:self availableFirmware:bakedFirmwareVersion withError:&error];
+- (FirmwareStatus)firmwareUpdateAvailable:(NSInteger)bakedFirmwareVersion error:(NSError * __autoreleasing *)error
+{
+    return [PTDFirmwareHelper firmwareUpdateRequiredForBean:self availableFirmware:bakedFirmwareVersion withError:error];
 }
 
 - (void)updateFirmwareWithImages:(NSArray *)images{
@@ -600,6 +599,7 @@ typedef enum { //These occur in sequence
         
         [deviceInfo_profile readFirmwareVersionWithCompletion:^{
             if (self.updateInProgress) {
+#warning This is where we need to start
                 if ( [self.firmwareVersion rangeOfString:@"OAD"].location == NSNotFound) { // OAD in Firmware version denotes we are in a firmware update
                     PTDLog(@"firmware update complete in %f seconds.", -[firmwareUpdateStartTime timeIntervalSinceNow]);
                     firmwareUpdateStartTime = NULL;

@@ -1,5 +1,6 @@
 #import <XCTest/XCTest.h>
 #import <OCMock/OCMock.h>
+#import "PTDBean.h"
 #import "PTDUtils.h"
 #import "PTDFirmwareHelper.h"
 
