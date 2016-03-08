@@ -16,6 +16,7 @@
 #import "PTDBeanRadioConfig.h"
 #import "CBPeripheral+RSSI_Universal.h"
 #import "PTDBeanRemoteFirmwareVersionManager.h"
+#import "PTDFirmwareHelper.h"
 
 #define ARDUINO_OAD_MAX_CHUNK_SIZE 64
 
@@ -349,7 +350,7 @@ typedef enum { //These occur in sequence
 
 - (BOOL)firmwareUpdateAvailable:(NSString *)bakedFirmwareVersion{
     NSError *error;
-    return [BEAN_Helper firmwareUpdateRequiredForBean:self availableFirmware:bakedFirmwareVersion withError:&error];
+    return [PTDFirmwareHelper firmwareUpdateRequiredForBean:self availableFirmware:bakedFirmwareVersion withError:&error];
 }
 
 - (void)updateFirmwareWithImages:(NSArray *)images{
