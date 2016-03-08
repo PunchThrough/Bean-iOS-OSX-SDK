@@ -3,8 +3,7 @@
 
 @implementation PTDFirmwareHelper
 
-
-+ (BOOL)firmwareUpdateRequiredForBean:(PTDBean *)bean availableFirmware:(NSString *)version withError:(NSError **)error
++ (BOOL)firmwareUpdateRequiredForBean:(PTDBean *)bean availableFirmware:(NSString *)version withError:(NSError * __autoreleasing *)error
 {
     // OAD images always need an update
     if ([bean.firmwareVersion hasPrefix:@"OAD"]) {
@@ -15,16 +14,25 @@
     NSNumber *available = [PTDUtils parseInteger:version];
 
     if (!onBean) {
-        // TODO: Error: Bean FW version was not OAD and is not integer
+        *error = [self errorForNonIntegerVersion:version deviceName:@"Bean"];
         return NO;
     }
 
     if (!available) {
-        // TODO: Error: Available FW version is not integer
+        *error = [self errorForNonIntegerVersion:version deviceName:@"available firmware"];
         return NO;
     }
 
     return [available integerValue] > [onBean integerValue];
+}
+
++ (NSError *)errorForNonIntegerVersion:(NSString *)version deviceName:(NSString *)name
+{
+    NSString *message = @"Firmware version string for %@ could not be parsed as an integer: \"%@\"";
+    NSString *desc = [NSString stringWithFormat:message, name, version];
+    return [NSError errorWithDomain:@"FirmwareVersionInvalid"
+                               code:-1
+                           userInfo:@{@"localizedDescription": desc}];
 }
 
 @end

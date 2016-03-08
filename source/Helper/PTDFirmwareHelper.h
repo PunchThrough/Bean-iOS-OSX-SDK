@@ -13,6 +13,6 @@
  *      If successful, this will be nil
  *  @return YES if Bean's firmware is out of date, NO if Bean has equivalent or newer firmware, NO if an error occurred
  */
-+ (BOOL)firmwareUpdateRequiredForBean:(PTDBean *)bean availableFirmware:(NSString *)version withError:(NSError **)error;
++ (BOOL)firmwareUpdateRequiredForBean:(PTDBean *)bean availableFirmware:(NSString *)version withError:(NSError * __autoreleasing *)error;
 
 @end
