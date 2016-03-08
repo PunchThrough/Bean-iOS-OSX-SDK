@@ -1,7 +1,7 @@
 #import <XCTest/XCTest.h>
 #import "BeanContainer.h"
 
-@interface TestBeanContainer : XCTestCase
+@interface TestBeanFeatures : XCTestCase
 
 @end
 
@@ -19,7 +19,7 @@ static BOOL (^outOfBoxFilter)(PTDBean *bean) = ^BOOL(PTDBean *bean) {
     return [bean.name isEqualToString:@"Bean"];
 };
 
-@implementation TestBeanContainer
+@implementation TestBeanFeatures
 
 #pragma mark - Test configuration
 
