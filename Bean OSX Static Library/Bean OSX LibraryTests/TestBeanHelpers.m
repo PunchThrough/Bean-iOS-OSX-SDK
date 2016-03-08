@@ -37,14 +37,10 @@
     NSInteger nowDateNumber = 201602290130;
     NSInteger futureDateNumber = 206304050000;
     
-    PTDBean *oldBean = OCMClassMock([PTDBean class]);
-    OCMStub(oldBean.firmwareVersion).andReturn(oldDate);
-    PTDBean *nowBean = OCMClassMock([PTDBean class]);
-    OCMStub(nowBean.firmwareVersion).andReturn(nowDate);
-    PTDBean *futureBean = OCMClassMock([PTDBean class]);
-    OCMStub(futureBean.firmwareVersion).andReturn(futureDate);
-    PTDBean *oadBean = OCMClassMock([PTDBean class]);
-    OCMStub(oadBean.firmwareVersion).andReturn(oadFirmware);
+    PTDBean *oldBean = [StatelessUtils fakeBeanWithFirmware:oldDate];
+    PTDBean *nowBean = [StatelessUtils fakeBeanWithFirmware:nowDate];
+    PTDBean *futureBean = [StatelessUtils fakeBeanWithFirmware:futureDate];
+    PTDBean *oadBean = [StatelessUtils fakeBeanWithFirmware:oadFirmware];
     
     // Verify our mock works properly
     XCTAssertTrue([oldBean.firmwareVersion isEqualToString:oldDate]);

@@ -1,6 +1,6 @@
 #import "StatelessUtils.h"
+#import <OCMock/OCMock.h>
 #import "PTDIntelHex.h"
-
 
 @implementation StatelessUtils
 
@@ -43,6 +43,13 @@
     }
     
     return firmwarePaths;
+}
+
++ (PTDBean *)fakeBeanWithFirmware:(NSString *)version;
+{
+    PTDBean *bean = OCMClassMock([PTDBean class]);
+    OCMStub(bean.firmwareVersion).andReturn(version);
+    return bean;
 }
 
 @end

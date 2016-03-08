@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
 #import <XCTest/XCTest.h>
+#import "PTDBean.h"
 
 @interface StatelessUtils : NSObject
 
@@ -25,5 +26,14 @@
  *  @return An NSArray object with the contents of the folder, or nil if the folder couldn't be opened
  */
 + (NSArray *)firmwareImagesFromResource:(NSString *)imageFolder;
+
+/**
+ *  Returns a stubbed Bean with the given firmware version string.
+ *
+ *  @param version the firmware version string to use
+ *
+ *  @return a PTDBean that always reports the given firmware version
+ */
++ (PTDBean *)fakeBeanWithFirmware:(NSString *)version;
 
 @end
