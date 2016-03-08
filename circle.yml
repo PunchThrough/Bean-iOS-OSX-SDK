@@ -1,0 +1,11 @@
+machine:
+  xcode:
+    version: 7.2
+
+test:
+  override:
+    - xctool
+      -project Bean\ OSX\ Static\ Library/Bean\ OSX\ Library.xcodeproj
+      -scheme "Bean OS X Library"
+      test
+      -only "OS X Unit Tests"
