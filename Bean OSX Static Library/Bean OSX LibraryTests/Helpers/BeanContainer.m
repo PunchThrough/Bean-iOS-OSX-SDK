@@ -214,7 +214,11 @@
     if (!self.beanFilter(bean)) return;
     if ([bean.RSSI integerValue] <= self.beanRssi) return;
     self.beanRssi = [bean.RSSI integerValue];
+
+    if ([self.bean isEqualToBean:bean]) return;
+
     self.bean = bean;
+    NSLog(@"New test candidate selected: %@ (RSSI: %@)", bean.name, bean.RSSI);
 }
 
 - (void)beanManager:(PTDBeanManager *)beanManager didConnectBean:(PTDBean *)bean error:(NSError *)error
