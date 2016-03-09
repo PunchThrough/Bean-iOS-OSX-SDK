@@ -42,16 +42,6 @@
 
 @protocol OAD_Delegate <NSObject>
 
-#warning WTF is this method actually
-/**
- *  Sent when a firmware upload process completes. This is called when all images are successfully uploaded to Bean or
- *  a failure causes the firmware upload process to abort early.
- *
- *  @param device The OadProfile for the Bean whose firmware has been updated
- *  @param error Nil if successful, or an NSError if the upload was unsuccessful. See <BeanErrors>.
- */
-- (void)device:(OadProfile *)device completedFirmwareUploadWithError:(NSError *)error;
-
 /**
  *  Indicates time remaining in the upload of a single OAD firmware image.
  *
@@ -68,7 +58,8 @@
  *
  *  @param device The OadProfile for the Bean that completed an image upload
  *  @param imagePath The path to the image that was just transferred to Bean
+ *  @param error Will be set to an NSError with info if an error occurs, or nil if nothing went wrong
  */
-- (void)device:(OadProfile *)device completedFirmwareUploadOfSingleImage:(NSString *)imagePath;
+- (void)device:(OadProfile *)device completedFirmwareUploadOfSingleImage:(NSString *)imagePath withError:(NSError *)error;
 
 @end

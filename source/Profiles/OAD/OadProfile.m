@@ -114,15 +114,17 @@ typedef struct {
     PTDLog(@"OAD updating firmware with image paths: %@", firmwareImages);
     
     if (peripheral.state != CBPeripheralStateConnected) {
-        if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadWithError:)]) {
-            [self.delegate device:self completedFirmwareUploadWithError:[OadProfile errorWithDesc:@"Device is not connected"]];
+        if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadOfSingleImage:withError:)]) {
+            [self.delegate device:self completedFirmwareUploadOfSingleImage:nil
+                        withError:[OadProfile errorWithDesc:@"Device is not connected"]];
         }
         return NO;
     }
     
     if (self.oadState != OADStateIdle) {
-        if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadWithError:)]) {
-            [self.delegate device:self completedFirmwareUploadWithError:[OadProfile errorWithDesc:@"Download already started"]];
+        if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadOfSingleImage:withError:)]) {
+            [self.delegate device:self completedFirmwareUploadOfSingleImage:nil
+                        withError:[OadProfile errorWithDesc:@"Download already started"]];
         }
         return NO;
     }
@@ -386,8 +388,8 @@ typedef struct {
     [peripheral setNotifyValue:NO forCharacteristic:self.characteristicOADIdentify];
 
     // We've successfully uploaded a single image
-    if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadOfSingleImage:)]) {
-        [self.delegate device:self completedFirmwareUploadOfSingleImage:self.lastImageOffered];
+    if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadOfSingleImage:withError:)]) {
+        [self.delegate device:self completedFirmwareUploadOfSingleImage:self.lastImageOffered withError:nil];
     }
     
     // NOTE: Bean delegate method completedFirmwareUploadWithError is called by PTDBean, NOT OadProfile.

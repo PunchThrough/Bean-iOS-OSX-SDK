@@ -28,6 +28,11 @@ typedef enum { //These occur in sequence
 } BeanArduinoOADLocalState;
 
 @interface PTDBean () <CBPeripheralDelegate, AppMessagingLayerDelegate, OAD_Delegate, BatteryProfileDelegate>
+
+#pragma mark - Header readonly overrides
+
+@property (nonatomic, readwrite) Boolean updateInProgress;
+
 @end
 
 @implementation PTDBean
@@ -867,16 +872,24 @@ typedef enum { //These occur in sequence
 
 
 #pragma mark OAD callbacks
-- (void)device:(OadProfile *)device completedFirmwareUploadOfSingleImage:(NSString *)imagePath
+
+- (void)device:(OadProfile *)device completedFirmwareUploadOfSingleImage:(NSString *)imagePath withError:(NSError *)error
 {
+    if (error) {
+        PTDLog(@"Error during OAD process: %@", error);
+        self.updateInProgress = NO;
+
+        // At this point, the firmware update has failed. Pass this error up the chain.
+        [self device:device completedFirmwareUploadWithError:error];
+        return;
+    }
+
     if (self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadOfSingleImage:)])
         [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadOfSingleImage:imagePath];
 }
 
 -(void)device:(OadProfile*)device completedFirmwareUploadWithError:(NSError*)error
 {
-    if ( error ) _updateInProgress = FALSE;
-    
     if (self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)])
         [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadWithError:error];
 }
