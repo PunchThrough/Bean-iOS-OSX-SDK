@@ -149,7 +149,7 @@
         if ([characteristic isEqual:characteristic_hardware_version]) {
             PTDLog(@"Warning: Couldn't read data for Device Info Profile -> Hardware Version. "
                    @"This is typically seen when Beans are running an OAD update-only (recovery) image. "
-                   @"You can safely ignore this warning if Bean is in the middle of a firmware update."
+                   @"You can safely ignore this warning if Bean is in the middle of a firmware update. "
                    @"Error: %@", error);
 
         } else {

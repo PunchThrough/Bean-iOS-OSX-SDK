@@ -1,11 +1,3 @@
-//
-//  OADDevice.m
-//  BleArduino
-//
-//  Created by Raymond Kampmeier on 8/16/13.
-//  Copyright (c) 2013 Punch Through Design. All rights reserved.
-//
-
 #import "OadProfile.h"
 
 // OAD implementation based on http://processors.wiki.ti.com/images/8/82/OAD_for_CC254x.pdf
@@ -68,6 +60,10 @@ typedef struct {
  *  The path to the firmware image that was last offered to Bean for OAD transfer. Bean has not necessarily accepted it.
  */
 @property (strong, nonatomic)   NSString            *lastImageOffered;
+/**
+ *  The size, in bytes, of the last image offered to Bean for OAD transfer
+ */
+@property (nonatomic, assign)   NSUInteger          lastImageSize;
 
 @property (nonatomic)           OADState            oadState;
 @property (strong, nonatomic)   NSTimer             *watchdogTimer;
@@ -110,19 +106,17 @@ typedef struct {
     PTDLog(@"OAD updating firmware with image paths: %@", firmwareImages);
     
     if (peripheral.state != CBPeripheralStateConnected) {
-        if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadWithError:)]) {
-            [self.delegate device:self completedFirmwareUploadWithError:[NSError errorWithDomain:ERROR_DOMAIN
-                                                                                            code:ERROR_CODE
-                                                                                        userInfo:@{NSLocalizedDescriptionKey:@"Device is not connected"}]];
+        if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadOfSingleImage:withError:)]) {
+            [self.delegate device:self completedFirmwareUploadOfSingleImage:nil
+                        withError:[OadProfile errorWithDesc:@"Device is not connected"]];
         }
         return NO;
     }
     
     if (self.oadState != OADStateIdle) {
-        if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadWithError:)]) {
-            [self.delegate device:self completedFirmwareUploadWithError:[NSError errorWithDomain:ERROR_DOMAIN
-                                                                                            code:ERROR_CODE
-                                                                                        userInfo:@{NSLocalizedDescriptionKey:@"Download already started"}]];
+        if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadOfSingleImage:withError:)]) {
+            [self.delegate device:self completedFirmwareUploadOfSingleImage:nil
+                        withError:[OadProfile errorWithDesc:@"Download already started"]];
         }
         return NO;
     }
@@ -175,13 +169,13 @@ typedef struct {
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateNotificationStateForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
 {
     self.watchdogSet = NO;
-    if (!error) {
-        if (self.oadState == OADStateEnableNotify) {
-            if (self.characteristicOADBlock.isNotifying && self.characteristicOADIdentify.isNotifying) {
-                [self beginOAD];
-            }
-        }
-    }
+
+    if (error) return;
+    if (self.oadState != OADStateEnableNotify) return;
+    if (!self.characteristicOADBlock.isNotifying) return;
+    if (!self.characteristicOADIdentify.isNotifying) return;
+
+    [self beginOAD];
 }
 
 - (void)peripheral:(CBPeripheral *)aPeripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
@@ -322,47 +316,48 @@ typedef struct {
 
 - (void)beginOAD
 {
-    if ( [self.firmwareImages count] > 0 ) {
-        NSString *filename = self.firmwareImages[0];
-        PTDLog(@"Offering firmware image %@", filename);
-        self.lastImageOffered = self.firmwareImages[0];
-        [self.firmwareImages removeObjectAtIndex:0];
-        
-        NSError* error = nil;
-        self.imageData = [NSData dataWithContentsOfFile:filename options:0 error:&error];
-        
-        if (error) {
-            PTDLog(@"Couldn't load firmware file: %@", error);
-        }
-        
-        if (!self.imageData) {
-            [self completeWithError:[NSError errorWithDomain:ERROR_DOMAIN
-                                                        code:ERROR_CODE
-                                                    userInfo:@{NSLocalizedDescriptionKey:@"Couldn't load firmware image."}]];
-            return;
-        }
-        
-        
-        self.totalBlocks = self.imageData.length / sizeof(data_block_t);
-        img_hdr_t *imageHeader = (img_hdr_t *)self.imageData.bytes;
-        
-        NSMutableData *data = [NSMutableData dataWithLength:sizeof(request_oad_header_t)];
-        request_oad_header_t   *request = (request_oad_header_t *)data.bytes;
-        request->ver = imageHeader->ver;
-        request->len = imageHeader->len;
-        memcpy(&request->uid, &imageHeader->uid, sizeof(request->uid));
-        UInt16  reserved[] = {CFSwapInt16HostToLittle(12), CFSwapInt16HostToLittle(15)};
-        memcpy(&request->res, reserved, sizeof(request->res));
-            
-        self.oadState = OADStateSentNewHeader;
-            
-        [peripheral writeValue:data forCharacteristic:self.characteristicOADIdentify type:CBCharacteristicWriteWithoutResponse];
-    } else {
-        [self completeWithError:[NSError errorWithDomain:ERROR_DOMAIN
-                                                    code:ERROR_CODE
-                                                userInfo:@{NSLocalizedDescriptionKey:@"Device rejected all available firmware versions."}]];
-        PTDLog(@"Device rejected all available firmware versions.");
+    // No images left to offer Bean? We can't send an update to Bean.
+    if ([self.firmwareImages count] == 0) {
+        NSString *desc = @"Device rejected all available firmware versions.";
+        PTDLog(@"%@", desc);
+        [self completeWithError:[OadProfile errorWithDesc:desc]];
+        return;
     }
+
+    // Pick the first firmware image in the list
+    NSString *filename = self.firmwareImages[0];
+    PTDLog(@"Offering firmware image %@", filename);
+    [self.firmwareImages removeObjectAtIndex:0];
+
+    // Load firmware image
+    NSError* error = nil;
+    self.imageData = [NSData dataWithContentsOfFile:filename options:0 error:&error];
+    if (error) {
+        NSString *desc = @"Couldn't load firmware image";
+        PTDLog(@"%@: %@", desc, error);
+        [self completeWithError:[OadProfile errorWithDesc:desc]];
+        return;
+    }
+
+    // Get the image header bytes
+    self.totalBlocks = self.imageData.length / sizeof(data_block_t);
+    img_hdr_t *imageHeader = (img_hdr_t *)self.imageData.bytes;
+
+    NSMutableData *data = [NSMutableData dataWithLength:sizeof(request_oad_header_t)];
+    request_oad_header_t *request = (request_oad_header_t *)data.bytes;
+    request->ver = imageHeader->ver;
+    request->len = imageHeader->len;
+    memcpy(&request->uid, &imageHeader->uid, sizeof(request->uid));
+    UInt16 reserved[] = {CFSwapInt16HostToLittle(12), CFSwapInt16HostToLittle(15)};
+    memcpy(&request->res, reserved, sizeof(request->res));
+
+    // Send image header data to Bean to offer this image to Bean
+    self.oadState = OADStateSentNewHeader;
+    [peripheral writeValue:data
+         forCharacteristic:self.characteristicOADIdentify
+                      type:CBCharacteristicWriteWithoutResponse];
+    self.lastImageOffered = filename;
+    self.lastImageSize = [self.imageData length];
 }
 
 - (void)cancel
@@ -385,62 +380,66 @@ typedef struct {
     [peripheral setNotifyValue:NO forCharacteristic:self.characteristicOADIdentify];
 
     // We've successfully uploaded a single image
-    if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadOfSingleImage:)]) {
-        [self.delegate device:self completedFirmwareUploadOfSingleImage:self.lastImageOffered];
+    if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadOfSingleImage:withError:)]) {
+        [self.delegate device:self completedFirmwareUploadOfSingleImage:self.lastImageOffered withError:nil];
     }
-
-    // If no more images remain, call the "FW process complete" delegate method
-    // WARNING: Right now this is called for every firmware image.
-    // TODO: Call this only when the entire OAD process is complete.
-    // TODO: Move the logic to determine OAD process completion into this profile from PTDBean.m.
-    if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadWithError:)]) {
-        [self.delegate device:self completedFirmwareUploadWithError:error];
-    }
+    
+    // NOTE: Bean delegate method completedFirmwareUploadWithError is called by PTDBean, NOT OadProfile.
+    // PTDBean is responsible for handling the recomplete/continue logic.
 }
 
 - (void)watchdogTimerFired:(NSTimer *)timer
 {
     if (self.oadState == OADStateIdle) {
-        // watchdog should never be running in idle.
-        PTDLog(@"OAD State idle.");
+        // watchdog should never be running in idle
         [timer invalidate];
         self.watchdogTimer = nil;
     }
-    
-    if (self.watchdogSet) {
-        NSError *error;
-        switch (self.oadState) {
-            case OADStateWaitForCompletion:
-                PTDLog(@"OAD completed in %f seconds", -[self.downloadStartDate timeIntervalSinceNow]-WATCHDOG_TIMER_INTERVAL);
-                break;
-                
-            case OADStateEnableNotify:
-                error = [NSError errorWithDomain:ERROR_DOMAIN
-                                            code:ERROR_CODE
-                                        userInfo:@{NSLocalizedDescriptionKey:@"Timeout configuring OAD characteristics."}];
-                break;
-                
-            case OADStateSendingPackets:
-                if (self.nextBlockRequest == 1) {
-                    PTDLog(@"Bean is resetting to small OAD-only image.");
-                } else {
-                    error = [NSError errorWithDomain:ERROR_DOMAIN
-                                                code:ERROR_CODE
-                                            userInfo:@{NSLocalizedDescriptionKey:@"Timeout sending firmware."}];
-                }
-                break;
-                
-            default:
-                error = [NSError errorWithDomain:ERROR_DOMAIN
-                                            code:ERROR_CODE
-                                        userInfo:@{NSLocalizedDescriptionKey:@"Unexpected watchdog timeout."}];
-                break;
+
+    // If the watchdog flag isn't set, set it and return.
+    if (!self.watchdogSet) {
+        self.watchdogSet = YES;
+        return;
+    }
+
+    // The watchdog flag is set. That means the flag was not reset since the watchdog fired last time.
+    // This might mean Bean rebooted as expected, or the firmware upload process timed out unexpectedly.
+
+    NSError *error;
+
+    if (self.oadState == OADStateWaitForCompletion) {
+        NSUInteger bytes = self.lastImageSize;
+        float duration = - [self.downloadStartDate timeIntervalSinceNow] - WATCHDOG_TIMER_INTERVAL;
+        float rate = bytes / duration;
+        PTDLog(@"OAD complete. %lu bytes, %0.2f seconds, %0.1f bytes/sec", bytes, duration, rate);
+
+    } else if (self.oadState == OADStateEnableNotify) {
+        error = [OadProfile errorWithDesc:@"Timeout configuring OAD characteristics."];
+
+    } else if (self.oadState == OADStateSendingPackets) {
+        if (self.nextBlockRequest == 1) {
+            PTDLog(@"Bean is resetting to small OAD-only image.");
+        } else {
+            error = [OadProfile errorWithDesc:@"Timeout sending firmware."];
         }
 
-        [self completeWithError:error];
     } else {
-        self.watchdogSet = YES;
+        error = [OadProfile errorWithDesc:@"Unexpected watchdog timeout."];
     }
+
+    [self completeWithError:error];
+}
+
+/**
+ *  Returns an NSError for OadProfile.
+ *
+ *  @param description a description of the error that occurred
+ *
+ *  @return an NSError configured with the error domain and code for this class
+ */
++ (NSError *)errorWithDesc:(NSString *)description
+{
+    return [NSError errorWithDomain:ERROR_DOMAIN code:ERROR_CODE userInfo:@{NSLocalizedDescriptionKey:description}];
 }
 
 @end

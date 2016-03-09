@@ -1,11 +1,3 @@
-//
-//  BeanDevice.m
-//  BleArduino
-//
-//  Created by Raymond Kampmeier on 1/16/14.
-//  Copyright (c) 2014 Punch Through Design. All rights reserved.
-//
-
 #import "PTDBean.h"
 #import "PTDBean+Protected.h"
 #import "PTDBeanManager+Protected.h"
@@ -28,6 +20,11 @@ typedef enum { //These occur in sequence
 } BeanArduinoOADLocalState;
 
 @interface PTDBean () <CBPeripheralDelegate, AppMessagingLayerDelegate, OAD_Delegate, BatteryProfileDelegate>
+
+#pragma mark - Header readonly overrides
+
+@property (nonatomic, readwrite) Boolean updateInProgress;
+
 @end
 
 @implementation PTDBean
@@ -347,6 +344,11 @@ typedef enum { //These occur in sequence
     }
 }
 
+- (FirmwareStatus)firmwareUpdateAvailable:(NSInteger)bakedFirmwareVersion error:(NSError * __autoreleasing *)error
+{
+    return [PTDFirmwareHelper firmwareUpdateRequiredForBean:self availableFirmware:bakedFirmwareVersion withError:error];
+}
+
 - (void)updateFirmwareWithImages:(NSArray *)images{
     
     if(!oad_profile && self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]) {
@@ -557,6 +559,50 @@ typedef enum { //These occur in sequence
     }
     return YES;
 }
+
+#pragma mark OAD firmware logic and state management
+
+/**
+ *  Called whenever the firmware version profile is read to ensure Bean's firmware update process continues.
+ */
+- (void)manageFirmwareUpdateStatus
+{
+    BOOL runningOadImage = [PTDFirmwareHelper oadImageRunningOnBean:self];
+    
+    if (self.updateInProgress && !runningOadImage) {
+        // Update was in progress last time Bean disconnected, and the image is no longer an OAD update image.
+        // That means the update was successful and Bean is running a fully functional image.
+        [self completeFirmwareUpdate];
+
+    } else if (runningOadImage) {
+        // Any Bean that's still running an OAD update image needs to be updated until it's fully functional.
+        [self continueFirmwareUpdate];
+    }
+}
+
+/**
+ *  Called when a Bean that was in the middle of a firmware update process has just reconnected, and it's now running
+ *  up to date firmware.
+ */
+- (void)completeFirmwareUpdate
+{
+    firmwareUpdateStartTime = NULL;
+    _updateInProgress = FALSE;
+    _updateStepNumber = 0;
+    if (self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]) {
+        [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadWithError:NULL];
+    }
+}
+
+/**
+ *  Called when a Bean has just connected and is still in the middle of a firmware update process.
+ */
+- (void)continueFirmwareUpdate
+{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(beanFoundWithIncompleteFirmware:)]){
+        [self.delegate beanFoundWithIncompleteFirmware:self];
+    }
+}
     
 #pragma mark BleDevice Overridden Methods
 -(void)rssiDidUpdateWithError:(NSError*)error{
@@ -593,30 +639,11 @@ typedef enum { //These occur in sequence
         }];
         
         [deviceInfo_profile readFirmwareVersionWithCompletion:^{
-            if (self.updateInProgress) {
-                if ( [self.firmwareVersion rangeOfString:@"OAD"].location == NSNotFound) { // OAD in Firmware version denotes we are in a firmware update
-                    PTDLog(@"firmware update complete in %f seconds.", -[firmwareUpdateStartTime timeIntervalSinceNow]);
-                    firmwareUpdateStartTime = NULL;
-                    _updateInProgress = FALSE;
-                    _updateStepNumber = 0;
-                    if(self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]){
-                        [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadWithError:NULL];
-                    }
-                } else {
-                    PTDLog(@"firmware update continues");
-                    if(self.delegate && [self.delegate respondsToSelector:@selector(beanFoundWithIncompleteFirmware:)]){
-                        PTDLog(@"calling delegate");
-                        [self.delegate beanFoundWithIncompleteFirmware:self];
-                    }
-                }
-            } else if ( [self.firmwareVersion rangeOfString:@"OAD"].location != NSNotFound ) { // OAD in Firmware version denotes we are in a firmware update
-                    PTDLog(@"Discovered partially updated Bean. Update Required.");
-                    if(self.delegate && [self.delegate respondsToSelector:@selector(beanFoundWithIncompleteFirmware:)]){
-                        PTDLog(@"calling delegate");
-                        [self.delegate beanFoundWithIncompleteFirmware:self];
-                    }
-            }
-            if (!self.updateInProgress && firmwareVersionAvailableHandler){
+            // Continue or complete any firmware update in progress
+            [self manageFirmwareUpdateStatus];
+
+            // Don't send firmware version back to handler when firmware update is still in progress
+            if (firmwareVersionAvailableHandler && !self.updateInProgress) {
                 [self checkFirmwareVersionAvailableWithHandler:firmwareVersionAvailableHandler];
                 firmwareVersionAvailableHandler = nil;
             }
@@ -654,7 +681,6 @@ typedef enum { //These occur in sequence
     }
 }
 
-    
 #pragma mark -
 #pragma mark AppMessagingLayerDelegate callbacks
 -(void)appMessagingLayer:(AppMessagingLayer*)layer recievedIncomingMessageWithID:(UInt16)identifier andPayload:(NSData*)payload{
@@ -740,9 +766,6 @@ typedef enum { //These occur in sequence
             BL_MSG_STATUS_T stateMsg;
             [payload getBytes:&stateMsg range:NSMakeRange(0, sizeof(BL_MSG_STATUS_T))];
             BL_HL_STATE_T highLevelState = stateMsg.hlState;
-//            BL_STATE_T internalState = stateMsg.intState;
-//            UInt16 blocks = stateMsg.blocksSent;
-//            UInt16 bytes = stateMsg.bytesSent;
             [self __handleArduinoOADRemoteStateChange:highLevelState];
             break;
         case MSG_ID_CC_GET_AR_POWER:
@@ -838,16 +861,24 @@ typedef enum { //These occur in sequence
 
 
 #pragma mark OAD callbacks
-- (void)device:(OadProfile *)device completedFirmwareUploadOfSingleImage:(NSString *)imagePath
+
+- (void)device:(OadProfile *)device completedFirmwareUploadOfSingleImage:(NSString *)imagePath withError:(NSError *)error
 {
+    if (error) {
+        PTDLog(@"Error during OAD process: %@", error);
+        self.updateInProgress = NO;
+
+        // At this point, the firmware update has failed. Pass this error up the chain.
+        [self device:device completedFirmwareUploadWithError:error];
+        return;
+    }
+
     if (self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadOfSingleImage:)])
         [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadOfSingleImage:imagePath];
 }
 
 -(void)device:(OadProfile*)device completedFirmwareUploadWithError:(NSError*)error
 {
-    if ( error ) _updateInProgress = FALSE;
-    
     if (self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)])
         [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadWithError:error];
 }

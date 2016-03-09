@@ -12,10 +12,10 @@
 @property (nonatomic, strong) PTDBeanManager *beanManager;
 @property (nonatomic, strong) XCTestExpectation *beanManagerPoweredOn;
 @property (nonatomic, strong) PTDBean *bean;
+@property (nonatomic, assign) NSInteger beanRssi;
 
 #pragma mark Test expectations and delegate callback values
 
-@property (nonatomic, strong) XCTestExpectation *beanDiscovered;
 @property (nonatomic, strong) XCTestExpectation *beanConnected;
 @property (nonatomic, strong) XCTestExpectation *beanDisconnected;
 @property (nonatomic, strong) XCTestExpectation *beanDidUpdateLedColor;
@@ -55,7 +55,8 @@
     if (!self) return nil;
 
     _lastPercentagePrinted = -1;
-    
+    _beanRssi = -999;  // very small inital value; any RSSI is > -999
+
     _testCase = testCase;
     _beanFilter = filter;
     _options = options;
@@ -67,16 +68,17 @@
         _beanManagerPoweredOn = nil;
     }
     
-    _beanDiscovered = [testCase expectationWithDescription:@"Bean with prefix found"];
     
     NSError *error;
     [_beanManager startScanningForBeans_error:&error];
     if (error) return nil;
-    
-    [testCase waitForExpectationsWithTimeout:10 handler:nil];
-    self.beanDiscovered = nil;
+
+    // Scan for 10 seconds for a Bean that fits our filter with the highest RSSI
+    [StatelessUtils delayTestCase:testCase forSeconds:10];
     if (!_bean) return nil;
     
+    NSLog(@"Bean selected for testing: %@ (RSSI: %ld)", _bean.name, (long)_beanRssi);
+
     [_beanManager stopScanningForBeans_error:&error];
     if (error) return nil;
     
@@ -137,9 +139,16 @@
     NSData *imageHex = [StatelessUtils bytesFromIntelHexResource:hexName usingBundleForClass:[self class]];
     self.beanDidProgramArduino = [self.testCase expectationWithDescription:@"Sketch uploaded to Bean"];
 
+    NSDate *start = [NSDate date];
     [self.bean programArduinoWithRawHexImage:imageHex andImageName:hexName];
     [self.testCase waitForExpectationsWithTimeout:120 handler:nil];
     self.beanDidProgramArduino = nil;
+    NSDate *finish = [NSDate date];
+
+    NSUInteger bytes = [imageHex length];
+    NSTimeInterval duration = [finish timeIntervalSinceDate:start];
+    float rate = bytes / duration;
+    NSLog(@"Sketch upload complete. %lu bytes, %0.2f seconds, %0.1f bytes/sec", bytes, duration, rate);
 
     return !self.programArduinoError;
 }
@@ -203,10 +212,13 @@
 - (void)beanManager:(PTDBeanManager *)beanManager didDiscoverBean:(PTDBean *)bean error:(NSError *)error
 {
     if (!self.beanFilter(bean)) return;
-    if (!self.beanDiscovered) return;
+    if ([bean.RSSI integerValue] <= self.beanRssi) return;
+    self.beanRssi = [bean.RSSI integerValue];
+
+    if ([self.bean isEqualToBean:bean]) return;
 
     self.bean = bean;
-    [self.beanDiscovered fulfill];
+    NSLog(@"New test candidate selected: %@ (RSSI: %@)", bean.name, bean.RSSI);
 }
 
 - (void)beanManager:(PTDBeanManager *)beanManager didConnectBean:(PTDBean *)bean error:(NSError *)error
