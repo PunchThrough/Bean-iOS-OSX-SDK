@@ -115,18 +115,14 @@ typedef struct {
     
     if (peripheral.state != CBPeripheralStateConnected) {
         if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadWithError:)]) {
-            [self.delegate device:self completedFirmwareUploadWithError:[NSError errorWithDomain:ERROR_DOMAIN
-                                                                                            code:ERROR_CODE
-                                                                                        userInfo:@{NSLocalizedDescriptionKey:@"Device is not connected"}]];
+            [self.delegate device:self completedFirmwareUploadWithError:[OadProfile errorWithDesc:@"Device is not connected"]];
         }
         return NO;
     }
     
     if (self.oadState != OADStateIdle) {
         if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadWithError:)]) {
-            [self.delegate device:self completedFirmwareUploadWithError:[NSError errorWithDomain:ERROR_DOMAIN
-                                                                                            code:ERROR_CODE
-                                                                                        userInfo:@{NSLocalizedDescriptionKey:@"Download already started"}]];
+            [self.delegate device:self completedFirmwareUploadWithError:[OadProfile errorWithDesc:@"Download already started"]];
         }
         return NO;
     }
@@ -330,9 +326,7 @@ typedef struct {
     if ([self.firmwareImages count] == 0) {
         NSString *desc = @"Device rejected all available firmware versions.";
         PTDLog(@"%@", desc);
-        [self completeWithError:[NSError errorWithDomain:ERROR_DOMAIN
-                                                    code:ERROR_CODE
-                                                userInfo:@{NSLocalizedDescriptionKey:desc}]];
+        [self completeWithError:[OadProfile errorWithDesc:desc]];
         return;
     }
 
@@ -347,9 +341,7 @@ typedef struct {
     if (error) {
         NSString *desc = @"Couldn't load firmware image";
         PTDLog(@"%@: %@", desc, error);
-        [self completeWithError:[NSError errorWithDomain:ERROR_DOMAIN
-                                                    code:ERROR_CODE
-                                                userInfo:@{NSLocalizedDescriptionKey:desc}]];
+        [self completeWithError:[OadProfile errorWithDesc:desc]];
         return;
     }
 
@@ -428,26 +420,32 @@ typedef struct {
         PTDLog(@"OAD complete. %lu bytes, %0.2f seconds, %0.1f bytes/sec", bytes, duration, rate);
 
     } else if (self.oadState == OADStateEnableNotify) {
-        error = [NSError errorWithDomain:ERROR_DOMAIN
-                                    code:ERROR_CODE
-                                userInfo:@{NSLocalizedDescriptionKey:@"Timeout configuring OAD characteristics."}];
+        error = [OadProfile errorWithDesc:@"Timeout configuring OAD characteristics."];
 
     } else if (self.oadState == OADStateSendingPackets) {
         if (self.nextBlockRequest == 1) {
             PTDLog(@"Bean is resetting to small OAD-only image.");
         } else {
-            error = [NSError errorWithDomain:ERROR_DOMAIN
-                                        code:ERROR_CODE
-                                    userInfo:@{NSLocalizedDescriptionKey:@"Timeout sending firmware."}];
+            error = [OadProfile errorWithDesc:@"Timeout sending firmware."];
         }
 
     } else {
-        error = [NSError errorWithDomain:ERROR_DOMAIN
-                                    code:ERROR_CODE
-                                userInfo:@{NSLocalizedDescriptionKey:@"Unexpected watchdog timeout."}];
+        error = [OadProfile errorWithDesc:@"Unexpected watchdog timeout."];
     }
 
     [self completeWithError:error];
+}
+
+/**
+ *  Returns an NSError for OadProfile.
+ *
+ *  @param description a description of the error that occurred
+ *
+ *  @return an NSError configured with the error domain and code for this class
+ */
++ (NSError *)errorWithDesc:(NSString *)description
+{
+    return [NSError errorWithDomain:ERROR_DOMAIN code:ERROR_CODE userInfo:@{NSLocalizedDescriptionKey:description}];
 }
 
 @end
