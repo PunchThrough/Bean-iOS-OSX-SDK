@@ -175,13 +175,13 @@ typedef struct {
 - (void)peripheral:(CBPeripheral *)peripheral didUpdateNotificationStateForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
 {
     self.watchdogSet = NO;
-    if (!error) {
-        if (self.oadState == OADStateEnableNotify) {
-            if (self.characteristicOADBlock.isNotifying && self.characteristicOADIdentify.isNotifying) {
-                [self beginOAD];
-            }
-        }
-    }
+
+    if (error) return;
+    if (self.oadState != OADStateEnableNotify) return;
+    if (!self.characteristicOADBlock.isNotifying) return;
+    if (!self.characteristicOADIdentify.isNotifying) return;
+
+    [self beginOAD];
 }
 
 - (void)peripheral:(CBPeripheral *)aPeripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
