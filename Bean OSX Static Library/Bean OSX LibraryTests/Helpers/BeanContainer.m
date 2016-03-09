@@ -139,9 +139,16 @@
     NSData *imageHex = [StatelessUtils bytesFromIntelHexResource:hexName usingBundleForClass:[self class]];
     self.beanDidProgramArduino = [self.testCase expectationWithDescription:@"Sketch uploaded to Bean"];
 
+    NSDate *start = [NSDate date];
     [self.bean programArduinoWithRawHexImage:imageHex andImageName:hexName];
     [self.testCase waitForExpectationsWithTimeout:120 handler:nil];
     self.beanDidProgramArduino = nil;
+    NSDate *finish = [NSDate date];
+
+    NSUInteger bytes = [imageHex length];
+    NSTimeInterval duration = [finish timeIntervalSinceDate:start];
+    float rate = bytes / duration;
+    NSLog(@"Sketch upload complete. %lu bytes, %0.2f seconds, %0.1f bytes/sec", bytes, duration, rate);
 
     return !self.programArduinoError;
 }
