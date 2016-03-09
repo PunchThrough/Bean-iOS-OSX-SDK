@@ -1,11 +1,3 @@
-//
-//  OADDevice.m
-//  BleArduino
-//
-//  Created by Raymond Kampmeier on 8/16/13.
-//  Copyright (c) 2013 Punch Through Design. All rights reserved.
-//
-
 #import "OadProfile.h"
 
 // OAD implementation based on http://processors.wiki.ti.com/images/8/82/OAD_for_CC254x.pdf

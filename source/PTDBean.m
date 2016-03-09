@@ -1,11 +1,3 @@
-//
-//  BeanDevice.m
-//  BleArduino
-//
-//  Created by Raymond Kampmeier on 1/16/14.
-//  Copyright (c) 2014 Punch Through Design. All rights reserved.
-//
-
 #import "PTDBean.h"
 #import "PTDBean+Protected.h"
 #import "PTDBeanManager+Protected.h"
@@ -774,9 +766,6 @@ typedef enum { //These occur in sequence
             BL_MSG_STATUS_T stateMsg;
             [payload getBytes:&stateMsg range:NSMakeRange(0, sizeof(BL_MSG_STATUS_T))];
             BL_HL_STATE_T highLevelState = stateMsg.hlState;
-//            BL_STATE_T internalState = stateMsg.intState;
-//            UInt16 blocks = stateMsg.blocksSent;
-//            UInt16 bytes = stateMsg.bytesSent;
             [self __handleArduinoOADRemoteStateChange:highLevelState];
             break;
         case MSG_ID_CC_GET_AR_POWER:

@@ -1,11 +1,3 @@
-//
-//  OADDevice.h
-//  BleArduino
-//
-//  Created by Raymond Kampmeier on 8/16/13.
-//  Copyright (c) 2013 Punch Through Design. All rights reserved.
-//
-
 #import <Foundation/Foundation.h>
 
 #ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
