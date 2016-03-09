@@ -405,53 +405,49 @@ typedef struct {
 - (void)watchdogTimerFired:(NSTimer *)timer
 {
     if (self.oadState == OADStateIdle) {
-        // watchdog should never be running in idle.
-        PTDLog(@"OAD State idle.");
+        // watchdog should never be running in idle
         [timer invalidate];
         self.watchdogTimer = nil;
     }
-    
-    if (self.watchdogSet) {
-        NSUInteger bytes;
-        float duration;
-        float rate;
-        NSError *error;
 
-        switch (self.oadState) {
-            case OADStateWaitForCompletion:
-                bytes = self.lastImageSize;
-                duration = - [self.downloadStartDate timeIntervalSinceNow] - WATCHDOG_TIMER_INTERVAL;
-                rate = bytes / duration;
-                PTDLog(@"OAD complete. %lu bytes, %0.2f seconds, %0.1f bytes/sec", bytes, duration, rate);
-                break;
-                
-            case OADStateEnableNotify:
-                error = [NSError errorWithDomain:ERROR_DOMAIN
-                                            code:ERROR_CODE
-                                        userInfo:@{NSLocalizedDescriptionKey:@"Timeout configuring OAD characteristics."}];
-                break;
-                
-            case OADStateSendingPackets:
-                if (self.nextBlockRequest == 1) {
-                    PTDLog(@"Bean is resetting to small OAD-only image.");
-                } else {
-                    error = [NSError errorWithDomain:ERROR_DOMAIN
-                                                code:ERROR_CODE
-                                            userInfo:@{NSLocalizedDescriptionKey:@"Timeout sending firmware."}];
-                }
-                break;
-                
-            default:
-                error = [NSError errorWithDomain:ERROR_DOMAIN
-                                            code:ERROR_CODE
-                                        userInfo:@{NSLocalizedDescriptionKey:@"Unexpected watchdog timeout."}];
-                break;
+    // If the watchdog flag isn't set, set it and return.
+    if (!self.watchdogSet) {
+        self.watchdogSet = YES;
+        return;
+    }
+
+    // The watchdog flag is set. That means the flag was not reset since the watchdog fired last time.
+    // This might mean Bean rebooted as expected, or the firmware upload process timed out unexpectedly.
+
+    NSError *error;
+
+    if (self.oadState == OADStateWaitForCompletion) {
+        NSUInteger bytes = self.lastImageSize;
+        float duration = - [self.downloadStartDate timeIntervalSinceNow] - WATCHDOG_TIMER_INTERVAL;
+        float rate = bytes / duration;
+        PTDLog(@"OAD complete. %lu bytes, %0.2f seconds, %0.1f bytes/sec", bytes, duration, rate);
+
+    } else if (self.oadState == OADStateEnableNotify) {
+        error = [NSError errorWithDomain:ERROR_DOMAIN
+                                    code:ERROR_CODE
+                                userInfo:@{NSLocalizedDescriptionKey:@"Timeout configuring OAD characteristics."}];
+
+    } else if (self.oadState == OADStateSendingPackets) {
+        if (self.nextBlockRequest == 1) {
+            PTDLog(@"Bean is resetting to small OAD-only image.");
+        } else {
+            error = [NSError errorWithDomain:ERROR_DOMAIN
+                                        code:ERROR_CODE
+                                    userInfo:@{NSLocalizedDescriptionKey:@"Timeout sending firmware."}];
         }
 
-        [self completeWithError:error];
     } else {
-        self.watchdogSet = YES;
+        error = [NSError errorWithDomain:ERROR_DOMAIN
+                                    code:ERROR_CODE
+                                userInfo:@{NSLocalizedDescriptionKey:@"Unexpected watchdog timeout."}];
     }
+
+    [self completeWithError:error];
 }
 
 @end
