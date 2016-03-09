@@ -68,6 +68,10 @@ typedef struct {
  *  The path to the firmware image that was last offered to Bean for OAD transfer. Bean has not necessarily accepted it.
  */
 @property (strong, nonatomic)   NSString            *lastImageOffered;
+/**
+ *  The size, in bytes, of the last image offered to Bean for OAD transfer
+ */
+@property (nonatomic, assign)   NSUInteger          lastImageSize;
 
 @property (nonatomic)           OADState            oadState;
 @property (strong, nonatomic)   NSTimer             *watchdogTimer;
@@ -322,47 +326,52 @@ typedef struct {
 
 - (void)beginOAD
 {
-    if ( [self.firmwareImages count] > 0 ) {
-        NSString *filename = self.firmwareImages[0];
-        PTDLog(@"Offering firmware image %@", filename);
-        self.lastImageOffered = self.firmwareImages[0];
-        [self.firmwareImages removeObjectAtIndex:0];
-        
-        NSError* error = nil;
-        self.imageData = [NSData dataWithContentsOfFile:filename options:0 error:&error];
-        
-        if (error) {
-            PTDLog(@"Couldn't load firmware file: %@", error);
-        }
-        
-        if (!self.imageData) {
-            [self completeWithError:[NSError errorWithDomain:ERROR_DOMAIN
-                                                        code:ERROR_CODE
-                                                    userInfo:@{NSLocalizedDescriptionKey:@"Couldn't load firmware image."}]];
-            return;
-        }
-        
-        
-        self.totalBlocks = self.imageData.length / sizeof(data_block_t);
-        img_hdr_t *imageHeader = (img_hdr_t *)self.imageData.bytes;
-        
-        NSMutableData *data = [NSMutableData dataWithLength:sizeof(request_oad_header_t)];
-        request_oad_header_t   *request = (request_oad_header_t *)data.bytes;
-        request->ver = imageHeader->ver;
-        request->len = imageHeader->len;
-        memcpy(&request->uid, &imageHeader->uid, sizeof(request->uid));
-        UInt16  reserved[] = {CFSwapInt16HostToLittle(12), CFSwapInt16HostToLittle(15)};
-        memcpy(&request->res, reserved, sizeof(request->res));
-            
-        self.oadState = OADStateSentNewHeader;
-            
-        [peripheral writeValue:data forCharacteristic:self.characteristicOADIdentify type:CBCharacteristicWriteWithoutResponse];
-    } else {
+    // No images left to offer Bean? We can't send an update to Bean.
+    if ([self.firmwareImages count] == 0) {
+        NSString *desc = @"Device rejected all available firmware versions.";
+        PTDLog(@"%@", desc);
         [self completeWithError:[NSError errorWithDomain:ERROR_DOMAIN
                                                     code:ERROR_CODE
-                                                userInfo:@{NSLocalizedDescriptionKey:@"Device rejected all available firmware versions."}]];
-        PTDLog(@"Device rejected all available firmware versions.");
+                                                userInfo:@{NSLocalizedDescriptionKey:desc}]];
+        return;
     }
+
+    // Pick the first firmware image in the list
+    NSString *filename = self.firmwareImages[0];
+    PTDLog(@"Offering firmware image %@", filename);
+    [self.firmwareImages removeObjectAtIndex:0];
+
+    // Load firmware image
+    NSError* error = nil;
+    self.imageData = [NSData dataWithContentsOfFile:filename options:0 error:&error];
+    if (error) {
+        NSString *desc = @"Couldn't load firmware image";
+        PTDLog(@"%@: %@", desc, error);
+        [self completeWithError:[NSError errorWithDomain:ERROR_DOMAIN
+                                                    code:ERROR_CODE
+                                                userInfo:@{NSLocalizedDescriptionKey:desc}]];
+        return;
+    }
+
+    // Get the image header bytes
+    self.totalBlocks = self.imageData.length / sizeof(data_block_t);
+    img_hdr_t *imageHeader = (img_hdr_t *)self.imageData.bytes;
+
+    NSMutableData *data = [NSMutableData dataWithLength:sizeof(request_oad_header_t)];
+    request_oad_header_t *request = (request_oad_header_t *)data.bytes;
+    request->ver = imageHeader->ver;
+    request->len = imageHeader->len;
+    memcpy(&request->uid, &imageHeader->uid, sizeof(request->uid));
+    UInt16 reserved[] = {CFSwapInt16HostToLittle(12), CFSwapInt16HostToLittle(15)};
+    memcpy(&request->res, reserved, sizeof(request->res));
+
+    // Send image header data to Bean to offer this image to Bean
+    self.oadState = OADStateSentNewHeader;
+    [peripheral writeValue:data
+         forCharacteristic:self.characteristicOADIdentify
+                      type:CBCharacteristicWriteWithoutResponse];
+    self.lastImageOffered = filename;
+    self.lastImageSize = [self.imageData length];
 }
 
 - (void)cancel
@@ -403,10 +412,17 @@ typedef struct {
     }
     
     if (self.watchdogSet) {
+        NSUInteger bytes;
+        float duration;
+        float rate;
         NSError *error;
+
         switch (self.oadState) {
             case OADStateWaitForCompletion:
-                PTDLog(@"OAD completed in %f seconds", -[self.downloadStartDate timeIntervalSinceNow]-WATCHDOG_TIMER_INTERVAL);
+                bytes = self.lastImageSize;
+                duration = - [self.downloadStartDate timeIntervalSinceNow] - WATCHDOG_TIMER_INTERVAL;
+                rate = bytes / duration;
+                PTDLog(@"OAD complete. %lu bytes, %0.2f seconds, %0.1f bytes/sec", bytes, duration, rate);
                 break;
                 
             case OADStateEnableNotify:
