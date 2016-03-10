@@ -195,14 +195,16 @@
     __block NSString *hardwareVersion;
     __block NSString *firmwareVersion;
     
-    [self.testCase expectationWithDescription:@"Bean hardware version retrieved"];
-    [self.testCase expectationWithDescription:@"Bean firmware version retrieved"];
+    XCTestExpectation *hwExpect = [self.testCase expectationWithDescription:@"Bean hardware version retrieved"];
+    XCTestExpectation *fwExpect = [self.testCase expectationWithDescription:@"Bean firmware version retrieved"];
 
     [self.bean checkHardwareVersionAvailableWithHandler:^(BOOL hardwareAvailable, NSError *error) {
         hardwareVersion = self.bean.hardwareVersion;
+        [hwExpect fulfill];
     }];
     [self.bean checkFirmwareVersionAvailableWithHandler:^(BOOL firmwareAvailable, NSError *error) {
         firmwareVersion = self.bean.firmwareVersion;
+        [fwExpect fulfill];
     }];
     
     [self.testCase waitForExpectationsWithTimeout:10 handler:nil];
