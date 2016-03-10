@@ -49,7 +49,7 @@
 
 - (BOOL)readHardwareVersion
 {
-    if (self.characteristic_hardware_version) return NO;
+    if (!self.characteristic_hardware_version) return NO;
 
     [peripheral readValueForCharacteristic:self.characteristic_hardware_version];
     return YES;
@@ -57,7 +57,7 @@
 
 - (BOOL)readFirmwareVersion
 {
-    if (self.characteristic_firmware_version) return NO;
+    if (!self.characteristic_firmware_version) return NO;
 
     [peripheral readValueForCharacteristic:self.characteristic_firmware_version];
     return YES;
@@ -131,15 +131,15 @@
     NSString *charValue = [[NSString alloc] initWithData:[characteristic value] encoding:NSUTF8StringEncoding];
 
     if ([characteristic isEqual:self.characteristic_firmware_version]) {
-        PTDLog(@"%@: Device Firmware Version Found: %@", self.class.description, self.firmwareVersion);
         self.firmwareVersion = charValue;
+        PTDLog(@"%@: Device Firmware Version Found: %@", self.class.description, self.firmwareVersion);
         if (self.delegate && [self.delegate respondsToSelector:@selector(firmwareVersionDidUpdate)]) {
             [self.delegate firmwareVersionDidUpdate];
         }
 
     } else if ([characteristic isEqual:self.characteristic_hardware_version]) {
-        PTDLog(@"%@: Device Hardware Version Found: %@", self.class.description, self.hardwareVersion);
         self.hardwareVersion = charValue;
+        PTDLog(@"%@: Device Hardware Version Found: %@", self.class.description, self.hardwareVersion);
         if (self.delegate && [self.delegate respondsToSelector:@selector(hardwareVersionDidUpdate)]) {
             [self.delegate hardwareVersionDidUpdate];
         }
