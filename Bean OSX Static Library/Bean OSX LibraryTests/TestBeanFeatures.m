@@ -6,13 +6,6 @@
 @end
 
 /**
- *  This filter selects Beans with names that start with "TEST_BEAN_"
- */
-static BOOL (^testBeanFilter)(PTDBean *bean) = ^BOOL(PTDBean *bean) {
-    return [bean.name hasPrefix:@"TEST_BEAN_"];
-};
-
-/**
  *  This filter selects Beans named "Bean", the name Bean has out of the box
  */
 static BOOL (^outOfBoxFilter)(PTDBean *bean) = ^BOOL(PTDBean *bean) {
@@ -35,7 +28,7 @@ static BOOL (^outOfBoxFilter)(PTDBean *bean) = ^BOOL(PTDBean *bean) {
  */
 - (void)testBlinkBean
 {
-    BeanContainer *beanContainer = [self containerWithBeanFilter:testBeanFilter andOptions:nil];
+    BeanContainer *beanContainer = [self containerWithBeanFilter:outOfBoxFilter andOptions:nil];
     NSColor *magenta = [NSColor colorWithRed:1 green:0 blue:1 alpha:1];
 
     XCTAssertTrue([beanContainer connect]);
@@ -48,7 +41,7 @@ static BOOL (^outOfBoxFilter)(PTDBean *bean) = ^BOOL(PTDBean *bean) {
  */
 - (void)testUploadSketchToBean
 {
-    BeanContainer *beanContainer = [self containerWithBeanFilter:testBeanFilter andOptions:nil];
+    BeanContainer *beanContainer = [self containerWithBeanFilter:outOfBoxFilter andOptions:nil];
 
     XCTAssertTrue([beanContainer connect]);
     XCTAssertTrue([beanContainer uploadSketch:@"blink"]);
@@ -74,7 +67,7 @@ static BOOL (^outOfBoxFilter)(PTDBean *bean) = ^BOOL(PTDBean *bean) {
  */
 - (void)testBeanHasDeviceInfo
 {
-    BeanContainer *beanContainer = [self containerWithBeanFilter:testBeanFilter andOptions:nil];
+    BeanContainer *beanContainer = [self containerWithBeanFilter:outOfBoxFilter andOptions:nil];
 
     XCTAssertTrue([beanContainer connect]);
     XCTAssertNotNil([beanContainer deviceInfo]);
