@@ -88,13 +88,14 @@
     didDiscoverCharacteristicsForService:(CBService *)service
                                    error:(NSError *)error
 {
+    if (![service isEqual:self.service_deviceInformation]) return;
+ 
     if (error) {
         PTDLog(@"%@: Discovery of Device Information characteristics was unsuccessful", self.class.description);
         return;
     }
     [self __processCharacteristics];
 
-    if (![service isEqual:self.service_deviceInformation]) return;
     if (!self.characteristic_hardware_version) {
         PTDLog(@"%@: Did not find Hardware Version characteristic", self.class.description);
         return;
