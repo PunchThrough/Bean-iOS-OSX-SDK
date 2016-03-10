@@ -886,7 +886,7 @@ typedef enum { //These occur in sequence
 
 - (void)hardwareVersionDidUpdate
 {
-    if (!self.updateInProgress && hardwareVersionAvailableHandler ){
+    if (hardwareVersionAvailableHandler){
         [self checkHardwareVersionAvailableWithHandler:hardwareVersionAvailableHandler];
         hardwareVersionAvailableHandler = nil;
     }
@@ -898,7 +898,9 @@ typedef enum { //These occur in sequence
     [self manageFirmwareUpdateStatus];
     
     // Don't send firmware version back to handler when firmware update is still in progress
-    if (firmwareVersionAvailableHandler && !self.updateInProgress) {
+    if (!self.updateInProgress) return;
+
+    if (firmwareVersionAvailableHandler) {
         [self checkFirmwareVersionAvailableWithHandler:firmwareVersionAvailableHandler];
         firmwareVersionAvailableHandler = nil;
     }
