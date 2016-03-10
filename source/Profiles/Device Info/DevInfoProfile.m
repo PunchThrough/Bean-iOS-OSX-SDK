@@ -2,17 +2,15 @@
 
 @interface DevInfoProfile ()
 
-@property (nonatomic, strong) void (^firmwareVersionCompletion)(void);
-@property (nonatomic, strong) void (^hardwareVersionCompletion)(void);
 @property (nonatomic, strong) CBService *service_deviceInformation;
 @property (nonatomic, strong) CBCharacteristic *characteristic_firmware_version;
 @property (nonatomic, strong) CBCharacteristic *characteristic_hardware_version;
-@property (nonatomic, strong) NSOperationQueue *firmwareVersionQueue;
-@property (nonatomic, strong) NSOperationQueue *hardwareVersionQueue;
 
 @end
 
 @implementation DevInfoProfile
+
+@dynamic delegate;  // Delegate is already synthesized by BleProfile
 
 + (void)load
 {
@@ -26,10 +24,6 @@
     self = [super init];
     if (!self) return nil;
 
-    self.firmwareVersionQueue = [[NSOperationQueue alloc] init];
-    self.hardwareVersionQueue = [[NSOperationQueue alloc] init];
-    self.firmwareVersionQueue.suspended = YES;
-    self.hardwareVersionQueue.suspended = YES;
     self.service_deviceInformation = service;
     peripheral = service.peripheral;
 
@@ -53,49 +47,27 @@
             self.hardwareVersion);
 }
 
-- (void)readFirmwareVersionWithCompletion:(void (^)(void))firmwareVersionCompletion
+- (BOOL)readHardwareVersion
 {
-    [self.firmwareVersionQueue addOperationWithBlock:^{
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            firmwareVersionCompletion();
-        }];
-    }];
+    if (self.characteristic_hardware_version) return NO;
+
+    [peripheral readValueForCharacteristic:self.characteristic_hardware_version];
+    return YES;
 }
 
-- (void)readHardwareVersionWithCompletion:(void (^)(void))hardwareVersionCompletion
+- (BOOL)readFirmwareVersion
 {
-    [self.hardwareVersionQueue addOperationWithBlock:^{
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            hardwareVersionCompletion();
-        }];
-    }];
+    if (self.characteristic_firmware_version) return NO;
+
+    [peripheral readValueForCharacteristic:self.characteristic_firmware_version];
+    return YES;
 }
 
-- (NSString *)firmwareVersion
-{
-    if (self.firmwareVersion) return self.firmwareVersion;
+#pragma mark Private Methods
 
-    // Wait until firmware version is available
-    PTDLog(@"firmwareVersion call blocking.");
-    NSOperation *op = [NSBlockOperation blockOperationWithBlock:^{}];
-    [self.firmwareVersionQueue addOperations:@[ op ] waitUntilFinished:YES];
-    
-    return self.firmwareVersion;
-}
-
-- (NSString *)hardwareVersion
-{
-    if (self.hardwareVersion) return self.hardwareVersion;
-
-    // Wait until hardware version is available
-    PTDLog(@"hardwareVersion call blocking.");
-    NSOperation *op = [NSBlockOperation blockOperationWithBlock:^{}];
-    [self.hardwareVersionQueue addOperations:@[ op ] waitUntilFinished:YES];
-    
-    return _hardwareVersion;
-}
-
-#pragma mark Private Functions
+/**
+ *  Process the characteristics discovered and store the relevant ones into local variables for future use.
+ */
 - (void)__processCharacteristics
 {
     if (!self.service_deviceInformation) return;
@@ -120,15 +92,21 @@
         PTDLog(@"%@: Discovery of Device Information characteristics was unsuccessful", self.class.description);
         return;
     }
-    if (!self.characteristic_hardware_version) return;
-    if (!self.characteristic_firmware_version) return;
-    if (![service isEqual:self.service_deviceInformation]) return;
-
     [self __processCharacteristics];
 
+    if (![service isEqual:self.service_deviceInformation]) return;
+    if (!self.characteristic_hardware_version) {
+        PTDLog(@"%@: Did not find Hardware Version characteristic", self.class.description);
+        return;
+    };
+    if (!self.characteristic_firmware_version) {
+        PTDLog(@"%@: Did not find Firmware Version characteristic", self.class.description);
+        return;
+    };
+
     PTDLog(@"%@: Found all Device Information characteristics", self.class.description);
-    [peripheral readValueForCharacteristic:self.characteristic_firmware_version];
-    [peripheral readValueForCharacteristic:self.characteristic_hardware_version];
+    [self readHardwareVersion];
+    [self readFirmwareVersion];
 }
 
 - (void)peripheral:(CBPeripheral *)peripheral
@@ -149,16 +127,22 @@
         
         return;
     }
+    
+    NSString *charValue = [[NSString alloc] initWithData:[characteristic value] encoding:NSUTF8StringEncoding];
 
     if ([characteristic isEqual:self.characteristic_firmware_version]) {
-        self.firmwareVersion = [[NSString alloc] initWithData:[characteristic value] encoding:NSUTF8StringEncoding];
         PTDLog(@"%@: Device Firmware Version Found: %@", self.class.description, self.firmwareVersion);
-        self.firmwareVersionQueue.suspended = NO;
+        self.firmwareVersion = charValue;
+        if (self.delegate && [self.delegate respondsToSelector:@selector(firmwareVersionDidUpdate)]) {
+            [self.delegate firmwareVersionDidUpdate];
+        }
 
     } else if ([characteristic isEqual:self.characteristic_hardware_version]) {
-        self.hardwareVersion = [[NSString alloc] initWithData:[characteristic value] encoding:NSUTF8StringEncoding];
         PTDLog(@"%@: Device Hardware Version Found: %@", self.class.description, self.hardwareVersion);
-        self.hardwareVersionQueue.suspended = NO;
+        self.hardwareVersion = charValue;
+        if (self.delegate && [self.delegate respondsToSelector:@selector(hardwareVersionDidUpdate)]) {
+            [self.delegate hardwareVersionDidUpdate];
+        }
     }
 }
 

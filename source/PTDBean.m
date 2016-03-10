@@ -19,7 +19,8 @@ typedef enum { //These occur in sequence
     BeanArduinoOADLocalState_Finished,
 } BeanArduinoOADLocalState;
 
-@interface PTDBean () <CBPeripheralDelegate, AppMessagingLayerDelegate, OAD_Delegate, BatteryProfileDelegate>
+@interface PTDBean () <CBPeripheralDelegate, AppMessagingLayerDelegate, OAD_Delegate, BatteryProfileDelegate,
+                       DevInfoProfileDelegate>
 
 #pragma mark - Header readonly overrides
 
@@ -630,6 +631,7 @@ typedef enum { //These occur in sequence
     } else if ([profile isMemberOfClass:[DevInfoProfile class]]) {
         
         deviceInfo_profile = (DevInfoProfile*)profile;
+        profile.delegate = self;
         __weak typeof(self) weakSelf = self;
         [deviceInfo_profile validateWithCompletion: ^(NSError* error) {
             if ( !error)
@@ -637,27 +639,8 @@ typedef enum { //These occur in sequence
                 [weakSelf __profileHasBeenValidated:profile];
             }
         }];
-        
-        [deviceInfo_profile readFirmwareVersionWithCompletion:^{
-            // Continue or complete any firmware update in progress
-            [self manageFirmwareUpdateStatus];
 
-            // Don't send firmware version back to handler when firmware update is still in progress
-            if (firmwareVersionAvailableHandler && !self.updateInProgress) {
-                [self checkFirmwareVersionAvailableWithHandler:firmwareVersionAvailableHandler];
-                firmwareVersionAvailableHandler = nil;
-            }
-        }];
-        
-        [deviceInfo_profile readHardwareVersionWithCompletion:^{
-            if (!self.updateInProgress && hardwareVersionAvailableHandler ){
-                [self checkHardwareVersionAvailableWithHandler:hardwareVersionAvailableHandler];
-                hardwareVersionAvailableHandler = nil;
-            }
-        }];
-        
-    }
-    else if ([profile isMemberOfClass:[GattSerialProfile class]]) {
+    } else if ([profile isMemberOfClass:[GattSerialProfile class]]) {
         gatt_serial_profile = (GattSerialProfile*)profile;
         appMessageLayer = [[AppMessagingLayer alloc] initWithGattSerialProfile:gatt_serial_profile];
         appMessageLayer.delegate = self;
@@ -899,5 +882,26 @@ typedef enum { //These occur in sequence
     }
 }
 
+#pragma mark Device Info Profile callbacks
+
+- (void)hardwareVersionDidUpdate
+{
+    if (!self.updateInProgress && hardwareVersionAvailableHandler ){
+        [self checkHardwareVersionAvailableWithHandler:hardwareVersionAvailableHandler];
+        hardwareVersionAvailableHandler = nil;
+    }
+}
+
+- (void)firmwareVersionDidUpdate
+{
+    // Continue or complete any firmware update in progress
+    [self manageFirmwareUpdateStatus];
+    
+    // Don't send firmware version back to handler when firmware update is still in progress
+    if (firmwareVersionAvailableHandler && !self.updateInProgress) {
+        [self checkFirmwareVersionAvailableWithHandler:firmwareVersionAvailableHandler];
+        firmwareVersionAvailableHandler = nil;
+    }
+}
 
 @end

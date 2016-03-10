@@ -69,6 +69,18 @@ static BOOL (^outOfBoxFilter)(PTDBean *bean) = ^BOOL(PTDBean *bean) {
     XCTAssertTrue([beanContainer disconnect]);
 }
 
+/**
+ *  Test that the Device Info profile has hardware and firmware version strings.
+ */
+- (void)testBeanHasDeviceInfo
+{
+    BeanContainer *beanContainer = [self containerWithBeanFilter:testBeanFilter andOptions:nil];
+
+    XCTAssertTrue([beanContainer connect]);
+    XCTAssertNotNil([beanContainer deviceInfo]);
+    XCTAssertTrue([beanContainer disconnect]);
+}
+
 #pragma mark - Test helpers
 
 /**

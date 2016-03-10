@@ -91,4 +91,11 @@
  */
 - (BOOL)cancelFirmwareUpdate;
 
+/**
+ *  Get the hardware and firmware version strings from Bean.
+ *
+ *  @return A dictionary with keys "hardwareVersion" and "firmwareVersion" if successful, nil if unsuccessful
+ */
+- (NSDictionary *)deviceInfo;
+
 @end

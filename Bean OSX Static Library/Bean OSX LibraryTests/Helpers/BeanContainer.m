@@ -190,6 +190,29 @@
     return !self.firmwareUploadError;
 }
 
+- (NSDictionary *)deviceInfo
+{
+    __block NSString *hardwareVersion;
+    __block NSString *firmwareVersion;
+    
+    [self.testCase expectationWithDescription:@"Bean hardware version retrieved"];
+    [self.testCase expectationWithDescription:@"Bean firmware version retrieved"];
+
+    [self.bean checkHardwareVersionAvailableWithHandler:^(BOOL hardwareAvailable, NSError *error) {
+        hardwareVersion = self.bean.hardwareVersion;
+    }];
+    [self.bean checkFirmwareVersionAvailableWithHandler:^(BOOL firmwareAvailable, NSError *error) {
+        firmwareVersion = self.bean.firmwareVersion;
+    }];
+    
+    [self.testCase waitForExpectationsWithTimeout:10 handler:nil];
+    
+    if (!hardwareVersion) return nil;
+    if (!firmwareVersion) return nil;
+    
+    return @{@"hardwareVersion": hardwareVersion, @"firmwareVersion": firmwareVersion};
+}
+
 #pragma mark - Helpers that depend on BeanContainer state
 
 - (void)printProgressTimeLeft:(NSNumber *)seconds withPercentage:(NSNumber *)percentageComplete
