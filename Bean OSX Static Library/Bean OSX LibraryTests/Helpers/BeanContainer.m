@@ -1,6 +1,7 @@
 #import "BeanContainer.h"
 #import "StatelessUtils.h"
 #import "PTDBean+Protected.h"
+#import "PTDUtils.h"
 
 @interface BeanContainer () <PTDBeanManagerDelegate, PTDBeanExtendedDelegate>
 
@@ -32,6 +33,8 @@
 @property (nonatomic, assign) NSInteger lastPercentagePrinted;
 
 @end
+
+NSString * const firmwareImagesFolder = @"Firmware Images";
 
 @implementation BeanContainer
 
@@ -155,10 +158,11 @@
 
 - (BOOL)updateFirmware
 {
-    NSArray *imagePaths = [StatelessUtils firmwareImagesFromResource:@"Firmware Images"];
+    NSArray *imagePaths = [StatelessUtils firmwareImagesFromResource:firmwareImagesFolder];
+    NSInteger targetVersion = [StatelessUtils firmwareVersionFromResource:firmwareImagesFolder];
     self.beanCompletedFirmwareUpload = [self.testCase expectationWithDescription:@"Firmware updated for Bean"];
-    
-    [self.bean updateFirmwareWithImages:imagePaths];
+
+    [self.bean updateFirmwareWithImages:imagePaths andTargetVersion:targetVersion];
     [self.testCase waitForExpectationsWithTimeout:480 handler:nil];
     self.beanCompletedFirmwareUpload = nil;
     
@@ -167,11 +171,12 @@
 
 - (BOOL)updateFirmwareOnce
 {
-    NSArray *imagePaths = [StatelessUtils firmwareImagesFromResource:@"Firmware Images"];
+    NSArray *imagePaths = [StatelessUtils firmwareImagesFromResource:firmwareImagesFolder];
+    NSInteger targetVersion = [StatelessUtils firmwareVersionFromResource:firmwareImagesFolder];
     NSString *desc = @"Single firmware image uploaded to Bean";
     self.beanCompletedFirmwareUploadOfSingleImage = [self.testCase expectationWithDescription:desc];
     
-    [self.bean updateFirmwareWithImages:imagePaths];
+    [self.bean updateFirmwareWithImages:imagePaths andTargetVersion:targetVersion];
     [self.testCase waitForExpectationsWithTimeout:120 handler:nil];
     self.beanCompletedFirmwareUploadOfSingleImage = nil;
     
@@ -313,8 +318,9 @@
 - (void)beanFoundWithIncompleteFirmware:(PTDBean *)bean
 {
     NSLog(@"Refetching firmware images and restarting update process");
-    NSArray *imagePaths = [StatelessUtils firmwareImagesFromResource:@"Firmware Images"];
-    [self.bean updateFirmwareWithImages:imagePaths];
+    NSArray *imagePaths = [StatelessUtils firmwareImagesFromResource:firmwareImagesFolder];
+    NSInteger targetVersion = [StatelessUtils firmwareVersionFromResource:firmwareImagesFolder];
+    [self.bean updateFirmwareWithImages:imagePaths andTargetVersion:targetVersion];
 }
 
 @end
