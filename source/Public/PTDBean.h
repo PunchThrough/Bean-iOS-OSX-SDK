@@ -366,9 +366,13 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
 - (FirmwareStatus)firmwareUpdateAvailable:(NSInteger)bakedFirmwareVersion error:(NSError * __autoreleasing *)error;
 
 /**
- *  Update the firmware with images
+ *  Update this Bean with a set of asymmetric firmware images.
+ *
+ *  @param images  An array of paths to firmware images for this Bean's hardware variant
+ *  @param version An NSInteger of the parsed datestamp for the firmware images. When Bean reflects this date in its
+ *      Hardware Version characteristic, the firmware version process is complete.
  */
-- (void)updateFirmwareWithImages:(NSArray *)images;
+- (void)updateFirmwareWithImages:(NSArray *)images andTargetVersion:(NSInteger)version;
 
 /**
  *  Cancel firmware update
