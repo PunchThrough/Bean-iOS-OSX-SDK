@@ -1,6 +1,7 @@
 #import "StatelessUtils.h"
 #import <OCMock/OCMock.h>
 #import "PTDIntelHex.h"
+#import "PTDUtils.h"
 
 @implementation StatelessUtils
 
@@ -43,6 +44,22 @@
     }
     
     return firmwarePaths;
+}
+
++ (NSInteger)firmwareVersionFromResource:(NSString *)imageFolder
+{
+    NSString *resourcePath = [[NSBundle bundleForClass:[self class]] resourcePath];
+    NSString *path = [resourcePath stringByAppendingPathComponent:imageFolder];
+    NSLog(@"Path = %@", path);
+
+    NSError *error;
+    NSArray *imageNames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:path error:&error];
+    if (error) {
+        return 0;
+    }
+
+    NSNumber *firstImageDatestamp = [PTDUtils parseLeadingInteger:imageNames[0]];
+    return [firstImageDatestamp integerValue];
 }
 
 + (PTDBean *)fakeBeanWithFirmware:(NSString *)version;

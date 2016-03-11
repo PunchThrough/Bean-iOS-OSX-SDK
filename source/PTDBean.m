@@ -8,6 +8,8 @@
 #import "PTDBeanRadioConfig.h"
 #import "CBPeripheral+RSSI_Universal.h"
 #import "PTDBeanRemoteFirmwareVersionManager.h"
+#import "PTDFirmwareHelper.h"
+#import "PTDUtils.h"
 
 #define ARDUINO_OAD_MAX_CHUNK_SIZE 64
 
@@ -25,6 +27,7 @@ typedef enum { //These occur in sequence
 #pragma mark - Header readonly overrides
 
 @property (nonatomic, readwrite) Boolean updateInProgress;
+@property (nonatomic, assign) NSInteger targetFirmwareVersion;
 
 @end
 
@@ -321,11 +324,6 @@ typedef enum { //These occur in sequence
     }
     [appMessageLayer sendMessageWithID:MSG_ID_BT_GET_CONFIG andPayload:nil];
 }
-
--(BOOL)updateFirmwareWithImagePaths:(NSArray*)firmwareImages{
-    if(!oad_profile)return FALSE;
-    return [oad_profile updateFirmwareWithImagePaths:firmwareImages];
-}
     
 - (void)checkFirmwareVersionAvailableWithHandler:(void (^)(BOOL firmwareAvailable, NSError *error))handler{
     
@@ -350,8 +348,10 @@ typedef enum { //These occur in sequence
     return [PTDFirmwareHelper firmwareUpdateRequiredForBean:self availableFirmware:bakedFirmwareVersion withError:error];
 }
 
-- (void)updateFirmwareWithImages:(NSArray *)images{
-    
+- (void)updateFirmwareWithImages:(NSArray *)images andTargetVersion:(NSInteger)version
+{
+    self.targetFirmwareVersion = version;
+
     if(!oad_profile && self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]) {
         NSError* error = [BEAN_Helper basicError:@"OAD profile not present!" domain:NSStringFromClass([self class]) code:0];
         [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadWithError:error];
@@ -568,40 +568,65 @@ typedef enum { //These occur in sequence
  */
 - (void)manageFirmwareUpdateStatus
 {
-    BOOL runningOadImage = [PTDFirmwareHelper oadImageRunningOnBean:self];
-    
-    if (self.updateInProgress && !runningOadImage) {
+    if ([PTDFirmwareHelper oadImageRunningOnBean:self]) {
+        NSLog(@"Bean is running OAD image. Update required.");
+        if (self.delegate && [self.delegate respondsToSelector:@selector(beanFoundWithIncompleteFirmware:)])
+            [self.delegate beanFoundWithIncompleteFirmware:self];
+        return;
+    }
+
+    if (!self.updateInProgress) {
+        NSLog(@"Bean isn't running OAD image and no update is in progress. No update required.");
+        return;
+    }
+
+    if (!self.targetFirmwareVersion) {
+        NSLog(@"Error: Bean requires update but target firmware version is unknown.");
+        return;
+    }
+
+    // Update in progress. See what the status of Bean is.
+    NSError *error;
+    FirmwareStatus updateStatus = [PTDFirmwareHelper firmwareUpdateRequiredForBean:self
+                                                                 availableFirmware:self.targetFirmwareVersion
+                                                                         withError:&error];
+    if (error) {
+        NSLog(@"Error fetching Bean update status: %@", error);
+        return;
+    }
+
+    if (updateStatus == FirmwareStatusBeanNeedsUpdate) {
+        // Bean is not fully up-to-date, and an update is in progress right now.
+        // This means Bean just reconnected and needs the next image in the update process.
+        if (self.delegate && [self.delegate respondsToSelector:@selector(beanFoundWithIncompleteFirmware:)])
+            [self.delegate beanFoundWithIncompleteFirmware:self];
+
+    } else if (updateStatus == FirmwareStatusUpToDate) {
         // Update was in progress last time Bean disconnected, and the image is no longer an OAD update image.
         // That means the update was successful and Bean is running a fully functional image.
-        [self completeFirmwareUpdate];
+        [self completeFirmwareUpdateWithError:nil];
 
-    } else if (runningOadImage) {
-        // Any Bean that's still running an OAD update image needs to be updated until it's fully functional.
-        [self continueFirmwareUpdate];
+    } else {
+        // Bean has more current firmware than Loader, or Bean firmware update status couldn't be determined
+        NSLog(@"Unexpected Bean update status: FirmwareStatus = %lu", updateStatus);
+        NSError *myError = nil;
+        [self completeFirmwareUpdateWithError:myError];
     }
 }
 
 /**
  *  Called when a Bean that was in the middle of a firmware update process has just reconnected, and it's now running
  *  up to date firmware.
+ *
+ *  @param error nil if everything went OK, an NSError if something went wrong
  */
-- (void)completeFirmwareUpdate
+- (void)completeFirmwareUpdateWithError:(NSError *)error
 {
     firmwareUpdateStartTime = NULL;
     _updateInProgress = FALSE;
     _updateStepNumber = 0;
     if (self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]) {
-        [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadWithError:NULL];
-    }
-}
-
-/**
- *  Called when a Bean has just connected and is still in the middle of a firmware update process.
- */
-- (void)continueFirmwareUpdate
-{
-    if (self.delegate && [self.delegate respondsToSelector:@selector(beanFoundWithIncompleteFirmware:)]){
-        [self.delegate beanFoundWithIncompleteFirmware:self];
+        [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadWithError:error];
     }
 }
     

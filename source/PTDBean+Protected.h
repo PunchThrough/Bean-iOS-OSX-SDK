@@ -21,7 +21,6 @@
 -(id)initWithPeripheral:(CBPeripheral*)peripheral beanManager:(id<PTDBeanManager>)manager;
 
 -(void)setBeanManager:(id<PTDBeanManager>)manager;
--(BOOL)updateFirmwareWithImagePaths:(NSArray*)firmwareImages;
 -(void)setProfilesRequiredToConnect:(NSArray*)classes;
 
 @end

@@ -33,7 +33,7 @@ typedef NS_ENUM(NSUInteger, FirmwareStatus) {
  *      For example, "201501110000_A_BEAN_PLUS.bin" should first be parsed to the integer 201501110000
  *  @param error Pass in an NSError object. If an error occurs, this will be set to the error.
  *      If successful, this will be nil
- *  @return YES if Bean's firmware is out of date, NO if Bean has equivalent or newer firmware, NO if an error occurred
+ *  @return FirmwareStatus that represents the status of Bean's firmware in relation to the available firmware
  */
 + (FirmwareStatus)firmwareUpdateRequiredForBean:(PTDBean *)bean availableFirmware:(NSInteger)version withError:(NSError * __autoreleasing *)error;
 

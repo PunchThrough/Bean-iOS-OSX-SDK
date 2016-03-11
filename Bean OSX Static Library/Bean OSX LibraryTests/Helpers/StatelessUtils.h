@@ -22,10 +22,20 @@
 
 /**
  *  Get the images files from the firmwareImages folder in the test resources folder.
- *  @param  The imageFolder specifies where the .bin files are stored
+ *  @param imageFolder Specifies where the .bin files are stored
  *  @return An NSArray object with the contents of the folder, or nil if the folder couldn't be opened
  */
 + (NSArray *)firmwareImagesFromResource:(NSString *)imageFolder;
+
+/**
+ *  Get the image files from the firmwareImages folder in the test resources folder and return the front datestamp of
+ *  prefixed to the first file.
+ *
+ *  @param imageFolder Specifies where the .bin files are stored
+ *
+ *  @return An NSInteger of the datestamp prefix of the first file listed
+ */
++ (NSInteger)firmwareVersionFromResource:(NSString *)imageFolder;
 
 /**
  *  Returns a stubbed Bean with the given firmware version string.
