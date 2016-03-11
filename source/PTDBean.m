@@ -563,16 +563,18 @@ typedef enum { //These occur in sequence
  */
 - (void)manageFirmwareUpdateStatus
 {
-    BOOL runningOadImage = [PTDFirmwareHelper oadImageRunningOnBean:self];
-    
-    if (self.updateInProgress && !runningOadImage) {
+    BOOL imageUpToDate = NO;
+#warning TODO implement this check to parse Bean's target FW version
+
+    if ([PTDFirmwareHelper oadImageRunningOnBean:self]) {
+        // Any Bean that's still running an OAD update image needs to be updated until it's fully functional.
+        if (self.delegate && [self.delegate respondsToSelector:@selector(beanFoundWithIncompleteFirmware:)])
+            [self.delegate beanFoundWithIncompleteFirmware:self];
+
+    } else if (self.updateInProgress && imageUpToDate) {
         // Update was in progress last time Bean disconnected, and the image is no longer an OAD update image.
         // That means the update was successful and Bean is running a fully functional image.
         [self completeFirmwareUpdate];
-
-    } else if (runningOadImage) {
-        // Any Bean that's still running an OAD update image needs to be updated until it's fully functional.
-        [self continueFirmwareUpdate];
     }
 }
 
@@ -587,16 +589,6 @@ typedef enum { //These occur in sequence
     _updateStepNumber = 0;
     if (self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)]) {
         [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadWithError:NULL];
-    }
-}
-
-/**
- *  Called when a Bean has just connected and is still in the middle of a firmware update process.
- */
-- (void)continueFirmwareUpdate
-{
-    if (self.delegate && [self.delegate respondsToSelector:@selector(beanFoundWithIncompleteFirmware:)]){
-        [self.delegate beanFoundWithIncompleteFirmware:self];
     }
 }
     
