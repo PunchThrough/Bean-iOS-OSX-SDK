@@ -321,11 +321,6 @@ typedef enum { //These occur in sequence
     }
     [appMessageLayer sendMessageWithID:MSG_ID_BT_GET_CONFIG andPayload:nil];
 }
-
--(BOOL)updateFirmwareWithImagePaths:(NSArray*)firmwareImages{
-    if(!oad_profile)return FALSE;
-    return [oad_profile updateFirmwareWithImagePaths:firmwareImages];
-}
     
 - (void)checkFirmwareVersionAvailableWithHandler:(void (^)(BOOL firmwareAvailable, NSError *error))handler{
     
