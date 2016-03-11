@@ -361,21 +361,7 @@ typedef enum { //These occur in sequence
     _updateInProgress = TRUE;
     _updateStepNumber++;
     if (!firmwareUpdateStartTime) firmwareUpdateStartTime = [NSDate date];
-    
-    // Shorter connection interval -> faster transfer
-    PTDBeanRadioConfig *config = [[PTDBeanRadioConfig alloc] init];
-    if (self.radioConfig) {
-        config.power = self.radioConfig.power;
-        config.name = self.radioConfig.name;
-    } else {
-        config.power = PTDTxPower_4dB;
-        config.name = @"Bean";
-    }
-    config.connectionInterval = 20;
-    config.advertisingInterval = 100;
-    config.configSave = FALSE;
-    [self setRadioConfig:config];
-    
+
     PTDLog(@"Updating bean firmware.");
     [oad_profile updateFirmwareWithImagePaths:images];
 }
