@@ -10,14 +10,12 @@
 
 static NSString *PTDFirmwareCheckDateKey = @"PTDFirmwareCheckDateKey";
 static NSString *PTDNewestFirmwareVersionKey = @"PTDNewestFirmwareVersionKey";
-static NSString *PTDFirmwareUrlStringAKey = @"PTDFirmwareUrlStringAKey";
-static NSString *PTDFirmwareUrlStringBKey = @"PTDFirmwareUrlStringBKey";
-static NSString *PTDFirmwareVersionUrlString = @"https://punchthrough.com/files/bean/oad-images/latest.php";
+
+static NSString *PTDFirmwareUrlStringsKey = @"PTDFirmwareUrlStringsKey";
+static NSString *PTDFirmwareVersionUrlString = @"https://punchthrough.com/files/bean/oad-images/v2/";
 
 static NSString *PTDFirmwareVersionJSONKey = @"version";
-static NSString *PTDFirmwareUrlBaseKey = @"url";
-static NSString *PTDFirmwareUrlAKey = @"img_a";
-static NSString *PTDFirmwareUrlBKey = @"img_b";
+static NSString *PTDFirmwareImagesJSONKey = @"images";
 
 static NSString *PTDFirmwareRecentVersionKey = @"__RECENT_VERSION__";
 
@@ -35,11 +33,9 @@ static NSString *PTDFirmwareRecentVersionKey = @"__RECENT_VERSION__";
 @property (nonatomic, copy) PTDFirmwareFetchCompletion fetchCompletion;
 @property (nonatomic, strong) NSDate *firmwareCheckDate;
 @property (nonatomic, strong) NSString *newestFirmwareVersion;
-@property (nonatomic, strong) NSString *firmwareUrlStringA;
-@property (nonatomic, strong) NSString *firmwareUrlStringB;
+@property (nonatomic, strong) NSArray *newestFirmwareImageURLs;
 @property (nonatomic, strong) NSOperationQueue *operationQueue;
-@property (nonatomic, strong) PTDFirmwareURLConnection *connectionA;
-@property (nonatomic, strong) PTDFirmwareURLConnection *connectionB;
+@property (strong) NSMutableArray *connections;
 @property (nonatomic, assign) NSUInteger updateRequestsPending;
 
 @property (nonatomic, strong) NSMutableDictionary *availableVersions;
@@ -97,29 +93,14 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
     return _firmwareCheckDate;
 }
 
-- (NSString *)newestFirmwareVersion
+/*- (NSString *)newestFirmwareVersion
 {
     if ( !_newestFirmwareVersion ) {
         _newestFirmwareVersion = [self cachedNewestFirmwareVersion];
     }
     return _newestFirmwareVersion;
-}
+}*/
 
-- (NSString *)firmwareUrlStringA
-{
-    if ( !_firmwareUrlStringA ) {
-        _firmwareUrlStringA = [self cachedFirmwareUrlStringA];
-    }
-    return _firmwareUrlStringA;
-}
-
-- (NSString *)firmwareUrlStringB
-{
-    if ( !_firmwareUrlStringB ) {
-        _firmwareUrlStringB = [self cachedFirmwareUrlStringB];
-    }
-    return _firmwareUrlStringB;
-}
 
 - (NSURL *)libraryDirectoryURL
 {
@@ -144,7 +125,7 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
 {
     NSURLRequest *firmwareVersionRequest;
     
-    if ( ![self firmwareCheckDate] || fabs([[self firmwareCheckDate] timeIntervalSinceNow]) > 3600. ) {
+    if ( ![self firmwareCheckDate] || ![self newestFirmwareVersion] || fabs([[self firmwareCheckDate] timeIntervalSinceNow]) > 3600 ) {
         firmwareVersionRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:PTDFirmwareVersionUrlString] cachePolicy:NSURLRequestReloadIgnoringLocalCacheData timeoutInterval:10];
         [NSURLConnection sendAsynchronousRequest:firmwareVersionRequest queue:self.operationQueue completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
             NSError *jsonError;
@@ -164,10 +145,9 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
                 return;
             }
             self.newestFirmwareVersion = responseDictionary[PTDFirmwareVersionJSONKey];
-            self.firmwareUrlStringA = responseDictionary[PTDFirmwareUrlBaseKey][PTDFirmwareUrlAKey];
-            self.firmwareUrlStringB = responseDictionary[PTDFirmwareUrlBaseKey][PTDFirmwareUrlBKey];
-            [self saveFirmwareUrlStringA:self.firmwareUrlStringA];
-            [self saveFirmwareUrlStringB:self.firmwareUrlStringB];
+            self.newestFirmwareImageURLs = responseDictionary[PTDFirmwareImagesJSONKey];
+            [self saveFirmwareUrlStrings:self.newestFirmwareImageURLs];
+            PTDLog(@"Firmware image URLS: %@", self.newestFirmwareImageURLs);
             [self saveNewestFirmwareVersion:self.newestFirmwareVersion];
             [self saveFirmwareCheckDate];
             
@@ -187,34 +167,33 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
 
 - (void)fetchFirmwareForVersion:(NSString *)version withCompletion:(PTDFirmwareFetchCompletion)completion
 {
-    NSURL *urlA;
-    NSURL *urlB;
-    NSDictionary *firmwareDictionary;
-    NSString *pathA;
-    NSString *pathB;
-    NSData *imageA;
-    NSData *imageB;
-    
-    firmwareDictionary = self.availableVersions[version];
-    if ( firmwareDictionary ) {
-        pathA = firmwareDictionary[@"filePathA"];
-        pathB = firmwareDictionary[@"filePathB"];
-        imageA = [NSData dataWithContentsOfFile:pathA];
-        imageB = [NSData dataWithContentsOfFile:pathB];
+    NSURL *libraryDirectory = [self libraryDirectoryURL];
+    NSMutableArray *firmwareImages = [NSMutableArray new];
+
+    // Make sure all the expected files are present
+    for (NSString *filename in self.availableVersions[version]) {
+        
+        NSString* firmwarePath = [[libraryDirectory URLByAppendingPathComponent:filename] path];
+        if ([[NSFileManager defaultManager] fileExistsAtPath:firmwarePath])
+            [firmwareImages addObject:firmwarePath];
     }
+
     //when the app is upgraded, we lose the documents, so we double check that we have the firmware that we think we have.
-    if ( imageA && imageB ) {
-        completion(pathA, pathB, nil);
+    if ( [firmwareImages count] > 0 ) {
+        PTDLog(@"Local firmware images: %@", firmwareImages);
+        completion(firmwareImages, nil);
     } else {
-        self.updateVersion = version;
+        PTDLog(@"Fetching firmware images.");
+        self.updateVersion = version;	
         self.fetchCompletion = completion;
         self.updateFailure = NO;
         self.updateInProgress = YES;
-        self.updateRequestsPending = 2;
-        urlA = [NSURL URLWithString:self.firmwareUrlStringA];
-        urlB = [NSURL URLWithString:self.firmwareUrlStringB];
-        self.connectionA = [self requestFirmware:urlA];
-        self.connectionB = [self requestFirmware:urlB];
+        self.updateRequestsPending = 0;
+        self.connections = [NSMutableArray new];
+        for (NSString *firmwareURL in self.newestFirmwareImageURLs) {
+            [self.connections addObject:[self requestFirmware:[NSURL URLWithString:firmwareURL]]];
+            self.updateRequestsPending++;
+        }
     }
 }
 
@@ -246,30 +225,33 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
 - (void)completeUpdate
 {
     if (self.updateFailure) {
-        [self cleanupConnectionData:self.connectionA];
-        [self cleanupConnectionData:self.connectionB];
+        for ( PTDFirmwareURLConnection *connection in self.connections ) {
+            [self cleanupConnectionData:connection];
+        }
         if ( self.fetchCompletion ) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                self.fetchCompletion(nil, nil, nil);
+                self.fetchCompletion(nil, nil);
                 self.fetchCompletion = nil;
             });
         }
     } else {
-        self.availableVersions[self.updateVersion] = @{@"version": self.updateVersion,
-                                                       @"filePathA": self.connectionA.firmwarePath,
-                                                       @"filePathB": self.connectionB.firmwarePath};
+
+        NSMutableArray *result = [NSMutableArray new];
+        for ( PTDFirmwareURLConnection *connection in self.connections ) {
+            [result addObject:connection.filename];
+        }
+        self.availableVersions[self.updateVersion] = result;
         self.availableVersions[PTDFirmwareRecentVersionKey] = self.updateVersion;
         [self.availableVersions writeToURL:self.firmwareVersionsURL atomically:YES];
         if ( self.fetchCompletion ) {
             dispatch_async(dispatch_get_main_queue(), ^{
-                self.fetchCompletion(self.connectionA.firmwarePath, self.connectionB.firmwarePath, nil);
+                [self fetchFirmwareForVersion:self.updateVersion withCompletion:self.fetchCompletion];
                 self.fetchCompletion = nil;
             });
         }
     }
     
-    self.connectionA = nil;
-    self.connectionB = nil;
+    [self.connections removeAllObjects];
     self.updateInProgress = NO;
 }
 
@@ -295,7 +277,7 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
     }
     if ( self.fetchCompletion ) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            self.fetchCompletion(nil, nil, error);
+            self.fetchCompletion(nil, error);
             self.fetchCompletion = nil;
         });
     }
@@ -355,26 +337,16 @@ static PTDBeanRemoteFirmwareVersionManager *_instance = nil;
     return [[NSUserDefaults standardUserDefaults] objectForKey:PTDNewestFirmwareVersionKey];
 }
 
-- (void)saveFirmwareUrlStringA:(NSString *)firmwareUrlString
+- (void)saveFirmwareUrlStrings:(NSArray *)firmwareUrlStrings
 {
-    [[NSUserDefaults standardUserDefaults] setObject:firmwareUrlString forKey:PTDFirmwareUrlStringAKey];
+    [[NSUserDefaults standardUserDefaults] setObject:firmwareUrlStrings forKey:PTDFirmwareUrlStringsKey];
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
 
-- (NSString *)cachedFirmwareUrlStringA
+- (NSString *)cachedFirmwareUrlStrings
 {
-    return [[NSUserDefaults standardUserDefaults] objectForKey:PTDFirmwareUrlStringAKey];
+    return [[NSUserDefaults standardUserDefaults] objectForKey:PTDFirmwareUrlStringsKey];
 }
 
-- (void)saveFirmwareUrlStringB:(NSString *)firmwareUrlString
-{
-    [[NSUserDefaults standardUserDefaults] setObject:firmwareUrlString forKey:PTDFirmwareUrlStringBKey];
-    [[NSUserDefaults standardUserDefaults] synchronize];
-}
-
-- (NSString *)cachedFirmwareUrlStringB
-{
-    return [[NSUserDefaults standardUserDefaults] objectForKey:PTDFirmwareUrlStringBKey];
-}
 
 @end

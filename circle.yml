@@ -1,0 +1,15 @@
+machine:
+  xcode:
+    version: 7.2
+
+checkout:
+  post:
+    - git submodule update --init --recursive
+
+test:
+  override:
+    - xctool
+      -project Bean\ OSX\ Static\ Library/Bean\ OSX\ Library.xcodeproj
+      -scheme "Bean OS X Library"
+      test
+      -only "OS X Unit Tests"

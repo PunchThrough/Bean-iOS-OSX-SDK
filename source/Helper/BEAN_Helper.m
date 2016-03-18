@@ -1,10 +1,17 @@
-//
-//  Helper.m
-//  BleArduino
-//
-//  Created by Raymond Kampmeier on 1/12/14.
-//  Copyright (c) 2014 Punch Through Design. All rights reserved.
-//
+/*
+
+    WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
+
+    This file is CURSED.
+    Stuff in here still works, but this file is known to cause problems with Xcode autocomplete.
+    Don't waste your time trying to fix autocomplete.
+
+    Consider this file DEPRECATED. Don't put new work into this file.
+    If you need to add helper methods, add them to PTDUtils or another helper class.
+
+    WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
+
+*/
 
 #import "BEAN_Helper.h"
 
@@ -45,19 +52,10 @@
         [commandToSend appendBytes:&whole_byte length:1];
     }
     PTDLog(@"Hex to data: %@", commandToSend);
-    
+
     return commandToSend;
 }
 
-/*
-+(const char *) UUIDToString:(CFUUIDRef)UUID
-{
-    if (!UUID) return "NULL";
-    CFStringRef s = CFUUIDCreateString(NULL, UUID);
-    return CFStringGetCStringPtr(s, 0);
-    
-}
- */
 +(const char *) CBUUIDToString:(CBUUID *) UUID
 {
     return [[UUID.data description] cStringUsingEncoding:NSStringEncodingConversionAllowLossy];
@@ -72,7 +70,7 @@
     CFRelease(s);
     return r;
 }
-    
+
 +(NSString *) UUIDToNSString:(CFUUIDRef) UUID
 {
     return [NSString stringWithFormat:@"%s", [self UUIDToString:UUID]];
@@ -96,7 +94,7 @@
 +(UInt16) computeCRC16:(NSData*)data startingCRC:(UInt16)startCrc;
 {
     UInt16 crc =  startCrc;
-    
+
     for (int i = 0; i < [data length]; i++)
     {
         UInt8 byte;
@@ -107,7 +105,7 @@
         crc ^= (crc << 8) << 4;
         crc ^= ((crc & 0xff) << 4) << 1;
     }
-    
+
     return crc;
 }
 
@@ -122,40 +120,3 @@
 }
 
 @end
-
-
-/*
-@interface CBUUID (StringExtraction)
-
-- (NSString *)representativeString;
-
-@end
-
-@implementation CBUUID (StringExtraction)
-
-- (NSString *)representativeString;
-{
-    NSData *data = [self data];
-    
-    NSUInteger bytesToConvert = [data length];
-    const unsigned char *uuidBytes = [data bytes];
-    NSMutableString *outputString = [NSMutableString stringWithCapacity:16];
-    
-    for (NSUInteger currentByteIndex = 0; currentByteIndex < bytesToConvert; currentByteIndex++)
-    {
-        switch (currentByteIndex)
-        {
-            case 3:
-            case 5:
-            case 7:
-            case 9:[outputString appendFormat:@"%02x-", uuidBytes[currentByteIndex]]; break;
-            default:[outputString appendFormat:@"%02x", uuidBytes[currentByteIndex]];
-        }
-        
-    }
-    
-    return outputString;
-}
- 
-@end
- */

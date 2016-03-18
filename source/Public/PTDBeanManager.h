@@ -44,6 +44,13 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
     BeanManagerState_PoweredOn,
 };
 
+/**
+ *  Bean connection options
+ */
+extern NSString * const PTDBeanManagerConnectionOptionAutoReconnect;
+extern NSString * const PTDBeanManagerConnectionOptionConfigSave;
+extern NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect;
+
 @protocol PTDBeanManagerDelegate;
 
 /**
@@ -152,6 +159,14 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
  *  @param error Nil if successful. See <BeanErrors> for error codes.
  */
 -(void)connectToBean:(PTDBean*)bean error:(NSError**)error;
+/**
+ *  Connects to Bean
+ *
+ * @param bean The Bean to connect to
+ * @param options A dictionary of connection options
+ * @param error Nil if successful. See <BeanErrors> for error codes.
+ */
+-(void)connectToBean:(PTDBean*)bean withOptions:(NSDictionary*)options error:(NSError**)error;
 /**
  *  Disconnects from a Bean
  *
