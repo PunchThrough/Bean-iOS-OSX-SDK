@@ -1,0 +1,47 @@
+ _      _       _     _   ____  _              ____
+| |    (_)     | |   | | |  _ \| |            |  _ \
+| |     _  __ _| |__ | |_| |_) | |_   _  ___  | |_) | ___  __ _ _ __
+| |    | |/ _` | '_ \| __|  _ <| | | | |/ _ \ |  _ < / _ \/ _` | '_ \
+| |____| | (_| | | | | |_| |_) | | |_| |  __/ | |_) |  __/ (_| | | | |
+|______|_|\__, |_| |_|\__|____/|_|\__,_|\___| |____/ \___|\__,_|_| |_|
+           __/ |                                  SDK for iOS and OS X
+          |___/
+
+---------------------------------
+1.0.0
+Released on 2016-03-18
+---------------------------------
+
+FEATURES:
+* Unit tests
+  * PTDIntelHex
+  * PTDHardwareLookup
+  * PTDUtils
+  * Stateless test utilities
+* Integration tests
+  * Blink LED
+  * Upload sketch
+  * Update firmware
+  * Device Info profile is present
+* Asymmetric firmware update support
+  We migrated to asymmetric firmware updates for Bean's CC2540. These updates
+  give us more program space which lets us include more Bluetooth features,
+  such as HID over BLE, MIDI over BLE, ANCS and observer mode.
+  This feature is leveraged by Bean Loader for OS X and iOS.
+* PTDIntelHex helper added
+* PTDHardwareLookup helper added
+* PTDUtils helper added (uncategorized utility methods)
+* SDK can automatically reconnect to a disconnected Bean
+  Used by Bean Loaders to reconnect to a Bean during a multi-step asymmetric
+  firmware update.
+
+IMPROVEMENTS:
+* Removed firmware files from SDK
+  Bean Loaders are now responsible for maintaining their own bundled firmware
+  and keeping it in sync with their bundled Arduino Core.
+* Device hardware identification is much more robust. Bean Loaders should use
+  PTDHardwareLookup logic in the future.
+
+BUG FIXES:
+* Device Info properties (Bean hardware and firmware version) no longer block
+  during a connection or firmware update event
