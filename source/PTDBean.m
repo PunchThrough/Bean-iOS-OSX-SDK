@@ -27,6 +27,7 @@ typedef enum { //These occur in sequence
 #pragma mark - Header readonly overrides
 
 @property (nonatomic, readwrite) Boolean updateInProgress;
+@property (nonatomic, readwrite) BOOL uploadInProgress;
 @property (nonatomic, assign) NSInteger targetFirmwareVersion;
 
 @end
@@ -148,6 +149,7 @@ typedef enum { //These occur in sequence
     if(self.state == BeanState_ConnectedAndValidated &&
        self.peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
     {
+        self.uploadInProgress = YES;
         [self __resetArduinoOADLocals];
         arduinoFwImage = hexImage?hexImage:[[NSData alloc] init];
         
@@ -418,6 +420,7 @@ typedef enum { //These occur in sequence
 
 -(void)__alertDelegateOfArduinoOADCompletion:(NSError*)error{
     [self __resetArduinoOADLocals];
+    self.uploadInProgress = NO;
     if(self.delegate){
         if([self.delegate respondsToSelector:@selector(bean:didProgramArduinoWithError:)]){
             [self.delegate bean:self didProgramArduinoWithError:error];
