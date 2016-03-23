@@ -412,9 +412,14 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
   If true, automatically reconnect to this Bean
   */
 @property (nonatomic) Boolean autoReconnect;
+/// @name uploadInProgress;
+/**
+ If true, a sketch upload is in progress
+ */
+@property (nonatomic, readonly) BOOL uploadInProgress;
 /// @name updateInProgress;
 /**
-  If true, an update is in progress
+  If true, a firmware update is in progress
  */
 @property (nonatomic, readonly) Boolean updateInProgress;
 /// @name updateStepNumber

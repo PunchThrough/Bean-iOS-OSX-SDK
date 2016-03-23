@@ -27,6 +27,7 @@ typedef enum { //These occur in sequence
 #pragma mark - Header readonly overrides
 
 @property (nonatomic, readwrite) Boolean updateInProgress;
+@property (nonatomic, readwrite) BOOL uploadInProgress;
 @property (nonatomic, assign) NSInteger targetFirmwareVersion;
 
 @end
@@ -148,6 +149,7 @@ typedef enum { //These occur in sequence
     if(self.state == BeanState_ConnectedAndValidated &&
        self.peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
     {
+        self.uploadInProgress = YES;
         [self __resetArduinoOADLocals];
         arduinoFwImage = hexImage?hexImage:[[NSData alloc] init];
         
@@ -181,7 +183,9 @@ typedef enum { //These occur in sequence
         }
     }else{
         NSError* error = [BEAN_Helper basicError:@"Bean isn't connected" domain:NSStringFromClass([self class]) code:100];
-        [self __alertDelegateOfArduinoOADCompletion:error];
+        if (self.uploadInProgress) {
+            [self __alertDelegateOfArduinoOADCompletion:error];
+        }
     }
 }
 -(void)sendSerialData:(NSData*)data{
@@ -418,6 +422,7 @@ typedef enum { //These occur in sequence
 
 -(void)__alertDelegateOfArduinoOADCompletion:(NSError*)error{
     [self __resetArduinoOADLocals];
+    self.uploadInProgress = NO;
     if(self.delegate){
         if([self.delegate respondsToSelector:@selector(bean:didProgramArduinoWithError:)]){
             [self.delegate bean:self didProgramArduinoWithError:error];
@@ -439,7 +444,9 @@ typedef enum { //These occur in sequence
 }
 -(void)__arduinoOADTimeout:(NSTimer*)timer{
     NSError* error = [BEAN_Helper basicError:@"Sketch upload failed!" domain:NSStringFromClass([self class]) code:0];
-    [self __alertDelegateOfArduinoOADCompletion:error];
+    if (self.uploadInProgress) {
+        [self __alertDelegateOfArduinoOADCompletion:error];
+    }
 }
 
 -(void)__sendArduinoOADChunk{ //Call this once. It will continue until the entire FW has been unloaded
@@ -502,7 +509,9 @@ typedef enum { //These occur in sequence
         case BL_HL_STATE_ERROR:
         {
             NSError *error = [BEAN_Helper basicError:@"Sketch upload failed!" domain:NSStringFromClass([self class]) code:0];
-            [self __alertDelegateOfArduinoOADCompletion:error];
+            if (self.uploadInProgress) {
+                [self __alertDelegateOfArduinoOADCompletion:error];
+            }
             break;
         }
         default:
