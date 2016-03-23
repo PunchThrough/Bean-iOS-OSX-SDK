@@ -8,6 +8,18 @@
           |___/
 
 ---------------------------------
+1.1.0
+Released on 2016-03-23
+---------------------------------
+
+FEATURES:
+* Add uploadInProgress boolean to PTDBean class
+
+BUG FIXES:
+* Limit duplicate calls to __alertDelegateOfArduinoOADCompletion:error to
+  prevent multiple "FW Update Complete" delegate callbacks
+
+---------------------------------
 1.0.0
 Released on 2016-03-18
 ---------------------------------
