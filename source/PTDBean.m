@@ -530,6 +530,7 @@ typedef enum { //These occur in sequence
     
     if([profilesRequiredForConnection isEqualToSet:profilesValidated])
     {
+        self.uploadInProgress = NO;
         if( _beanManager
            && [_beanManager respondsToSelector:@selector(bean:hasBeenValidated_error:)])
         {
