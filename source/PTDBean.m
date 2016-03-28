@@ -366,7 +366,6 @@ typedef enum { //These occur in sequence
     _updateStepNumber++;
     if (!firmwareUpdateStartTime) firmwareUpdateStartTime = [NSDate date];
 
-    PTDLog(@"Updating bean firmware.");
     [oad_profile updateFirmwareWithImagePaths:images];
 }
 
@@ -866,7 +865,14 @@ typedef enum { //These occur in sequence
 
 #pragma mark OAD callbacks
 
-- (void)device:(OadProfile *)device completedFirmwareUploadOfSingleImage:(NSString *)imagePath withError:(NSError *)error
+- (void)device:(OadProfile *)device currentImage:(NSUInteger)index totalImages:(NSUInteger)images imageProgress:(NSUInteger)bytesSent imageSize:(NSUInteger)bytesTotal
+{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(bean:currentImage:totalImages:imageProgress:imageSize:)]) {
+        [(id<PTDBeanExtendedDelegate>)self.delegate bean:self currentImage:index totalImages:images imageProgress:bytesSent imageSize:bytesTotal];
+    }
+}
+
+- (void)device:(OadProfile *)device completedFirmwareUploadOfSingleImage:(NSString *)path imageIndex:(NSUInteger)index totalImages:(NSUInteger)images withError:(NSError *)error
 {
     if (error) {
         PTDLog(@"Error during OAD process: %@", error);
@@ -877,20 +883,14 @@ typedef enum { //These occur in sequence
         return;
     }
 
-    if (self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadOfSingleImage:)])
-        [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadOfSingleImage:imagePath];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadOfSingleImage:imageIndex:totalImages:withError:)])
+        [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadOfSingleImage:path imageIndex:index totalImages:images withError:error];
 }
 
--(void)device:(OadProfile*)device completedFirmwareUploadWithError:(NSError*)error
+- (void)device:(OadProfile*)device completedFirmwareUploadWithError:(NSError*)error
 {
     if (self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadWithError:)])
         [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadWithError:error];
-}
-
--(void)device:(OadProfile*)device OADUploadTimeLeft:(NSNumber*)seconds withPercentage:(NSNumber*)percentageComplete
-{
-    if ( self.delegate && [self.delegate respondsToSelector:@selector(bean:firmwareUploadTimeLeft:withPercentage:)] )
-        [(id<PTDBeanExtendedDelegate>)self.delegate bean:self firmwareUploadTimeLeft:seconds withPercentage:percentageComplete];
 }
 
 #pragma mark Battery Monitoring Delegate callbacks

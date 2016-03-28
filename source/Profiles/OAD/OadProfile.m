@@ -41,12 +41,28 @@ typedef struct {
     UInt8   uid[4];
 } response_oad_header_t;
 
-typedef UInt8 data_block_t[16];
+const static NSUInteger OAD_DATA_BLOCK_SIZE = 16;
+typedef UInt8 data_block_t[OAD_DATA_BLOCK_SIZE];
 
 typedef struct {
     UInt16          nbr;
     data_block_t    block;
 } oad_packet_t;
+
+#pragma mark - OadFirmwareImage object definition
+
+@interface OadFirmwareImage : NSObject
+
+@property (nonatomic, strong)  NSString             *path;
+@property (nonatomic, strong)  NSData               *data;
+
+@end
+
+@implementation OadFirmwareImage
+
+@end
+
+#pragma mark - OadProfile
 
 @interface OadProfile ()
 
@@ -54,16 +70,14 @@ typedef struct {
 @property (strong, nonatomic)   CBCharacteristic    *characteristicOADBlock;
 @property (strong, nonatomic)   CBCharacteristic    *characteristicOADIdentify;
 
-@property (strong, nonatomic)   NSData              *imageData;
-@property (strong, nonatomic)   NSMutableArray      *firmwareImages;
 /**
- *  The path to the firmware image that was last offered to Bean for OAD transfer. Bean has not necessarily accepted it.
+ *  An array of OadFirmwareImage objects containing binary data for firmware images to be offered to Bean
  */
-@property (strong, nonatomic)   NSString            *lastImageOffered;
+@property (nonatomic, strong)   NSArray             *firmwareImages;
 /**
- *  The size, in bytes, of the last image offered to Bean for OAD transfer
+ *  The firmwareImages array index of the last image offered to Bean
  */
-@property (nonatomic, assign)   NSUInteger          lastImageSize;
+@property (nonatomic, assign)   NSUInteger          lastImageOffered;
 
 @property (nonatomic)           OADState            oadState;
 @property (strong, nonatomic)   NSTimer             *watchdogTimer;
@@ -100,29 +114,52 @@ typedef struct {
 
 #pragma mark - PTDOADProfile
 
-- (BOOL)updateFirmwareWithImagePaths:(NSArray*)firmwareImages
+- (BOOL)updateFirmwareWithImagePaths:(NSArray*)firmwareImagePaths
 {
     
-    PTDLog(@"OAD updating firmware with image paths: %@", firmwareImages);
+    PTDLog(@"OAD updating firmware with image paths: %@", firmwareImagePaths);
     
     if (peripheral.state != CBPeripheralStateConnected) {
-        if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadOfSingleImage:withError:)]) {
+        if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadOfSingleImage:imageIndex:totalImages:withError:)]) {
             [self.delegate device:self completedFirmwareUploadOfSingleImage:nil
+                       imageIndex:0
+                      totalImages:0
                         withError:[OadProfile errorWithDesc:@"Device is not connected"]];
         }
         return NO;
     }
     
     if (self.oadState != OADStateIdle) {
-        if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadOfSingleImage:withError:)]) {
+        if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadOfSingleImage:imageIndex:totalImages:withError:)]) {
             [self.delegate device:self completedFirmwareUploadOfSingleImage:nil
+                       imageIndex:0
+                      totalImages:0
                         withError:[OadProfile errorWithDesc:@"Download already started"]];
         }
         return NO;
     }
     
-    self.firmwareImages = [NSMutableArray arrayWithArray:firmwareImages];
-    
+    // Load data for all firmware images
+
+    NSError *error;
+    NSMutableArray *firmwareImages = [[NSMutableArray alloc] init];
+    for (NSString *path in firmwareImagePaths) {
+        NSData *data = [NSData dataWithContentsOfFile:path options:0 error:&error];
+        if (error) {
+            NSString *desc = @"Couldn't load firmware image";
+            PTDLog(@"%@: %@", desc, error);
+            [self completeWithError:[OadProfile errorWithDesc:desc]];
+            return NO;
+        }
+
+        OadFirmwareImage *image = [[OadFirmwareImage alloc] init];
+        image.path = path;
+        image.data = data;
+        [firmwareImages addObject:image];
+    }
+
+    self.firmwareImages = firmwareImages;
+
     self.watchdogSet = NO;
     self.watchdogTimer = [NSTimer scheduledTimerWithTimeInterval:WATCHDOG_TIMER_INTERVAL
                                                           target:self
@@ -175,7 +212,7 @@ typedef struct {
     if (!self.characteristicOADBlock.isNotifying) return;
     if (!self.characteristicOADIdentify.isNotifying) return;
 
-    [self beginOAD];
+    [self offerOneImageUsingFirstImage:YES];
 }
 
 - (void)peripheral:(CBPeripheral *)aPeripheral didUpdateValueForCharacteristic:(CBCharacteristic *)characteristic error:(NSError *)error
@@ -185,7 +222,10 @@ typedef struct {
         UInt16 requestedBlock = CFSwapInt16LittleToHost(*((UInt16 *)characteristic.value.bytes));
         switch (self.oadState) {
             case OADStateSentNewHeader:
-                PTDLog(@"Device accepted image transfer: %@", self.lastImageOffered);
+                PTDLog(@"Device accepted image transfer: %lu of %lu: %@",
+                       self.lastImageOffered + 1,
+                       self.firmwareImages.count,
+                       [[self currentImage].path lastPathComponent]);
                 self.oadState = OADStateSendingPackets;
                 self.nextBlock = 0;
                 self.nextBlockRequest = 0;
@@ -204,8 +244,7 @@ typedef struct {
         switch (self.oadState) {
                 
             case OADStateSentNewHeader:
-
-                [self beginOAD];        // Try next firmware image
+                [self offerOneImageUsingFirstImage:NO];  // Offer the next unoffered image
                 break;
                 
             default:
@@ -245,7 +284,8 @@ typedef struct {
 // Send the requested block number to the OAD Target
 -(void)sendOneBlock:(UInt16)block
 {
-    data_block_t    *imageBlocks = (data_block_t *)self.imageData.bytes;
+    OadFirmwareImage *image = [self currentImage];
+    data_block_t *imageBlocks = (data_block_t *)image.data.bytes;
     NSMutableData *data = [NSMutableData dataWithLength:sizeof(oad_packet_t)];
     oad_packet_t *packet = (oad_packet_t *)data.bytes;
     packet->nbr = CFSwapInt16HostToLittle(block);
@@ -274,11 +314,16 @@ typedef struct {
 
         // Update the delegate on our progress
         if (self.nextBlock) {
-            NSNumber *percentage = [NSNumber numberWithFloat:(self.nextBlock * 1.0) / self.totalBlocks];
-            float secondsSoFar = -[self.downloadStartDate timeIntervalSinceNow];
-            self.leastSeconds = (secondsSoFar / self.nextBlock) * (self.totalBlocks - self.nextBlock);
-            NSNumber *seconds = [NSNumber numberWithFloat:self.leastSeconds];
-            [self.delegate device:self OADUploadTimeLeft:seconds withPercentage:percentage];
+            OadFirmwareImage *currentImage = [self currentImage];
+            NSUInteger currentImageProgress = self.nextBlock * OAD_DATA_BLOCK_SIZE;
+            NSUInteger currentImageTotal = currentImage.data.length;
+            if ([self.delegate respondsToSelector:@selector(device:currentImage:totalImages:imageProgress:imageSize:)]) {
+                [self.delegate device:self
+                         currentImage:self.lastImageOffered
+                          totalImages:self.firmwareImages.count
+                        imageProgress:currentImageProgress
+                            imageSize:currentImageTotal];
+            }
         } else {
             self.downloadStartDate = [NSDate date];
         }
@@ -303,7 +348,7 @@ typedef struct {
     
     if (self.characteristicOADBlock.isNotifying && self.characteristicOADIdentify.isNotifying) {
         // Already enabled
-        [self beginOAD];
+        [self offerOneImageUsingFirstImage:YES];
     } else {
         if (!self.characteristicOADBlock.isNotifying) {
             [peripheral setNotifyValue:YES forCharacteristic:self.characteristicOADBlock];
@@ -314,34 +359,38 @@ typedef struct {
     }
 }
 
-- (void)beginOAD
+/**
+ *  Offer one OAD image to Bean.
+ *
+ *  @param firstImage YES to offer the first image to Bean, NO to offer the next unoffered image
+ */
+- (void)offerOneImageUsingFirstImage:(BOOL)offerFirstImage
 {
+    // Pick the next firmware image in the list
+    NSUInteger imageToOffer;
+    if (offerFirstImage) {
+        imageToOffer = 0;
+    } else {
+        imageToOffer = self.lastImageOffered + 1;
+    }
+
     // No images left to offer Bean? We can't send an update to Bean.
-    if ([self.firmwareImages count] == 0) {
+    if (self.firmwareImages.count == imageToOffer) {
         NSString *desc = @"Device rejected all available firmware versions.";
         PTDLog(@"%@", desc);
         [self completeWithError:[OadProfile errorWithDesc:desc]];
         return;
     }
 
-    // Pick the first firmware image in the list
-    NSString *filename = self.firmwareImages[0];
-    PTDLog(@"Offering firmware image %@", filename);
-    [self.firmwareImages removeObjectAtIndex:0];
-
-    // Load firmware image
-    NSError* error = nil;
-    self.imageData = [NSData dataWithContentsOfFile:filename options:0 error:&error];
-    if (error) {
-        NSString *desc = @"Couldn't load firmware image";
-        PTDLog(@"%@: %@", desc, error);
-        [self completeWithError:[OadProfile errorWithDesc:desc]];
-        return;
-    }
+    OadFirmwareImage *image = self.firmwareImages[imageToOffer];
+    PTDLog(@"Offering firmware image %lu of %lu: %@",
+           imageToOffer + 1,
+           self.firmwareImages.count,
+           [image.path lastPathComponent]);
 
     // Get the image header bytes
-    self.totalBlocks = self.imageData.length / sizeof(data_block_t);
-    img_hdr_t *imageHeader = (img_hdr_t *)self.imageData.bytes;
+    self.totalBlocks = image.data.length / sizeof(data_block_t);
+    img_hdr_t *imageHeader = (img_hdr_t *)image.data.bytes;
 
     NSMutableData *data = [NSMutableData dataWithLength:sizeof(request_oad_header_t)];
     request_oad_header_t *request = (request_oad_header_t *)data.bytes;
@@ -356,8 +405,8 @@ typedef struct {
     [peripheral writeValue:data
          forCharacteristic:self.characteristicOADIdentify
                       type:CBCharacteristicWriteWithoutResponse];
-    self.lastImageOffered = filename;
-    self.lastImageSize = [self.imageData length];
+
+    self.lastImageOffered = imageToOffer;
 }
 
 - (void)cancel
@@ -371,7 +420,6 @@ typedef struct {
 
     self.oadState = OADStateIdle;
     self.downloadStartDate = nil;
-    self.imageData = nil;
 
     [self.watchdogTimer invalidate];
     self.watchdogTimer = nil;
@@ -380,8 +428,12 @@ typedef struct {
     [peripheral setNotifyValue:NO forCharacteristic:self.characteristicOADIdentify];
 
     // We've successfully uploaded a single image
-    if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadOfSingleImage:withError:)]) {
-        [self.delegate device:self completedFirmwareUploadOfSingleImage:self.lastImageOffered withError:nil];
+    if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadOfSingleImage:imageIndex:totalImages:withError:)]) {
+        OadFirmwareImage *image = [self currentImage];
+        [self.delegate device:self completedFirmwareUploadOfSingleImage:image.path
+                   imageIndex:self.lastImageOffered
+                  totalImages:self.firmwareImages.count
+                    withError:nil];
     }
     
     // NOTE: Bean delegate method completedFirmwareUploadWithError is called by PTDBean, NOT OadProfile.
@@ -408,10 +460,15 @@ typedef struct {
     NSError *error;
 
     if (self.oadState == OADStateWaitForCompletion) {
-        NSUInteger bytes = self.lastImageSize;
+        NSUInteger bytes = [self currentImage].data.length;
         float duration = - [self.downloadStartDate timeIntervalSinceNow] - WATCHDOG_TIMER_INTERVAL;
         float rate = bytes / duration;
-        PTDLog(@"OAD complete. %lu bytes, %0.2f seconds, %0.1f bytes/sec", bytes, duration, rate);
+        PTDLog(@"Image %lu of %lu uploaded successfully. %lu bytes, %0.2f seconds, %0.1f bytes/sec",
+               self.lastImageOffered + 1,
+               self.firmwareImages.count,
+               bytes,
+               duration,
+               rate);
 
     } else if (self.oadState == OADStateEnableNotify) {
         error = [OadProfile errorWithDesc:@"Timeout configuring OAD characteristics."];
@@ -428,6 +485,14 @@ typedef struct {
     }
 
     [self completeWithError:error];
+}
+
+/**
+ *  @return the current FirmwareImage being uploaded to Bean
+ */
+- (OadFirmwareImage *)currentImage
+{
+    return self.firmwareImages[self.lastImageOffered];
 }
 
 /**
