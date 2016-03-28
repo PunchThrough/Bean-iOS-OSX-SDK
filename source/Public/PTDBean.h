@@ -617,6 +617,11 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  */
 -(void)readTemperature;
 
+/*
+ *  Erases sketch with completion handler. Used to ensure sketch is cleared before updating from Sym. to Asym. FW
+ */
+- (void)eraseSketchWithHandler:(void (^)(void))handler;
+
 @end
 
 
