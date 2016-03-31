@@ -456,6 +456,7 @@ typedef enum { //These occur in sequence
 -(void)__arduinoOADTimeout:(NSTimer*)timer{
     NSError* error = [BEAN_Helper basicError:@"Sketch upload failed!" domain:NSStringFromClass([self class]) code:0];
     if (self.uploadInProgress) {
+        _sketchName = @"";
         [self __alertDelegateOfArduinoOADCompletion:error];
     }
 }
@@ -521,6 +522,7 @@ typedef enum { //These occur in sequence
         {
             NSError *error = [BEAN_Helper basicError:@"Sketch upload failed!" domain:NSStringFromClass([self class]) code:0];
             if (self.uploadInProgress) {
+                _sketchName = @"";
                 [self __alertDelegateOfArduinoOADCompletion:error];
             }
             break;
