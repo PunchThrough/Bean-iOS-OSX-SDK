@@ -809,6 +809,7 @@ typedef enum { //These occur in sequence
                 // execute sketch erased handler and clear
                 self.sketchErasedHandler([name isEqualToString:@""]);
                 self.sketchErasedHandler = nil;
+                self.uploadInProgress = NO;
             }
             if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateSketchName:dateProgrammed:crc32:)]) {
                 [self.delegate bean:self didUpdateSketchName:name dateProgrammed:date crc32:meta.hexCrc];
