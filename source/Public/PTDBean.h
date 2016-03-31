@@ -620,7 +620,7 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
 /*
  *  Erases sketch with completion handler. Used to ensure sketch is cleared before updating from Sym. to Asym. FW
  */
-- (void)eraseSketchWithHandler:(void (^)(BOOL sketchErased, NSError* error))handler;
+- (void)eraseSketchWithHandler:(void (^)(BOOL sketchErased))handler;
 
 @end
 
