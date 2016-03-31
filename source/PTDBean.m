@@ -432,6 +432,9 @@ typedef enum { //These occur in sequence
 #pragma mark - Private Methods
 
 -(void)__alertDelegateOfArduinoOADCompletion:(NSError*)error{
+    if (error) {
+        _sketchName = @"";
+    }
     [self __resetArduinoOADLocals];
     self.uploadInProgress = NO;
     if(self.delegate){
@@ -456,7 +459,6 @@ typedef enum { //These occur in sequence
 -(void)__arduinoOADTimeout:(NSTimer*)timer{
     NSError* error = [BEAN_Helper basicError:@"Sketch upload failed!" domain:NSStringFromClass([self class]) code:0];
     if (self.uploadInProgress) {
-        _sketchName = @"";
         [self __alertDelegateOfArduinoOADCompletion:error];
     }
 }
@@ -517,12 +519,12 @@ typedef enum { //These occur in sequence
             break;
         case BL_HL_STATE_COMPLETE:
             [self __alertDelegateOfArduinoOADCompletion:nil];
+            
             break;
         case BL_HL_STATE_ERROR:
         {
             NSError *error = [BEAN_Helper basicError:@"Sketch upload failed!" domain:NSStringFromClass([self class]) code:0];
             if (self.uploadInProgress) {
-                _sketchName = @"";
                 [self __alertDelegateOfArduinoOADCompletion:error];
             }
             break;
