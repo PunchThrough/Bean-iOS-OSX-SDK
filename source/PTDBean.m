@@ -29,7 +29,7 @@ typedef enum { //These occur in sequence
 @property (nonatomic, readwrite) Boolean updateInProgress;
 @property (nonatomic, readwrite) BOOL uploadInProgress;
 @property (nonatomic, assign) NSInteger targetFirmwareVersion;
-@property (nonatomic, copy) void (^sketchErasedHandler)(BOOL sketchErased, NSError* error);
+@property (nonatomic, copy) void (^sketchErasedHandler)(BOOL sketchErased);
 
 @end
 
@@ -379,7 +379,7 @@ typedef enum { //These occur in sequence
     }
 }
 
-- (void)eraseSketchWithHandler:(void (^)(BOOL sketchErased, NSError* error))handler{
+- (void)eraseSketchWithHandler:(void (^)(BOOL sketchErased))handler{
     
     // program a nil image and image name to clear sketch
     [self programArduinoWithRawHexImage:nil andImageName:@""];
@@ -805,7 +805,7 @@ typedef enum { //These occur in sequence
             _dateProgrammed = date;
             if (self.sketchErasedHandler) {
                 // execute sketch erased handler and clear
-                self.sketchErasedHandler([name isEqualToString:@""], nil);
+                self.sketchErasedHandler([name isEqualToString:@""]);
                 self.sketchErasedHandler = nil;
             }
             if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateSketchName:dateProgrammed:crc32:)]) {
