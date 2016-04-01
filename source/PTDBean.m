@@ -381,6 +381,11 @@ typedef enum { //These occur in sequence
 
 - (void)eraseSketchWithHandler:(void (^)(BOOL sketchErased))handler{
     
+    if([_sketchName isEqualToString:@""]) {
+        handler(YES);
+        return;
+    }
+     
     // program a nil image and image name to clear sketch
     [self programArduinoWithRawHexImage:nil andImageName:@""];
     [self readArduinoSketchInfo];
