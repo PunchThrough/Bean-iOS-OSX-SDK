@@ -210,11 +210,6 @@ typedef enum { //These occur in sequence
     if(![self connected]) {
         return;
     }
-    NSError *error;
-    if (![config validate:&error]) {
-
-        return;
-    }
     BT_RADIOCONFIG_T raw;
     raw.adv_int = config.advertisingInterval;
     raw.conn_int = config.connectionInterval;
