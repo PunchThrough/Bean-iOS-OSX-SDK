@@ -34,14 +34,22 @@
 
 @protocol OAD_Delegate <NSObject>
 
+@optional
+
 /**
- *  Indicates time remaining in the upload of a single OAD firmware image.
+ *  Indicates upload progress for a single OAD firmware image in a firmware update operation.
  *
- *  @param device             the device receiving the update
- *  @param seconds            estimated time left, in seconds
- *  @param percentageComplete upload progress, from 0.0 to 1.0
+ *  @param device       The OadProfile for the device transferring OAD data
+ *  @param index        The index of the current image being sent to Bean
+ *  @param images       The total number of images being offered to Bean
+ *  @param bytesSent    The number of bytes in the current image that have been sent to Bean
+ *  @param bytesTotal   The number of bytes in the current image
  */
-- (void)device:(OadProfile *)device OADUploadTimeLeft:(NSNumber *)seconds withPercentage:(NSNumber *)percentageComplete;
+- (void)device:(OadProfile *)device
+  currentImage:(NSUInteger)index
+   totalImages:(NSUInteger)images
+ imageProgress:(NSUInteger)bytesSent
+     imageSize:(NSUInteger)bytesTotal;
 
 /**
  *  Called when a single firmware image is successfully uploaded to Bean.
@@ -49,9 +57,11 @@
  *  updating a Bean's firmware will most likely result in multiple calls to this delegate - one for each image uploaded.
  *
  *  @param device The OadProfile for the Bean that completed an image upload
- *  @param imagePath The path to the image that was just transferred to Bean
+ *  @param path The path to the image that was just transferred to Bean
+ *  @param index The index of the image that was just transferred to Bean
+ *  @param images The total number of images being transferred to Bean, including ones that have been sent succesfully
  *  @param error Will be set to an NSError with info if an error occurs, or nil if nothing went wrong
  */
-- (void)device:(OadProfile *)device completedFirmwareUploadOfSingleImage:(NSString *)imagePath withError:(NSError *)error;
+- (void)device:(OadProfile *)device completedFirmwareUploadOfSingleImage:(NSString *)path imageIndex:(NSUInteger)index totalImages:(NSUInteger)images withError:(NSError *)error;
 
 @end
