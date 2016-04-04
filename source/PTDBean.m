@@ -387,11 +387,10 @@ typedef enum { //These occur in sequence
     }
      
     // program a nil image and image name to clear sketch
+    self.sketchErasedHandler = handler;
+    [self setLedColor:[NSColor colorWithRed:0 green:0 blue:0 alpha:1]];
     [self programArduinoWithRawHexImage:nil andImageName:@""];
     [self readArduinoSketchInfo];
-    [self readArduinoPowerState];
-    [self setLedColor:[NSColor colorWithRed:0 green:0 blue:0 alpha:1]];
-    self.sketchErasedHandler = handler;
 }
 
 #pragma mark - Protected Methods
