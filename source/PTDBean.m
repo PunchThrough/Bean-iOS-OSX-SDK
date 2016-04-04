@@ -811,16 +811,21 @@ typedef enum { //These occur in sequence
             NSDate *date = [NSDate dateWithTimeIntervalSince1970:meta.timestamp];
             _sketchName = name;
             _dateProgrammed = date;
+            
+            // if erasing sketch, then clear upload in progress flag
+            // erasing a sketch, uploads a nil hex which means no data transfer occurs
+            // thus, we won't receive any OAD complete callback indicating upload is over
+            if ([name isEqualToString:@""]){
+                self.uploadInProgress = NO;
+            }
+            
             // check for sketch erased handler
             if (self.sketchErasedHandler) {
                 // execute sketch erased handler and clear
-                self.uploadInProgress = NO;
                 self.sketchErasedHandler([name isEqualToString:@""]);
                 self.sketchErasedHandler = nil;
-            } else if ([name isEqualToString:@""]){
-                // if erasing sketch and no handler was set, then clear upload in progress flag
-                self.uploadInProgress = NO;
             }
+            
             if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateSketchName:dateProgrammed:crc32:)]) {
                 [self.delegate bean:self didUpdateSketchName:name dateProgrammed:date crc32:meta.hexCrc];
             }
