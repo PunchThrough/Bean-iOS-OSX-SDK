@@ -150,7 +150,6 @@ typedef enum { //These occur in sequence
     if(self.state == BeanState_ConnectedAndValidated &&
        self.peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
     {
-        self.uploadInProgress = YES;
         [self __resetArduinoOADLocals];
         arduinoFwImage = hexImage?hexImage:[[NSData alloc] init];
         
@@ -178,6 +177,7 @@ typedef enum { //These occur in sequence
 
         localArduinoOADState = BeanArduinoOADLocalState_SendingStartCommand;
         if(imageSize!=0){
+            self.uploadInProgress = YES;
             [self __setArduinoOADTimeout:ARDUINO_OAD_GENERIC_TIMEOUT_SEC];
         }else{
             [self __resetArduinoOADLocals];
@@ -813,14 +813,7 @@ typedef enum { //These occur in sequence
             NSDate *date = [NSDate dateWithTimeIntervalSince1970:meta.timestamp];
             _sketchName = name;
             _dateProgrammed = date;
-            
-            // if erasing sketch, then clear upload in progress flag
-            // erasing a sketch, uploads a nil hex which means no data transfer occurs
-            // thus, we won't receive any OAD complete callback indicating upload is over
-            if ([name isEqualToString:@""]){
-                self.uploadInProgress = NO;
-            }
-            
+
             // check for sketch erased handler
             if (self.sketchErasedHandler) {
                 // execute sketch erased handler and clear
