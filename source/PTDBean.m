@@ -382,7 +382,9 @@ typedef enum { //These occur in sequence
 - (void)eraseSketchWithHandler:(void (^)(BOOL sketchErased))handler{
     
     if([_sketchName isEqualToString:@""]) {
-        handler(YES);
+        if (handler) {
+            handler(YES);
+        }
         return;
     }
      
