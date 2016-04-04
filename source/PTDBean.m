@@ -439,9 +439,6 @@ typedef enum { //These occur in sequence
 #pragma mark - Private Methods
 
 -(void)__alertDelegateOfArduinoOADCompletion:(NSError*)error{
-    if (error) {
-        _sketchName = @"";
-    }
     [self __resetArduinoOADLocals];
     self.uploadInProgress = NO;
     if(self.delegate){
