@@ -28,6 +28,7 @@ typedef enum { //These occur in sequence
 
 @property (nonatomic, readwrite) Boolean updateInProgress;
 @property (nonatomic, readwrite) BOOL uploadInProgress;
+@property (nonatomic, readwrite) NSString *sketchName;
 @property (nonatomic, assign) NSInteger targetFirmwareVersion;
 @property (nonatomic, copy) void (^sketchErasedHandler)(BOOL sketchErased);
 
@@ -381,7 +382,7 @@ typedef enum { //These occur in sequence
 
 - (void)eraseSketchWithHandler:(void (^)(BOOL sketchErased))handler{
     
-    if([_sketchName isEqualToString:@""]) {
+    if([self.sketchName isEqualToString:@""]) {
         if (handler) {
             handler(YES);
         }
@@ -811,7 +812,7 @@ typedef enum { //These occur in sequence
             NSData* nameBytes = [[NSData alloc] initWithBytes:meta.hexName length:nameSize];
             NSString* name = [[NSString alloc] initWithData:nameBytes encoding:NSUTF8StringEncoding];
             NSDate *date = [NSDate dateWithTimeIntervalSince1970:meta.timestamp];
-            _sketchName = name;
+            self.sketchName = name;
             _dateProgrammed = date;
 
             // check for sketch erased handler
