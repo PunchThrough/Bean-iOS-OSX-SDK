@@ -811,11 +811,15 @@ typedef enum { //These occur in sequence
             NSDate *date = [NSDate dateWithTimeIntervalSince1970:meta.timestamp];
             _sketchName = name;
             _dateProgrammed = date;
+            // check for sketch erased handler
             if (self.sketchErasedHandler) {
                 // execute sketch erased handler and clear
                 self.uploadInProgress = NO;
                 self.sketchErasedHandler([name isEqualToString:@""]);
                 self.sketchErasedHandler = nil;
+            } else if ([name isEqualToString:@""]){
+                // if erasing sketch and no handler was set, then clear upload in progress flag
+                self.uploadInProgress = NO;
             }
             if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateSketchName:dateProgrammed:crc32:)]) {
                 [self.delegate bean:self didUpdateSketchName:name dateProgrammed:date crc32:meta.hexCrc];
