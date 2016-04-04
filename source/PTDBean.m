@@ -28,7 +28,9 @@ typedef enum { //These occur in sequence
 
 @property (nonatomic, readwrite) Boolean updateInProgress;
 @property (nonatomic, readwrite) BOOL uploadInProgress;
+@property (nonatomic, readwrite) NSString *sketchName;
 @property (nonatomic, assign) NSInteger targetFirmwareVersion;
+@property (nonatomic, copy) void (^sketchErasedHandler)(BOOL sketchErased);
 
 @end
 
@@ -149,7 +151,6 @@ typedef enum { //These occur in sequence
     if(self.state == BeanState_ConnectedAndValidated &&
        self.peripheral.state == CBPeripheralStateConnected) //This second conditional is an assertion
     {
-        self.uploadInProgress = YES;
         [self __resetArduinoOADLocals];
         arduinoFwImage = hexImage?hexImage:[[NSData alloc] init];
         
@@ -177,6 +178,7 @@ typedef enum { //These occur in sequence
 
         localArduinoOADState = BeanArduinoOADLocalState_SendingStartCommand;
         if(imageSize!=0){
+            self.uploadInProgress = YES;
             [self __setArduinoOADTimeout:ARDUINO_OAD_GENERIC_TIMEOUT_SEC];
         }else{
             [self __resetArduinoOADLocals];
@@ -372,6 +374,22 @@ typedef enum { //These occur in sequence
     }
 }
 
+- (void)eraseSketchWithHandler:(void (^)(BOOL sketchErased))handler{
+    
+    if([self.sketchName isEqualToString:@""]) {
+        if (handler) {
+            handler(YES);
+        }
+        return;
+    }
+     
+    // program a nil image and image name to clear sketch
+    self.sketchErasedHandler = handler;
+    [self setLedColor:[NSColor colorWithRed:0 green:0 blue:0 alpha:1]];
+    [self programArduinoWithRawHexImage:nil andImageName:@""];
+    [self readArduinoSketchInfo];
+}
+
 #pragma mark - Protected Methods
 -(id)initWithPeripheral:(CBPeripheral*)peripheral beanManager:(id<PTDBeanManager>)manager{
     self = [super initWithPeripheral:peripheral];
@@ -499,6 +517,7 @@ typedef enum { //These occur in sequence
             break;
         case BL_HL_STATE_COMPLETE:
             [self __alertDelegateOfArduinoOADCompletion:nil];
+            
             break;
         case BL_HL_STATE_ERROR:
         {
@@ -784,8 +803,16 @@ typedef enum { //These occur in sequence
             NSData* nameBytes = [[NSData alloc] initWithBytes:meta.hexName length:nameSize];
             NSString* name = [[NSString alloc] initWithData:nameBytes encoding:NSUTF8StringEncoding];
             NSDate *date = [NSDate dateWithTimeIntervalSince1970:meta.timestamp];
-            _sketchName = name;
+            self.sketchName = name;
             _dateProgrammed = date;
+
+            // check for sketch erased handler
+            if (self.sketchErasedHandler) {
+                // execute sketch erased handler and clear
+                self.sketchErasedHandler([name isEqualToString:@""]);
+                self.sketchErasedHandler = nil;
+            }
+            
             if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateSketchName:dateProgrammed:crc32:)]) {
                 [self.delegate bean:self didUpdateSketchName:name dateProgrammed:date crc32:meta.hexCrc];
             }
