@@ -270,13 +270,6 @@ NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect    = @"
     }
 }
 -(void)__notifyDelegateOfDisconnectedBean:(PTDBean*)bean error:(NSError*)error{
-    //Deprecated
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    if (self.delegate && [self.delegate respondsToSelector:@selector(BeanManager:didDisconnectBean:error:)]){
-        [self.delegate BeanManager:self didDisconnectBean:bean error:error];
-    }
-#pragma clang diagnostic pop
     if (self.delegate && [self.delegate respondsToSelector:@selector(beanManager:didDisconnectBean:error:)]){
         [self.delegate beanManager:self didDisconnectBean:bean error:error];
     }

@@ -239,10 +239,5 @@ extern NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect;
  *  @param error       This error is passed through from [centralManager:didDisconnectPeripheral:error:](https://developer.apple.com/library/mac/documentation/CoreBluetooth/Reference/CBCentralManagerDelegate_Protocol/translated_content/CBCentralManagerDelegate.html#//apple_ref/occ/intfm/CBCentralManagerDelegate/centralManager:didDisconnectPeripheral:error:)
  */
 - (void)beanManager:(PTDBeanManager*)beanManager didDisconnectBean:(PTDBean*)bean error:(NSError*)error;
-/**
- This method is deprecated. Use <[PTDBeanManager beanManager:didDisconnectBean:error:]> instead.
- @deprecated v0.3.2
- */
-- (void)BeanManager:(PTDBeanManager*)beanManager didDisconnectBean:(PTDBean*)bean error:(NSError*)error __attribute__((deprecated("use beanManager:didDisconnectBean:error:")));
 
 @end
