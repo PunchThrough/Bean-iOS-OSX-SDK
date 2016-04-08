@@ -562,11 +562,6 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  @see [PTDBeanDelegate bean:didUpdateAccelerationAxes:]
  */
 -(void)readAccelerationAxes;
-/**
- This method is deprecated. Use <[PTDBean readAccelerationAxes]> instead.
- @deprecated v0.3.2
- */
--(void)readAccelerationAxis __attribute__((deprecated("use readAccelerationAxes")));
 /// @name Accessing "Scratch" Data
 /**
    Stores data in one of the Bean's scratch banks.
