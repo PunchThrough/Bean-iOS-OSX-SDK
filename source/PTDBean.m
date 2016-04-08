@@ -748,7 +748,6 @@ typedef enum { //These occur in sequence
                 BT_SCRATCH_T rawData;
                 [payload getBytes:&rawData range:NSMakeRange(0, payload.length)];
                 NSData *scratch = [NSData dataWithBytes:rawData.scratch length:payload.length];
-                //This delegate call has been deprecated!
                 if([self.delegate respondsToSelector:@selector(bean:didUpdateScratchBank:data:)]){
                     [self.delegate bean:self didUpdateScratchBank:rawData.number data:scratch];
                 }
