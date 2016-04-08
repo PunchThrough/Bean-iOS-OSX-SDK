@@ -281,11 +281,6 @@ typedef enum { //These occur in sequence
     [appMessageLayer sendMessageWithID:MSG_ID_CC_LED_READ_ALL andPayload:nil];
 }
     
-//This method is deprecated
--(void)setScratchNumber:(NSInteger)scratchNumber withValue:(NSData*)value{
-    [self setScratchBank:scratchNumber data:value];
-}
-    
 -(void)setScratchBank:(NSInteger)bank data:(NSData*)data{
     if(![self connected]) {
         return;

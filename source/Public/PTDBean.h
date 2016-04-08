@@ -570,7 +570,7 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
     // set the scratch bank, 1-5
     int scratchNumber = 1
     // set the scratch data
-    [self.bean setScratchNumber:scratchNumber withValue:[@"scratchdata" dataUsingEncoding:NSUTF8StringEncoding]];
+    [self.bean setScratchBank:scratchNumber withValue:[@"scratchdata" dataUsingEncoding:NSUTF8StringEncoding]];
     // after some time, ask for it back
     [self.bean readScratchBank:scratchNumber];
  
@@ -586,11 +586,6 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  @see [PTDBean readScratchBank:];
  */
 -(void)setScratchBank:(NSInteger)bank data:(NSData*)data;
-/**
- This method is deprecated. Use <[PTDBean setScratchBank:data:]> instead.
- @deprecated v0.3.2
- */
--(void)setScratchNumber:(NSInteger)scratchNumber withValue:(NSData*)value __attribute__((deprecated("use setScratchBank:data:")));
 /**
  *  Requests Bean's current scratch bank data.
  *  @discussion When you call this method to read one of the Bean's scratch banks, the bean calls the [PTDBeanDelegate bean:didUpdateScratchBank:withValue:] method of its delegate object.
