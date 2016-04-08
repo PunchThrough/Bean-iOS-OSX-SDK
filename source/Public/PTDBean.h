@@ -568,11 +568,11 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  
     Example:
     // set the scratch bank, 1-5
-    int scratchNumber = 1
+    int scratchBank = 1
     // set the scratch data
-    [self.bean setScratchBank:scratchNumber withValue:[@"scratchdata" dataUsingEncoding:NSUTF8StringEncoding]];
+    [self.bean setScratchBank:scratchBank withValue:[@"scratchdata" dataUsingEncoding:NSUTF8StringEncoding]];
     // after some time, ask for it back
-    [self.bean readScratchBank:scratchNumber];
+    [self.bean readScratchBank:scratchBank];
  
     // check the delegate value
     -(void)bean:(PTDBean *)bean didUpdateScratchBank:(NSNumber *)number withValue:(NSData *)data {
