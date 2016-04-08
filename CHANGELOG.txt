@@ -8,6 +8,31 @@
           |___/
 
 ---------------------------------
+2.0.0
+Released on 2016-04-08
+---------------------------------
+App Message Definitions: master/369b766 (2014-09-16)
+---------------------------------
+
+FEATURES:
+* Added ability to erase the sketch on Beans with a confirmation handler
+
+IMPROVEMENTS:
+* Changed protected API for firmware updates
+* Removed deprecated methods
+  * BeanManager:didDiscoverBean:
+  * BeanManager:didConnectBean:
+  * BeanManager:didDisconnectBean:
+  * setScratchNumber:withValue:
+  * bean:didUpdateScratchNumber:withValue:
+  * readAccelerationAxis
+* Replaced variable type Boolean with BOOL
+
+BUG FIXES:
+* Removed client-side Bean radio config validation - this is done in
+  firmware, and duplicating it in SDK causes issues
+
+---------------------------------
 1.1.0
 Released on 2016-03-23
 ---------------------------------
