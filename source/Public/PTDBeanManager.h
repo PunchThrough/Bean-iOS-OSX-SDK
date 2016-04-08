@@ -80,7 +80,7 @@ extern NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect;
        }
      }
      // bean discovered
-     - (void)BeanManager:(PTDBeanManager*)beanManager didDiscoverBean:(PTDBean*)bean error:(NSError*)error{
+     - (void)beanManager:(PTDBeanManager*)beanManager didDiscoverBean:(PTDBean*)bean error:(NSError*)error{
        if (error) {
          NSLog(@"%@", [error localizedDescription]);
          return;
@@ -210,7 +210,7 @@ extern NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect;
 
     Example:
     // Manager letting us know a Bean was discovered
-    - (void)BeanManager:(PTDBeanManager*)beanManager didDiscoverBean:(PTDBean*)bean error:(NSError*)error{
+    - (void)beanManager:(PTDBeanManager*)beanManager didDiscoverBean:(PTDBean*)bean error:(NSError*)error{
         NSError* connectError;
         [self.beanManager connectToBean:bean error:&connectError];
         if (connectError) {
@@ -223,11 +223,6 @@ extern NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect;
  @param error       Not implemented yet
  */
 - (void)beanManager:(PTDBeanManager*)beanManager didDiscoverBean:(PTDBean*)bean error:(NSError*)error;
-/**
- This method is deprecated. Use <[PTDBeanManager beanManager:didDiscoverBean:error:]> instead.
- @deprecated v0.3.2
- */
-- (void)BeanManager:(PTDBeanManager*)beanManager didDiscoverBean:(PTDBean*)bean error:(NSError*)error __attribute__((deprecated("use beanManager:didDiscoverBean:errror:")));
 /**
  *  A Bean was connected
  *
