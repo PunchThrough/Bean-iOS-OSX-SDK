@@ -92,7 +92,7 @@ extern NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect;
        }
      }
      // bean connected
-     - (void)BeanManager:(PTDBeanManager*)beanManager didConnectToBean:(PTDBean*)bean error:(NSError*)error{
+     - (void)beanManager:(PTDBeanManager*)beanManager didConnectToBean:(PTDBean*)bean error:(NSError*)error{
        if (error) {
          NSLog(@"%@", [error localizedDescription]);
          return;
