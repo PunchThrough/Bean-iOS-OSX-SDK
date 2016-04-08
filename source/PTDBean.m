@@ -26,7 +26,7 @@ typedef enum { //These occur in sequence
 
 #pragma mark - Header readonly overrides
 
-@property (nonatomic, readwrite) Boolean updateInProgress;
+@property (nonatomic, readwrite) BOOL updateInProgress;
 @property (nonatomic, readwrite) BOOL uploadInProgress;
 @property (nonatomic, readwrite) NSString *sketchName;
 @property (nonatomic, assign) NSInteger targetFirmwareVersion;
@@ -240,10 +240,6 @@ typedef enum { //These occur in sequence
     }
     [appMessageLayer sendMessageWithID:MSG_ID_CC_ACCEL_READ andPayload:nil];
 }
-//Deprecated
--(void)readAccelerationAxis {
-    [self readAccelerationAxes];
-}
 -(void)readBatteryVoltage{
     if(battery_profile){
         [battery_profile readBattery];
@@ -283,11 +279,6 @@ typedef enum { //These occur in sequence
         return;
     }
     [appMessageLayer sendMessageWithID:MSG_ID_CC_LED_READ_ALL andPayload:nil];
-}
-    
-//This method is deprecated
--(void)setScratchNumber:(NSInteger)scratchNumber withValue:(NSData*)value{
-    [self setScratchBank:scratchNumber data:value];
 }
     
 -(void)setScratchBank:(NSInteger)bank data:(NSData*)data{
@@ -757,13 +748,6 @@ typedef enum { //These occur in sequence
                 BT_SCRATCH_T rawData;
                 [payload getBytes:&rawData range:NSMakeRange(0, payload.length)];
                 NSData *scratch = [NSData dataWithBytes:rawData.scratch length:payload.length];
-                //This delegate call has been deprecated!
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-                if([self.delegate respondsToSelector:@selector(bean:didUpdateScratchNumber:withValue:)]){
-                    [self.delegate bean:self didUpdateScratchNumber:@(rawData.number) withValue:scratch];
-                }
-#pragma clang diagnostic pop
                 if([self.delegate respondsToSelector:@selector(bean:didUpdateScratchBank:data:)]){
                     [self.delegate bean:self didUpdateScratchBank:rawData.number data:scratch];
                 }

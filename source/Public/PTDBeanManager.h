@@ -80,7 +80,7 @@ extern NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect;
        }
      }
      // bean discovered
-     - (void)BeanManager:(PTDBeanManager*)beanManager didDiscoverBean:(PTDBean*)bean error:(NSError*)error{
+     - (void)beanManager:(PTDBeanManager*)beanManager didDiscoverBean:(PTDBean*)bean error:(NSError*)error{
        if (error) {
          NSLog(@"%@", [error localizedDescription]);
          return;
@@ -92,7 +92,7 @@ extern NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect;
        }
      }
      // bean connected
-     - (void)BeanManager:(PTDBeanManager*)beanManager didConnectToBean:(PTDBean*)bean error:(NSError*)error{
+     - (void)beanManager:(PTDBeanManager*)beanManager didConnectToBean:(PTDBean*)bean error:(NSError*)error{
        if (error) {
          NSLog(@"%@", [error localizedDescription]);
          return;
@@ -210,7 +210,7 @@ extern NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect;
 
     Example:
     // Manager letting us know a Bean was discovered
-    - (void)BeanManager:(PTDBeanManager*)beanManager didDiscoverBean:(PTDBean*)bean error:(NSError*)error{
+    - (void)beanManager:(PTDBeanManager*)beanManager didDiscoverBean:(PTDBean*)bean error:(NSError*)error{
         NSError* connectError;
         [self.beanManager connectToBean:bean error:&connectError];
         if (connectError) {
@@ -224,11 +224,6 @@ extern NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect;
  */
 - (void)beanManager:(PTDBeanManager*)beanManager didDiscoverBean:(PTDBean*)bean error:(NSError*)error;
 /**
- This method is deprecated. Use <[PTDBeanManager beanManager:didDiscoverBean:error:]> instead.
- @deprecated v0.3.2
- */
-- (void)BeanManager:(PTDBeanManager*)beanManager didDiscoverBean:(PTDBean*)bean error:(NSError*)error __attribute__((deprecated("use beanManager:didDiscoverBean:errror:")));
-/**
  *  A Bean was connected
  *
  *  @param beanManager The BeanManager that connected to an advertising beans
@@ -237,11 +232,6 @@ extern NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect;
  */
 - (void)beanManager:(PTDBeanManager*)beanManager didConnectBean:(PTDBean*)bean error:(NSError*)error;
 /**
- This method is deprecated. Use <[PTDBeanManager beanManager:didConnectToBean:error:]> instead.
- @deprecated v0.3.2
- */
-- (void)BeanManager:(PTDBeanManager*)beanManager didConnectToBean:(PTDBean*)bean error:(NSError*)error __attribute__((deprecated("use beanManager:didConnectBean:error:")));
-/**
  *  A Bean was disconnected
  *
  *  @param beanManager The BeanManager that lost connection with the Bean
@@ -249,10 +239,5 @@ extern NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect;
  *  @param error       This error is passed through from [centralManager:didDisconnectPeripheral:error:](https://developer.apple.com/library/mac/documentation/CoreBluetooth/Reference/CBCentralManagerDelegate_Protocol/translated_content/CBCentralManagerDelegate.html#//apple_ref/occ/intfm/CBCentralManagerDelegate/centralManager:didDisconnectPeripheral:error:)
  */
 - (void)beanManager:(PTDBeanManager*)beanManager didDisconnectBean:(PTDBean*)bean error:(NSError*)error;
-/**
- This method is deprecated. Use <[PTDBeanManager beanManager:didDisconnectBean:error:]> instead.
- @deprecated v0.3.2
- */
-- (void)BeanManager:(PTDBeanManager*)beanManager didDisconnectBean:(PTDBean*)bean error:(NSError*)error __attribute__((deprecated("use beanManager:didDisconnectBean:error:")));
 
 @end

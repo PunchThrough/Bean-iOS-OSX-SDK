@@ -260,37 +260,16 @@ NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect    = @"
     }
 }
 -(void)__notifyDelegateOfDiscoveredBean:(PTDBean*)bean error:(NSError*)error{
-    //Deprecated
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    if (self.delegate && [self.delegate respondsToSelector:@selector(BeanManager:didDiscoverBean:error:)]){
-        [self.delegate BeanManager:self didDiscoverBean:bean error:error];
-    }
-#pragma clang diagnostic pop
     if (self.delegate && [self.delegate respondsToSelector:@selector(beanManager:didDiscoverBean:error:)]){
         [self.delegate beanManager:self didDiscoverBean:bean error:error];
     }
 }
 -(void)__notifyDelegateOfConnectedBean:(PTDBean*)bean error:(NSError*)error{
-    //Deprecated
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    if (self.delegate && [self.delegate respondsToSelector:@selector(BeanManager:didConnectToBean:error:)]){
-        [self.delegate BeanManager:self didConnectToBean:bean error:error];
-    }
-#pragma clang diagnostic pop
     if (self.delegate && [self.delegate respondsToSelector:@selector(beanManager:didConnectBean:error:)]){
         [self.delegate beanManager:self didConnectBean:bean error:error];
     }
 }
 -(void)__notifyDelegateOfDisconnectedBean:(PTDBean*)bean error:(NSError*)error{
-    //Deprecated
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-    if (self.delegate && [self.delegate respondsToSelector:@selector(BeanManager:didDisconnectBean:error:)]){
-        [self.delegate BeanManager:self didDisconnectBean:bean error:error];
-    }
-#pragma clang diagnostic pop
     if (self.delegate && [self.delegate respondsToSelector:@selector(beanManager:didDisconnectBean:error:)]){
         [self.delegate beanManager:self didDisconnectBean:bean error:error];
     }
