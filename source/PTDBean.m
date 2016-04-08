@@ -758,12 +758,6 @@ typedef enum { //These occur in sequence
                 [payload getBytes:&rawData range:NSMakeRange(0, payload.length)];
                 NSData *scratch = [NSData dataWithBytes:rawData.scratch length:payload.length];
                 //This delegate call has been deprecated!
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-                if([self.delegate respondsToSelector:@selector(bean:didUpdateScratchNumber:withValue:)]){
-                    [self.delegate bean:self didUpdateScratchNumber:@(rawData.number) withValue:scratch];
-                }
-#pragma clang diagnostic pop
                 if([self.delegate respondsToSelector:@selector(bean:didUpdateScratchBank:data:)]){
                     [self.delegate bean:self didUpdateScratchBank:rawData.number data:scratch];
                 }

@@ -270,11 +270,6 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  */
 -(void)bean:(PTDBean*)bean didUpdateScratchBank:(NSInteger)bank data:(NSData*)data;
 /**
- This method is deprecated. Use <[PTDBeanDelegate bean:didUpdateScratchBank:data:]> instead.
- @deprecated v0.3.2
- */
--(void)bean:(PTDBean*)bean didUpdateScratchNumber:(NSNumber*)number withValue:(NSData*)data __attribute__((deprecated("use didUpdateScratchBank:data:")));
-/**
  *  Sent in response when information about a Bean's Arduino sketch is requested
  *
  *  @param bean The Bean whose sketch info has been requested.
@@ -585,7 +580,7 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
     [self.bean readScratchBank:scratchNumber];
  
     // check the delegate value
-    -(void)bean:(PTDBean *)bean didUpdateScratchNumber:(NSNumber *)number withValue:(NSData *)data {
+    -(void)bean:(PTDBean *)bean didUpdateScratchBank:(NSNumber *)number withValue:(NSData *)data {
       NSString* str = [NSString stringWithUTF8String:[data bytes]];
       NSString *msg = [NSString stringWithFormat:@"received scratch number:%@ scratch:%@", number, str];
       NSLog(@"%@", msg);
@@ -603,9 +598,9 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
 -(void)setScratchNumber:(NSInteger)scratchNumber withValue:(NSData*)value __attribute__((deprecated("use setScratchBank:data:")));
 /**
  *  Requests Bean's current scratch bank data.
- *  @discussion When you call this method to read one of the Bean's scratch banks, the bean calls the [PTDBeanDelegate bean:didUpdateScratchNumber:withValue:] method of its delegate object.
+ *  @discussion When you call this method to read one of the Bean's scratch banks, the bean calls the [PTDBeanDelegate bean:didUpdateScratchBank:withValue:] method of its delegate object.
  *  @param The index of the scratch bank to request, from 1 to 5.
- *  @see [PTDBeanDelegate bean:didUpdateScratchNumber:withValue:]
+ *  @see [PTDBeanDelegate bean:didUpdateScratchBank:withValue:]
  */
 -(void)readScratchBank:(NSInteger)bank;
 
