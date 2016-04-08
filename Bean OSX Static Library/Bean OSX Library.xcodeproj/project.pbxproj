@@ -22,7 +22,6 @@
 
 /* Begin PBXBuildFile section */
 		2F6B5991196CA72E000CC6E8 /* PTDBleDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 524E2B8C195A0C10007FE17D /* PTDBleDevice.m */; };
-		2FB1B35E1975E29600903F59 /* PTDBleDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 2FB1B35D1975E29600903F59 /* PTDBleDevice.h */; };
 		363A1A881C8A329500B005BD /* TestBeanHelpers.m in Sources */ = {isa = PBXBuildFile; fileRef = 363A1A871C8A329500B005BD /* TestBeanHelpers.m */; };
 		364BD51F1C8F46E40065893B /* BEAN_Helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E9218A9B890002F0C59 /* BEAN_Helper.m */; };
 		364BD5201C8F46E50065893B /* BEAN_Helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E9218A9B890002F0C59 /* BEAN_Helper.m */; };
@@ -605,7 +604,6 @@
 				36DCC8B41C8A227700BCB3C5 /* PTDHardwareLookup.h in Headers */,
 				520A7E141AA0034500CB5B80 /* CBPeripheral+RSSI_Universal.h in Headers */,
 				364BD5231C8F46F80065893B /* PTDFirmwareHelper.h in Headers */,
-				2FB1B35E1975E29600903F59 /* PTDBleDevice.h in Headers */,
 				525AB3E01B7E8135007D6DE1 /* PTDBleDevice+Protected.h in Headers */,
 				364BD5271C8F47690065893B /* PTDUtils.h in Headers */,
 				52BF98A119352E59008DCA31 /* BatteryProfile.h in Headers */,
@@ -693,7 +691,7 @@
 		52D34E1C18A9B455002F0C59 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0500;
+				LastUpgradeCheck = 0730;
 				ORGANIZATIONNAME = "Punch Through Design";
 			};
 			buildConfigurationList = 52D34E1F18A9B455002F0C59 /* Build configuration list for PBXProject "Bean OSX Library" */;
@@ -890,6 +888,7 @@
 				INFOPLIST_FILE = "OS X Unit Tests copy-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(PROJECT_DIR)/Frameworks";
 				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = "Punch-Through-Design.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xctest;
 			};
@@ -910,6 +909,7 @@
 				INFOPLIST_FILE = "OS X Unit Tests copy-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(PROJECT_DIR)/Frameworks";
 				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = "Punch-Through-Design.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xctest;
 			};
@@ -945,6 +945,7 @@
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
@@ -1000,6 +1001,7 @@
 		52D34E4918A9B455002F0C59 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks/OCMock/OSX",
@@ -1013,6 +1015,7 @@
 		52D34E4A18A9B455002F0C59 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks/OCMock/OSX",
@@ -1040,6 +1043,7 @@
 				INFOPLIST_FILE = "Bean OSX LibraryTests/Bean OSX LibraryTests-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(PROJECT_DIR)/Frameworks";
 				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = "Punch-Through-Design.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xctest;
 			};
@@ -1059,6 +1063,7 @@
 				INFOPLIST_FILE = "Bean OSX LibraryTests/Bean OSX LibraryTests-Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(PROJECT_DIR)/Frameworks";
 				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = "Punch-Through-Design.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = xctest;
 			};
