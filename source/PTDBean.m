@@ -26,7 +26,7 @@ typedef enum { //These occur in sequence
 
 #pragma mark - Header readonly overrides
 
-@property (nonatomic, readwrite) Boolean updateInProgress;
+@property (nonatomic, readwrite) BOOL updateInProgress;
 @property (nonatomic, readwrite) BOOL uploadInProgress;
 @property (nonatomic, readwrite) NSString *sketchName;
 @property (nonatomic, assign) NSInteger targetFirmwareVersion;
