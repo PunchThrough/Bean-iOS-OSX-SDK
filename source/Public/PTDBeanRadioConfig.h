@@ -78,14 +78,5 @@
  *  If false, configuration changes will only persist until next Bean reset.
  */
 @property (nonatomic) BOOL configSave;
-/// @name Validation
-/**
- *  Validates a config
- *
- *  @param error See BeanErrors
- *
- *  @return YES if valid, NO if not
- */
--(BOOL)validate:(NSError**)error;
 
 @end

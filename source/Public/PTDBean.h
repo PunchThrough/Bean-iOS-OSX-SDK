@@ -270,11 +270,6 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  */
 -(void)bean:(PTDBean*)bean didUpdateScratchBank:(NSInteger)bank data:(NSData*)data;
 /**
- This method is deprecated. Use <[PTDBeanDelegate bean:didUpdateScratchBank:data:]> instead.
- @deprecated v0.3.2
- */
--(void)bean:(PTDBean*)bean didUpdateScratchNumber:(NSNumber*)number withValue:(NSData*)data __attribute__((deprecated("use didUpdateScratchBank:data:")));
-/**
  *  Sent in response when information about a Bean's Arduino sketch is requested
  *
  *  @param bean The Bean whose sketch info has been requested.
@@ -411,7 +406,7 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
 /**
   If true, automatically reconnect to this Bean
   */
-@property (nonatomic) Boolean autoReconnect;
+@property (nonatomic) BOOL autoReconnect;
 /// @name uploadInProgress;
 /**
  If true, a sketch upload is in progress
@@ -421,7 +416,7 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
 /**
   If true, a firmware update is in progress
  */
-@property (nonatomic, readonly) Boolean updateInProgress;
+@property (nonatomic, readonly) BOOL updateInProgress;
 /// @name updateStepNumber
 /**
  While an update is in progress, the current step number
@@ -567,25 +562,20 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  @see [PTDBeanDelegate bean:didUpdateAccelerationAxes:]
  */
 -(void)readAccelerationAxes;
-/**
- This method is deprecated. Use <[PTDBean readAccelerationAxes]> instead.
- @deprecated v0.3.2
- */
--(void)readAccelerationAxis __attribute__((deprecated("use readAccelerationAxes")));
 /// @name Accessing "Scratch" Data
 /**
    Stores data in one of the Bean's scratch banks.
  
     Example:
     // set the scratch bank, 1-5
-    int scratchNumber = 1
+    int scratchBank = 1
     // set the scratch data
-    [self.bean setScratchNumber:scratchNumber withValue:[@"scratchdata" dataUsingEncoding:NSUTF8StringEncoding]];
+    [self.bean setScratchBank:scratchBank withValue:[@"scratchdata" dataUsingEncoding:NSUTF8StringEncoding]];
     // after some time, ask for it back
-    [self.bean readScratchBank:scratchNumber];
+    [self.bean readScratchBank:scratchBank];
  
     // check the delegate value
-    -(void)bean:(PTDBean *)bean didUpdateScratchNumber:(NSNumber *)number withValue:(NSData *)data {
+    -(void)bean:(PTDBean *)bean didUpdateScratchBank:(NSNumber *)number withValue:(NSData *)data {
       NSString* str = [NSString stringWithUTF8String:[data bytes]];
       NSString *msg = [NSString stringWithFormat:@"received scratch number:%@ scratch:%@", number, str];
       NSLog(@"%@", msg);
@@ -597,15 +587,10 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  */
 -(void)setScratchBank:(NSInteger)bank data:(NSData*)data;
 /**
- This method is deprecated. Use <[PTDBean setScratchBank:data:]> instead.
- @deprecated v0.3.2
- */
--(void)setScratchNumber:(NSInteger)scratchNumber withValue:(NSData*)value __attribute__((deprecated("use setScratchBank:data:")));
-/**
  *  Requests Bean's current scratch bank data.
- *  @discussion When you call this method to read one of the Bean's scratch banks, the bean calls the [PTDBeanDelegate bean:didUpdateScratchNumber:withValue:] method of its delegate object.
+ *  @discussion When you call this method to read one of the Bean's scratch banks, the bean calls the [PTDBeanDelegate bean:didUpdateScratchBank:withValue:] method of its delegate object.
  *  @param The index of the scratch bank to request, from 1 to 5.
- *  @see [PTDBeanDelegate bean:didUpdateScratchNumber:withValue:]
+ *  @see [PTDBeanDelegate bean:didUpdateScratchBank:withValue:]
  */
 -(void)readScratchBank:(NSInteger)bank;
 
@@ -616,6 +601,12 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  *  @see [PTDBeanDelegate bean:didUpdateTemperature:]
  */
 -(void)readTemperature;
+
+/*
+ *  Erases sketch with completion handler. Used to ensure sketch is cleared before updating from Sym. to Asym. FW
+ *  @param The handler to run once the sketch name has been updated. The sketchErased bool indicates whether the erasure was successful or not.
+ */
+- (void)eraseSketchWithHandler:(void (^)(BOOL sketchErased))handler;
 
 @end
 
