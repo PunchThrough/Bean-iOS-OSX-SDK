@@ -116,8 +116,9 @@
     if (!error) {
         UInt8 byte;
         [characteristic.value getBytes:&byte length:1];
-        _batteryVoltage = [self __voltageFromPercentage:[NSNumber numberWithInt:byte]];
-        PTDLog(@"%@: Battery Level Found: %@ Volts", self.class.description, _batteryVoltage);
+        _batteryLevel = [NSNumber numberWithInt:byte];
+        _batteryVoltage = [self __voltageFromPercentage:_batteryLevel];
+        PTDLog(@"%@: Battery Level Found: %@ Volts | %@ %%", self.class.description, _batteryVoltage, _batteryLevel);
         
         if(self.delegate){
             if ([self.delegate respondsToSelector:@selector(batteryProfileDidUpdate)]) {
