@@ -85,6 +85,14 @@ typedef enum { //These occur in sequence
     }
     return nil;
 }
+- (NSNumber*)batteryLevel{
+    if([self connected]
+       && battery_profile
+       && [battery_profile batteryLevel]){
+        return [battery_profile batteryLevel];
+    }
+    return nil;
+}
 -(NSString*)firmwareVersion{
     if(deviceInfo_profile){
         return deviceInfo_profile.firmwareVersion;

@@ -22,6 +22,7 @@
 
 @property (nonatomic, weak) id<BatteryProfileDelegate> delegate;
 @property (nonatomic, strong) NSNumber *batteryVoltage; // Voltage
+@property (nonatomic, strong) NSNumber *batteryLevel; // Level (%), from CHARACTERISTIC_BATTERY_MONITOR_LEVEL
 
 -(void)readBattery;
 

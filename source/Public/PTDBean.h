@@ -504,6 +504,10 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  *  Cached representation of the Bean's battery or power supply voltage. Should call <readBatteryVoltage> first to ensure this data is fresh.
  */
 @property (nonatomic, readonly) NSNumber* batteryVoltage;
+/**
+ *  Cached representation of the Bean's battery or power supply level. Should call <readBatteryVoltage> first to ensure this data is fresh.
+ */
+@property (nonatomic, readonly) NSNumber* batteryLevel;
 
 /// @name Accessing LED colors
 /**
