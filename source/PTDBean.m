@@ -376,7 +376,11 @@ typedef enum { //These occur in sequence
      
     // program a nil image and image name to clear sketch
     self.sketchErasedHandler = handler;
+#if TARGET_OS_IPHONE
+    [self setLedColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:1]];
+#else
     [self setLedColor:[NSColor colorWithRed:0 green:0 blue:0 alpha:1]];
+#endif
     [self programArduinoWithRawHexImage:nil andImageName:@""];
     [self readArduinoSketchInfo];
 }
