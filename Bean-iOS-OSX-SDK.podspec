@@ -13,7 +13,7 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = "7.0"
   s.osx.deployment_target = "10.9"
 
-  s.source       = { :git => "https://github.com/MHeeres/Bean-iOS-OSX-SDK.git", :tag => s.version.to_s, :submodules => true, :branch => ‘batteryLevel’ }
+  s.source       = { :git => "https://github.com/MHeeres/Bean-iOS-OSX-SDK.git", :tag => s.version.to_s, :submodules => true, :branch => 'batteryLevel' }
 
   s.source_files  = "App Message Definitions/*.{h,m}","Bean OSX Static Library/**/*.{h,m}","source","source/**/*.{h,m}"
   s.exclude_files = "Bean OSX Static Library/Bean OSX LibraryTests/**/*.{h,m}"
