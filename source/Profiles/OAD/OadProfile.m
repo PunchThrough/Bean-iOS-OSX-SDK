@@ -338,6 +338,16 @@ typedef struct {
 
     // Watch for last block
     if ( self.nextBlock == self.totalBlocks) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, .5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            // We've successfully sent all blocks for an image
+            if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadOfSingleImage:imageIndex:totalImages:withError:)]) {
+                OadFirmwareImage *image = [self currentImage];
+                [self.delegate device:self completedFirmwareUploadOfSingleImage:image.path
+                           imageIndex:self.lastImageOffered
+                          totalImages:self.firmwareImages.count
+                            withError:nil];
+            }
+        });
         self.oadState = OADStateWaitForCompletion; // Signal the watchdog timer that we expect to timeout, allows OAD Target to re-request last packet
     }
 }
@@ -426,15 +436,6 @@ typedef struct {
 
     [peripheral setNotifyValue:NO forCharacteristic:self.characteristicOADBlock];
     [peripheral setNotifyValue:NO forCharacteristic:self.characteristicOADIdentify];
-
-    // We've successfully uploaded a single image
-    if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadOfSingleImage:imageIndex:totalImages:withError:)]) {
-        OadFirmwareImage *image = [self currentImage];
-        [self.delegate device:self completedFirmwareUploadOfSingleImage:image.path
-                   imageIndex:self.lastImageOffered
-                  totalImages:self.firmwareImages.count
-                    withError:nil];
-    }
     
     // NOTE: Bean delegate method completedFirmwareUploadWithError is called by PTDBean, NOT OadProfile.
     // PTDBean is responsible for handling the recomplete/continue logic.
