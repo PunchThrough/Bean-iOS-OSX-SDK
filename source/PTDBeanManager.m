@@ -184,7 +184,6 @@ NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect    = @"
         [self __notifyDelegateOfDisconnectedBean:bean error:nil];
     }
     
-    if (bean.updateInProgress) [bean cancelFirmwareUpdate];
     bean.autoReconnect = FALSE;
 }
 
