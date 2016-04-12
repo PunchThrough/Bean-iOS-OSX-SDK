@@ -342,17 +342,17 @@ NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect    = @"
     if(!bean)
         return; //This may not be the best way to handle this case
     
+    if(bean.updateInProgress) {
+        // delay reconnect to allow for Bean to power cycle and reboot
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            // reconnect
+            [self connectToBean:bean error:nil];
+        });
+    }
+    
     if (bean.autoReconnect) {
         PTDLog(@"autoReconnecting to %@", bean);
-        if (bean.updateInProgress) {
-            // delay reconnect to allow for Bean to power cycle and reboot
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-                // reconnect
-                [self connectToBean:bean error:nil];
-            });
-        } else {
-            [self connectToBean:bean error:nil];
-        }
+        [self connectToBean:bean error:nil];
     }
     
     //Alert the delegate of the disconnect
