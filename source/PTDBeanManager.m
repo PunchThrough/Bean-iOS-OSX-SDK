@@ -343,14 +343,17 @@ NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect    = @"
         return; //This may not be the best way to handle this case
     
     if(bean.updateInProgress) {
+#if TARGET_OS_IPHONE
         // delay reconnect to allow for Bean to power cycle and reboot
+        // used to work around iOS Bluetooth caching
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
             // reconnect
             [self connectToBean:bean error:nil];
         });
-    }
-    
-    if (bean.autoReconnect) {
+#else 
+        [self connectToBean:bean error:nil];
+#endif
+    }else if (bean.autoReconnect) {
         PTDLog(@"autoReconnecting to %@", bean);
         [self connectToBean:bean error:nil];
     }
