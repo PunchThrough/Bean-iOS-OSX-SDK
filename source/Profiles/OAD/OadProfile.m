@@ -9,7 +9,7 @@
 #define ERROR_DOMAIN                    @"OAD"
 #define ERROR_CODE                      100
 
-#define WATCHDOG_TIMER_INTERVAL         (2)
+#define WATCHDOG_TIMER_INTERVAL         (.5)
 
 typedef NS_ENUM(NSUInteger, OADState) {
     OADStateIdle,
@@ -338,16 +338,6 @@ typedef struct {
 
     // Watch for last block
     if ( self.nextBlock == self.totalBlocks) {
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, .5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            // We've successfully sent all blocks for an image
-            if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadOfSingleImage:imageIndex:totalImages:withError:)]) {
-                OadFirmwareImage *image = [self currentImage];
-                [self.delegate device:self completedFirmwareUploadOfSingleImage:image.path
-                           imageIndex:self.lastImageOffered
-                          totalImages:self.firmwareImages.count
-                            withError:nil];
-            }
-        });
         self.oadState = OADStateWaitForCompletion; // Signal the watchdog timer that we expect to timeout, allows OAD Target to re-request last packet
     }
 }
@@ -470,6 +460,14 @@ typedef struct {
                bytes,
                duration,
                rate);
+        // We've successfully sent all blocks for an image
+        if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadOfSingleImage:imageIndex:totalImages:withError:)]) {
+            OadFirmwareImage *image = [self currentImage];
+            [self.delegate device:self completedFirmwareUploadOfSingleImage:image.path
+                       imageIndex:self.lastImageOffered
+                      totalImages:self.firmwareImages.count
+                        withError:nil];
+        }
 
     } else if (self.oadState == OADStateEnableNotify) {
         error = [OadProfile errorWithDesc:@"Timeout configuring OAD characteristics."];
