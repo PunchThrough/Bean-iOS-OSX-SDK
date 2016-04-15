@@ -427,6 +427,15 @@ typedef struct {
     [peripheral setNotifyValue:NO forCharacteristic:self.characteristicOADBlock];
     [peripheral setNotifyValue:NO forCharacteristic:self.characteristicOADIdentify];
     
+    // We've successfully sent all blocks for an image
+    if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadOfSingleImage:imageIndex:totalImages:withError:)]) {
+        OadFirmwareImage *image = [self currentImage];
+        [self.delegate device:self completedFirmwareUploadOfSingleImage:image.path
+                   imageIndex:self.lastImageOffered
+                  totalImages:self.firmwareImages.count
+                    withError:error];
+    }
+    
     // NOTE: Bean delegate method completedFirmwareUploadWithError is called by PTDBean, NOT OadProfile.
     // PTDBean is responsible for handling the recomplete/continue logic.
 }
@@ -460,14 +469,6 @@ typedef struct {
                bytes,
                duration,
                rate);
-        // We've successfully sent all blocks for an image
-        if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadOfSingleImage:imageIndex:totalImages:withError:)]) {
-            OadFirmwareImage *image = [self currentImage];
-            [self.delegate device:self completedFirmwareUploadOfSingleImage:image.path
-                       imageIndex:self.lastImageOffered
-                      totalImages:self.firmwareImages.count
-                        withError:nil];
-        }
 
     } else if (self.oadState == OADStateEnableNotify) {
         error = [OadProfile errorWithDesc:@"Timeout configuring OAD characteristics."];
