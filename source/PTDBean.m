@@ -899,8 +899,11 @@ typedef enum { //These occur in sequence
      CoreBluetooth callback occurs when the OS notices the device went missing) iOS reuses the last GATT table. By
      explicitly disconnecting, we force iOS to clear its GATT cache and read the new GATT table.
      */
+#if TARGET_OS_IPHONE
     [self.beanManager disconnectBean:self cancelUpdate:NO error:&error];
-
+#else
+#endif
+    
     if (self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadOfSingleImage:imageIndex:totalImages:withError:)])
         [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadOfSingleImage:path imageIndex:index totalImages:images withError:error];
 }
