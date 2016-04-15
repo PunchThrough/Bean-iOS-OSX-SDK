@@ -8,8 +8,20 @@
 
 #define ERROR_DOMAIN                    @"OAD"
 #define ERROR_CODE                      100
-
+/*
+ iOS only: When the last block is sent, we can't wait too long for the device to disconnect and reboot. iOS does some
+ strange undocumented BLE GATT caching. If we wait too long, the device power cycles - when iOS reconnects, it expects
+ the device to have the same GATT table.
+ 
+ The workaround is for iOS to explicitly disconnect from Bean before Bean power cycles. To do this, we have to reduce
+ the watchdog timer that fires the on-complete delegate method so that PTDBeanManager can disconnect from our hardware.
+ In our experience, 2.0 seconds is too long but 0.5 seconds works fine.
+ */
+#if TARGET_OS_IPHONE
+#define WATCHDOG_TIMER_INTERVAL         (0.5)
+#else
 #define WATCHDOG_TIMER_INTERVAL         (2)
+#endif
 
 typedef NS_ENUM(NSUInteger, OADState) {
     OADStateIdle,
@@ -426,14 +438,13 @@ typedef struct {
 
     [peripheral setNotifyValue:NO forCharacteristic:self.characteristicOADBlock];
     [peripheral setNotifyValue:NO forCharacteristic:self.characteristicOADIdentify];
-
-    // We've successfully uploaded a single image
+    
     if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadOfSingleImage:imageIndex:totalImages:withError:)]) {
         OadFirmwareImage *image = [self currentImage];
         [self.delegate device:self completedFirmwareUploadOfSingleImage:image.path
                    imageIndex:self.lastImageOffered
                   totalImages:self.firmwareImages.count
-                    withError:nil];
+                    withError:error];
     }
     
     // NOTE: Bean delegate method completedFirmwareUploadWithError is called by PTDBean, NOT OadProfile.

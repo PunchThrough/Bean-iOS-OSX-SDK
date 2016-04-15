@@ -158,7 +158,13 @@ NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect    = @"
     [cbcentralmanager connectPeripheral:bean.peripheral options:nil];
 }
 
--(void)disconnectBean:(PTDBean*)bean_ error:(NSError**)error{
+-(void)disconnectBean:(PTDBean*)bean error:(NSError**)error
+{
+    [self disconnectBean:bean cancelUpdate:YES error:error];
+}
+
+-(void)disconnectBean:(PTDBean *)bean_ cancelUpdate:(BOOL)cancelUpdate error:(NSError **)error
+{
     //Find BeanPeripheral that corresponds to this UUID
     PTDBean* bean = [beanRecords objectForKey:bean_.identifier];
     //Check if the device isn't currently connected
@@ -184,7 +190,7 @@ NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect    = @"
         [self __notifyDelegateOfDisconnectedBean:bean error:nil];
     }
     
-    if (bean.updateInProgress) [bean cancelFirmwareUpdate];
+    if (bean.updateInProgress && cancelUpdate) [bean cancelFirmwareUpdate];
     bean.autoReconnect = FALSE;
 }
 
@@ -342,12 +348,35 @@ NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect    = @"
     
     if(!bean)
         return; //This may not be the best way to handle this case
-    
-    if ( bean.autoReconnect || bean.updateInProgress ) {
-     PTDLog(@"autoReconnecting to %@", bean);
-     [self connectToBean:bean error:nil];
+
+#if TARGET_OS_IPHONE
+
+    if (bean.updateInProgress) {
+        /*
+         If we reconnect to Bean too quickly, we will reuse the old GATT table. During an update, we expect the GATT
+         table to change, and using the cached GATT table will cause unexpected behavior. By waiting until Bean has
+         reset fully before attempting to connect again, we ensure that iOS doesn't use the cached table.
+         */
+        PTDLog(@"Auto-reconnecting to %@ in 2 seconds", bean);
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            PTDLog(@"Auto-reconnecting to %@", bean);
+            [self connectToBean:bean error:nil];
+        });
+
+    } else if (bean.autoReconnect) {
+        PTDLog(@"Auto-reconnecting to %@", bean);
+        [self connectToBean:bean error:nil];
     }
-    
+
+#else
+
+    if (bean.updateInProgress || bean.autoReconnect) {
+        PTDLog(@"Auto-reconnecting to %@", bean);
+        [self connectToBean:bean error:nil];
+    }
+
+#endif
+
     //Alert the delegate of the disconnect
     [self __notifyDelegateOfDisconnectedBean:bean error:error];
 }
