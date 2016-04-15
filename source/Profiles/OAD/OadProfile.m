@@ -427,7 +427,6 @@ typedef struct {
     [peripheral setNotifyValue:NO forCharacteristic:self.characteristicOADBlock];
     [peripheral setNotifyValue:NO forCharacteristic:self.characteristicOADIdentify];
     
-    // We've successfully sent all blocks for an image
     if ([self.delegate respondsToSelector:@selector(device:completedFirmwareUploadOfSingleImage:imageIndex:totalImages:withError:)]) {
         OadFirmwareImage *image = [self currentImage];
         [self.delegate device:self completedFirmwareUploadOfSingleImage:image.path
