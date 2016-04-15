@@ -168,7 +168,7 @@ extern NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect;
  */
 -(void)connectToBean:(PTDBean*)bean withOptions:(NSDictionary*)options error:(NSError**)error;
 /**
- *  Disconnects from a Bean
+ *  Disconnects from a Bean. This will cancel any firmware update in progress.
  *
  *  @param bean  The Bean to disconnect from
  *  @param error Nil if successful. See <BeanErrors> for error codes.
