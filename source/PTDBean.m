@@ -892,6 +892,9 @@ typedef enum { //These occur in sequence
         [self device:device completedFirmwareUploadWithError:error];
         return;
     }
+    
+    // Disconnect from Bean between firmware image transfers without canceling update
+    [self.beanManager disconnectBean:self cancelUpdate:NO error:&error];
 
     if (self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadOfSingleImage:imageIndex:totalImages:withError:)])
         [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadOfSingleImage:path imageIndex:index totalImages:images withError:error];
