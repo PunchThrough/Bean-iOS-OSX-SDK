@@ -126,6 +126,21 @@ typedef NS_ENUM(NSInteger, PTDBleDeviceState) {
 
 
 @protocol PTDBleDeviceDelegate <NSObject>
+
+/**
+ *  Sent when the following Core Bluetooth error occurs:
+ *  Error: {Domain=CBATTErrorDomain Code=1 UserInfo={NSLocalizedDescription=The handle is invalid.}}
+ *
+ *  "The attribute handle is invalid on this peripheral." This error is usually hard to recover from without power cycling the device's Bluetooth to clear the GATT cache.
+ *
+ *  See https://developer.apple.com/library/ios/documentation/CoreBluetooth/Reference/CoreBluetooth_Constants/#//apple_ref/c/tdef/CBATTError
+ *
+ *  @param device The device for which this error occurred
+ *  @param peripheral The peripheral for which this error occurred
+ *  @param descriptor The descriptor for which this error occurred
+ */
+- (void)handleIsInvalidForDevice:(PTDBleDevice *)device peripheral:(CBPeripheral *)peripheral descriptor:(CBDescriptor *)descriptor;
+
 @optional
 /**
  *  Sent in response when a Device's RSSI is requested
