@@ -900,7 +900,10 @@ typedef enum { //These occur in sequence
      explicitly disconnecting, we force iOS to clear its GATT cache and read the new GATT table.
      */
 #if TARGET_OS_IPHONE
-    [self.beanManager disconnectBean:self cancelUpdate:NO error:&error];
+    if (self.updateInProgress) {
+        // only disconnect if doing FW update
+        [self.beanManager disconnectBean:self cancelUpdate:NO error:&error];
+    }
 #else
 #endif
     
