@@ -641,7 +641,7 @@ typedef enum { //These occur in sequence
     }
 }
 
--(void)notifcationStateUpdatedWithError:(NSError *)error
+-(void)notificationStateUpdatedWithError:(NSError *)error
 {
     if (error.domain == CBATTErrorDomain && error.code == 1 && self.delegate
             && [self.delegate respondsToSelector:@selector(bean:bluetoothError:)]){
