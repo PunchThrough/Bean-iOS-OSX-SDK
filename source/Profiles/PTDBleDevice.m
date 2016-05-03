@@ -100,6 +100,10 @@
     //[NSException raise:NSInternalInconsistencyException format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];
 }
 
+-(void)notificationStateUpdatedWithError:(NSError*)error{
+    //[NSException raise:NSInternalInconsistencyException format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];
+}
+
 #pragma mark CBPeripheralDelegate callbacks
 /* //Example of registering to one of these notifications
  id peripheralNotifier = cbperipheral.delegate;
@@ -246,8 +250,8 @@
                             nil];
     [[NSNotificationCenter defaultCenter] postNotificationName: @"didUpdateNotificationStateForCharacteristic" object:params];
 
-    if (error && self.delegate && [self.delegate respondsToSelector:@selector(deviceFoundWithInvalidHandle:peripheral:characteristic:)]) {
-        [self.delegate deviceFoundWithInvalidHandle:self peripheral:peripheral characteristic:characteristic];
+    if (error) {
+        [self notificationStateUpdatedWithError:error];
     }
     
     BleProfile* profile = _profiles[characteristic.service.UUID];

@@ -641,9 +641,11 @@ typedef enum { //These occur in sequence
     }
 }
 
--(void)deviceFoundWithInvalidHandle:(PTDBleDevice *)device peripheral:(CBPeripheral *)peripheral characteristic:(CBCharacteristic *)characteristic
+-(void)notifcationStateUpdatedWithError:(NSError *)error
 {
-    if (self.delegate && [self.delegate respondsToSelector:@selector(bean:bluetoothError:)]){
+    if (error.domain == CBATTErrorDomain && error.code == 1 && self.delegate
+            && [self.delegate respondsToSelector:@selector(bean:bluetoothError:)]){
+        // alert user that bluetooth error occurred where GATT table handles invalid
         [self.delegate bean:self bluetoothError:BeanBluetoothError_InvalidHandle];
     }
 }
