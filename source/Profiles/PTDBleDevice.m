@@ -246,9 +246,7 @@
                             nil];
     [[NSNotificationCenter defaultCenter] postNotificationName: @"didUpdateNotificationStateForCharacteristic" object:params];
 
-    NSInteger invalidHandleCode = 1;
-    PTDLog(@"Error with domain: %@ and with code: %ld", error.domain, (long)error.code);
-    if (error && error.code == invalidHandleCode && self.delegate && [self.delegate respondsToSelector:@selector(deviceFoundWithInvalidHandle:peripheral:characteristic:)]) {
+    if (error && self.delegate && [self.delegate respondsToSelector:@selector(deviceFoundWithInvalidHandle:peripheral:characteristic:)]) {
         [self.delegate deviceFoundWithInvalidHandle:self peripheral:peripheral characteristic:characteristic];
     }
     
