@@ -245,9 +245,9 @@
                             error ?: [NSNull null], @"error",
                             nil];
     [[NSNotificationCenter defaultCenter] postNotificationName: @"didUpdateNotificationStateForCharacteristic" object:params];
-    
-    if (error && error.domain == CBATTErrorDomain && error.code == 1) {
-        [self.delegate handleIsInvalidForDevice:self peripheral:peripheral characteristic:characteristic];
+    ;
+    if (error && error.domain == CBATTErrorDomain && error.code == 1 && self.delegate && [self.delegate respondsToSelector:@selector(deviceFoundWithInvalidHandle:peripheral:characteristic:)]) {
+        [self.delegate deviceFoundWithInvalidHandle:self peripheral:peripheral characteristic:characteristic];
     }
     
     BleProfile* profile = _profiles[characteristic.service.UUID];

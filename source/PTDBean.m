@@ -641,6 +641,13 @@ typedef enum { //These occur in sequence
     }
 }
 
+-(void)deviceFoundWithInvalidHandle:(PTDBleDevice *)device peripheral:(CBPeripheral *)peripheral characteristic:(CBCharacteristic *)characteristic
+{
+    if (self.delegate && [self.delegate respondsToSelector:@selector(bean:bluetoothError:)]){
+        [self.delegate bean:self bluetoothError:BeanBluetoothError_InvalidHandle];
+    }
+}
+
 -(void)servicesHaveBeenModified{
     // TODO: Re-Instantiate the Bean object
 }

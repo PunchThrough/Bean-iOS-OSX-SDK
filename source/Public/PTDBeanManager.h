@@ -45,16 +45,6 @@ typedef NS_ENUM(NSUInteger, BeanManagerState) {
 };
 
 /**
- *  Called when a serious error occurs that must be handled by the client
- */
-typedef NS_ENUM(NSUInteger, BeanBluetoothError) {
-    /**
-     *  CoreBluetooth has cached a Bean's GATT table improperly. The only known resolution to this issue is to turn Bluetooth off and back on.
-     */
-    BeanBluetoothError_InvalidHandle = 0
-};
-
-/**
  *  Bean connection options
  */
 extern NSString * const PTDBeanManagerConnectionOptionAutoReconnect;
@@ -259,13 +249,5 @@ extern NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect;
  *  @param error       This error is passed through from [centralManager:didDisconnectPeripheral:error:](https://developer.apple.com/library/mac/documentation/CoreBluetooth/Reference/CBCentralManagerDelegate_Protocol/translated_content/CBCentralManagerDelegate.html#//apple_ref/occ/intfm/CBCentralManagerDelegate/centralManager:didDisconnectPeripheral:error:)
  */
 - (void)beanManager:(PTDBeanManager*)beanManager didDisconnectBean:(PTDBean*)bean error:(NSError*)error;
-
-/**
- *  A serious error has occurred that BeanManager can't resolve. The client must resolve this issue.
- *
- *  @param beanManager The BeanManager that encountered this issue
- *  @param bluetoothError a BeanBluetoothError indicating what went wrong
- */
-- (void)beanManager:(PTDBeanManager *)beanManager bluetoothError:(BeanBluetoothError)error;
 
 @end

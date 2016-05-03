@@ -386,13 +386,4 @@ NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect    = @"
     //nothing needs to happen here
 }
 
-#pragma mark - PTDBleDeviceDelegate
-
-- (void)handleIsInvalidForDevice:(PTDBleDevice *)device peripheral:(CBPeripheral *)peripheral characteristic:(CBCharacteristic *)characteristic
-{
-    if (self.delegate && [self.delegate respondsToSelector:@selector(beanManager:bluetoothError:)]){
-        [self.delegate beanManager:self bluetoothError:BeanBluetoothError_InvalidHandle];
-    }
-}
-
 @end

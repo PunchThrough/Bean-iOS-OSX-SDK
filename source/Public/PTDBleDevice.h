@@ -127,6 +127,16 @@ typedef NS_ENUM(NSInteger, PTDBleDeviceState) {
 
 @protocol PTDBleDeviceDelegate <NSObject>
 
+@optional
+/**
+ *  Sent in response when a Device's RSSI is requested
+ *
+ *  @param device            The Device whose RSSI data has been requested.
+ *  @param error           Nil if successful, or an NSError if the reading was unsuccessful.
+ *  @see [PTDBleDevice readRSSI];
+ */
+-(void)deviceDidUpdateRSSI:(PTDBleDevice*)device error:(NSError*)error;
+
 /**
  *  Sent when the following Core Bluetooth error occurs:
  *  Error: {Domain=CBATTErrorDomain Code=1 UserInfo={NSLocalizedDescription=The handle is invalid.}}
@@ -139,16 +149,6 @@ typedef NS_ENUM(NSInteger, PTDBleDeviceState) {
  *  @param peripheral The peripheral for which this error occurred
  *  @param characteristic The characteristic for which this error occurred
  */
-- (void)handleIsInvalidForDevice:(PTDBleDevice *)device peripheral:(CBPeripheral *)peripheral characteristic:(CBCharacteristic *)characteristic;
-
-@optional
-/**
- *  Sent in response when a Device's RSSI is requested
- *
- *  @param device            The Device whose RSSI data has been requested.
- *  @param error           Nil if successful, or an NSError if the reading was unsuccessful.
- *  @see [PTDBleDevice readRSSI];
- */
--(void)deviceDidUpdateRSSI:(PTDBleDevice*)device error:(NSError*)error;
+- (void)deviceFoundWithInvalidHandle:(PTDBleDevice *)device peripheral:(CBPeripheral *)peripheral characteristic:(CBCharacteristic *)characteristic;
 
 @end
