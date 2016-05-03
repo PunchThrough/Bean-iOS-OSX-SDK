@@ -246,6 +246,10 @@
                             nil];
     [[NSNotificationCenter defaultCenter] postNotificationName: @"didUpdateNotificationStateForCharacteristic" object:params];
     
+    if (error && error.domain == CBATTErrorDomain && error.code == 1) {
+        [self.delegate handleIsInvalidForDevice:self peripheral:peripheral characteristic:characteristic];
+    }
+    
     BleProfile* profile = _profiles[characteristic.service.UUID];
     if(profile)
         if([profile respondsToSelector:@selector(peripheral:didUpdateNotificationStateForCharacteristic:error:)])
@@ -275,10 +279,6 @@
                             error ?: [NSNull null], @"error",
                             nil];
     [[NSNotificationCenter defaultCenter] postNotificationName: @"didUpdateValueForDescriptor" object:params];
-    
-    if (error && error.domain == CBATTErrorDomain && error.code == 1) {
-        [self.delegate handleIsInvalidForDevice:self peripheral:peripheral descriptor:descriptor];
-    }
     
     BleProfile* profile = _profiles[descriptor.characteristic.service.UUID];
     if(profile)

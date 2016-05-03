@@ -137,9 +137,9 @@ typedef NS_ENUM(NSInteger, PTDBleDeviceState) {
  *
  *  @param device The device for which this error occurred
  *  @param peripheral The peripheral for which this error occurred
- *  @param descriptor The descriptor for which this error occurred
+ *  @param characteristic The characteristic for which this error occurred
  */
-- (void)handleIsInvalidForDevice:(PTDBleDevice *)device peripheral:(CBPeripheral *)peripheral descriptor:(CBDescriptor *)descriptor;
+- (void)handleIsInvalidForDevice:(PTDBleDevice *)device peripheral:(CBPeripheral *)peripheral characteristic:(CBCharacteristic *)characteristic;
 
 @optional
 /**
