@@ -158,12 +158,7 @@ NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect    = @"
     [cbcentralmanager connectPeripheral:bean.peripheral options:nil];
 }
 
--(void)disconnectBean:(PTDBean*)bean error:(NSError**)error
-{
-    [self disconnectBean:bean cancelUpdate:YES error:error];
-}
-
--(void)disconnectBean:(PTDBean *)bean_ cancelUpdate:(BOOL)cancelUpdate error:(NSError **)error
+-(void)disconnectBean:(PTDBean*)bean_ error:(NSError**)error
 {
     //Find BeanPeripheral that corresponds to this UUID
     PTDBean* bean = [beanRecords objectForKey:bean_.identifier];
@@ -190,7 +185,7 @@ NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect    = @"
         [self __notifyDelegateOfDisconnectedBean:bean error:nil];
     }
     
-    if (bean.updateInProgress && cancelUpdate) [bean cancelFirmwareUpdate];
+    if (bean.updateInProgress) [bean cancelFirmwareUpdate];
     bean.autoReconnect = FALSE;
 }
 
