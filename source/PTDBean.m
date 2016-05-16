@@ -893,20 +893,6 @@ typedef enum { //These occur in sequence
         return;
     }
     
-    /*
-     Explicitly disconnect from Bean between firmware image transfers without cancelling the firmware update. The iOS
-     implementation depends on explicitly disconnecting from Bean. With an implied disconnect (Bean power cycles,
-     CoreBluetooth callback occurs when the OS notices the device went missing) iOS reuses the last GATT table. By
-     explicitly disconnecting, we force iOS to clear its GATT cache and read the new GATT table.
-     */
-#if TARGET_OS_IPHONE
-    if (self.updateInProgress) {
-        // only disconnect if doing FW update
-        [self.beanManager disconnectBean:self cancelUpdate:NO error:&error];
-    }
-#else
-#endif
-    
     if (self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadOfSingleImage:imageIndex:totalImages:withError:)])
         [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadOfSingleImage:path imageIndex:index totalImages:images withError:error];
 }
@@ -943,7 +929,7 @@ typedef enum { //These occur in sequence
     [self manageFirmwareUpdateStatus];
     
     // Don't send firmware version back to handler when firmware update is still in progress
-    if (!self.updateInProgress) return;
+    if (self.updateInProgress) return;
 
     if (firmwareVersionAvailableHandler) {
         [self checkFirmwareVersionAvailableWithHandler:firmwareVersionAvailableHandler];
