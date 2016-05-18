@@ -949,7 +949,7 @@ typedef enum { //These occur in sequence
     [self manageFirmwareUpdateStatus];
     
     // Don't send firmware version back to handler when firmware update is still in progress
-    if (!self.updateInProgress) return;
+    if (self.updateInProgress) return;
 
     if (firmwareVersionAvailableHandler) {
         [self checkFirmwareVersionAvailableWithHandler:firmwareVersionAvailableHandler];
