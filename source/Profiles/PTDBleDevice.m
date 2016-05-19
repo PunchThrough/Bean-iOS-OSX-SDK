@@ -11,12 +11,6 @@
 
 @implementation PTDBleDevice
 
-
-#pragma mark - Virtual methods
--(void)profileDiscovered:(BleProfile*)profile
-{
-}
-
 #pragma mark - Public Methods
 -(id)initWithPeripheral:(CBPeripheral*)peripheral{
     self = [super init];
@@ -91,7 +85,12 @@
     _lastDiscovered = date;
 }
 
-#pragma mark "Virtual" Methods
+#pragma mark Virtual methods
+
+- (void)profileDiscovered:(BleProfile *)profile
+{
+    // This method should be overridden by a child class that wants to implement its behavior
+}
 
 - (void)rssiDidUpdateWithError:(NSError *)error
 {
