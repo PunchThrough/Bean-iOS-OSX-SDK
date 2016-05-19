@@ -92,16 +92,20 @@
 }
 
 #pragma mark "Virtual" Methods
--(void)rssiDidUpdateWithError:(NSError*)error{
-    //[NSException raise:NSInternalInconsistencyException format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];
+
+- (void)rssiDidUpdateWithError:(NSError *)error
+{
+    // This method should be overridden by a child class that wants to implement its behavior
 }
 
--(void)servicesHaveBeenModified{
-    //[NSException raise:NSInternalInconsistencyException format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];
+- (void)servicesHaveBeenModified
+{
+    // This method should be overridden by a child class that wants to implement its behavior
 }
 
--(void)notificationStateUpdatedWithError:(NSError*)error{
-    //[NSException raise:NSInternalInconsistencyException format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];
+- (void)notificationStateUpdatedWithError:(NSError *)error
+{
+    // This method should be overridden by a child class that wants to implement its behavior
 }
 
 #pragma mark CBPeripheralDelegate callbacks
