@@ -295,7 +295,7 @@ typedef NS_ENUM(NSUInteger, BeanBluetoothError) {
  */
 -(void)beanFoundWithIncompleteFirmware:(PTDBean*)bean;
 
-/**d
+/**
  *  A serious error has occurred that Bean can't resolve. The client must resolve this issue.
  *
  *  @param bean The Bean that encountered this issue
