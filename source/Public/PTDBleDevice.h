@@ -62,11 +62,29 @@ typedef NS_ENUM(NSInteger, PTDBleDeviceState) {
 //-(BOOL)requiredProfilesAreValid;
 
 /// @name Virtual methods
+
 /**
  *  Called when a BLE profile is discovered.
  *  @discussion This method can be overridden to notify a subclass when a new BLE profile is discovered. After a profile is discovered, it should then be validated.
  */
--(void)profileDiscovered:(BleProfile*)profile;
+- (void)profileDiscovered:(BleProfile *)profile;
+
+/**
+ *  Called when a device's RSSI is updated. Override this in your PTDBleDevice subclass to handle its data.
+ */
+- (void)rssiDidUpdateWithError:(NSError *)error;
+
+/**
+ *  Called when a device's services are modified. Override this in your PTDBleDevice subclass to handle its data.
+ */
+- (void)servicesHaveBeenModified;
+
+/**
+ *  Called when iOS encounters an error when updating a characteristic notification state. Override this in your PTDBleDevice subclass to handle its data.
+ */
+- (void)notificationStateUpdatedWithError:(NSError *)error;
+
+/// @name Delegate
 
 /**
  *  The <PTDBleDeviceDelegate> delegate object for the device. Set your class as the delegate to receive messages and responses from the device.
@@ -126,6 +144,7 @@ typedef NS_ENUM(NSInteger, PTDBleDeviceState) {
 
 
 @protocol PTDBleDeviceDelegate <NSObject>
+
 @optional
 /**
  *  Sent in response when a Device's RSSI is requested

@@ -641,6 +641,15 @@ typedef enum { //These occur in sequence
     }
 }
 
+-(void)notificationStateUpdatedWithError:(NSError *)error
+{
+    if (error.domain == CBATTErrorDomain && error.code == 1 && self.delegate
+            && [self.delegate respondsToSelector:@selector(bean:bluetoothError:)]){
+        // alert user that bluetooth error occurred where GATT table handles invalid
+        [self.delegate bean:self bluetoothError:BeanBluetoothError_InvalidHandle];
+    }
+}
+
 -(void)servicesHaveBeenModified{
     // TODO: Re-Instantiate the Bean object
 }

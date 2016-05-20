@@ -155,6 +155,15 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
     PTDAdvertisingMode_IBeacon
 };
 
+/**
+ *  Called when a serious error occurs that must be handled by the client
+ */
+typedef NS_ENUM(NSUInteger, BeanBluetoothError) {
+    /**
+     *  CoreBluetooth has cached a Bean's GATT table improperly. The only known resolution to this issue is to turn Bluetooth off and back on.
+     */
+    BeanBluetoothError_InvalidHandle = 0
+};
 
 /**
  Delegates of a PTDBean object should implement this protocol. See [BeanXcodeWorkspace](http://www.punchthrough.com) for more examples.
@@ -285,6 +294,15 @@ typedef NS_ENUM(NSUInteger, PTDAdvertisingMode) {
  *  @param bean            The Bean whose firmware was found incomplete.
  */
 -(void)beanFoundWithIncompleteFirmware:(PTDBean*)bean;
+
+/**
+ *  A serious error has occurred that Bean can't resolve. The client must resolve this issue.
+ *
+ *  @param bean The Bean that encountered this issue
+ *  @param bluetoothError a BeanBluetoothError indicating what went wrong
+ */
+- (void)bean:(PTDBean *)bean bluetoothError:(BeanBluetoothError)error;
+
 @end
 
 
