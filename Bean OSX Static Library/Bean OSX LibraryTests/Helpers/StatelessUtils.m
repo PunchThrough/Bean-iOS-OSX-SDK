@@ -46,20 +46,19 @@
     return firmwarePaths;
 }
 
-+ (NSInteger)firmwareVersionFromResource:(NSString *)imageFolder
++ (NSNumber *)firmwareVersionFromResource:(NSString *)imageFolder
 {
     NSString *resourcePath = [[NSBundle bundleForClass:[self class]] resourcePath];
-    NSString *path = [resourcePath stringByAppendingPathComponent:imageFolder];
-    NSLog(@"Path = %@", path);
-
+    NSString *folderPath = [resourcePath stringByAppendingPathComponent:imageFolder];
+    NSString *versionFile = [folderPath stringByAppendingPathComponent:@"version.txt"];
     NSError *error;
-    NSArray *imageNames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:path error:&error];
+    NSString *versionFileData = [NSString stringWithContentsOfFile:versionFile encoding:NSUTF8StringEncoding error:&error];
     if (error) {
-        return 0;
+        NSLog(@"Could not open version file (%@): %@", versionFile, error);
+        return nil;
     }
-
-    NSNumber *firstImageDatestamp = [PTDUtils parseLeadingInteger:imageNames[0]];
-    return [firstImageDatestamp integerValue];
+    NSNumber *asNumber = [PTDUtils parseLeadingInteger:versionFileData];
+    return asNumber;
 }
 
 + (PTDBean *)fakeBeanWithFirmware:(NSString *)version;

@@ -33,9 +33,9 @@
  *
  *  @param imageFolder Specifies where the .bin files are stored
  *
- *  @return An NSInteger of the datestamp prefix of the first file listed
+ *  @return An NSNumber of the datestamp prefix of the first file listed, or nil if none could be parsed
  */
-+ (NSInteger)firmwareVersionFromResource:(NSString *)imageFolder;
++ (NSNumber *)firmwareVersionFromResource:(NSString *)imageFolder;
 
 /**
  *  Returns a stubbed Bean with the given firmware version string.
