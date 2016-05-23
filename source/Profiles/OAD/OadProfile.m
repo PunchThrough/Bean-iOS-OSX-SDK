@@ -233,6 +233,10 @@ typedef struct {
                 [self sendBlocks:requestedBlock];
                 break;
                 
+            case OADStateIdle:
+                // this is probably a notification confirming a packet we sent earlier, we can safely ignore this
+                break;
+
             default:
                 PTDLog(@"Unexpected value update for Block characteristic in state %tu\n", self.oadState);
                 break;
