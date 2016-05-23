@@ -15,7 +15,6 @@ typedef NS_ENUM(NSUInteger, OADState) {
     OADStateEnableNotify,
     OADStateSentNewHeader,
     OADStateSendingPackets,
-    OADStateWaitForCompletion
 };
 
 typedef struct {
@@ -231,7 +230,6 @@ typedef struct {
                 // Fall through
                 
             case OADStateSendingPackets:
-            case OADStateWaitForCompletion:
                 [self sendBlocks:requestedBlock];
                 break;
                 
@@ -337,7 +335,7 @@ typedef struct {
 
     // Watch for last block
     if ( self.nextBlock == self.totalBlocks) {
-        self.oadState = OADStateWaitForCompletion; // Signal the watchdog timer that we expect to timeout, allows OAD Target to re-request last packet
+        [self imageUploaded];
     }
 }
 
@@ -413,6 +411,20 @@ typedef struct {
     [self completeWithError:nil];
 }
 
+- (void)imageUploaded
+{
+    NSUInteger bytes = [self currentImage].data.length;
+    float duration = - [self.downloadStartDate timeIntervalSinceNow] - WATCHDOG_TIMER_INTERVAL;
+    float rate = bytes / duration;
+    PTDLog(@"Image %lu of %lu uploaded successfully. %lu bytes, %0.2f seconds, %0.1f bytes/sec",
+           self.lastImageOffered + 1,
+           self.firmwareImages.count,
+           bytes,
+           duration,
+           rate);
+    [self completeWithError:nil];
+}
+
 - (void)completeWithError:(NSError *)error
 {
     if (error) PTDLog(@"OAD completed with error: %@", error);
@@ -457,18 +469,7 @@ typedef struct {
 
     NSError *error;
 
-    if (self.oadState == OADStateWaitForCompletion) {
-        NSUInteger bytes = [self currentImage].data.length;
-        float duration = - [self.downloadStartDate timeIntervalSinceNow] - WATCHDOG_TIMER_INTERVAL;
-        float rate = bytes / duration;
-        PTDLog(@"Image %lu of %lu uploaded successfully. %lu bytes, %0.2f seconds, %0.1f bytes/sec",
-               self.lastImageOffered + 1,
-               self.firmwareImages.count,
-               bytes,
-               duration,
-               rate);
-
-    } else if (self.oadState == OADStateEnableNotify) {
+    if (self.oadState == OADStateEnableNotify) {
         error = [OadProfile errorWithDesc:@"Timeout configuring OAD characteristics."];
 
     } else if (self.oadState == OADStateSendingPackets) {
