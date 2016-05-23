@@ -231,6 +231,19 @@ NSString * const firmwareImagesFolder = @"Firmware Images";
     }
 }
 
+- (void)printProgressIndexSent:(NSUInteger)index
+                   totalImages:(NSUInteger)total
+                 imageProgress:(NSUInteger)bytesSent
+                     imageSize:(NSUInteger)bytesTotal
+{
+    NSInteger percentage = (float) bytesSent / bytesTotal * 100;
+    if (percentage != self.lastPercentagePrinted) {
+        self.lastPercentagePrinted = percentage;
+        NSLog(@"Upload progress: %ld%% (image %ld/%ld, %ld/%ld bytes)",
+              percentage, index + 1, total, bytesSent, bytesTotal);
+    }
+}
+
 #pragma mark - PTDBeanManagerDelegate
 
 - (void)beanManagerDidUpdateState:(PTDBeanManager *)beanManager
@@ -283,9 +296,13 @@ NSString * const firmwareImagesFolder = @"Firmware Images";
     [self printProgressTimeLeft:seconds withPercentage:percentageComplete];
 }
 
-- (void)bean:(PTDBean *)bean firmwareUploadTimeLeft:(NSNumber *)seconds withPercentage:(NSNumber *)percentageComplete
+- (void)bean:(PTDBean *)bean
+currentImage:(NSUInteger)index
+ totalImages:(NSUInteger)total
+imageProgress:(NSUInteger)bytesSent
+   imageSize:(NSUInteger)bytesTotal
 {
-    [self printProgressTimeLeft:seconds withPercentage:percentageComplete];
+    [self printProgressIndexSent:index totalImages:total imageProgress:bytesSent imageSize:bytesTotal];
 }
 
 - (void)bean:(PTDBean *)bean didProgramArduinoWithError:(NSError *)error
