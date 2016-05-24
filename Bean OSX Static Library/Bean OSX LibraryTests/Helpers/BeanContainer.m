@@ -353,7 +353,7 @@ imageProgress:(NSUInteger)bytesSent
 - (void)beanFoundWithIncompleteFirmware:(PTDBean *)bean
 {
     NSLog(@"Refetching firmware images and restarting update process");
-    NSString *hardwareName = [self deviceHardwareVersion];
+    NSString *hardwareName = self.bean.hardwareVersion;  // not kosher, but we're in the middle of an xctest await during connection
     NSArray *imagePaths = [StatelessUtils firmwareImagesFromResource:firmwareImagesFolder withHardwareName:hardwareName];
     NSNumber *targetVersion = [StatelessUtils firmwareVersionFromResource:firmwareImagesFolder withHardwareName:hardwareName];
     if (!targetVersion) {
