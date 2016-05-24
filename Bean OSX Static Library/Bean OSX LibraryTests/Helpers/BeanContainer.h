@@ -73,17 +73,18 @@
 - (BOOL)uploadSketch:(NSString *)hexName;
 
 /**
- *  Update the firmware on Bean with the images inside the "Firmware Images" folder.
+ *  Update the firmware on Bean with the images inside the "Firmware Images/<hardwareName>" folder.
+ *  @param hardwareName The name of the folder with hardware-specific images, e.g. "Bean" or "Bean+"
  *  @return YES if firmware update was successful
  */
-- (BOOL)updateFirmware;
+- (BOOL)updateFirmware:(NSString *)hardwareName;
 
 /**
  *  Update the firmware on Bean with ONLY ONE image inside the "Firmware Images" folder.
  *  Stop after Bean accepts transfer of one image and the image is transferred successfully.
  *  @return YES after a single image is transferred to Bean successfully
  */
-- (BOOL)updateFirmwareOnce;
+- (BOOL)updateFirmwareOnce:(NSString *)hardwareName;
 
 /**
  *  Cancel a Bean firmware update in progress.

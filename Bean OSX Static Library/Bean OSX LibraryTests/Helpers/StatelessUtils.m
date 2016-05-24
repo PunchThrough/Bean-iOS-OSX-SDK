@@ -2,6 +2,7 @@
 #import <OCMock/OCMock.h>
 #import "PTDIntelHex.h"
 #import "PTDUtils.h"
+#import "PTDHardwareLookup.h"
 
 @implementation StatelessUtils
 
@@ -25,10 +26,11 @@
     return [intelHex bytes];
 }
 
-+ (NSArray *)firmwareImagesFromResource:(NSString *)imageFolder
++ (NSArray *)firmwareImagesFromResource:(NSString *)imageFolder withHardwareName:(NSString *)hardwareName
 {
     NSString *resourcePath = [[NSBundle bundleForClass:[self class]] resourcePath];
     NSString *path = [resourcePath stringByAppendingPathComponent:imageFolder];
+    path = [path stringByAppendingPathComponent:[PTDHardwareLookup hardwareNameForVersion:hardwareName]];
     NSLog(@"Path = %@", path);
     
     NSError *error;
@@ -40,16 +42,18 @@
     // build full resource path to each firmware image
     NSMutableArray *firmwarePaths = [NSMutableArray new];
     for (NSString *imageName in imageNames){
+        if (![imageName hasSuffix:@".bin"]) continue;
         [firmwarePaths addObject:[path stringByAppendingPathComponent:imageName]];
     }
     
     return firmwarePaths;
 }
 
-+ (NSNumber *)firmwareVersionFromResource:(NSString *)imageFolder
++ (NSNumber *)firmwareVersionFromResource:(NSString *)imageFolder withHardwareName:(NSString *)hardwareName
 {
     NSString *resourcePath = [[NSBundle bundleForClass:[self class]] resourcePath];
     NSString *folderPath = [resourcePath stringByAppendingPathComponent:imageFolder];
+    folderPath = [folderPath stringByAppendingPathComponent:[PTDHardwareLookup hardwareNameForVersion:hardwareName]];
     NSString *versionFile = [folderPath stringByAppendingPathComponent:@"version.txt"];
     NSError *error;
     NSString *versionFileData = [NSString stringWithContentsOfFile:versionFile encoding:NSUTF8StringEncoding error:&error];

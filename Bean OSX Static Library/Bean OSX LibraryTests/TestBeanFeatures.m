@@ -56,10 +56,11 @@ static BOOL (^outOfBoxFilter)(PTDBean *bean) = ^BOOL(PTDBean *bean) {
     // Connection callback doesn't happen until Bean firmware is fully updated. Increase the connection timeout.
     NSDictionary *options = @{@"connectTimeout": @600};
     BeanContainer *beanContainer = [self containerWithBeanFilter:outOfBoxFilter andOptions:options];
-    
     XCTAssertTrue([beanContainer connect]);
-    XCTAssertTrue([beanContainer updateFirmware]);
-    XCTAssertTrue([beanContainer disconnect]);
+    [beanContainer.bean checkHardwareVersionAvailableWithHandler:^(BOOL hardwareAvailable, NSError *error) {
+        XCTAssertTrue([beanContainer updateFirmware:beanContainer.bean.hardwareVersion]);
+        XCTAssertTrue([beanContainer disconnect]);
+    }];
 }
 
 /**

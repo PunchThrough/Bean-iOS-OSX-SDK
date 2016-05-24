@@ -156,10 +156,10 @@ NSString * const firmwareImagesFolder = @"Firmware Images";
     return !self.programArduinoError;
 }
 
-- (BOOL)updateFirmware
+- (BOOL)updateFirmware:(NSString *)hardwareName
 {
-    NSArray *imagePaths = [StatelessUtils firmwareImagesFromResource:firmwareImagesFolder];
-    NSNumber *targetVersion = [StatelessUtils firmwareVersionFromResource:firmwareImagesFolder];
+    NSArray *imagePaths = [StatelessUtils firmwareImagesFromResource:firmwareImagesFolder withHardwareName:hardwareName];
+    NSNumber *targetVersion = [StatelessUtils firmwareVersionFromResource:firmwareImagesFolder withHardwareName:hardwareName];
     if (!targetVersion) return NO;
     self.beanCompletedFirmwareUpload = [self.testCase expectationWithDescription:@"Firmware updated for Bean"];
 
@@ -170,10 +170,10 @@ NSString * const firmwareImagesFolder = @"Firmware Images";
     return !self.firmwareUploadError;
 }
 
-- (BOOL)updateFirmwareOnce
+- (BOOL)updateFirmwareOnce:(NSString *)hardwareName
 {
-    NSArray *imagePaths = [StatelessUtils firmwareImagesFromResource:firmwareImagesFolder];
-    NSNumber *targetVersion = [StatelessUtils firmwareVersionFromResource:firmwareImagesFolder];
+    NSArray *imagePaths = [StatelessUtils firmwareImagesFromResource:firmwareImagesFolder withHardwareName:hardwareName];
+    NSNumber *targetVersion = [StatelessUtils firmwareVersionFromResource:firmwareImagesFolder withHardwareName:hardwareName];
     if (!targetVersion) return NO;
     NSString *desc = @"Single firmware image uploaded to Bean";
     self.beanCompletedFirmwareUploadOfSingleImage = [self.testCase expectationWithDescription:desc];
@@ -337,13 +337,15 @@ imageProgress:(NSUInteger)bytesSent
 - (void)beanFoundWithIncompleteFirmware:(PTDBean *)bean
 {
     NSLog(@"Refetching firmware images and restarting update process");
-    NSArray *imagePaths = [StatelessUtils firmwareImagesFromResource:firmwareImagesFolder];
-    NSNumber *targetVersion = [StatelessUtils firmwareVersionFromResource:firmwareImagesFolder];
-    if (!targetVersion) {
-        NSLog(@"version.txt not found; can't continue firmware update");
-        return;
-    }
-    [self.bean updateFirmwareWithImages:imagePaths andTargetVersion:[targetVersion integerValue]];
+    [bean checkHardwareVersionAvailableWithHandler:^(BOOL hardwareAvailable, NSError *error) {
+        NSArray *imagePaths = [StatelessUtils firmwareImagesFromResource:firmwareImagesFolder withHardwareName:bean.hardwareVersion];
+        NSNumber *targetVersion = [StatelessUtils firmwareVersionFromResource:firmwareImagesFolder withHardwareName:bean.hardwareVersion];
+        if (!targetVersion) {
+            NSLog(@"version.txt not found; can't continue firmware update");
+            return;
+        }
+        [self.bean updateFirmwareWithImages:imagePaths andTargetVersion:[targetVersion integerValue]];
+    }];
 }
 
 @end

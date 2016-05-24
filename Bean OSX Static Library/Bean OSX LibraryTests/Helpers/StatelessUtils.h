@@ -25,7 +25,7 @@
  *  @param imageFolder Specifies where the .bin files are stored
  *  @return An NSArray object with the contents of the folder, or nil if the folder couldn't be opened
  */
-+ (NSArray *)firmwareImagesFromResource:(NSString *)imageFolder;
++ (NSArray *)firmwareImagesFromResource:(NSString *)imageFolder withHardwareName:(NSString *)hardwareName;
 
 /**
  *  Get the image files from the firmwareImages folder in the test resources folder and return the front datestamp of
@@ -35,7 +35,7 @@
  *
  *  @return An NSNumber of the datestamp prefix of the first file listed, or nil if none could be parsed
  */
-+ (NSNumber *)firmwareVersionFromResource:(NSString *)imageFolder;
++ (NSNumber *)firmwareVersionFromResource:(NSString *)imageFolder withHardwareName:(NSString *)hardwareName;
 
 /**
  *  Returns a stubbed Bean with the given firmware version string.
