@@ -57,10 +57,8 @@ static BOOL (^outOfBoxFilter)(PTDBean *bean) = ^BOOL(PTDBean *bean) {
     NSDictionary *options = @{@"connectTimeout": @600};
     BeanContainer *beanContainer = [self containerWithBeanFilter:outOfBoxFilter andOptions:options];
     XCTAssertTrue([beanContainer connect]);
-    [beanContainer.bean checkHardwareVersionAvailableWithHandler:^(BOOL hardwareAvailable, NSError *error) {
-        XCTAssertTrue([beanContainer updateFirmware:beanContainer.bean.hardwareVersion]);
-        XCTAssertTrue([beanContainer disconnect]);
-    }];
+    XCTAssertTrue([beanContainer updateFirmware]);
+    XCTAssertTrue([beanContainer disconnect]);
 }
 
 /**

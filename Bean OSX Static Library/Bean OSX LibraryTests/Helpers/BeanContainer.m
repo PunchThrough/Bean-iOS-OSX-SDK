@@ -156,8 +156,9 @@ NSString * const firmwareImagesFolder = @"Firmware Images";
     return !self.programArduinoError;
 }
 
-- (BOOL)updateFirmware:(NSString *)hardwareName
+- (BOOL)updateFirmware
 {
+    NSString *hardwareName = [self deviceHardwareVersion];
     NSArray *imagePaths = [StatelessUtils firmwareImagesFromResource:firmwareImagesFolder withHardwareName:hardwareName];
     NSNumber *targetVersion = [StatelessUtils firmwareVersionFromResource:firmwareImagesFolder withHardwareName:hardwareName];
     if (!targetVersion) return NO;
@@ -170,8 +171,9 @@ NSString * const firmwareImagesFolder = @"Firmware Images";
     return !self.firmwareUploadError;
 }
 
-- (BOOL)updateFirmwareOnce:(NSString *)hardwareName
+- (BOOL)updateFirmwareOnce
 {
+    NSString *hardwareName = [self deviceInfo][@"hardwareVersion"];
     NSArray *imagePaths = [StatelessUtils firmwareImagesFromResource:firmwareImagesFolder withHardwareName:hardwareName];
     NSNumber *targetVersion = [StatelessUtils firmwareVersionFromResource:firmwareImagesFolder withHardwareName:hardwareName];
     if (!targetVersion) return NO;
@@ -220,6 +222,20 @@ NSString * const firmwareImagesFolder = @"Firmware Images";
     if (!firmwareVersion) return nil;
     
     return @{@"hardwareVersion": hardwareVersion, @"firmwareVersion": firmwareVersion};
+}
+
+- (NSString *)deviceHardwareVersion
+{
+    __block NSString *hardwareVersion;
+    XCTestExpectation *hwExpect = [self.testCase expectationWithDescription:@"Bean hardware version retrieved"];
+
+    [self.bean checkHardwareVersionAvailableWithHandler:^(BOOL hardwareAvailable, NSError *error) {
+        hardwareVersion = self.bean.hardwareVersion;
+        [hwExpect fulfill];
+    }];
+    [self.testCase waitForExpectationsWithTimeout:10 handler:nil];
+
+    return hardwareVersion;
 }
 
 #pragma mark - Helpers that depend on BeanContainer state
@@ -337,15 +353,14 @@ imageProgress:(NSUInteger)bytesSent
 - (void)beanFoundWithIncompleteFirmware:(PTDBean *)bean
 {
     NSLog(@"Refetching firmware images and restarting update process");
-    [bean checkHardwareVersionAvailableWithHandler:^(BOOL hardwareAvailable, NSError *error) {
-        NSArray *imagePaths = [StatelessUtils firmwareImagesFromResource:firmwareImagesFolder withHardwareName:bean.hardwareVersion];
-        NSNumber *targetVersion = [StatelessUtils firmwareVersionFromResource:firmwareImagesFolder withHardwareName:bean.hardwareVersion];
-        if (!targetVersion) {
-            NSLog(@"version.txt not found; can't continue firmware update");
-            return;
-        }
-        [self.bean updateFirmwareWithImages:imagePaths andTargetVersion:[targetVersion integerValue]];
-    }];
+    NSString *hardwareName = [self deviceHardwareVersion];
+    NSArray *imagePaths = [StatelessUtils firmwareImagesFromResource:firmwareImagesFolder withHardwareName:hardwareName];
+    NSNumber *targetVersion = [StatelessUtils firmwareVersionFromResource:firmwareImagesFolder withHardwareName:hardwareName];
+    if (!targetVersion) {
+        NSLog(@"version.txt not found; can't continue firmware update");
+        return;
+    }
+    [self.bean updateFirmwareWithImages:imagePaths andTargetVersion:[targetVersion integerValue]];
 }
 
 @end
