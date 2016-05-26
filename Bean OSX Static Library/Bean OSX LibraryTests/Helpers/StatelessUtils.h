@@ -13,16 +13,21 @@
 
 /**
  *  Parse an Intel HEX file (with the extension .hex) into raw bytes.
+ *
  *  @param intelHexFileName The name of the Intel HEX file. For example, to read from mysketch.hex,
  *      <code>intelHexFileName</code> should be "mysketch"
  *  @param klass The class to be used to select the bundle. Usually this should be <code>[self class]</code>
+ *
  *  @return An NSData object with the contents of the file, or nil if the file couldn't be opened
  */
 + (NSData *)bytesFromIntelHexResource:(NSString *)intelHexFilename usingBundleForClass:(id)klass;
 
 /**
  *  Get the images files from the firmwareImages folder in the test resources folder.
+ *
  *  @param imageFolder Specifies where the .bin files are stored
+ *  @param hardwareName The name of the hardware binary folder, e.g. "Bean"
+ *
  *  @return An NSArray object with the contents of the folder, or nil if the folder couldn't be opened
  */
 + (NSArray *)firmwareImagesFromResource:(NSString *)imageFolder withHardwareName:(NSString *)hardwareName;
@@ -32,6 +37,7 @@
  *  prefixed to the first file.
  *
  *  @param imageFolder Specifies where the .bin files are stored
+ *  @param hardwareName The name of the hardware binary folder, e.g. "Bean"
  *
  *  @return An NSNumber of the datestamp prefix of the first file listed, or nil if none could be parsed
  */
