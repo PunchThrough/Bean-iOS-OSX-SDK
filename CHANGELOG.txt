@@ -12,6 +12,8 @@
 Released on 2016-05-26
 ---------------------------------
 App Message Definitions: master/369b766 (2014-09-16)
+Bean Test Firmware: 201605240000 (2016-05-24)
+Bean+ Test Firmware: 201605240000 (2016-05-24)
 ---------------------------------
 
 FEATURES:
