@@ -158,7 +158,8 @@ NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect    = @"
     [cbcentralmanager connectPeripheral:bean.peripheral options:nil];
 }
 
--(void)disconnectBean:(PTDBean*)bean_ error:(NSError**)error{
+-(void)disconnectBean:(PTDBean*)bean_ error:(NSError**)error
+{
     //Find BeanPeripheral that corresponds to this UUID
     PTDBean* bean = [beanRecords objectForKey:bean_.identifier];
     //Check if the device isn't currently connected
@@ -342,12 +343,12 @@ NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect    = @"
     
     if(!bean)
         return; //This may not be the best way to handle this case
-    
-    if ( bean.autoReconnect || bean.updateInProgress ) {
-     PTDLog(@"autoReconnecting to %@", bean);
-     [self connectToBean:bean error:nil];
+
+    if (bean.updateInProgress || bean.autoReconnect) {
+        PTDLog(@"Auto-reconnecting to %@", bean);
+        [self connectToBean:bean error:nil];
     }
-    
+
     //Alert the delegate of the disconnect
     [self __notifyDelegateOfDisconnectedBean:bean error:error];
 }

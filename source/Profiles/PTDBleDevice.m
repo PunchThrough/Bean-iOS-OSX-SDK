@@ -11,12 +11,6 @@
 
 @implementation PTDBleDevice
 
-
-#pragma mark - Virtual methods
--(void)profileDiscovered:(BleProfile*)profile
-{
-}
-
 #pragma mark - Public Methods
 -(id)initWithPeripheral:(CBPeripheral*)peripheral{
     self = [super init];
@@ -91,13 +85,26 @@
     _lastDiscovered = date;
 }
 
-#pragma mark "Virtual" Methods
--(void)rssiDidUpdateWithError:(NSError*)error{
-    //[NSException raise:NSInternalInconsistencyException format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];
+#pragma mark Virtual methods
+
+- (void)profileDiscovered:(BleProfile *)profile
+{
+    // This method should be overridden by a child class that wants to implement its behavior
 }
 
--(void)servicesHaveBeenModified{
-    //[NSException raise:NSInternalInconsistencyException format:@"You must override %@ in a subclass", NSStringFromSelector(_cmd)];
+- (void)rssiDidUpdateWithError:(NSError *)error
+{
+    // This method should be overridden by a child class that wants to implement its behavior
+}
+
+- (void)servicesHaveBeenModified
+{
+    // This method should be overridden by a child class that wants to implement its behavior
+}
+
+- (void)notificationStateUpdatedWithError:(NSError *)error
+{
+    // This method should be overridden by a child class that wants to implement its behavior
 }
 
 #pragma mark CBPeripheralDelegate callbacks
@@ -245,6 +252,10 @@
                             error ?: [NSNull null], @"error",
                             nil];
     [[NSNotificationCenter defaultCenter] postNotificationName: @"didUpdateNotificationStateForCharacteristic" object:params];
+
+    if (error) {
+        [self notificationStateUpdatedWithError:error];
+    }
     
     BleProfile* profile = _profiles[characteristic.service.UUID];
     if(profile)
@@ -275,7 +286,6 @@
                             error ?: [NSNull null], @"error",
                             nil];
     [[NSNotificationCenter defaultCenter] postNotificationName: @"didUpdateValueForDescriptor" object:params];
-    
     
     BleProfile* profile = _profiles[descriptor.characteristic.service.UUID];
     if(profile)

@@ -641,6 +641,15 @@ typedef enum { //These occur in sequence
     }
 }
 
+-(void)notificationStateUpdatedWithError:(NSError *)error
+{
+    if (error.domain == CBATTErrorDomain && error.code == 1 && self.delegate
+            && [self.delegate respondsToSelector:@selector(bean:bluetoothError:)]){
+        // alert user that bluetooth error occurred where GATT table handles invalid
+        [self.delegate bean:self bluetoothError:BeanBluetoothError_InvalidHandle];
+    }
+}
+
 -(void)servicesHaveBeenModified{
     // TODO: Re-Instantiate the Bean object
 }
@@ -892,7 +901,7 @@ typedef enum { //These occur in sequence
         [self device:device completedFirmwareUploadWithError:error];
         return;
     }
-
+    
     if (self.delegate && [self.delegate respondsToSelector:@selector(bean:completedFirmwareUploadOfSingleImage:imageIndex:totalImages:withError:)])
         [(id<PTDBeanExtendedDelegate>)self.delegate bean:self completedFirmwareUploadOfSingleImage:path imageIndex:index totalImages:images withError:error];
 }
@@ -929,7 +938,7 @@ typedef enum { //These occur in sequence
     [self manageFirmwareUpdateStatus];
     
     // Don't send firmware version back to handler when firmware update is still in progress
-    if (!self.updateInProgress) return;
+    if (self.updateInProgress) return;
 
     if (firmwareVersionAvailableHandler) {
         [self checkFirmwareVersionAvailableWithHandler:firmwareVersionAvailableHandler];

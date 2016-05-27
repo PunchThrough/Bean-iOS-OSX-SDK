@@ -73,7 +73,7 @@
 - (BOOL)uploadSketch:(NSString *)hexName;
 
 /**
- *  Update the firmware on Bean with the images inside the "Firmware Images" folder.
+ *  Update the firmware on Bean with the images inside the "Firmware Images/<hardwareName>" folder.
  *  @return YES if firmware update was successful
  */
 - (BOOL)updateFirmware;

@@ -8,8 +8,15 @@
 /**
  *  This filter selects Beans named "Bean", the name Bean has out of the box
  */
-static BOOL (^outOfBoxFilter)(PTDBean *bean) = ^BOOL(PTDBean *bean) {
+static BOOL (^beanFilter)(PTDBean *bean) = ^BOOL(PTDBean *bean) {
     return [bean.name isEqualToString:@"Bean"];
+};
+
+/**
+ *  This filter selects Bean+s named "Bean+", the name Bean+ has out of the box
+ */
+static BOOL (^beanPlusFilter)(PTDBean *bean) = ^BOOL(PTDBean *bean) {
+    return [bean.name isEqualToString:@"Bean+"];
 };
 
 @implementation TestBeanFeatures
@@ -28,7 +35,7 @@ static BOOL (^outOfBoxFilter)(PTDBean *bean) = ^BOOL(PTDBean *bean) {
  */
 - (void)testBlinkBean
 {
-    BeanContainer *beanContainer = [self containerWithBeanFilter:outOfBoxFilter andOptions:nil];
+    BeanContainer *beanContainer = [self containerWithBeanFilter:beanFilter andOptions:nil];
     NSColor *magenta = [NSColor colorWithRed:1 green:0 blue:1 alpha:1];
 
     XCTAssertTrue([beanContainer connect]);
@@ -41,7 +48,7 @@ static BOOL (^outOfBoxFilter)(PTDBean *bean) = ^BOOL(PTDBean *bean) {
  */
 - (void)testUploadSketchToBean
 {
-    BeanContainer *beanContainer = [self containerWithBeanFilter:outOfBoxFilter andOptions:nil];
+    BeanContainer *beanContainer = [self containerWithBeanFilter:beanFilter andOptions:nil];
 
     XCTAssertTrue([beanContainer connect]);
     XCTAssertTrue([beanContainer uploadSketch:@"blink"]);
@@ -55,8 +62,20 @@ static BOOL (^outOfBoxFilter)(PTDBean *bean) = ^BOOL(PTDBean *bean) {
 {
     // Connection callback doesn't happen until Bean firmware is fully updated. Increase the connection timeout.
     NSDictionary *options = @{@"connectTimeout": @600};
-    BeanContainer *beanContainer = [self containerWithBeanFilter:outOfBoxFilter andOptions:options];
-    
+    BeanContainer *beanContainer = [self containerWithBeanFilter:beanFilter andOptions:options];
+    XCTAssertTrue([beanContainer connect]);
+    XCTAssertTrue([beanContainer updateFirmware]);
+    XCTAssertTrue([beanContainer disconnect]);
+}
+
+/**
+ *  Test that Bean+ firmware can be updated.
+ */
+- (void)testBeanPlusFirmwareUpdate
+{
+    // Connection callback doesn't happen until Bean firmware is fully updated. Increase the connection timeout.
+    NSDictionary *options = @{@"connectTimeout": @600};
+    BeanContainer *beanContainer = [self containerWithBeanFilter:beanPlusFilter andOptions:options];
     XCTAssertTrue([beanContainer connect]);
     XCTAssertTrue([beanContainer updateFirmware]);
     XCTAssertTrue([beanContainer disconnect]);
@@ -67,7 +86,7 @@ static BOOL (^outOfBoxFilter)(PTDBean *bean) = ^BOOL(PTDBean *bean) {
  */
 - (void)testBeanHasDeviceInfo
 {
-    BeanContainer *beanContainer = [self containerWithBeanFilter:outOfBoxFilter andOptions:nil];
+    BeanContainer *beanContainer = [self containerWithBeanFilter:beanFilter andOptions:nil];
 
     XCTAssertTrue([beanContainer connect]);
     XCTAssertNotNil([beanContainer deviceInfo]);
