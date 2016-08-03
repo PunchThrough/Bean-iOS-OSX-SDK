@@ -31,6 +31,8 @@ typedef enum { //These occur in sequence
 @property (nonatomic, readwrite) NSString *sketchName;
 @property (nonatomic, assign) NSInteger targetFirmwareVersion;
 @property (nonatomic, copy) void (^sketchErasedHandler)(BOOL sketchErased);
+@property (nonatomic, strong) void (^firmwareVersionAvailableHandler)(BOOL firmwareAvailable, NSError *error);
+@property (nonatomic, strong) void (^hardwareVersionAvailableHandler)(BOOL hardwareAvailable, NSError *error);
 
 @end
 
@@ -53,9 +55,6 @@ typedef enum { //These occur in sequence
     BeanArduinoOADLocalState    localArduinoOADState;
     NSTimer*                    arduinoOADStateTimout;
     NSTimer*                    arduinoOADChunkSendTimer;
-    
-    void (^firmwareVersionAvailableHandler)(BOOL firmwareAvailable, NSError *error);
-    void (^hardwareVersionAvailableHandler)(BOOL hardwareAvailable, NSError *error);
     NSDate*                     firmwareUpdateStartTime;
         
 }
@@ -322,7 +321,7 @@ typedef enum { //These occur in sequence
     if ( [self firmwareVersion] ) {
         handler( YES, nil );
     } else {
-        firmwareVersionAvailableHandler = handler;   // Wait until device info is valid
+        self.firmwareVersionAvailableHandler = [handler copy];   // Wait until device info is valid
     }
 }
 
@@ -331,7 +330,7 @@ typedef enum { //These occur in sequence
     if ( [self hardwareVersion] ) {
         handler( YES, nil );
     } else {
-        hardwareVersionAvailableHandler = handler;   // Wait until device info is valid
+        self.hardwareVersionAvailableHandler = [handler copy];   // Wait until device info is valid
     }
 }
 
@@ -926,9 +925,9 @@ typedef enum { //These occur in sequence
 
 - (void)hardwareVersionDidUpdate
 {
-    if (hardwareVersionAvailableHandler){
-        [self checkHardwareVersionAvailableWithHandler:hardwareVersionAvailableHandler];
-        hardwareVersionAvailableHandler = nil;
+    if (self.hardwareVersionAvailableHandler){
+        [self checkHardwareVersionAvailableWithHandler:self.hardwareVersionAvailableHandler];
+        self.hardwareVersionAvailableHandler = nil;
     }
 }
 
@@ -940,9 +939,9 @@ typedef enum { //These occur in sequence
     // Don't send firmware version back to handler when firmware update is still in progress
     if (self.updateInProgress) return;
 
-    if (firmwareVersionAvailableHandler) {
-        [self checkFirmwareVersionAvailableWithHandler:firmwareVersionAvailableHandler];
-        firmwareVersionAvailableHandler = nil;
+    if (self.firmwareVersionAvailableHandler) {
+        [self checkFirmwareVersionAvailableWithHandler:self.firmwareVersionAvailableHandler];
+        self.firmwareVersionAvailableHandler = nil;
     }
 }
 
