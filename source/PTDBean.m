@@ -450,7 +450,7 @@ typedef enum { //These occur in sequence
     arduinoOADStateTimout = [NSTimer scheduledTimerWithTimeInterval:duration target:self selector:@selector(__arduinoOADTimeout:) userInfo:nil repeats:NO];
 }
 -(void)__arduinoOADTimeout:(NSTimer*)timer{
-    NSError* error = [BEAN_Helper basicError:@"Sketch upload failed!" domain:NSStringFromClass([self class]) code:0];
+    NSError* error = [BEAN_Helper basicError:@"Sketch upload failed due to timeout!" domain:NSStringFromClass([self class]) code:0];
     if (self.uploadInProgress) {
         [self __alertDelegateOfArduinoOADCompletion:error];
     }
@@ -516,7 +516,7 @@ typedef enum { //These occur in sequence
             break;
         case BL_HL_STATE_ERROR:
         {
-            NSError *error = [BEAN_Helper basicError:@"Sketch upload failed!" domain:NSStringFromClass([self class]) code:0];
+            NSError *error = [BEAN_Helper basicError:@"Sketch upload failed due to bootloader error!" domain:NSStringFromClass([self class]) code:0];
             if (self.uploadInProgress) {
                 [self __alertDelegateOfArduinoOADCompletion:error];
             }
