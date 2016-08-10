@@ -803,6 +803,13 @@ typedef enum { //These occur in sequence
             NSDate *date = [NSDate dateWithTimeIntervalSince1970:meta.timestamp];
             self.sketchName = name;
             _dateProgrammed = date;
+
+            // check for sketch erased handler
+            if (self.sketchErasedHandler) {
+                // execute sketch erased handler and clear
+                self.sketchErasedHandler([name isEqualToString:@""]);
+                self.sketchErasedHandler = nil;
+            }
             
             if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateSketchName:dateProgrammed:crc32:)]) {
                 [self.delegate bean:self didUpdateSketchName:name dateProgrammed:date crc32:meta.hexCrc];
