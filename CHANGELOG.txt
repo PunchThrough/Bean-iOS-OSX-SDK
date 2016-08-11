@@ -8,6 +8,28 @@
           |___/
 
 ---------------------------------
+2.2.0
+Released on 2016-08-11
+---------------------------------
+App Message Definitions: master/22a7dea (2016-03-28)
+Bean Test Firmware: 201606030000 (2016-06-03)
+Bean+ Test Firmware: 201607260001 (2016-07-26)
+---------------------------------
+
+FEATURES:
+* Updated firmware for Bean and Bean+
+* Updated App Message Definitions
+
+IMPROVEMENTS:
+* Better sketch upload error messages
+* Deprecated [PTDBean eraseSketchWithHandler:]; use 
+  [PTDBean setArduinoPowerState:] instead
+
+BUG FIXES:
+* Fixed spelling errors in logging messages from Bean Manager
+* Fixed improper handling of certain completion blocks
+
+---------------------------------
 2.1.0
 Released on 2016-05-26
 ---------------------------------

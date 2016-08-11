@@ -31,6 +31,8 @@ typedef enum { //These occur in sequence
 @property (nonatomic, readwrite) NSString *sketchName;
 @property (nonatomic, assign) NSInteger targetFirmwareVersion;
 @property (nonatomic, copy) void (^sketchErasedHandler)(BOOL sketchErased);
+@property (nonatomic, copy) void (^firmwareVersionAvailableHandler)(BOOL firmwareAvailable, NSError *error);
+@property (nonatomic, copy) void (^hardwareVersionAvailableHandler)(BOOL hardwareAvailable, NSError *error);
 
 @end
 
@@ -53,9 +55,6 @@ typedef enum { //These occur in sequence
     BeanArduinoOADLocalState    localArduinoOADState;
     NSTimer*                    arduinoOADStateTimout;
     NSTimer*                    arduinoOADChunkSendTimer;
-    
-    void (^firmwareVersionAvailableHandler)(BOOL firmwareAvailable, NSError *error);
-    void (^hardwareVersionAvailableHandler)(BOOL hardwareAvailable, NSError *error);
     NSDate*                     firmwareUpdateStartTime;
         
 }
@@ -322,7 +321,7 @@ typedef enum { //These occur in sequence
     if ( [self firmwareVersion] ) {
         handler( YES, nil );
     } else {
-        firmwareVersionAvailableHandler = handler;   // Wait until device info is valid
+        self.firmwareVersionAvailableHandler = handler;   // Wait until device info is valid
     }
 }
 
@@ -331,7 +330,7 @@ typedef enum { //These occur in sequence
     if ( [self hardwareVersion] ) {
         handler( YES, nil );
     } else {
-        hardwareVersionAvailableHandler = handler;   // Wait until device info is valid
+        self.hardwareVersionAvailableHandler = handler;   // Wait until device info is valid
     }
 }
 
@@ -365,6 +364,7 @@ typedef enum { //These occur in sequence
     }
 }
 
+// Deprecated
 - (void)eraseSketchWithHandler:(void (^)(BOOL sketchErased))handler{
     
     if([self.sketchName isEqualToString:@""]) {
@@ -450,7 +450,7 @@ typedef enum { //These occur in sequence
     arduinoOADStateTimout = [NSTimer scheduledTimerWithTimeInterval:duration target:self selector:@selector(__arduinoOADTimeout:) userInfo:nil repeats:NO];
 }
 -(void)__arduinoOADTimeout:(NSTimer*)timer{
-    NSError* error = [BEAN_Helper basicError:@"Sketch upload failed!" domain:NSStringFromClass([self class]) code:0];
+    NSError* error = [BEAN_Helper basicError:@"Sketch upload failed: Arduino communication timed out" domain:NSStringFromClass([self class]) code:0];
     if (self.uploadInProgress) {
         [self __alertDelegateOfArduinoOADCompletion:error];
     }
@@ -516,7 +516,7 @@ typedef enum { //These occur in sequence
             break;
         case BL_HL_STATE_ERROR:
         {
-            NSError *error = [BEAN_Helper basicError:@"Sketch upload failed!" domain:NSStringFromClass([self class]) code:0];
+            NSError *error = [BEAN_Helper basicError:@"Sketch upload failed: Bootloader error" domain:NSStringFromClass([self class]) code:0];
             if (self.uploadInProgress) {
                 [self __alertDelegateOfArduinoOADCompletion:error];
             }
@@ -926,9 +926,9 @@ typedef enum { //These occur in sequence
 
 - (void)hardwareVersionDidUpdate
 {
-    if (hardwareVersionAvailableHandler){
-        [self checkHardwareVersionAvailableWithHandler:hardwareVersionAvailableHandler];
-        hardwareVersionAvailableHandler = nil;
+    if (self.hardwareVersionAvailableHandler){
+        [self checkHardwareVersionAvailableWithHandler:self.hardwareVersionAvailableHandler];
+        self.hardwareVersionAvailableHandler = nil;
     }
 }
 
@@ -940,9 +940,9 @@ typedef enum { //These occur in sequence
     // Don't send firmware version back to handler when firmware update is still in progress
     if (self.updateInProgress) return;
 
-    if (firmwareVersionAvailableHandler) {
-        [self checkFirmwareVersionAvailableWithHandler:firmwareVersionAvailableHandler];
-        firmwareVersionAvailableHandler = nil;
+    if (self.firmwareVersionAvailableHandler) {
+        [self checkFirmwareVersionAvailableWithHandler:self.firmwareVersionAvailableHandler];
+        self.firmwareVersionAvailableHandler = nil;
     }
 }
 
