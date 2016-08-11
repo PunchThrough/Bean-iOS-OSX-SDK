@@ -321,7 +321,7 @@ typedef enum { //These occur in sequence
     if ( [self firmwareVersion] ) {
         handler( YES, nil );
     } else {
-        self.firmwareVersionAvailableHandler = [handler copy];   // Wait until device info is valid
+        self.firmwareVersionAvailableHandler = handler;   // Wait until device info is valid
     }
 }
 
@@ -330,7 +330,7 @@ typedef enum { //These occur in sequence
     if ( [self hardwareVersion] ) {
         handler( YES, nil );
     } else {
-        self.hardwareVersionAvailableHandler = [handler copy];   // Wait until device info is valid
+        self.hardwareVersionAvailableHandler = handler;   // Wait until device info is valid
     }
 }
 
