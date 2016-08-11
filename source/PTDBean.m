@@ -365,6 +365,7 @@ typedef enum { //These occur in sequence
     }
 }
 
+// Deprecated
 - (void)eraseSketchWithHandler:(void (^)(BOOL sketchErased))handler{
     
     if([self.sketchName isEqualToString:@""]) {
