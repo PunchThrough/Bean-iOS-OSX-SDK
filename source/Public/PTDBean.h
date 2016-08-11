@@ -621,12 +621,10 @@ typedef NS_ENUM(NSUInteger, BeanBluetoothError) {
 -(void)readTemperature;
 
 /*
- *  This method is deprecated. Use <[PTDBean setArduinoPowerState:state:]> instead.
- *  @deprecated v2.2
  *  Erases sketch with completion handler. Used to ensure sketch is cleared before updating from Sym. to Asym. FW
  *  @param The handler to run once the sketch name has been updated. The sketchErased bool indicates whether the erasure was successful or not.
  */
-- (void)eraseSketchWithHandler:(void (^)(BOOL sketchErased))handler;
+- (void)eraseSketchWithHandler:(void (^)(BOOL sketchErased))handler __attribute__((deprecated(("Use [setArduinoPowerState:] instead"))));
 
 @end
 
