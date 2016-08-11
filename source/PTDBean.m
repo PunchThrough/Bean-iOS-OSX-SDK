@@ -31,8 +31,8 @@ typedef enum { //These occur in sequence
 @property (nonatomic, readwrite) NSString *sketchName;
 @property (nonatomic, assign) NSInteger targetFirmwareVersion;
 @property (nonatomic, copy) void (^sketchErasedHandler)(BOOL sketchErased);
-@property (nonatomic, strong) void (^firmwareVersionAvailableHandler)(BOOL firmwareAvailable, NSError *error);
-@property (nonatomic, strong) void (^hardwareVersionAvailableHandler)(BOOL hardwareAvailable, NSError *error);
+@property (nonatomic, copy) void (^firmwareVersionAvailableHandler)(BOOL firmwareAvailable, NSError *error);
+@property (nonatomic, copy) void (^hardwareVersionAvailableHandler)(BOOL hardwareAvailable, NSError *error);
 
 @end
 
