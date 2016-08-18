@@ -1,7 +1,6 @@
 #import <XCTest/XCTest.h>
 #import <OCMock/OCMock.h>
 #import "PTDBean.h"
-#import "PTDUtils.h"
 #import "PTDFirmwareHelper.h"
 #import "StatelessUtils.h"
 
@@ -10,18 +9,6 @@
 @end
 
 @implementation TestBeanHelpers
-
-/**
- *  Ensure that parseInteger parses integers and nothing else.
- */
-- (void)testParseInteger
-{
-    XCTAssertTrue([[PTDUtils parseLeadingInteger:@"123"] integerValue] == 123);
-    XCTAssertTrue([[PTDUtils parseLeadingInteger:@"123 "] integerValue] == 123);
-    XCTAssertTrue([[PTDUtils parseLeadingInteger:@"123_"] integerValue] == 123);
-    XCTAssertNil([PTDUtils parseLeadingInteger:@"?456"]);
-    XCTAssertNil([PTDUtils parseLeadingInteger:@" 456"]);
-}
 
 /**
  *  Ensure that firmwareUpdateRequiredForBean returns proper values for different firmwares and Beans.

@@ -1,7 +1,6 @@
 #import "BeanContainer.h"
 #import "StatelessUtils.h"
 #import "PTDBean+Protected.h"
-#import "PTDUtils.h"
 
 @interface BeanContainer () <PTDBeanManagerDelegate, PTDBeanExtendedDelegate>
 

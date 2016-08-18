@@ -1,5 +1,4 @@
 #import "PTDFirmwareHelper.h"
-#import "PTDUtils.h"
 #import "PTDBean.h"
 
 @implementation PTDFirmwareHelper
@@ -11,16 +10,15 @@
         return FirmwareStatusBeanNeedsUpdate;
     }
     
-    NSNumber *onBeanNumber = [PTDUtils parseLeadingInteger:bean.firmwareVersion];
-    if (!onBeanNumber) {
-        *error = [self errorForNonIntegerVersion:bean.firmwareVersion deviceName:@"Bean"];
-        return FirmwareStatusCouldNotDetermine;
-    }
-    
     long long available = [version longLongValue];
     
     NSString *beanVersion = [bean.firmwareVersion substringToIndex:12];
     long long onBean = [beanVersion longLongValue];
+    
+    if (!available || !onBean) {
+        *error = [self errorForNonIntegerVersion:bean.firmwareVersion deviceName:@"Bean"];
+        return FirmwareStatusCouldNotDetermine;
+    }
 
     if (available > onBean) {
         return FirmwareStatusBeanNeedsUpdate;
@@ -50,7 +48,7 @@
 
 + (NSError *)errorForNonIntegerVersion:(NSString *)version deviceName:(NSString *)name
 {
-    NSString *message = @"Firmware version string for %@ could not be parsed as an integer: \"%@\"";
+    NSString *message = @"Firmware version string for %@ could not be parsed: \"%@\"";
     NSString *desc = [NSString stringWithFormat:message, name, version];
     return [NSError errorWithDomain:@"FirmwareVersionInvalid"
                                code:-1

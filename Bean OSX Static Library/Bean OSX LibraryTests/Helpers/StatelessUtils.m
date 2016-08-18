@@ -1,7 +1,6 @@
 #import "StatelessUtils.h"
 #import <OCMock/OCMock.h>
 #import "PTDIntelHex.h"
-#import "PTDUtils.h"
 #import "PTDHardwareLookup.h"
 
 @implementation StatelessUtils

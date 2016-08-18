@@ -9,7 +9,6 @@
 #import "CBPeripheral+RSSI_Universal.h"
 #import "PTDBeanRemoteFirmwareVersionManager.h"
 #import "PTDFirmwareHelper.h"
-#import "PTDUtils.h"
 
 #define ARDUINO_OAD_MAX_CHUNK_SIZE 64
 
