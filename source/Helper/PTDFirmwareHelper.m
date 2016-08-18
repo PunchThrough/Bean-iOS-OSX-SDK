@@ -10,6 +10,11 @@
         return FirmwareStatusBeanNeedsUpdate;
     }
     
+    // if Bean firmware version unresolved, can't determine
+    if (bean.firmwareVersion == nil) {
+        return FirmwareStatusCouldNotDetermine;
+    }
+    
     long long available = [version longLongValue];
     
     NSString *beanVersion = [bean.firmwareVersion substringToIndex:12];
