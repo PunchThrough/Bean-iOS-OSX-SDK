@@ -9,7 +9,6 @@
 #import "CBPeripheral+RSSI_Universal.h"
 #import "PTDBeanRemoteFirmwareVersionManager.h"
 #import "PTDFirmwareHelper.h"
-#import "PTDUtils.h"
 
 #define ARDUINO_OAD_MAX_CHUNK_SIZE 64
 
@@ -29,7 +28,7 @@ typedef enum { //These occur in sequence
 @property (nonatomic, readwrite) BOOL updateInProgress;
 @property (nonatomic, readwrite) BOOL uploadInProgress;
 @property (nonatomic, readwrite) NSString *sketchName;
-@property (nonatomic, assign) NSInteger targetFirmwareVersion;
+@property (nonatomic, readwrite) NSString *targetFirmwareVersion;
 @property (nonatomic, copy) void (^sketchErasedHandler)(BOOL sketchErased);
 @property (nonatomic, copy) void (^firmwareVersionAvailableHandler)(BOOL firmwareAvailable, NSError *error);
 @property (nonatomic, copy) void (^hardwareVersionAvailableHandler)(BOOL hardwareAvailable, NSError *error);
@@ -334,12 +333,12 @@ typedef enum { //These occur in sequence
     }
 }
 
-- (FirmwareStatus)firmwareUpdateAvailable:(NSInteger)bakedFirmwareVersion error:(NSError * __autoreleasing *)error
+- (FirmwareStatus)firmwareUpdateAvailable:(NSString *)bakedFirmwareVersion error:(NSError * __autoreleasing *)error
 {
     return [PTDFirmwareHelper firmwareUpdateRequiredForBean:self availableFirmware:bakedFirmwareVersion withError:error];
 }
 
-- (void)updateFirmwareWithImages:(NSArray *)images andTargetVersion:(NSInteger)version
+- (void)updateFirmwareWithImages:(NSArray *)images andTargetVersion:(NSString *)version
 {
     self.targetFirmwareVersion = version;
 

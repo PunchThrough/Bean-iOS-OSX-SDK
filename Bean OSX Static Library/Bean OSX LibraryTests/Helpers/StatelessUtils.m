@@ -1,7 +1,6 @@
 #import "StatelessUtils.h"
 #import <OCMock/OCMock.h>
 #import "PTDIntelHex.h"
-#import "PTDUtils.h"
 #import "PTDHardwareLookup.h"
 
 @implementation StatelessUtils
@@ -49,7 +48,7 @@
     return firmwarePaths;
 }
 
-+ (NSNumber *)firmwareVersionFromResource:(NSString *)imageFolder withHardwareName:(NSString *)hardwareName
++ (NSString *)firmwareVersionFromResource:(NSString *)imageFolder withHardwareName:(NSString *)hardwareName
 {
     NSString *resourcePath = [[NSBundle bundleForClass:[self class]] resourcePath];
     NSString *folderPath = [resourcePath stringByAppendingPathComponent:imageFolder];
@@ -57,12 +56,12 @@
     NSString *versionFile = [folderPath stringByAppendingPathComponent:@"version.txt"];
     NSError *error;
     NSString *versionFileData = [NSString stringWithContentsOfFile:versionFile encoding:NSUTF8StringEncoding error:&error];
-    if (error) {
+    if (error || !versionFileData) {
         NSLog(@"Could not open version file (%@): %@", versionFile, error);
         return nil;
     }
-    NSNumber *asNumber = [PTDUtils parseLeadingInteger:versionFileData];
-    return asNumber;
+    NSString *versionString = [versionFileData substringToIndex:12];
+    return versionString;
 }
 
 + (PTDBean *)fakeBeanWithFirmware:(NSString *)version;

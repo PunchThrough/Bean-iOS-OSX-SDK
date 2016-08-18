@@ -27,8 +27,6 @@
 		364BD5201C8F46E50065893B /* BEAN_Helper.m in Sources */ = {isa = PBXBuildFile; fileRef = 52D34E9218A9B890002F0C59 /* BEAN_Helper.m */; };
 		364BD5231C8F46F80065893B /* PTDFirmwareHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 364BD5211C8F46F80065893B /* PTDFirmwareHelper.h */; };
 		364BD5241C8F46F80065893B /* PTDFirmwareHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 364BD5221C8F46F80065893B /* PTDFirmwareHelper.m */; };
-		364BD5271C8F47690065893B /* PTDUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 364BD5251C8F47690065893B /* PTDUtils.h */; };
-		364BD5281C8F47690065893B /* PTDUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 364BD5261C8F47690065893B /* PTDUtils.m */; };
 		36539CB31C7CEB4C00F4926F /* PTDIntelHex.h in Headers */ = {isa = PBXBuildFile; fileRef = 36539CB11C7CEB4C00F4926F /* PTDIntelHex.h */; };
 		36539CB41C7CEB4C00F4926F /* PTDIntelHex.m in Sources */ = {isa = PBXBuildFile; fileRef = 36539CB21C7CEB4C00F4926F /* PTDIntelHex.m */; };
 		36539CB71C7CEB5700F4926F /* PTDIntelHexLine.h in Headers */ = {isa = PBXBuildFile; fileRef = 36539CB51C7CEB5700F4926F /* PTDIntelHexLine.h */; };
@@ -141,8 +139,6 @@
 		363A1A871C8A329500B005BD /* TestBeanHelpers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestBeanHelpers.m; sourceTree = "<group>"; };
 		364BD5211C8F46F80065893B /* PTDFirmwareHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTDFirmwareHelper.h; sourceTree = "<group>"; };
 		364BD5221C8F46F80065893B /* PTDFirmwareHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PTDFirmwareHelper.m; sourceTree = "<group>"; };
-		364BD5251C8F47690065893B /* PTDUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTDUtils.h; sourceTree = "<group>"; };
-		364BD5261C8F47690065893B /* PTDUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PTDUtils.m; sourceTree = "<group>"; };
 		36539CB11C7CEB4C00F4926F /* PTDIntelHex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTDIntelHex.h; sourceTree = "<group>"; };
 		36539CB21C7CEB4C00F4926F /* PTDIntelHex.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PTDIntelHex.m; sourceTree = "<group>"; };
 		36539CB51C7CEB5700F4926F /* PTDIntelHexLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PTDIntelHexLine.h; sourceTree = "<group>"; };
@@ -501,8 +497,6 @@
 				36DCC8B31C8A227700BCB3C5 /* PTDHardwareLookup.m */,
 				364BD5211C8F46F80065893B /* PTDFirmwareHelper.h */,
 				364BD5221C8F46F80065893B /* PTDFirmwareHelper.m */,
-				364BD5251C8F47690065893B /* PTDUtils.h */,
-				364BD5261C8F47690065893B /* PTDUtils.m */,
 			);
 			name = Helper;
 			path = ../../source/Helper;
@@ -605,7 +599,6 @@
 				520A7E141AA0034500CB5B80 /* CBPeripheral+RSSI_Universal.h in Headers */,
 				364BD5231C8F46F80065893B /* PTDFirmwareHelper.h in Headers */,
 				525AB3E01B7E8135007D6DE1 /* PTDBleDevice+Protected.h in Headers */,
-				364BD5271C8F47690065893B /* PTDUtils.h in Headers */,
 				52BF98A119352E59008DCA31 /* BatteryProfile.h in Headers */,
 				36539CB31C7CEB4C00F4926F /* PTDIntelHex.h in Headers */,
 				52BB1B621A2FDAE1003135A5 /* PTDBeanRemoteFirmwareVersionManager.h in Headers */,
@@ -778,7 +771,6 @@
 				364BD5201C8F46E50065893B /* BEAN_Helper.m in Sources */,
 				36DCC8B51C8A227700BCB3C5 /* PTDHardwareLookup.m in Sources */,
 				52D34EBD18A9B890002F0C59 /* GattSerialTransport.m in Sources */,
-				364BD5281C8F47690065893B /* PTDUtils.m in Sources */,
 				52D34EAF18A9B890002F0C59 /* CBPeripheral+UniqueId.m in Sources */,
 				52D34EC218A9B890002F0C59 /* OadProfile.m in Sources */,
 				969FDE98191A9DE80068B99A /* PTDBeanManager.m in Sources */,
