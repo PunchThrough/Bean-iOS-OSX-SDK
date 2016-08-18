@@ -4,7 +4,7 @@
 
 @implementation PTDFirmwareHelper
 
-+ (FirmwareStatus)firmwareUpdateRequiredForBean:(PTDBean *)bean availableFirmware:(NSInteger)version withError:(NSError * __autoreleasing *)error
++ (FirmwareStatus)firmwareUpdateRequiredForBean:(PTDBean *)bean availableFirmware:(NSString *)version withError:(NSError * __autoreleasing *)error
 {
     // OAD images always need an update
     if ([self oadImageRunningOnBean:bean]) {
@@ -17,8 +17,10 @@
         return FirmwareStatusCouldNotDetermine;
     }
     
-    NSInteger available = version;
-    NSInteger onBean = [onBeanNumber integerValue];
+    long long available = [version longLongValue];
+    
+    NSString *beanVersion = [bean.firmwareVersion substringToIndex:12];
+    long long onBean = [beanVersion longLongValue];
 
     if (available > onBean) {
         return FirmwareStatusBeanNeedsUpdate;

@@ -376,7 +376,7 @@ typedef NS_ENUM(NSUInteger, BeanBluetoothError) {
 /**
  *  Check if a firmware update is available
  */
-- (FirmwareStatus)firmwareUpdateAvailable:(NSInteger)bakedFirmwareVersion error:(NSError * __autoreleasing *)error;
+- (FirmwareStatus)firmwareUpdateAvailable:(NSString *)bakedFirmwareVersion error:(NSError * __autoreleasing *)error;
 
 /**
  *  Update this Bean with a set of asymmetric firmware images.
@@ -385,7 +385,7 @@ typedef NS_ENUM(NSUInteger, BeanBluetoothError) {
  *  @param version An NSInteger of the parsed datestamp for the firmware images. When Bean reflects this date in its
  *      Hardware Version characteristic, the firmware version process is complete.
  */
-- (void)updateFirmwareWithImages:(NSArray *)images andTargetVersion:(NSInteger)version;
+- (void)updateFirmwareWithImages:(NSArray *)images andTargetVersion:(NSString *)version;
 
 /**
  *  Cancel firmware update
