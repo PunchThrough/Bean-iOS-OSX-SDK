@@ -160,11 +160,11 @@ NSString * const firmwareImagesFolder = @"Firmware Images";
 {
     NSString *hardwareName = [self deviceHardwareVersion];
     NSArray *imagePaths = [StatelessUtils firmwareImagesFromResource:firmwareImagesFolder withHardwareName:hardwareName];
-    NSNumber *targetVersion = [StatelessUtils firmwareVersionFromResource:firmwareImagesFolder withHardwareName:hardwareName];
+    NSString *targetVersion = [StatelessUtils firmwareVersionFromResource:firmwareImagesFolder withHardwareName:hardwareName];
     if (!targetVersion) return NO;
     self.beanCompletedFirmwareUpload = [self.testCase expectationWithDescription:@"Firmware updated for Bean"];
 
-    [self.bean updateFirmwareWithImages:imagePaths andTargetVersion:[targetVersion integerValue]];
+    [self.bean updateFirmwareWithImages:imagePaths andTargetVersion:targetVersion];
     [self.testCase waitForExpectationsWithTimeout:480 handler:nil];
     self.beanCompletedFirmwareUpload = nil;
     
@@ -175,12 +175,12 @@ NSString * const firmwareImagesFolder = @"Firmware Images";
 {
     NSString *hardwareName = [self deviceInfo][@"hardwareVersion"];
     NSArray *imagePaths = [StatelessUtils firmwareImagesFromResource:firmwareImagesFolder withHardwareName:hardwareName];
-    NSNumber *targetVersion = [StatelessUtils firmwareVersionFromResource:firmwareImagesFolder withHardwareName:hardwareName];
+    NSString *targetVersion = [StatelessUtils firmwareVersionFromResource:firmwareImagesFolder withHardwareName:hardwareName];
     if (!targetVersion) return NO;
     NSString *desc = @"Single firmware image uploaded to Bean";
     self.beanCompletedFirmwareUploadOfSingleImage = [self.testCase expectationWithDescription:desc];
     
-    [self.bean updateFirmwareWithImages:imagePaths andTargetVersion:[targetVersion integerValue]];
+    [self.bean updateFirmwareWithImages:imagePaths andTargetVersion:targetVersion];
     [self.testCase waitForExpectationsWithTimeout:120 handler:nil];
     self.beanCompletedFirmwareUploadOfSingleImage = nil;
     
@@ -355,12 +355,12 @@ imageProgress:(NSUInteger)bytesSent
     NSLog(@"Refetching firmware images and restarting update process");
     NSString *hardwareName = self.bean.hardwareVersion;  // not kosher, but we're in the middle of an xctest await during connection
     NSArray *imagePaths = [StatelessUtils firmwareImagesFromResource:firmwareImagesFolder withHardwareName:hardwareName];
-    NSNumber *targetVersion = [StatelessUtils firmwareVersionFromResource:firmwareImagesFolder withHardwareName:hardwareName];
+    NSString *targetVersion = [StatelessUtils firmwareVersionFromResource:firmwareImagesFolder withHardwareName:hardwareName];
     if (!targetVersion) {
         NSLog(@"version.txt not found; can't continue firmware update");
         return;
     }
-    [self.bean updateFirmwareWithImages:imagePaths andTargetVersion:[targetVersion integerValue]];
+    [self.bean updateFirmwareWithImages:imagePaths andTargetVersion:targetVersion];
 }
 
 @end
