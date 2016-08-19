@@ -8,6 +8,32 @@
           |___/
 
 ---------------------------------
+3.0.0
+Released on 2016-08-19
+---------------------------------
+App Message Definitions: master/22a7dea (2016-03-28)
+Bean Test Firmware: 201606030000 (2016-06-03)
+Bean+ Test Firmware: 201608170000 (2016-08-17)
+---------------------------------
+
+FEATURES:
+* Updated firmware for Bean+
+
+IMPROVEMENTS:
+* Removed [PTDUtils:parseLeadingInteger:]
+* Removed deprecated [PTDBean:eraseSketchWithHandler:]; use
+  [Bean:setArduinoPowerState:] instead
+* Updated API for:
+  * [PTDBean:updateFirmwareWithImages:andTargetVersion:]
+  * [PTDBean:firmwareUpdateAvailable:error:]
+  * [PTDFirmwareHelper:firmwareUpdateRequiredForBean:
+  	availableFirmware:withError:]
+  pass in NSString instead of NSInteger
+
+BUG FIXES:
+* Fixed incorrect firmware version parsing on 32-bit devices
+
+---------------------------------
 2.2.0
 Released on 2016-08-11
 ---------------------------------
