@@ -7,7 +7,7 @@
     Don't waste your time trying to fix autocomplete.
 
     Consider this file DEPRECATED. Don't put new work into this file.
-    If you need to add helper methods, add them to PTDUtils or another helper class.
+    If you need to add helper methods, add them to or another helper class.
 
     WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING
 

@@ -376,16 +376,16 @@ typedef NS_ENUM(NSUInteger, BeanBluetoothError) {
 /**
  *  Check if a firmware update is available
  */
-- (FirmwareStatus)firmwareUpdateAvailable:(NSInteger)bakedFirmwareVersion error:(NSError * __autoreleasing *)error;
+- (FirmwareStatus)firmwareUpdateAvailable:(NSString *)bakedFirmwareVersion error:(NSError * __autoreleasing *)error;
 
 /**
  *  Update this Bean with a set of asymmetric firmware images.
  *
  *  @param images  An array of paths to firmware images for this Bean's hardware variant
- *  @param version An NSInteger of the parsed datestamp for the firmware images. When Bean reflects this date in its
- *      Hardware Version characteristic, the firmware version process is complete.
+ *  @param version An NSString of the parsed datestamp for the firmware images. When Bean reflects this date in its
+ *      Firmware Version characteristic, the firmware version process is complete.
  */
-- (void)updateFirmwareWithImages:(NSArray *)images andTargetVersion:(NSInteger)version;
+- (void)updateFirmwareWithImages:(NSArray *)images andTargetVersion:(NSString *)version;
 
 /**
  *  Cancel firmware update
@@ -619,12 +619,6 @@ typedef NS_ENUM(NSUInteger, BeanBluetoothError) {
  *  @see [PTDBeanDelegate bean:didUpdateTemperature:]
  */
 -(void)readTemperature;
-
-/*
- *  Erases sketch with completion handler. Used to ensure sketch is cleared before updating from Sym. to Asym. FW
- *  @param The handler to run once the sketch name has been updated. The sketchErased bool indicates whether the erasure was successful or not.
- */
-- (void)eraseSketchWithHandler:(void (^)(BOOL sketchErased))handler __attribute__((deprecated(("Use [setArduinoPowerState:] instead"))));
 
 @end
 

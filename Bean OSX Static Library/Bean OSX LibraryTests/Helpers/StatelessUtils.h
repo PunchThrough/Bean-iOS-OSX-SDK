@@ -39,9 +39,9 @@
  *  @param imageFolder Specifies where the .bin files are stored
  *  @param hardwareName The name of the hardware binary folder, e.g. "Bean"
  *
- *  @return An NSNumber of the datestamp prefix of the first file listed, or nil if none could be parsed
+ *  @return An NSString of the datestamp prefix of the first file listed, or nil if none could be parsed
  */
-+ (NSNumber *)firmwareVersionFromResource:(NSString *)imageFolder withHardwareName:(NSString *)hardwareName;
++ (NSString *)firmwareVersionFromResource:(NSString *)imageFolder withHardwareName:(NSString *)hardwareName;
 
 /**
  *  Returns a stubbed Bean with the given firmware version string.

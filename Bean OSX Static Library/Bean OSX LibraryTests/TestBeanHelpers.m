@@ -1,7 +1,6 @@
 #import <XCTest/XCTest.h>
 #import <OCMock/OCMock.h>
 #import "PTDBean.h"
-#import "PTDUtils.h"
 #import "PTDFirmwareHelper.h"
 #import "StatelessUtils.h"
 
@@ -10,18 +9,6 @@
 @end
 
 @implementation TestBeanHelpers
-
-/**
- *  Ensure that parseInteger parses integers and nothing else.
- */
-- (void)testParseInteger
-{
-    XCTAssertTrue([[PTDUtils parseLeadingInteger:@"123"] integerValue] == 123);
-    XCTAssertTrue([[PTDUtils parseLeadingInteger:@"123 "] integerValue] == 123);
-    XCTAssertTrue([[PTDUtils parseLeadingInteger:@"123_"] integerValue] == 123);
-    XCTAssertNil([PTDUtils parseLeadingInteger:@"?456"]);
-    XCTAssertNil([PTDUtils parseLeadingInteger:@" 456"]);
-}
 
 /**
  *  Ensure that firmwareUpdateRequiredForBean returns proper values for different firmwares and Beans.
@@ -33,9 +20,9 @@
     NSString *futureDate = @"206304050000 Img-B";
     NSString *oadFirmware = @"OAD Img B";
     
-    NSInteger oldDateNumber = 199201110734;
-    NSInteger nowDateNumber = 201602290130;
-    NSInteger futureDateNumber = 206304050000;
+    NSString *oldDateFirmware = @"199201110734";
+    NSString *nowDateFirmware = @"201602290130";
+    NSString *futureDateFirmware = @"206304050000";
     
     PTDBean *oldBean = [StatelessUtils fakeBeanWithFirmware:oldDate];
     PTDBean *nowBean = [StatelessUtils fakeBeanWithFirmware:nowDate];
@@ -49,22 +36,22 @@
     
     // Success cases
 
-    XCTAssertEqual([PTDFirmwareHelper firmwareUpdateRequiredForBean:oldBean availableFirmware:oldDateNumber withError:&error], FirmwareStatusUpToDate);
-    XCTAssertEqual([PTDFirmwareHelper firmwareUpdateRequiredForBean:oldBean availableFirmware:nowDateNumber withError:&error], FirmwareStatusBeanNeedsUpdate);
-    XCTAssertEqual([PTDFirmwareHelper firmwareUpdateRequiredForBean:oldBean availableFirmware:futureDateNumber withError:&error], FirmwareStatusBeanNeedsUpdate);
+    XCTAssertEqual([PTDFirmwareHelper firmwareUpdateRequiredForBean:oldBean availableFirmware:oldDateFirmware withError:&error], FirmwareStatusUpToDate);
+    XCTAssertEqual([PTDFirmwareHelper firmwareUpdateRequiredForBean:oldBean availableFirmware:nowDateFirmware withError:&error], FirmwareStatusBeanNeedsUpdate);
+    XCTAssertEqual([PTDFirmwareHelper firmwareUpdateRequiredForBean:oldBean availableFirmware:futureDateFirmware withError:&error], FirmwareStatusBeanNeedsUpdate);
     
-    XCTAssertEqual([PTDFirmwareHelper firmwareUpdateRequiredForBean:nowBean availableFirmware:oldDateNumber withError:&error], FirmwareStatusBeanIsNewerThanAvailable);
-    XCTAssertEqual([PTDFirmwareHelper firmwareUpdateRequiredForBean:nowBean availableFirmware:nowDateNumber withError:&error], FirmwareStatusUpToDate);
-    XCTAssertEqual([PTDFirmwareHelper firmwareUpdateRequiredForBean:nowBean availableFirmware:futureDateNumber withError:&error], FirmwareStatusBeanNeedsUpdate);
+    XCTAssertEqual([PTDFirmwareHelper firmwareUpdateRequiredForBean:nowBean availableFirmware:oldDateFirmware withError:&error], FirmwareStatusBeanIsNewerThanAvailable);
+    XCTAssertEqual([PTDFirmwareHelper firmwareUpdateRequiredForBean:nowBean availableFirmware:nowDateFirmware withError:&error], FirmwareStatusUpToDate);
+    XCTAssertEqual([PTDFirmwareHelper firmwareUpdateRequiredForBean:nowBean availableFirmware:futureDateFirmware withError:&error], FirmwareStatusBeanNeedsUpdate);
     
-    XCTAssertEqual([PTDFirmwareHelper firmwareUpdateRequiredForBean:futureBean availableFirmware:oldDateNumber withError:&error], FirmwareStatusBeanIsNewerThanAvailable);
-    XCTAssertEqual([PTDFirmwareHelper firmwareUpdateRequiredForBean:futureBean availableFirmware:nowDateNumber withError:&error], FirmwareStatusBeanIsNewerThanAvailable);
-    XCTAssertEqual([PTDFirmwareHelper firmwareUpdateRequiredForBean:futureBean availableFirmware:futureDateNumber withError:&error], FirmwareStatusUpToDate);
+    XCTAssertEqual([PTDFirmwareHelper firmwareUpdateRequiredForBean:futureBean availableFirmware:oldDateFirmware withError:&error], FirmwareStatusBeanIsNewerThanAvailable);
+    XCTAssertEqual([PTDFirmwareHelper firmwareUpdateRequiredForBean:futureBean availableFirmware:nowDateFirmware withError:&error], FirmwareStatusBeanIsNewerThanAvailable);
+    XCTAssertEqual([PTDFirmwareHelper firmwareUpdateRequiredForBean:futureBean availableFirmware:futureDateFirmware withError:&error], FirmwareStatusUpToDate);
     
     // Ensure OAD beans always get an update
-    XCTAssertTrue([PTDFirmwareHelper firmwareUpdateRequiredForBean:oadBean availableFirmware:oldDateNumber withError:&error]);
-    XCTAssertTrue([PTDFirmwareHelper firmwareUpdateRequiredForBean:oadBean availableFirmware:nowDateNumber withError:&error]);
-    XCTAssertTrue([PTDFirmwareHelper firmwareUpdateRequiredForBean:oadBean availableFirmware:futureDateNumber withError:&error]);
+    XCTAssertTrue([PTDFirmwareHelper firmwareUpdateRequiredForBean:oadBean availableFirmware:oldDateFirmware withError:&error]);
+    XCTAssertTrue([PTDFirmwareHelper firmwareUpdateRequiredForBean:oadBean availableFirmware:nowDateFirmware withError:&error]);
+    XCTAssertTrue([PTDFirmwareHelper firmwareUpdateRequiredForBean:oadBean availableFirmware:futureDateFirmware withError:&error]);
 
     // Ensure no method above errored out
     XCTAssertNil(error);
@@ -76,7 +63,7 @@
 
     // Should fail when Bean has an invalid date
     error = nil;
-    XCTAssertFalse([PTDFirmwareHelper firmwareUpdateRequiredForBean:beanWithInvalidDate availableFirmware:futureDateNumber withError:&error]);
+    XCTAssertFalse([PTDFirmwareHelper firmwareUpdateRequiredForBean:beanWithInvalidDate availableFirmware:futureDateFirmware withError:&error]);
     XCTAssertNotNil(error);
 }
 
