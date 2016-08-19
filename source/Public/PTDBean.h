@@ -382,8 +382,8 @@ typedef NS_ENUM(NSUInteger, BeanBluetoothError) {
  *  Update this Bean with a set of asymmetric firmware images.
  *
  *  @param images  An array of paths to firmware images for this Bean's hardware variant
- *  @param version An NSInteger of the parsed datestamp for the firmware images. When Bean reflects this date in its
- *      Hardware Version characteristic, the firmware version process is complete.
+ *  @param version An NSString of the parsed datestamp for the firmware images. When Bean reflects this date in its
+ *      Firmware Version characteristic, the firmware version process is complete.
  */
 - (void)updateFirmwareWithImages:(NSArray *)images andTargetVersion:(NSString *)version;
 
