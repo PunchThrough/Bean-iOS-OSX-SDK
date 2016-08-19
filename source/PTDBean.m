@@ -29,7 +29,6 @@ typedef enum { //These occur in sequence
 @property (nonatomic, readwrite) BOOL uploadInProgress;
 @property (nonatomic, readwrite) NSString *sketchName;
 @property (nonatomic, readwrite) NSString *targetFirmwareVersion;
-@property (nonatomic, copy) void (^sketchErasedHandler)(BOOL sketchErased);
 @property (nonatomic, copy) void (^firmwareVersionAvailableHandler)(BOOL firmwareAvailable, NSError *error);
 @property (nonatomic, copy) void (^hardwareVersionAvailableHandler)(BOOL hardwareAvailable, NSError *error);
 
@@ -361,27 +360,6 @@ typedef enum { //These occur in sequence
         if (oad_profile)
             [oad_profile cancel];
     }
-}
-
-// Deprecated
-- (void)eraseSketchWithHandler:(void (^)(BOOL sketchErased))handler{
-    
-    if([self.sketchName isEqualToString:@""]) {
-        if (handler) {
-            handler(YES);
-        }
-        return;
-    }
-     
-    // program a nil image and image name to clear sketch
-    self.sketchErasedHandler = handler;
-#if TARGET_OS_IPHONE
-    [self setLedColor:[UIColor colorWithRed:0 green:0 blue:0 alpha:1]];
-#else
-    [self setLedColor:[NSColor colorWithRed:0 green:0 blue:0 alpha:1]];
-#endif
-    [self programArduinoWithRawHexImage:nil andImageName:@""];
-    [self readArduinoSketchInfo];
 }
 
 #pragma mark - Protected Methods
@@ -801,13 +779,6 @@ typedef enum { //These occur in sequence
             NSDate *date = [NSDate dateWithTimeIntervalSince1970:meta.timestamp];
             self.sketchName = name;
             _dateProgrammed = date;
-
-            // check for sketch erased handler
-            if (self.sketchErasedHandler) {
-                // execute sketch erased handler and clear
-                self.sketchErasedHandler([name isEqualToString:@""]);
-                self.sketchErasedHandler = nil;
-            }
             
             if (self.delegate && [self.delegate respondsToSelector:@selector(bean:didUpdateSketchName:dateProgrammed:crc32:)]) {
                 [self.delegate bean:self didUpdateSketchName:name dateProgrammed:date crc32:meta.hexCrc];
