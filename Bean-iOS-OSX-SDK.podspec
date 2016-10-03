@@ -2,7 +2,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "Bean-iOS-OSX-SDK"
-  s.version      = "3.0.0"
+  s.version      = "3.0.1"
   s.summary      = "Punch Through Design's SDK for speeding up development with the LightBlue Bean development platform"
   s.homepage     = "https://github.com/PunchThrough/Bean-iOS-OSX-SDK"
   s.license      = { :type => "MIT", :file => "LICENSE.txt" }
@@ -10,7 +10,7 @@ Pod::Spec.new do |s|
   s.author             = { "Punch Through Design" => "info@punchthrough.com" }
   s.documentation_url = 'http://punchthrough.com/files/bean/sdk-docs/index.html'
 
-  s.ios.deployment_target = "7.0"
+  s.ios.deployment_target = "8.0"
   s.osx.deployment_target = "10.9"
 
   s.source       = { :git => "https://github.com/PunchThrough/Bean-iOS-OSX-SDK.git", :tag => s.version.to_s, :submodules => true }
