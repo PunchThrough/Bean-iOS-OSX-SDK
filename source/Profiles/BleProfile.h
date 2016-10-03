@@ -7,14 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
-#ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
 #import <CoreBluetooth/CoreBluetooth.h>
-#else
-#import <IOBluetooth/IOBluetooth.h>
-#endif
-
-
 
 
 // This is an abstract class and should only be used when subclassed.
