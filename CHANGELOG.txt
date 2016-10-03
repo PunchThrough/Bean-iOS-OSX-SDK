@@ -8,6 +8,23 @@
           |___/
 
 ---------------------------------
+3.0.1
+Released on 2016-10-03
+---------------------------------
+App Message Definitions: master/22a7dea (2016-03-28)
+Bean Test Firmware: 201609290000 (2016-09-29)
+Bean+ Test Firmware: 201609290000 (2016-09-29)
+---------------------------------
+
+FEATURES:
+* Updated firmware for Bean & Bean+
+
+IMPROVEMENTS:
+* Modified IOBluetooth includes for OS X build
+* Updated to recommended project settings
+* Bumped iOS deployment target to 8.0
+
+---------------------------------
 3.0.0
 Released on 2016-08-19
 ---------------------------------

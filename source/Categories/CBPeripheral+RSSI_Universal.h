@@ -6,11 +6,7 @@
 //  Copyright (c) 2015 Punch Through Design. All rights reserved.
 //
 
-#ifdef __IPHONE_OS_VERSION_MIN_REQUIRED
 #import <CoreBluetooth/CoreBluetooth.h>
-#else
-#import <IOBluetooth/IOBluetooth.h>
-#endif
 
 
 @interface CBPeripheral (RSSI_Universal)
