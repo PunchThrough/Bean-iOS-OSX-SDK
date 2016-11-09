@@ -663,7 +663,6 @@ typedef enum { //These occur in sequence
         __weak typeof(self) weakSelf = self;
         [gatt_serial_profile validateWithCompletion: ^(NSError* error) {
             if ( !error && [gatt_serial_profile isValid:nil] ) {
-                [weakSelf releaseSerialGate];
                 [weakSelf __profileHasBeenValidated:profile];
             }
         }];

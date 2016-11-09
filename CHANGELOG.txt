@@ -8,6 +8,21 @@
           |___/
 
 ---------------------------------
+3.0.2
+Released on 2016-11-09
+---------------------------------
+App Message Definitions: master/22a7dea (2016-03-28)
+Bean Test Firmware: 201611070000 (2016-11-07)
+Bean+ Test Firmware: 201611070000 (2016-11-07)
+---------------------------------
+
+FEATURES:
+* Updated firmware for Bean & Bean+
+
+IMPROVEMENTS:
+* Removed call to release serial gate, handled in firmware
+
+---------------------------------
 3.0.1
 Released on 2016-10-03
 ---------------------------------
