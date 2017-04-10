@@ -2,7 +2,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "Bean-iOS-OSX-SDK"
-  s.version      = "3.0.3"
+  s.version      = "3.0.4"
   s.summary      = "Punch Through Design's SDK for speeding up development with the LightBlue Bean development platform"
   s.homepage     = "https://github.com/PunchThrough/Bean-iOS-OSX-SDK"
   s.license      = { :type => "MIT", :file => "LICENSE.txt" }
