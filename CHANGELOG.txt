@@ -7,6 +7,19 @@
            __/ |                                  SDK for iOS and OS X
           |___/
 
+
+---------------------------------
+3.0.5
+Released on 2017-04-10
+---------------------------------
+App Message Definitions: master/22a7dea (2016-03-28)
+Bean Test Firmware: 201611160000 (2016-11-16)
+Bean+ Test Firmware: 201611160000 (2016-11-16)
+---------------------------------
+
+BUG FIXES:
+* Updated podspec to exclude test framework files and import other headers in correct order when generating Swift umbrella file
+
 ---------------------------------
 3.0.4
 Released on 2017-04-10
