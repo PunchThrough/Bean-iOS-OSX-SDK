@@ -16,7 +16,7 @@ Pod::Spec.new do |s|
   s.source       = { :git => "https://github.com/PunchThrough/Bean-iOS-OSX-SDK.git", :tag => s.version.to_s, :submodules => true }
 
   s.source_files  = "source/**/*.{h,m}", "App Message Definitions/*.{h,m}","Bean OSX Static Library/**/*.{h,m}","source"
-  s.exclude_files = "Bean OSX Static Library/Bean OSX LibraryTests/**/*.{h,m}", "Bean OSX Static Library/Frameworks/**/OCMock.framework/*"
+  s.exclude_files = "Bean OSX Static Library/Bean OSX LibraryTests/**/*.{h,m}", "Bean OSX Static Library/Frameworks/**/OCMock.framework/**/*.{h,m}"
   s.resource = "firmware/*"
 
   s.ios.frameworks = "CoreBluetooth"
