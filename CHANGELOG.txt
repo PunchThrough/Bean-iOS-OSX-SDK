@@ -9,6 +9,18 @@
 
 
 ---------------------------------
+3.0.6
+Released on 2017-05-02
+---------------------------------
+App Message Definitions: master/429deff (2017-04-17)
+Bean Test Firmware: 201611160000 (2016-11-16)
+Bean+ Test Firmware: 201611160000 (2016-11-16)
+---------------------------------
+
+IMPROVEMENTS:
+* Use HTTPS instead of SSH for App Message Definitions submodule so users aren’t forced to set up SSH to install the SDK pod
+
+---------------------------------
 3.0.5
 Released on 2017-04-10
 ---------------------------------
