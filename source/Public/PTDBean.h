@@ -299,7 +299,7 @@ typedef NS_ENUM(NSUInteger, BeanBluetoothError) {
  *  A serious error has occurred that Bean can't resolve. The client must resolve this issue.
  *
  *  @param bean The Bean that encountered this issue
- *  @param bluetoothError a BeanBluetoothError indicating what went wrong
+ *  @param error a BeanBluetoothError indicating what went wrong
  */
 - (void)bean:(PTDBean *)bean bluetoothError:(BeanBluetoothError)error;
 
@@ -470,7 +470,7 @@ typedef NS_ENUM(NSUInteger, BeanBluetoothError) {
 /**
  *  Temporarily turns the Bean's Arduino on or off.
  *
- *  @param "YES" sets the Arduino to a powered-on state and "NO" is a shutdown state.
+ *  @param state "YES" sets the Arduino to a powered-on state and "NO" is a shutdown state.
  */
 -(void)setArduinoPowerState:(ArduinoPowerState)state;
 /**
@@ -607,7 +607,7 @@ typedef NS_ENUM(NSUInteger, BeanBluetoothError) {
 /**
  *  Requests Bean's current scratch bank data.
  *  @discussion When you call this method to read one of the Bean's scratch banks, the bean calls the [PTDBeanDelegate bean:didUpdateScratchBank:withValue:] method of its delegate object.
- *  @param The index of the scratch bank to request, from 1 to 5.
+ *  @param bank The index of the scratch bank to request, from 1 to 5.
  *  @see [PTDBeanDelegate bean:didUpdateScratchBank:withValue:]
  */
 -(void)readScratchBank:(NSInteger)bank;
