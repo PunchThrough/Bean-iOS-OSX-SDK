@@ -21,7 +21,7 @@ typedef enum { //These occur in sequence
 } BeanArduinoOADLocalState;
 
 @interface PTDBean () <CBPeripheralDelegate, AppMessagingLayerDelegate, OAD_Delegate, BatteryProfileDelegate,
-                       DevInfoProfileDelegate>
+                       DevInfoProfileDelegate, ScratchProfileDelegate>
 
 #pragma mark - Header readonly overrides
 
@@ -47,6 +47,7 @@ typedef enum { //These occur in sequence
     OadProfile*                 oad_profile;
     GattSerialProfile*          gatt_serial_profile;
     BatteryProfile*             battery_profile;
+    ScratchProfile*             scratch_profile;
     
     NSData*                     arduinoFwImage;
     NSInteger                   arduinoFwImage_chunkIndex;
@@ -374,7 +375,8 @@ typedef enum { //These occur in sequence
         [self setProfilesRequiredToConnect:@[[BatteryProfile class],
                                                      [DevInfoProfile class],
                                                      [GattSerialProfile class],
-                                                     [OadProfile class]
+                                                     [OadProfile class],
+                                                     [ScratchProfile class],
                                                      ]];
     }
     return self;
@@ -386,6 +388,7 @@ typedef enum { //These occur in sequence
     deviceInfo_profile = nil;
     gatt_serial_profile = nil;
     battery_profile = nil;
+    scratch_profile = nil;
     
     [super discoverServices];
     [self __checkIfRequiredProfilesAreValidated];
@@ -675,6 +678,18 @@ typedef enum { //These occur in sequence
                 [weakSelf __profileHasBeenValidated:profile];
             }
         }];
+    } else if ([profile isMemberOfClass:[ScratchProfile class]]) {
+        
+        scratch_profile = (ScratchProfile*)profile;
+        profile.delegate = self;
+        __weak typeof(self) weakSelf = self;
+        [scratch_profile validateWithCompletion: ^(NSError* error) {
+            if ( !error)
+            {
+                [weakSelf __profileHasBeenValidated:profile];
+            }
+        }];
+        
     }
 }
 
@@ -912,6 +927,16 @@ typedef enum { //These occur in sequence
     if (self.firmwareVersionAvailableHandler) {
         [self checkFirmwareVersionAvailableWithHandler:self.firmwareVersionAvailableHandler];
         self.firmwareVersionAvailableHandler = nil;
+    }
+}
+
+#pragma mark Scratch Profile callbacks
+
+- (void)didUpdateScratchBank:(NSInteger)bank data:(NSData *)data {
+    if(self.delegate){
+        if([self.delegate respondsToSelector:@selector(bean:didUpdateScratchBank:data:)]){
+            [self.delegate bean:self didUpdateScratchBank:bank data:data];
+        }
     }
 }
 

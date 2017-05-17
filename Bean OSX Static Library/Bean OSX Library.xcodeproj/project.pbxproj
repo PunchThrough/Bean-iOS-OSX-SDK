@@ -103,6 +103,8 @@
 		A9448BF11C7B94DE0031DA2C /* IOBluetooth.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 52DE25C018AAC53900E69929 /* IOBluetooth.framework */; };
 		A94C7A6B1C7CC89B0018A161 /* blink.hex in Resources */ = {isa = PBXBuildFile; fileRef = A94C7A6A1C7CC89B0018A161 /* blink.hex */; };
 		A99DECD01C7F4B32007F506D /* Firmware Images in Resources */ = {isa = PBXBuildFile; fileRef = A99DECCF1C7F4B32007F506D /* Firmware Images */; };
+		C42299DA1ECCABFE00BE65B6 /* ScratchProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = C42299D81ECCABFE00BE65B6 /* ScratchProfile.m */; };
+		C42299DB1ECCABFE00BE65B6 /* ScratchProfile.m in Sources */ = {isa = PBXBuildFile; fileRef = C42299D81ECCABFE00BE65B6 /* ScratchProfile.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -223,6 +225,8 @@
 		A9448BEF1C7B94D10031DA2C /* IOBluetoothUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOBluetoothUI.framework; path = System/Library/Frameworks/IOBluetoothUI.framework; sourceTree = SDKROOT; };
 		A94C7A6A1C7CC89B0018A161 /* blink.hex */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = blink.hex; sourceTree = "<group>"; };
 		A99DECCF1C7F4B32007F506D /* Firmware Images */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "Firmware Images"; sourceTree = "<group>"; };
+		C42299D71ECCABFE00BE65B6 /* ScratchProfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScratchProfile.h; sourceTree = "<group>"; };
+		C42299D81ECCABFE00BE65B6 /* ScratchProfile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScratchProfile.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -511,6 +515,7 @@
 				52D34E9418A9B890002F0C59 /* Device Info */,
 				52D34E9718A9B890002F0C59 /* Gatt Serial */,
 				52D34EA518A9B890002F0C59 /* OAD */,
+				C42299D61ECCABDC00BE65B6 /* Scratch */,
 			);
 			name = "BLE Profiles";
 			sourceTree = "<group>";
@@ -584,6 +589,15 @@
 				36539CBC1C7D18D000F4926F /* IntelHexSource.hex */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		C42299D61ECCABDC00BE65B6 /* Scratch */ = {
+			isa = PBXGroup;
+			children = (
+				C42299D71ECCABFE00BE65B6 /* ScratchProfile.h */,
+				C42299D81ECCABFE00BE65B6 /* ScratchProfile.m */,
+			);
+			path = Scratch;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -775,6 +789,7 @@
 				52D34EC218A9B890002F0C59 /* OadProfile.m in Sources */,
 				969FDE98191A9DE80068B99A /* PTDBeanManager.m in Sources */,
 				969FDE97191A9DE80068B99A /* PTDBean.m in Sources */,
+				C42299DA1ECCABFE00BE65B6 /* ScratchProfile.m in Sources */,
 				52BC523718D96A610083A031 /* AppMessagingLayer.m in Sources */,
 				36539CB81C7CEB5700F4926F /* PTDIntelHexLine.m in Sources */,
 				52D34EB518A9B890002F0C59 /* GattSerialProfile.m in Sources */,
@@ -813,6 +828,7 @@
 			files = (
 				2F6B5991196CA72E000CC6E8 /* PTDBleDevice.m in Sources */,
 				364BD51F1C8F46E40065893B /* BEAN_Helper.m in Sources */,
+				C42299DB1ECCABFE00BE65B6 /* ScratchProfile.m in Sources */,
 				96506ECA1937E82A00D02440 /* BatteryProfile.m in Sources */,
 				520C8EE0191C31970086C530 /* BleProfile.m in Sources */,
 				520C8EDE191C31780086C530 /* NSData+CRC.m in Sources */,

@@ -15,6 +15,7 @@
 #endif
 #import "PTDBleDevice.h"
 #import "BatteryProfile.h"
+#import "ScratchProfile.h"
 #import "PTDFirmwareHelper.h"
 
 #define ARDUINO_OAD_GENERIC_TIMEOUT_SEC 3
