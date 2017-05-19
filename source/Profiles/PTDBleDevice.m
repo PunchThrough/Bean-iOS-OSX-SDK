@@ -139,7 +139,7 @@
         [self.delegate deviceDidUpdateRSSI:self error:error];
     }
 }
-#endif
+#else
 - (void)peripheralDidUpdateRSSI:(CBPeripheral *)peripheral error:(NSError *)error{
     if (error) PTDLog(@"PTDBleDevice error: peripheralDidUpdateRSSI: %@ error: %@", peripheral, error);
     NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
@@ -161,6 +161,7 @@
         [self.delegate deviceDidUpdateRSSI:self error:error];
     }
 }
+#endif
 - (void)peripheral:(CBPeripheral *)peripheral didDiscoverServices:(NSError *)error{
     if (error) PTDLog(@"PTDBleDevice error: peripheral:%@ didDiscoverServices: error:%@", peripheral, error);
     NSDictionary *params = [[NSDictionary alloc] initWithObjectsAndKeys:
