@@ -382,6 +382,8 @@ typedef enum { //These occur in sequence
 
 -(void)discoverServices{
     
+    profilesValidated = [[NSMutableSet alloc] init];
+    
     oad_profile = nil;
     deviceInfo_profile = nil;
     gatt_serial_profile = nil;
