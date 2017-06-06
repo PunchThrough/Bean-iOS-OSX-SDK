@@ -59,6 +59,26 @@ NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect    = @"
     return cbcentralmanager?(BeanManagerState)cbcentralmanager.state:0;
 }
 
+-(void)restoreBeans:(NSArray<NSUUID*>*)identifiers{
+    NSArray* peripherals = [cbcentralmanager retrievePeripheralsWithIdentifiers:identifiers];
+    for(CBPeripheral* beanPeripheral in peripherals){
+        PTDBean* bean;
+        //If this bean is already in out records, pass it back to the delegate as having been discovered!
+        if((bean = [beanRecords objectForKey:beanPeripheral.identifier])){
+            bean.lastDiscovered = [NSDate date];
+            [self __notifyDelegateOfDiscoveredBean:bean error:nil];
+        }else{
+            if((bean = [[PTDBean alloc] initWithPeripheral:beanPeripheral beanManager:self])){
+                [beanRecords setObject:bean forKey:bean.identifier];
+                bean.RSSI = [beanPeripheral RSSI_Universal];
+                bean.lastDiscovered = [NSDate date];
+                bean.state = BeanState_Discovered;
+                [self __notifyDelegateOfDiscoveredBean:bean error:nil];
+            }
+        }
+    }
+}
+
 -(void)startScanningForBeans_error:(NSError**)error{
     //Stop any previous scan
     [self stopScanningForBeans_error:nil];
