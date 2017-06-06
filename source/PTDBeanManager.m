@@ -78,6 +78,7 @@ NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect    = @"
         PTDBean* bean;
         //If this bean is already in out records, pass it back to the delegate as having been discovered!
         if((bean = [beanRecords objectForKey:beanPeripheral.identifier])){
+            bean.lastDiscovered = [NSDate date];
             [self __notifyDelegateOfDiscoveredBean:bean error:nil];
         }else{ //If this bean's peripheral is connected and not in our records, another app could have connected to it.
             if((bean = [[PTDBean alloc] initWithPeripheral:beanPeripheral beanManager:self])){
