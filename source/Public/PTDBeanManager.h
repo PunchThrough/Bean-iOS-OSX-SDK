@@ -137,6 +137,13 @@ extern NSString * const PTDBeanManagerConnectionOptionProfilesRequiredToConnect;
 - (instancetype)initWithDelegate:(id<PTDBeanManagerDelegate>)delegate stateRestorationIdentifier:(NSString *)stateRestorationIdentifier;
 #endif
 
+/**
+ *  Restore Beans
+ *
+ *  @param identifiers UUID identifiers of Beans to instantiate without re-scanning.
+ */
+-(void)restoreBeans:(NSArray<NSUUID*>*)identifiers;
+
 /// @name Scanning or Stopping Scans for Beans
 /**
  *  Begins scanning for Beans

@@ -141,7 +141,7 @@
 
 /**
  *  Parse raw bytes from a string containing ASCII hex characters.
- *  @param The string with ASCII hex characters
+ *  @param hexString The string with ASCII hex characters
  *  @param offset The offset of the first character in the slice. 0 starts from the beginning of the string.
  *  @param len The number of characters in the slice
  *  @return An NSData object containing the raw bytes from the hex string
@@ -154,7 +154,7 @@
 
 /**
  *  Parse raw bytes from a string containing ASCII hex characters.
- *  @param The string with ASCII hex characters
+ *  @param hexString The string with ASCII hex characters
  *  @return An NSData object containing the raw bytes from the hex string
  */
 - (NSData *)bytesFromHexString:(NSString *)hexString

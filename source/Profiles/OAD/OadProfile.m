@@ -363,7 +363,7 @@ typedef struct {
 /**
  *  Offer one OAD image to Bean.
  *
- *  @param firstImage YES to offer the first image to Bean, NO to offer the next unoffered image
+ *  @param offerFirstImage YES to offer the first image to Bean, NO to offer the next unoffered image
  */
 - (void)offerOneImageUsingFirstImage:(BOOL)offerFirstImage
 {
